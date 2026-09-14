@@ -24,3 +24,16 @@
 \contentsline {subsection}{Первая квантовая поправка через концентрацию}{19}{subsection*.17}%
 \contentsline {section}{\numberline {7}Вырожденный ферми-газ при $T=0$}{21}{section.1.7}%
 \contentsline {subsection}{Энергия Ферми}{22}{subsection*.18}%
+\contentsline {subsection}{Энергия и давление вырожденного ферми-газа}{23}{subsection*.19}%
+\contentsline {subsection}{Примеры вырожденных ферми-систем}{24}{subsection*.20}%
+\contentsline {section}{\numberline {8}Ферми-газ при конечных температурах}{26}{section.1.8}%
+\contentsline {subsection}{Разложение интеграла Ферми}{26}{subsection*.21}%
+\contentsline {subsection}{$\Omega $-потенциал}{28}{subsection*.22}%
+\contentsline {subsection}{Химический потенциал}{29}{subsection*.23}%
+\contentsline {subsection}{Энтропия и теплоёмкость}{30}{subsection*.24}%
+\contentsline {subsection}{Давление}{31}{subsection*.25}%
+\contentsline {subsection}{Энергия}{32}{subsection*.26}%
+\contentsline {subsection}{Зависимость давления от объёма}{32}{subsection*.27}%
+\contentsline {section}{\numberline {9}Магнетизм электронного газа}{32}{section.1.9}%
+\contentsline {subsection}{$\Omega $-потенциал в магнитном поле}{33}{subsection*.28}%
+\contentsline {subsection}{Магнитный момент и восприимчивость}{34}{subsection*.29}%

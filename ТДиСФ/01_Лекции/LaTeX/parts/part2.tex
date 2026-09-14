@@ -1,0 +1,1562 @@
+% !TeX root = part02.tex
+
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% ============================================================
+\section{Ферми-газ при конечных температурах}
+% ============================================================
+
+Рассмотрим сильно вырожденный ферми-газ в области
+%
+\begin{equation*}
+    T
+    \ll
+    \varepsilon_F.
+\end{equation*}
+
+При конечной, но малой температуре резкая ступенька распределения
+Ферми--Дирака размывается лишь в узкой области энергий порядка $T$
+вблизи химического потенциала. Поэтому температурные поправки
+к термодинамическим величинам удобно находить разложением
+интегралов с распределением Ферми--Дирака.
+
+
+% ------------------------------------------------------------
+\subsection{Разложение интеграла Ферми}
+% ------------------------------------------------------------
+
+Рассмотрим интеграл
+%
+\begin{equation*}
+    I
+    =
+    \int_0^\infty
+    \frac{
+        f(\varepsilon)\,d\varepsilon
+    }{
+        e^{(\varepsilon-\mu)/T}+1
+    }.
+\end{equation*}
+
+Введём новую переменную
+%
+\begin{equation*}
+    \varepsilon-\mu
+    =
+    Tz.
+\end{equation*}
+
+Тогда
+%
+\begin{equation*}
+    \varepsilon
+    =
+    \mu+Tz,
+    \qquad
+    d\varepsilon
+    =
+    T\,dz,
+\end{equation*}
+%
+а пределы интегрирования переходят в
+%
+\begin{equation*}
+    \varepsilon=0
+    \quad\Longrightarrow\quad
+    z=-\frac{\mu}{T},
+    \qquad
+    \varepsilon\rightarrow\infty
+    \quad\Longrightarrow\quad
+    z\rightarrow\infty.
+\end{equation*}
+
+Поэтому
+%
+\begin{equation*}
+    I
+    =
+    T
+    \int_{-\mu/T}^{+\infty}
+    \frac{
+        f(\mu+Tz)
+    }{
+        e^z+1
+    }
+    \,dz.
+\end{equation*}
+
+Разобьём область интегрирования в точке $z=0$:
+%
+\begin{equation*}
+    I
+    =
+    T
+    \int_{-\mu/T}^{0}
+    \frac{
+        f(\mu+Tz)
+    }{
+        e^z+1
+    }
+    \,dz
+    +
+    T
+    \int_0^\infty
+    \frac{
+        f(\mu+Tz)
+    }{
+        e^z+1
+    }
+    \,dz.
+\end{equation*}
+
+В первом интеграле сделаем замену
+%
+\begin{equation*}
+    z
+    \rightarrow
+    -z.
+\end{equation*}
+
+Получаем
+%
+\begin{equation*}
+    I
+    =
+    T
+    \int_0^{\mu/T}
+    \frac{
+        f(\mu-Tz)
+    }{
+        e^{-z}+1
+    }
+    \,dz
+    +
+    T
+    \int_0^\infty
+    \frac{
+        f(\mu+Tz)
+    }{
+        e^z+1
+    }
+    \,dz.
+\end{equation*}
+
+Используем тождество
+%
+\begin{align*}
+    \frac{1}{e^{-z}+1}
+    &=
+    \frac{e^z}{e^z+1}
+    \\[4pt]
+    &=
+    1
+    -
+    \frac{1}{e^z+1}.
+\end{align*}
+
+Следовательно,
+%
+\begin{align*}
+    I
+    &=
+    T
+    \int_0^{\mu/T}
+    f(\mu-Tz)\,dz
+    -
+    T
+    \int_0^{\mu/T}
+    \frac{
+        f(\mu-Tz)
+    }{
+        e^z+1
+    }
+    \,dz
+    \\[4pt]
+    &\hspace{1.2cm}
+    +
+    T
+    \int_0^\infty
+    \frac{
+        f(\mu+Tz)
+    }{
+        e^z+1
+    }
+    \,dz.
+\end{align*}
+
+В первом интеграле возвращаемся к переменной энергии:
+%
+\begin{equation*}
+    T
+    \int_0^{\mu/T}
+    f(\mu-Tz)\,dz
+    =
+    \int_0^\mu
+    f(\varepsilon)\,d\varepsilon.
+\end{equation*}
+
+При сильном вырождении
+%
+\begin{equation*}
+    \frac{\mu}{T}
+    \gg
+    1.
+\end{equation*}
+
+В интеграле, содержащем множитель
+%
+\begin{equation*}
+    \frac{1}{e^z+1},
+\end{equation*}
+%
+область больших $z$ экспоненциально подавлена. Поэтому верхний
+предел $\mu/T$ можно заменить на бесконечность:
+%
+\begin{equation*}
+    I
+    =
+    \int_0^\mu
+    f(\varepsilon)\,d\varepsilon
+    +
+    T
+    \int_0^\infty
+    \frac{
+        f(\mu+Tz)-f(\mu-Tz)
+    }{
+        e^z+1
+    }
+    \,dz.
+\end{equation*}
+
+Разложим функции в ряд около $\varepsilon=\mu$:
+%
+\begin{align*}
+    f(\mu+Tz)
+    &=
+    f(\mu)
+    +
+    Tz\,f'(\mu)
+    +
+    \frac{(Tz)^2}{2}f''(\mu)
+    +
+    \frac{(Tz)^3}{6}f'''(\mu)
+    +
+    \ldots,
+    \\[6pt]
+    f(\mu-Tz)
+    &=
+    f(\mu)
+    -
+    Tz\,f'(\mu)
+    +
+    \frac{(Tz)^2}{2}f''(\mu)
+    -
+    \frac{(Tz)^3}{6}f'''(\mu)
+    +
+    \ldots.
+\end{align*}
+
+При вычитании чётные степени сокращаются:
+%
+\begin{equation*}
+    f(\mu+Tz)-f(\mu-Tz)
+    =
+    2Tz\,f'(\mu)
+    +
+    \frac{(Tz)^3}{3}f'''(\mu)
+    +
+    \ldots.
+\end{equation*}
+
+Ограничиваясь поправкой порядка $T^2$, получаем
+%
+\begin{equation*}
+    I
+    =
+    \int_0^\mu
+    f(\varepsilon)\,d\varepsilon
+    +
+    T^2f'(\mu)
+    \int_0^\infty
+    \frac{
+        2z\,dz
+    }{
+        e^z+1
+    }.
+\end{equation*}
+
+Известный интеграл равен
+%
+\begin{equation*}
+    \int_0^\infty
+    \frac{
+        z\,dz
+    }{
+        e^z+1
+    }
+    =
+    \frac{\pi^2}{12},
+\end{equation*}
+%
+поэтому
+%
+\begin{equation*}
+    \int_0^\infty
+    \frac{
+        2z\,dz
+    }{
+        e^z+1
+    }
+    =
+    \frac{\pi^2}{6}.
+\end{equation*}
+
+Таким образом,
+%
+\[
+    \boxed{
+        \int_0^\infty
+        \frac{
+            f(\varepsilon)\,d\varepsilon
+        }{
+            e^{(\varepsilon-\mu)/T}+1
+        }
+        =
+        \int_0^\mu
+        f(\varepsilon)\,d\varepsilon
+        +
+        \frac{(\pi T)^2}{6}
+        f'(\mu)
+    }.
+\]
+
+Это разложение применимо при
+%
+\begin{equation*}
+    T
+    \ll
+    \mu
+    \sim
+    \varepsilon_F.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection{\texorpdfstring{$\Omega$}{Omega}-потенциал}
+% ------------------------------------------------------------
+
+Для нерелятивистского идеального ферми-газа
+%
+\begin{equation*}
+    \Omega
+    =
+    -\frac{2}{3}AV
+    \int_0^\infty
+    \frac{
+        \varepsilon^{3/2}\,d\varepsilon
+    }{
+        e^{(\varepsilon-\mu)/T}+1
+    }.
+\end{equation*}
+
+Воспользуемся полученной формулой, положив
+%
+\begin{equation*}
+    f(\varepsilon)
+    =
+    \varepsilon^{3/2}.
+\end{equation*}
+
+Тогда
+%
+\begin{equation*}
+    f'(\varepsilon)
+    =
+    \frac{3}{2}
+    \sqrt{\varepsilon}.
+\end{equation*}
+
+Следовательно,
+%
+\begin{align*}
+    \int_0^\infty
+    \frac{
+        \varepsilon^{3/2}\,d\varepsilon
+    }{
+        e^{(\varepsilon-\mu)/T}+1
+    }
+    &=
+    \int_0^\mu
+    \varepsilon^{3/2}\,d\varepsilon
+    +
+    \frac{(\pi T)^2}{6}
+    \frac{3}{2}
+    \sqrt{\mu}
+    \\[4pt]
+    &=
+    \frac{2}{5}
+    \mu^{5/2}
+    +
+    \frac{(\pi T)^2}{4}
+    \sqrt{\mu}.
+\end{align*}
+
+Поэтому
+%
+\begin{align*}
+    \Omega
+    &=
+    -\frac{2}{3}AV
+    \left[
+        \frac{2}{5}\mu^{5/2}
+        +
+        \frac{(\pi T)^2}{4}
+        \sqrt{\mu}
+    \right]
+    \\[6pt]
+    &=
+    -\frac{2}{3}AV
+    \frac{2}{5}\mu^{5/2}
+    \left[
+        1
+        +
+        \frac{5}{8}
+        \left(
+            \frac{\pi T}{\mu}
+        \right)^2
+    \right].
+\end{align*}
+
+Таким образом,
+%
+\[
+    \boxed{
+        \Omega
+        =
+        -\frac{2}{3}AV
+        \frac{2}{5}\mu^{5/2}
+        \left[
+            1
+            +
+            \frac{5}{8}
+            \left(
+                \frac{\pi T}{\mu}
+            \right)^2
+        \right]
+    }.
+\]
+
+Термодинамический дифференциал $\Omega$ имеет вид
+%
+\begin{equation*}
+    d\Omega
+    =
+    -S\,dT
+    -
+    p\,dV
+    -
+    N\,d\mu.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    N
+    =
+    -
+    \left(
+        \frac{\partial\Omega}{\partial\mu}
+    \right)_{T,V}.
+\end{equation*}
+
+Дифференцируя полученное выражение, находим
+%
+\begin{align*}
+    N
+    &=
+    \frac{2}{3}AV
+    \left[
+        \mu^{3/2}
+        +
+        \frac{(\pi T)^2}{8\sqrt{\mu}}
+    \right]
+    \\[4pt]
+    &=
+    \frac{2}{3}AV
+    \mu^{3/2}
+    \left[
+        1
+        +
+        \frac{1}{8}
+        \left(
+            \frac{\pi T}{\mu}
+        \right)^2
+    \right].
+\end{align*}
+
+Итак,
+%
+\[
+    \boxed{
+        N
+        =
+        \frac{2}{3}AV
+        \mu^{3/2}
+        \left[
+            1
+            +
+            \frac{1}{8}
+            \left(
+                \frac{\pi T}{\mu}
+            \right)^2
+        \right]
+    }.
+\]
+
+
+% ------------------------------------------------------------
+\subsection{Химический потенциал}
+% ------------------------------------------------------------
+
+При $T=0$
+%
+\begin{equation*}
+    \mu
+    =
+    \varepsilon_F,
+\end{equation*}
+%
+поэтому
+%
+\begin{equation*}
+    N
+    =
+    \frac{2}{3}AV
+    \varepsilon_F^{3/2}.
+\end{equation*}
+
+Поскольку число частиц фиксировано, при конечной температуре имеем
+%
+\begin{equation*}
+    \varepsilon_F^{3/2}
+    =
+    \mu^{3/2}
+    \left[
+        1
+        +
+        \frac{1}{8}
+        \left(
+            \frac{\pi T}{\mu}
+        \right)^2
+    \right].
+\end{equation*}
+
+Разделим обе части на $\varepsilon_F^{3/2}$:
+%
+\begin{equation*}
+    1
+    =
+    \left(
+        \frac{\mu}{\varepsilon_F}
+    \right)^{3/2}
+    \left[
+        1
+        +
+        \frac{1}{8}
+        \left(
+            \frac{\pi T}{\mu}
+        \right)^2
+    \right].
+\end{equation*}
+
+При
+%
+\begin{equation*}
+    \mu
+    \simeq
+    \varepsilon_F
+    \gg
+    T
+\end{equation*}
+%
+представим химический потенциал в виде
+%
+\begin{equation*}
+    \mu
+    =
+    \varepsilon_F
+    (1+\delta),
+    \qquad
+    |\delta|
+    \ll
+    1.
+\end{equation*}
+
+С требуемой точностью в температурной поправке можно заменить
+$\mu$ на $\varepsilon_F$:
+%
+\begin{equation*}
+    1
+    =
+    (1+\delta)^{3/2}
+    \left[
+        1
+        +
+        \frac{1}{8}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right].
+\end{equation*}
+
+Разлагаем
+%
+\begin{equation*}
+    (1+\delta)^{3/2}
+    \simeq
+    1
+    +
+    \frac{3}{2}\delta.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    1
+    =
+    1
+    +
+    \frac{3}{2}\delta
+    +
+    \frac{1}{8}
+    \left(
+        \frac{\pi T}{\varepsilon_F}
+    \right)^2.
+\end{equation*}
+
+Отсюда
+%
+\begin{equation*}
+    \frac{3}{2}\delta
+    =
+    -
+    \frac{1}{8}
+    \left(
+        \frac{\pi T}{\varepsilon_F}
+    \right)^2,
+\end{equation*}
+%
+то есть
+%
+\begin{equation*}
+    \delta
+    =
+    -
+    \frac{1}{12}
+    \left(
+        \frac{\pi T}{\varepsilon_F}
+    \right)^2.
+\end{equation*}
+
+Таким образом,
+%
+\[
+    \boxed{
+        \mu
+        =
+        \varepsilon_F
+        \left[
+            1
+            -
+            \frac{1}{12}
+            \left(
+                \frac{\pi T}{\varepsilon_F}
+            \right)^2
+        \right]
+    }.
+\]
+
+При увеличении температуры химический потенциал вырожденного
+ферми-газа уменьшается.
+
+
+% ------------------------------------------------------------
+\subsection{Энтропия и теплоёмкость}
+% ------------------------------------------------------------
+
+Энтропия определяется выражением
+%
+\begin{equation*}
+    S
+    =
+    -
+    \left(
+        \frac{\partial\Omega}{\partial T}
+    \right)_{\mu,V}.
+\end{equation*}
+
+Из выражения для $\Omega$ получаем
+%
+\begin{equation*}
+    S
+    =
+    \frac{\pi^2}{3}
+    AV\sqrt{\mu}\,T.
+\end{equation*}
+
+В главном приближении по температуре
+%
+\begin{equation*}
+    \mu
+    \simeq
+    \varepsilon_F,
+\end{equation*}
+%
+поэтому
+%
+\begin{equation*}
+    S
+    =
+    \frac{\pi^2}{3}
+    AV\sqrt{\varepsilon_F}\,T.
+\end{equation*}
+
+Из соотношения
+%
+\begin{equation*}
+    N
+    =
+    \frac{2}{3}
+    AV\varepsilon_F^{3/2}
+\end{equation*}
+%
+следует
+%
+\begin{equation*}
+    AV\sqrt{\varepsilon_F}
+    =
+    \frac{3}{2}
+    \frac{N}{\varepsilon_F}.
+\end{equation*}
+
+Следовательно,
+%
+\[
+    \boxed{
+        S
+        =
+        N
+        \frac{\pi^2}{2}
+        \frac{T}{\varepsilon_F}
+    }.
+\]
+
+Теплоёмкость при постоянном объёме
+%
+\begin{equation*}
+    C_V
+    =
+    T
+    \left(
+        \frac{\partial S}{\partial T}
+    \right)_V.
+\end{equation*}
+
+Поскольку при низких температурах
+%
+\begin{equation*}
+    S
+    \propto
+    T,
+\end{equation*}
+%
+получаем
+%
+\[
+    \boxed{
+        C_V
+        =
+        \frac{\pi^2}{2}
+        N
+        \frac{T}{\varepsilon_F}
+    }.
+\]
+
+Таким образом, теплоёмкость сильно вырожденного ферми-газа линейна
+по температуре:
+%
+\begin{equation*}
+    C_V
+    \sim
+    T.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection{Давление}
+% ------------------------------------------------------------
+
+Давление связано с $\Omega$-потенциалом соотношением
+%
+\begin{equation*}
+    p
+    =
+    -
+    \frac{\Omega}{V}.
+\end{equation*}
+
+Поэтому
+%
+\begin{equation*}
+    p
+    =
+    \frac{2}{3}A
+    \frac{2}{5}
+    \mu^{5/2}
+    \left[
+        1
+        +
+        \frac{5}{8}
+        \left(
+            \frac{\pi T}{\mu}
+        \right)^2
+    \right].
+\end{equation*}
+
+Подставим
+%
+\begin{equation*}
+    \mu
+    =
+    \varepsilon_F
+    \left[
+        1
+        -
+        \frac{1}{12}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right].
+\end{equation*}
+
+Тогда
+%
+\begin{align*}
+    p
+    &=
+    \frac{2}{3}A
+    \frac{2}{5}
+    \varepsilon_F^{5/2}
+    \left[
+        1
+        -
+        \frac{1}{12}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right]^{5/2}
+    \left[
+        1
+        +
+        \frac{5}{8}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right].
+\end{align*}
+
+Разложим первый множитель:
+%
+\begin{equation*}
+    \left[
+        1
+        -
+        \frac{1}{12}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right]^{5/2}
+    \simeq
+    1
+    -
+    \frac{5}{24}
+    \left(
+        \frac{\pi T}{\varepsilon_F}
+    \right)^2.
+\end{equation*}
+
+Поэтому
+%
+\begin{align*}
+    p
+    &=
+    \frac{2}{3}A
+    \frac{2}{5}
+    \varepsilon_F^{5/2}
+    \left[
+        1
+        -
+        \frac{5}{24}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+        +
+        \frac{5}{8}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right]
+    \\[6pt]
+    &=
+    \frac{2}{3}A
+    \frac{2}{5}
+    \varepsilon_F^{5/2}
+    \left[
+        1
+        +
+        \frac{5}{12}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right].
+\end{align*}
+
+Так как
+%
+\begin{equation*}
+    \frac{N}{V}
+    =
+    \frac{2}{3}A
+    \varepsilon_F^{3/2},
+\end{equation*}
+%
+окончательно
+%
+\[
+    \boxed{
+        p
+        =
+        \frac{N}{V}
+        \frac{2}{5}
+        \varepsilon_F
+        \left[
+            1
+            +
+            \frac{5}{12}
+            \left(
+                \frac{\pi T}{\varepsilon_F}
+            \right)^2
+        \right]
+    }.
+\]
+
+При $T=0$ получаем уже найденное ранее давление вырождения
+%
+\begin{equation*}
+    p_0
+    =
+    \frac{2}{5}
+    \frac{N}{V}
+    \varepsilon_F.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection{Энергия}
+% ------------------------------------------------------------
+
+Для нерелятивистского идеального газа выполняется
+%
+\begin{equation*}
+    E
+    =
+    \frac{3}{2}pV.
+\end{equation*}
+
+Следовательно,
+%
+\[
+    \boxed{
+        E
+        =
+        \frac{3}{5}
+        N\varepsilon_F
+        \left[
+            1
+            +
+            \frac{5}{12}
+            \left(
+                \frac{\pi T}{\varepsilon_F}
+            \right)^2
+        \right]
+    }.
+\]
+
+При $T=0$
+%
+\begin{equation*}
+    E_0
+    =
+    \frac{3}{5}
+    N\varepsilon_F.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection{Зависимость давления от объёма}
+% ------------------------------------------------------------
+
+При фиксированном числе частиц
+%
+\begin{equation*}
+    \varepsilon_F
+    \sim
+    \left(
+        \frac{N}{V}
+    \right)^{2/3}
+    \sim
+    V^{-2/3}.
+\end{equation*}
+
+Поэтому нулевой по температуре вклад в давление ведёт себя как
+%
+\begin{equation*}
+    p_0
+    \sim
+    \frac{N}{V}\varepsilon_F
+    \sim
+    V^{-5/3}.
+\end{equation*}
+
+Температурная поправка имеет вид
+%
+\begin{equation*}
+    \Delta p
+    \sim
+    p_0
+    \frac{T^2}{\varepsilon_F^2}.
+\end{equation*}
+
+Так как
+%
+\begin{equation*}
+    \varepsilon_F
+    \sim
+    V^{-2/3},
+\end{equation*}
+%
+получаем
+%
+\begin{equation*}
+    \Delta p
+    \sim
+    T^2V^{-1/3}.
+\end{equation*}
+
+Таким образом, при фиксированном $N$
+%
+\[
+    \boxed{
+        p
+        \sim
+        V^{-5/3}
+        +
+        T^2V^{-1/3}
+    }.
+\]
+
+
+% ============================================================
+\section{Магнетизм электронного газа}
+% ============================================================
+
+Рассмотрим идеальный электронный газ во внешнем магнитном поле.
+
+Для электрона спиновый $g$-фактор принимаем равным
+%
+\begin{equation*}
+    g
+    =
+    2.
+\end{equation*}
+
+Введём магнетон Бора
+%
+\[
+    \boxed{
+        \beta
+        =
+        \frac{
+            e\hbar
+        }{
+            2m_ec
+        }
+    }.
+\]
+
+Во внешнем магнитном поле $H$ энергия электрона зависит от ориентации
+его спина:
+%
+\[
+    \boxed{
+        \varepsilon
+        =
+        \frac{p^2}{2m}
+        \pm
+        \beta H
+    }.
+\]
+
+Таким образом, магнитное поле расщепляет энергетический спектр
+на две ветви, соответствующие двум возможным ориентациям спина.
+
+
+% ------------------------------------------------------------
+\subsection{\texorpdfstring{$\Omega$}{Omega}-потенциал в магнитном поле}
+% ------------------------------------------------------------
+
+Для магнитной системы при фиксированном химическом потенциале
+термодинамический дифференциал можно записать в виде
+%
+\begin{equation*}
+    d\Omega
+    =
+    -S\,dT
+    -
+    p\,dV
+    -
+    \vec M\cdot d\vec H.
+\end{equation*}
+
+Обозначим через
+%
+\begin{equation*}
+    \Omega_0
+    =
+    \left.
+        \Omega
+    \right|_{H=0}
+\end{equation*}
+%
+термодинамический потенциал электронного газа в отсутствие
+магнитного поля.
+
+Число заполнения одночастичного состояния имеет вид
+%
+\begin{equation*}
+    N_i
+    =
+    \left[
+        \exp
+        \left(
+            \frac{
+                p^2/(2m)
+                \pm
+                \beta H
+                -
+                \mu
+            }{
+                T
+            }
+        \right)
+        +1
+    \right]^{-1}.
+\end{equation*}
+
+Сдвиг энергии на $\pm\beta H$ эквивалентен противоположному
+сдвигу химического потенциала для двух спиновых подсистем.
+
+Поэтому
+%
+\begin{equation*}
+    \Omega
+    =
+    \frac{1}{2}
+    \Omega_0(\mu-\beta H)
+    +
+    \frac{1}{2}
+    \Omega_0(\mu+\beta H).
+\end{equation*}
+
+Рассматривая слабое поле, разложим оба слагаемых по степеням $H$:
+%
+\begin{align*}
+    \Omega_0(\mu-\beta H)
+    &=
+    \Omega_0(\mu)
+    -
+    \frac{\partial\Omega_0}{\partial\mu}
+    \beta H
+    +
+    \frac{1}{2}
+    \frac{\partial^2\Omega_0}{\partial\mu^2}
+    \beta^2H^2
+    +
+    \ldots,
+    \\[6pt]
+    \Omega_0(\mu+\beta H)
+    &=
+    \Omega_0(\mu)
+    +
+    \frac{\partial\Omega_0}{\partial\mu}
+    \beta H
+    +
+    \frac{1}{2}
+    \frac{\partial^2\Omega_0}{\partial\mu^2}
+    \beta^2H^2
+    +
+    \ldots.
+\end{align*}
+
+После сложения линейные по полю члены сокращаются:
+%
+\begin{equation*}
+    \Omega
+    =
+    \Omega_0
+    +
+    \frac{1}{2}
+    \frac{\partial^2\Omega_0}{\partial\mu^2}
+    \beta^2H^2.
+\end{equation*}
+
+Но
+%
+\begin{equation*}
+    N
+    =
+    -
+    \frac{\partial\Omega_0}{\partial\mu},
+\end{equation*}
+%
+следовательно,
+%
+\begin{equation*}
+    \frac{\partial^2\Omega_0}{\partial\mu^2}
+    =
+    -
+    \frac{\partial N}{\partial\mu}.
+\end{equation*}
+
+Таким образом,
+%
+\[
+    \boxed{
+        \Omega
+        =
+        \Omega_0
+        -
+        \frac{1}{2}
+        \left(
+            \frac{\partial N}{\partial\mu}
+        \right)_{T,V}
+        \beta^2H^2
+    }.
+\]
+
+
+% ------------------------------------------------------------
+\subsection{Магнитный момент и восприимчивость}
+% ------------------------------------------------------------
+
+Магнитный момент определяется как
+%
+\begin{equation*}
+    M
+    =
+    -
+    \left(
+        \frac{\partial\Omega}{\partial H}
+    \right)_{T,V,\mu}.
+\end{equation*}
+
+Поэтому
+%
+\[
+    \boxed{
+        M
+        =
+        \left(
+            \frac{\partial N}{\partial\mu}
+        \right)_{T,V}
+        \beta^2H
+    }.
+\]
+
+Магнитная восприимчивость равна
+%
+\begin{equation*}
+    \chi
+    =
+    \frac{\partial M}{\partial H},
+\end{equation*}
+%
+откуда
+%
+\[
+    \boxed{
+        \chi
+        =
+        \left(
+            \frac{\partial N}{\partial\mu}
+        \right)_{T,V}
+        \beta^2
+    }.
+\]
+
+Найдём производную $\partial N/\partial\mu$ при
+%
+\begin{equation*}
+    T
+    \ll
+    \varepsilon_F.
+\end{equation*}
+
+Ранее было получено
+%
+\begin{equation*}
+    N
+    =
+    \frac{2}{3}AV
+    \left[
+        \mu^{3/2}
+        +
+        \frac{(\pi T)^2}{8\sqrt{\mu}}
+    \right].
+\end{equation*}
+
+Дифференцируя по $\mu$, имеем
+%
+\begin{align*}
+    \frac{\partial N}{\partial\mu}
+    &=
+    \frac{2}{3}AV
+    \left[
+        \frac{3}{2}\mu^{1/2}
+        -
+        \frac{1}{16}
+        \frac{(\pi T)^2}{\mu^{3/2}}
+    \right]
+    \\[6pt]
+    &=
+    AV\sqrt{\mu}
+    \left[
+        1
+        -
+        \frac{1}{24}
+        \left(
+            \frac{\pi T}{\mu}
+        \right)^2
+    \right].
+\end{align*}
+
+При этом
+%
+\begin{equation*}
+    \mu
+    =
+    \varepsilon_F
+    \left[
+        1
+        -
+        \frac{1}{12}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right].
+\end{equation*}
+
+Следовательно,
+%
+\begin{align*}
+    \sqrt{\mu}
+    &=
+    \sqrt{\varepsilon_F}
+    \left[
+        1
+        -
+        \frac{1}{12}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right]^{1/2}
+    \\[4pt]
+    &\simeq
+    \sqrt{\varepsilon_F}
+    \left[
+        1
+        -
+        \frac{1}{24}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right].
+\end{align*}
+
+Поэтому
+%
+\begin{align*}
+    \frac{\partial N}{\partial\mu}
+    &=
+    AV\sqrt{\varepsilon_F}
+    \left[
+        1
+        -
+        \frac{1}{24}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right]
+    \left[
+        1
+        -
+        \frac{1}{24}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right]
+    \\[6pt]
+    &=
+    AV\sqrt{\varepsilon_F}
+    \left[
+        1
+        -
+        \frac{1}{12}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right].
+\end{align*}
+
+Используем
+%
+\begin{equation*}
+    N
+    =
+    \frac{2}{3}
+    AV\varepsilon_F^{3/2}.
+\end{equation*}
+
+Отсюда
+%
+\begin{equation*}
+    AV\sqrt{\varepsilon_F}
+    =
+    \frac{3}{2}
+    \frac{N}{\varepsilon_F}.
+\end{equation*}
+
+Таким образом,
+%
+\[
+    \boxed{
+        \frac{\partial N}{\partial\mu}
+        =
+        \frac{3}{2}
+        \frac{N}{\varepsilon_F}
+        \left[
+            1
+            -
+            \frac{1}{12}
+            \left(
+                \frac{\pi T}{\varepsilon_F}
+            \right)^2
+        \right]
+    }.
+\]
+
+Следовательно, магнитный момент электронного газа при
+$T\ll\varepsilon_F$ равен
+%
+\[
+    \boxed{
+        M
+        =
+        \frac{3}{2}
+        \frac{N}{\varepsilon_F}
+        \left[
+            1
+            -
+            \frac{1}{12}
+            \left(
+                \frac{\pi T}{\varepsilon_F}
+            \right)^2
+        \right]
+        \beta^2H
+    }.
+\]
+
+Магнитная восприимчивость имеет вид
+%
+\[
+    \boxed{
+        \chi
+        =
+        \frac{3}{2}
+        \frac{N}{\varepsilon_F}
+        \left[
+            1
+            -
+            \frac{1}{12}
+            \left(
+                \frac{\pi T}{\varepsilon_F}
+            \right)^2
+        \right]
+        \beta^2
+    }.
+\]
+
+Так как
+%
+\begin{equation*}
+    \chi
+    >
+    0,
+\end{equation*}
+%
+электронный газ обладает \rtxt{3}{парамагнетизмом Паули}.
+
+При абсолютном нуле
+%
+\[
+    \boxed{
+        \chi(0)
+        =
+        \frac{
+            3N\beta^2
+        }{
+            2\varepsilon_F
+        }
+    }.
+\]
+
+При повышении температуры в области $T\ll\varepsilon_F$
+парамагнитная восприимчивость уменьшается как
+%
+\begin{equation*}
+    \chi(T)
+    =
+    \chi(0)
+    \left[
+        1
+        -
+        \frac{1}{12}
+        \left(
+            \frac{\pi T}{\varepsilon_F}
+        \right)^2
+    \right].
+\end{equation*}
+
+В противоположном пределе
+%
+\begin{equation*}
+    T
+    \gg
+    \varepsilon_F
+\end{equation*}
+%
+электронный газ переходит в невырожденный, больцмановский режим.
+
+\end{document}
