@@ -1,4 +1,0 @@
-\babel@toc {russian}{}\relax 
-\contentsline {part}{Семестр 1. Последний рубеж}{2}{section*.2}%
-\contentsline {section}{\numberline {1}Задача 1. Вырожденный электронный газ}{8}{section.0.1}%
-\contentsline {section}{\numberline {2}Задача 2. Электроны проводимости в меди}{14}{section.0.2}%

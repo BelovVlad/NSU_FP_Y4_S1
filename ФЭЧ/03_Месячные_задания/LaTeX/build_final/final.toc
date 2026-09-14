@@ -1,8 +1,0 @@
-\babel@toc {russian}{}\relax 
-\contentsline {part}{Семестр 1. Последний рубеж}{2}{section*.2}%
-\contentsline {section}{\numberline {1}Задача 1. Двухчастичный распад}{5}{section.0.1}%
-\contentsline {section}{\numberline {2}Задача 2. Неподвижная мишень}{7}{section.0.2}%
-\contentsline {section}{\numberline {3}Задача 3. Открытие антипротона. BEVATRON}{9}{section.0.3}%
-\contentsline {section}{\numberline {4}Задача 4. Релятивистский мюон}{11}{section.0.4}%
-\contentsline {section}{\numberline {5}Задача 5. Преобразование углов}{13}{section.0.5}%
-\contentsline {section}{\numberline {6}Задача 6. Упругое рассеяние}{15}{section.0.6}%

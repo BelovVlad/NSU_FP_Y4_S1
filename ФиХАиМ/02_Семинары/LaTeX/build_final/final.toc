@@ -1,4 +1,0 @@
-\babel@toc {russian}{}\relax 
-\contentsline {part}{Семестр 1. Последний рубеж}{2}{section*.2}%
-\contentsline {chapter}{Практическое занятие №1. Классические и квантовые модели атома}{3}{section*.3}%
-\contentsline {section}{\numberline {1}Задача 1. Модель Томсона}{3}{section.0.1}%
