@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.5.31)  7 SEP 2026 14:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.5.31)  14 SEP 2026 13:43
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**"c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/02_Семин
+**"C:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/02_Семин
 ары/LaTeX/final.tex"
 
-(c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/02_Семина
+(C:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/02_Семина
 ры/LaTeX/final.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
@@ -2525,7 +2525,7 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 \Hy@SectionHShift=\skip136
 ) (style/colors.tex) (style/page-style.tex) (style/boxes.tex)
 (style/figures.tex) (style/headings.tex) (style/commands.tex))
-(c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семина
+(C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семина
 ры\LaTeX\build_final\final.aux
 Package babel Info: 'russian' activates 'russian' shorthands.
 (babel)             Reported on input line 9.
@@ -2611,9 +2611,9 @@ enefit from \pgfplotsset{compat=1.18} (current compat level: 1.16).
 \c@lstlisting=\count457
 Package hyperref Info: Link coloring ON on input line 8.
 
-(c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семина
+(C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семина
 ры\LaTeX\build_final\final.out)
-(c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семина
+(C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семина
 ры\LaTeX\build_final\final.out)
 \@outlinefile=\write4
 \openout4 = `final.out'.
@@ -2654,7 +2654,7 @@ Non-PDF special ignored!
 {C:/Users/Влад/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/�
 �лад/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/cm-super/cm-super-t2a.enc
 }]
-(c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семина
+(C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семина
 ры\LaTeX\build_final\final.toc<<ot1.cmap>><<oml.cmap>><<oms.cmap>><<omx.cmap>
 >
 LaTeX Font Info:    Trying to load font information for U+msa on input line 4.
@@ -2678,7 +2678,7 @@ l.52 \newpage
               [1
 
 ]
-<image/chapter1.png, id=103, 1328.965pt x 1192.455pt>
+<image/chapter1.png, id=123, 1328.965pt x 1192.455pt>
 File: image/chapter1.png Graphic file (type png)
 <use image/chapter1.png>
 Package pdftex.def Info: image/chapter1.png  used on input line 54.
@@ -2723,54 +2723,77 @@ Package caption Warning: The option `hypcap=true' will be ignored for this
 (caption)                particular \caption on input line 1495.
 See the caption package documentation for explanation.
 
-[15] [16]) [17]
-(c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семина
+[15] [16]) [17] (parts/part2.tex [18
+
+{C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/cm-super/cm-su
+per-ts1.enc}]
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 252.
+See the caption package documentation for explanation.
+
+[19] [20] [21] [22]
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 958.
+See the caption package documentation for explanation.
+
+[23] [24] [25]
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 1321.
+See the caption package documentation for explanation.
+
+) [26]
+(C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семина
 ры\LaTeX\build_final\final.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2020/03/25>
  ***********
 Package rerunfilecheck Info: File `final.out' has not changed.
-(rerunfilecheck)             Checksum: 68DEB44B4B8728EFF89904C7F23678B4;2314.
+(rerunfilecheck)             Checksum: 7F1229EC846E13CD354B209EDE52DD48;4101.
  ) 
 Here is how much of TeX's memory you used:
- 61951 strings out of 467871
- 1459088 string characters out of 5416924
- 2211568 words of memory out of 5000000
- 89530 multiletter control sequences out of 15000+600000
- 654374 words of font info for 103 fonts, out of 8000000 for 9000
+ 62071 strings out of 467871
+ 1461125 string characters out of 5416924
+ 2211601 words of memory out of 5000000
+ 89622 multiletter control sequences out of 15000+600000
+ 656322 words of font info for 106 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 96i,11n,110p,1310b,1229s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 96i,11n,110p,1310b,1497s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
 cm/cmex10.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/publ
 ic/amsfonts/cm/cmmi10.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/font
 s/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/Влад/AppData/Local/Programs
 /MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/Влад/AppData/Loc
-al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/Влад/
-AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users
-/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.p
-fb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts
-/cm/cmsy6.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmsy8.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts
-/type1/public/cm-super/sfbx1200.pfb><C:/Users/Влад/AppData/Local/Programs/M
-iKTeX/fonts/type1/public/cm-super/sfbx1440.pfb><C:/Users/Влад/AppData/Local
-/Programs/MiKTeX/fonts/type1/public/cm-super/sfbx1728.pfb><C:/Users/Влад/Ap
-pData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfbx2488.pfb><C:/Users/
-Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfbx3583.pfb
-><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/s
-fcc1728.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public
-/cm-super/sfrm0800.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/t
-ype1/public/cm-super/sfrm1000.pfb><C:/Users/Влад/AppData/Local/Programs/MiK
-TeX/fonts/type1/public/cm-super/sfrm1095.pfb><C:/Users/Влад/AppData/Local/P
-rograms/MiKTeX/fonts/type1/public/cm-super/sfrm1200.pfb><C:/Users/Влад/AppD
-ata/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfrm1440.pfb><C:/Users/В
-лад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfti1200.pfb><
-C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sft
-i1728.pfb>
-Output written on "c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭ
-Ч\02_Семинары\LaTeX\build_final\final.pdf" (18 pages, 1685479 bytes).
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/Влад/
+AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/User
+s/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pf
+b><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmr8.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public
+/amsfonts/cm/cmsy10.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/
+type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/Влад/AppData/Local/Programs/Mi
+KTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/Влад/AppData/Local/
+Programs/MiKTeX/fonts/type1/public/cm-super/sfbx1200.pfb><C:/Users/Влад/App
+Data/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfbx1440.pfb><C:/Users/�
+�лад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfbx1728.pfb>
+<C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sf
+bx2488.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/
+cm-super/sfbx3583.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/cm-super/sfcc1728.pfb><C:/Users/Влад/AppData/Local/Programs/MiKT
+eX/fonts/type1/public/cm-super/sfrm0800.pfb><C:/Users/Влад/AppData/Local/Pr
+ograms/MiKTeX/fonts/type1/public/cm-super/sfrm1000.pfb><C:/Users/Влад/AppDa
+ta/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfrm1095.pfb><C:/Users/В�
+�ад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfrm1200.pfb><C
+:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfrm
+1440.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm
+-super/sfti1200.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type
+1/public/cm-super/sfti1728.pfb>
+Output written on "C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭ
+Ч\02_Семинары\LaTeX\build_final\final.pdf" (27 pages, 1749048 bytes).
 PDF statistics:
- 273 PDF objects out of 1000 (max. 8388607)
- 34 named destinations out of 1000 (max. 500000)
- 246 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 353 PDF objects out of 1000 (max. 8388607)
+ 52 named destinations out of 1000 (max. 500000)
+ 278 words of extra memory for PDF output out of 10000 (max. 10000000)
 
