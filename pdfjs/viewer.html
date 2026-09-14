@@ -58,7 +58,10 @@ const loading=document.getElementById('loading');
 const loadingText=document.getElementById('loadingText');
 
 let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=true;
-let pdfUrl='';
+let pdfUrl='',renderSerial=0,preloadSerial=0;
+const pageCache=new Map();
+const warmedPages=new Set();
+
 const showLoading=(text='Загрузка страницы…')=>{loadingText.textContent=text;loading.classList.add('show')};
 const hideLoading=()=>loading.classList.remove('show');
 
@@ -67,9 +70,64 @@ function savePage(){try{localStorage.setItem('nsu-pdf-page:'+pdfUrl,String(pageN
 function rememberedPage(){try{return Number(localStorage.getItem('nsu-pdf-page:'+pdfUrl))||1}catch{return 1}}
 function updateControls(){pageInput.value=pageNum;total.textContent=`/ ${pdf?pdf.numPages:'—'}`;zoomLabel.textContent=`${Math.round(scale*100)}%`;prev.disabled=pageNum<=1;next.disabled=!pdf||pageNum>=pdf.numPages}
 
-async function renderPage(){if(!pdf)return;showLoading();if(renderTask){try{renderTask.cancel()}catch{}}
+async function getCachedPage(n){
+  if(pageCache.has(n))return pageCache.get(n);
+  const page=await pdf.getPage(n);
+  pageCache.set(n,page);
+  return page;
+}
+
+function trimPageCache(center){
+  for(const [n,page] of pageCache){
+    if(Math.abs(n-center)>1){
+      try{page.cleanup()}catch{}
+      pageCache.delete(n);
+      warmedPages.delete(n);
+    }
+  }
+}
+
+async function preloadAround(center){
+  if(!pdf)return;
+  const serial=++preloadSerial;
+  const targets=[center-1,center+1].filter(n=>n>=1&&n<=pdf.numPages);
+
+  await Promise.allSettled(targets.map(async n=>{
+    if(warmedPages.has(n))return;
+    const page=await getCachedPage(n);
+
+    if(serial!==preloadSerial&&Math.abs(n-pageNum)>1){
+      try{page.cleanup()}catch{}
+      pageCache.delete(n);
+      warmedPages.delete(n);
+      return;
+    }
+
+    await page.getOperatorList();
+
+    if(Math.abs(n-pageNum)<=1){
+      warmedPages.add(n);
+    }else{
+      try{page.cleanup()}catch{}
+      pageCache.delete(n);
+      warmedPages.delete(n);
+    }
+  }));
+
+  if(serial===preloadSerial)trimPageCache(center);
+}
+
+async function renderPage(){
+  if(!pdf)return;
+  const target=pageNum;
+  const serial=++renderSerial;
+  showLoading();
+  if(renderTask){try{renderTask.cancel()}catch{}}
+
   try{
-    const page=await pdf.getPage(pageNum);
+    const page=await getCachedPage(target);
+    if(serial!==renderSerial)return;
+
     const base=page.getViewport({scale:1});
     if(fitWidth){const available=Math.max(280,viewer.clientWidth-(innerWidth<760?28:52));scale=Math.min(2.4,available/base.width)}
     const viewport=page.getViewport({scale});
@@ -77,8 +135,21 @@ async function renderPage(){if(!pdf)return;showLoading();if(renderTask){try{rend
     canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);
     canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;
     renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});
-    await renderTask.promise;renderTask=null;updateControls();savePage();hideLoading();viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});
-  }catch(err){if(err?.name!=='RenderingCancelledException')fail(err?.message||String(err))}
+    await renderTask.promise;
+    if(serial!==renderSerial)return;
+
+    renderTask=null;
+    warmedPages.add(target);
+    updateControls();
+    savePage();
+    hideLoading();
+    viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});
+
+    trimPageCache(target);
+    void preloadAround(target);
+  }catch(err){
+    if(err?.name!=='RenderingCancelledException'&&serial===renderSerial)fail(err?.message||String(err));
+  }
 }
 
 async function open(){if(!raw){fail('В ссылке не указан файл.');return}
