@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.5.31)  14 SEP 2026 13:02
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.5.31)  14 SEP 2026 13:40
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**"c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекци
+**"C:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекци
 и/LaTeX/parts/part2.tex"
 
-(c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции
+(C:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции
 /LaTeX/parts/part2.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
@@ -2533,7 +2533,7 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )) (../style/colors.tex) (../style/page-style.tex)
 (../style/boxes.tex) (../style/figures.tex) (../style/headings.tex)
 (../style/commands.tex))))
-(c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
+(C:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
 \LaTeX\build_parts\part2.aux
 Package babel Info: 'russian' activates 'russian' shorthands.
 (babel)             Reported on input line 9.
@@ -2619,9 +2619,9 @@ enefit from \pgfplotsset{compat=1.18} (current compat level: 1.16).
 \c@lstlisting=\count457
 Package hyperref Info: Link coloring ON on input line 5.
 
-(c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
+(C:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
 \LaTeX\build_parts\part2.out)
-(c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
+(C:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
 \LaTeX\build_parts\part2.out)
 \@outlinefile=\write4
 \openout4 = `part2.out'.
@@ -2716,7 +2716,7 @@ Package caption Warning: The option `hypcap=true' will be ignored for this
 See the caption package documentation for explanation.
 
 [9]
-(c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
+(C:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
 \LaTeX\build_parts\part2.aux)
  ***********
 LaTeX2e <2025-11-01>
@@ -2755,7 +2755,7 @@ m-super/sfrm0800.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/typ
 e1/public/cm-super/sfrm1000.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTe
 X/fonts/type1/public/cm-super/sfrm1095.pfb><C:/Users/Влад/AppData/Local/Pro
 grams/MiKTeX/fonts/type1/public/cm-super/sfrm1200.pfb>
-Output written on "c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭ
+Output written on "C:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭ
 Ч\01_Лекции\LaTeX\build_parts\part2.pdf" (9 pages, 297534 bytes).
 PDF statistics:
  211 PDF objects out of 1000 (max. 8388607)

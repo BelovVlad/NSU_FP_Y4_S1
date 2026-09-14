@@ -1,7 +1,7 @@
 PWD C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\final.tex
-OUTPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.log
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\final.tex
+OUTPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.log
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\base\report.cls
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\base\report.cls
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\base\size12.clo
@@ -38,7 +38,7 @@ INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cyrillic\t2acmr.
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm1200.tfm
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cmap\t2a.cmap
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cmap\t2a.cmap
-OUTPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.pdf
+OUTPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.pdf
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cmap\t2a.cmap
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\base\inputenc.sty
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\base\inputenc.sty
@@ -762,10 +762,10 @@ INPUT .\style\commands.tex
 INPUT .\style\commands.tex
 INPUT .\style\commands.tex
 INPUT style\commands.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.aux
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.aux
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.aux
-OUTPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.aux
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.aux
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.aux
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.aux
+OUTPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.aux
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cbfonts-fd\lgrcmr.fd
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cbfonts-fd\lgrcmr.fd
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cbfonts-fd\lgrcmr.fd
@@ -780,13 +780,13 @@ INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\00miktex\epstopd
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\translations\dicts\translations-basic-dictionary-english.trsl
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\translations\dicts\translations-basic-dictionary-english.trsl
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\translations\dicts\translations-basic-dictionary-english.trsl
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
-OUTPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
+OUTPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm1728.tfm
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lacc1728.tfm
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm1440.tfm
@@ -795,9 +795,9 @@ INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\labx2488.tfm
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lati1728.tfm
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\cm-super\cm-super-t2a.enc
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.toc
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.toc
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.toc
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.toc
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.toc
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.toc
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\labx1440.tfm
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\labx1200.tfm
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr8.tfm
@@ -844,7 +844,7 @@ INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbsy10.tfm
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\cmextra\cmbsy8.tfm
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\cmextra\cmbsy6.tfm
-OUTPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.toc
+OUTPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.toc
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm3583.tfm
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\labx3583.tfm
 INPUT .\image\chapter1.png
@@ -883,9 +883,19 @@ INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm0800.tfm
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm0600.tfm
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\lati1200.tfm
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.aux
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
+INPUT .\parts\part2.tex
+INPUT .\parts\part2.tex
+INPUT parts\part2.tex
+INPUT .\parts\part2.tex
+INPUT .\parts\part2.tex
+INPUT parts\part2.tex
+INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\tcrm1200.tfm
+INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\cm-super\cm-super-ts1.enc
+INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm0700.tfm
+INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm0500.tfm
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.aux
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\02_Семинары\LaTeX\build_final\final.out
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmex10.pfb
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmex10.pfb
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi10.pfb
@@ -894,8 +904,12 @@ INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfont
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi12.pfb
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi8.pfb
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi8.pfb
+INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr10.pfb
+INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr10.pfb
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr12.pfb
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr12.pfb
+INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr6.pfb
+INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr6.pfb
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr8.pfb
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr8.pfb
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy10.pfb

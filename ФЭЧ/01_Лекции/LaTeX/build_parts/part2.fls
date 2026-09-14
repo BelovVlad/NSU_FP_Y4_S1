@@ -1,13 +1,13 @@
 PWD C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\parts
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\parts\part2.tex
-OUTPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.log
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\parts\part2.tex
+OUTPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.log
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\subfiles\subfiles.cls
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\subfiles\subfiles.cls
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\import\import.sty
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\import\import.sty
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\final.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\final.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\final.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\final.tex
 INPUT ..\final.tex
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\base\report.cls
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\base\report.cls
@@ -16,16 +16,16 @@ INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\base\size12.clo
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\base\size12.clo
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr12.tfm
 INPUT ..\style\style.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\style.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\style.tex
 INPUT ..\style\style.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\style.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\style.tex
 INPUT ..\style\style.tex
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\subfiles\subfiles.sty
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\subfiles\subfiles.sty
 INPUT ..\style\packages.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\packages.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\packages.tex
 INPUT ..\style\packages.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\packages.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\packages.tex
 INPUT ..\style\packages.tex
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cmap\cmap.sty
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cmap\cmap.sty
@@ -43,7 +43,7 @@ INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cyrillic\t2acmr.
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm1200.tfm
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cmap\t2a.cmap
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cmap\t2a.cmap
-OUTPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.pdf
+OUTPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.pdf
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cmap\t2a.cmap
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\base\inputenc.sty
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\base\inputenc.sty
@@ -738,39 +738,39 @@ INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\rerunfilecheck\r
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\generic\uniquecounter\uniquecounter.sty
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\generic\uniquecounter\uniquecounter.sty
 INPUT ..\style\colors.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\colors.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\colors.tex
 INPUT ..\style\colors.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\colors.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\colors.tex
 INPUT ..\style\colors.tex
 INPUT ..\style\page-style.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\page-style.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\page-style.tex
 INPUT ..\style\page-style.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\page-style.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\page-style.tex
 INPUT ..\style\page-style.tex
 INPUT ..\style\boxes.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\boxes.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\boxes.tex
 INPUT ..\style\boxes.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\boxes.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\boxes.tex
 INPUT ..\style\boxes.tex
 INPUT ..\style\figures.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\figures.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\figures.tex
 INPUT ..\style\figures.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\figures.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\figures.tex
 INPUT ..\style\figures.tex
 INPUT ..\style\headings.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\headings.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\headings.tex
 INPUT ..\style\headings.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\headings.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\headings.tex
 INPUT ..\style\headings.tex
 INPUT ..\style\commands.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\commands.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\commands.tex
 INPUT ..\style\commands.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\commands.tex
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\..\style\commands.tex
 INPUT ..\style\commands.tex
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.aux
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.aux
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.aux
-OUTPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.aux
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.aux
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.aux
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.aux
+OUTPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.aux
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cbfonts-fd\lgrcmr.fd
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cbfonts-fd\lgrcmr.fd
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\cbfonts-fd\lgrcmr.fd
@@ -785,13 +785,13 @@ INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\00miktex\epstopd
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\translations\dicts\translations-basic-dictionary-english.trsl
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\translations\dicts\translations-basic-dictionary-english.trsl
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex\latex\translations\dicts\translations-basic-dictionary-english.trsl
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
-OUTPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
+OUTPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm1728.tfm
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\labx1728.tfm
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr8.tfm
@@ -891,9 +891,9 @@ INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\cm-super\cm-super-t2a.enc
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm0800.tfm
 INPUT C:\Users\Влад\AppData\Local\MiKTeX\fonts\tfm\lh\lh-t2a\larm0600.tfm
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.aux
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
-INPUT c:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.aux
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
+INPUT C:\Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции\LaTeX\build_parts\part2.out
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmex10.pfb
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmex10.pfb
 INPUT C:\Users\Влад\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi10.pfb

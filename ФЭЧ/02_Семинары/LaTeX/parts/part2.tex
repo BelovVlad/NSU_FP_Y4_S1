@@ -1,0 +1,1351 @@
+% !TeX root = part2.tex
+
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% ============================================================
+% Практическое занятие 2
+% ============================================================
+
+\practice{2}{10.09.2026}{Взаимодействие с веществом}
+
+
+% ============================================================
+% Основные механизмы взаимодействия с веществом
+% ============================================================
+
+\section*{Основные механизмы взаимодействия с веществом}
+
+При прохождении частиц через вещество характер взаимодействия
+существенно зависит от того, является частица заряженной
+или нейтральной.
+
+
+% ------------------------------------------------------------
+\subsection{Заряженные частицы}
+% ------------------------------------------------------------
+
+К заряженным частицам относятся, например,
+
+\begin{equation*}
+    e^\pm,
+    \qquad
+    p,
+    \qquad
+    \mu^\pm,
+    \qquad
+    K^\pm,
+    \qquad
+    \pi^\pm.
+\end{equation*}
+
+При прохождении через вещество для них существенны следующие процессы:
+
+\begin{itemize}
+    \item ионизационные потери;
+    \item тормозные потери;
+    \item многократное рассеяние;
+    \item черенковское излучение;
+    \item переходное излучение.
+\end{itemize}
+
+Ионизационные и тормозные процессы приводят прежде всего
+к \rtxt{3}{потере энергии} частицы.
+
+Многократное рассеяние приводит главным образом к
+\rtxt{3}{изменению траектории} движения.
+
+
+% ------------------------------------------------------------
+\subsection{Нейтральные частицы}
+% ------------------------------------------------------------
+
+К рассматриваемым нейтральным частицам относятся
+
+\begin{equation*}
+    n,
+    \qquad
+    \gamma.
+\end{equation*}
+
+Для $\gamma$-квантов основными процессами взаимодействия
+с веществом являются
+
+\begin{itemize}
+    \item фотоэффект;
+    \item эффект Комптона;
+    \item рождение электрон-позитронных пар.
+\end{itemize}
+
+
+% ============================================================
+% Классическая оценка передачи энергии электрону
+% ============================================================
+
+\section*{Классическая оценка передачи энергии электрону}
+
+
+% ------------------------------------------------------------
+\section{Задача 1. Пролёт тяжёлой заряженной частицы мимо электрона}
+% ------------------------------------------------------------
+
+Рассмотрим тяжёлую частицу с зарядом $Ze$,
+движущуюся с постоянной скоростью $v$ мимо атомного электрона.
+
+Пусть минимальное расстояние от траектории частицы
+до электрона равно $b$.
+
+Требуется определить энергию
+
+\begin{equation*}
+    \Delta E,
+\end{equation*}
+
+переданную электрону при таком взаимодействии.
+
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % -----------------------------------------------------
+        % Оси
+        % -----------------------------------------------------
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.8pt
+        ]
+        (-4.3,0) -- (4.4,0)
+        node[right] {$x$};
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.8pt
+        ]
+        (0,-0.5) -- (0,3.4)
+        node[above] {$y$};
+
+
+        % -----------------------------------------------------
+        % Электрон
+        % -----------------------------------------------------
+
+        \coordinate (E) at (0,2.2);
+
+        \fill[rc3] (E) circle (2.5pt);
+
+        \node[
+            above right=2pt
+        ] at (E) {$e^-$};
+
+
+        % -----------------------------------------------------
+        % Налетающая частица
+        % -----------------------------------------------------
+
+        \coordinate (P) at (-2.7,0);
+
+        \fill[rc3] (P) circle (2.5pt);
+
+        \node[
+            below=6pt
+        ] at (P) {$Ze$};
+
+
+        % -----------------------------------------------------
+        % Вектор скорости прямо на оси x
+        % -----------------------------------------------------
+
+        \draw[
+            ->,
+            draw=rc3,
+            line width=1.25pt
+        ]
+        (-2.62,0) -- (-1.05,0);
+
+        \node[
+            above=5pt
+        ] at (-1.78,0) {$\vec v$};
+
+
+        % -----------------------------------------------------
+        % Прицельный параметр b
+        % -----------------------------------------------------
+
+        \draw[
+            densely dashed,
+            draw=rtextmuted,
+            line width=0.7pt
+        ]
+        (0,0) -- (E);
+
+        \node[
+            right=5pt
+        ] at (0,1.05) {$b$};
+
+
+        % -----------------------------------------------------
+        % Линия между частицей и электроном
+        % -----------------------------------------------------
+
+        \draw[
+            draw=rtext,
+            line width=0.85pt
+        ]
+        (P) -- (E);
+
+
+        % -----------------------------------------------------
+        % Сила
+        % -----------------------------------------------------
+
+        \draw[
+            ->,
+            draw=rc3,
+            line width=1.15pt
+        ]
+        (E) -- ++(-1.45,-1.18);
+
+        \node[
+            above left=1pt
+        ] at (-0.85,1.55) {$\vec F$};
+
+
+        % -----------------------------------------------------
+        % Угол theta
+        % -----------------------------------------------------
+
+        \draw[
+            draw=rtext,
+            line width=0.8pt
+        ]
+        ($(E)+(0,-0.62)$)
+        arc[
+            start angle=-90,
+            end angle=-140,
+            radius=0.62
+        ];
+
+        \node at (-0.31,1.48) {$\theta$};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Пролёт тяжёлой заряженной частицы с зарядом $Ze$
+        мимо атомного электрона.
+        Параметр $b$ определяет минимальное расстояние
+        от траектории частицы до электрона.
+    }
+    \label{fig:matter_collision_geometry}
+\end{rbox}
+
+
+Из геометрии рисунка расстояние между налетающей частицей
+и электроном равно
+
+\begin{equation*}
+    r
+    =
+    \frac{b}{\cos\theta}.
+\end{equation*}
+
+Кулоновская сила взаимодействия имеет модуль
+
+\begin{equation*}
+    F
+    =
+    \frac{Ze^2}{r^2}
+    =
+    \frac{Ze^2}{
+        \left(
+            b/\cos\theta
+        \right)^2
+    }.
+\end{equation*}
+
+Нас интересует поперечная составляющая силы:
+
+\begin{equation*}
+    F_y
+    =
+    F\cos\theta
+    =
+    \frac{Ze^2}{
+        \left(
+            b/\cos\theta
+        \right)^2
+    }
+    \cos\theta
+    =
+    \frac{Ze^2}{b^2}
+    \cos^3\theta.
+\end{equation*}
+
+При равномерном движении налетающей частицы
+
+\begin{equation*}
+    x=vt.
+\end{equation*}
+
+Из геометрии
+
+\begin{equation*}
+    \tan\theta
+    =
+    \frac{vt}{b}.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    \cos\theta
+    =
+    \frac{1}{
+        \sqrt{
+            1+\tan^2\theta
+        }
+    }
+    =
+    \frac{1}{
+        \sqrt{
+            1+
+            \left(
+                \dfrac{vt}{b}
+            \right)^2
+        }
+    }.
+\end{equation*}
+
+Изменение поперечной компоненты импульса электрона определяется
+соотношением
+
+\begin{equation*}
+    dp_y
+    =
+    F_y\,dt.
+\end{equation*}
+
+Поэтому полный поперечный импульс, переданный электрону,
+
+\begin{equation*}
+    p_y
+    =
+    \int_{-\infty}^{+\infty}
+    F_y\,dt.
+\end{equation*}
+
+Подставим выражение для силы:
+
+\begin{equation*}
+    p_y
+    =
+    \int_{-\infty}^{+\infty}
+    \frac{Ze^2}{b^2}
+    \cos^3\theta\,dt
+    =
+    \frac{Ze^2}{b^2}
+    \int_{-\infty}^{+\infty}
+    \left[
+        1+
+        \left(
+            \frac{vt}{b}
+        \right)^2
+    \right]^{-3/2}
+    dt.
+\end{equation*}
+
+Преобразуем выражение в скобках:
+
+\begin{equation*}
+    1+
+    \frac{v^2t^2}{b^2}
+    =
+    \frac{v^2}{b^2}
+    \left[
+        \left(
+            \frac{b}{v}
+        \right)^2
+        +
+        t^2
+    \right].
+\end{equation*}
+
+Поэтому
+
+\begin{equation*}
+    \left(
+        1+
+        \frac{v^2t^2}{b^2}
+    \right)^{-3/2}
+    =
+    \frac{b^3}{v^3}
+    \left[
+        \left(
+            \frac{b}{v}
+        \right)^2
+        +
+        t^2
+    \right]^{-3/2}.
+\end{equation*}
+
+Тогда
+
+\begin{equation*}
+    p_y
+    =
+    \frac{Ze^2b}{v^3}
+    \int_{-\infty}^{+\infty}
+    \frac{dt}{
+        \left[
+            \left(
+                \dfrac{b}{v}
+            \right)^2
+            +
+            t^2
+        \right]^{3/2}
+    }.
+\end{equation*}
+
+Используем интеграл
+
+\begin{equation*}
+    \int
+    \frac{dt}{
+        \left(
+            a^2+t^2
+        \right)^{3/2}
+    }
+    =
+    \frac{t}{
+        a^2
+        \sqrt{
+            a^2+t^2
+        }
+    }.
+\end{equation*}
+
+При
+
+\begin{equation*}
+    a
+    =
+    \frac{b}{v}
+\end{equation*}
+
+получаем
+
+\begin{equation*}
+    p_y
+    =
+    \frac{Ze^2b}{v^3}
+    \left.
+    \frac{t}{
+        \left(
+            \dfrac{b}{v}
+        \right)^2
+        \sqrt{
+            \left(
+                \dfrac{b}{v}
+            \right)^2+t^2
+        }
+    }
+    \right|_{-\infty}^{+\infty}.
+\end{equation*}
+
+При $t\rightarrow\pm\infty$
+
+\begin{equation*}
+    \frac{t}{
+        \sqrt{
+            a^2+t^2
+        }
+    }
+    \longrightarrow
+    \pm1.
+\end{equation*}
+
+Поэтому
+
+\begin{equation*}
+    p_y
+    =
+    \frac{Ze^2b}{v^3}
+    \frac{v^2}{b^2}
+    \left[
+        1-(-1)
+    \right]
+    =
+    \boxed{
+        \frac{2Ze^2}{bv}
+    }.
+\end{equation*}
+
+Полученная электроном кинетическая энергия равна
+
+\begin{equation*}
+    \Delta E
+    =
+    \frac{p_y^2}{2m_e}.
+\end{equation*}
+
+Подставляя найденный импульс,
+
+\begin{equation*}
+    \Delta E
+    =
+    \frac{1}{2m_e}
+    \left(
+        \frac{2Ze^2}{bv}
+    \right)^2
+    =
+    \frac{4Z^2e^4}{
+        2m_eb^2v^2
+    }
+    =
+    \frac{2Z^2e^4}{
+        m_eb^2v^2
+    }.
+\end{equation*}
+
+Так как
+
+\begin{equation*}
+    v=\beta c,
+\end{equation*}
+
+окончательно
+
+\begin{equation*}
+    \boxed{
+        \Delta E
+        =
+        \frac{
+            2Z^2e^4
+        }{
+            b^2\beta^2m_ec^2
+        }
+    }.
+\end{equation*}
+
+Для характерного атомного расстояния
+
+\begin{equation*}
+    b
+    =
+    10^{-8}\,\text{см}
+\end{equation*}
+
+получается оценка
+
+\begin{equation*}
+    \boxed{
+        \Delta E
+        \simeq
+        8\cdot10^{-4}
+        \left(
+            \frac{Z}{\beta}
+        \right)^2
+        \text{эВ}
+    }.
+\end{equation*}
+
+
+\textbf{Домашнее задание.}
+Оценить потери энергии для
+
+\begin{equation*}
+    \alpha,
+    \qquad
+    p,
+    \qquad
+    \pi
+\end{equation*}
+
+при кинетической энергии
+
+\begin{equation*}
+    T
+    =
+    1\,\text{МэВ}.
+\end{equation*}
+
+
+% ============================================================
+% Задачи на ионизационные потери
+% ============================================================
+
+\section*{Ионизационные потери}
+
+Для дальнейших оценок используем формулу ионизационных потерь
+тяжёлой заряженной частицы
+
+\begin{equation*}
+    -
+    \frac{dE}{dx}
+    =
+    4\pi
+    N_A
+    r_e^2
+    m_ec^2
+    z^2
+    \frac{Z}{A}
+    \frac{1}{\beta^2}
+    \left[
+        \ln
+        \left(
+            \frac{
+                2m_ec^2
+                \gamma^2\beta^2
+            }{
+                I
+            }
+        \right)
+        -
+        \beta^2
+        -
+        \frac{\delta}{2}
+    \right].
+\end{equation*}
+
+Здесь
+
+\begin{equation*}
+    \beta
+    =
+    \frac{v}{c},
+    \qquad
+    \gamma
+    =
+    \frac{1}{
+        \sqrt{
+            1-\beta^2
+        }
+    }.
+\end{equation*}
+
+Для численных оценок используется приближённая форма
+
+\begin{equation*}
+    \boxed{
+        -
+        \frac{dE}{dx}
+        \simeq
+        0.3
+        \frac{
+            Zz^2
+        }{
+            A\beta^2
+        }
+        \left[
+            11.2
+            +
+            \ln
+            \left(
+                \frac{
+                    (\beta\gamma)^2
+                }{
+                    Z
+                }
+            \right)
+            -
+            \beta^2
+        \right]
+    }.
+\end{equation*}
+
+Характерное минимальное значение удельных ионизационных потерь:
+
+\begin{equation*}
+    \boxed{
+        -
+        \left(
+            \frac{dE}{dx}
+        \right)_{\min}
+        \simeq
+        2\,
+        \frac{
+            \text{МэВ}
+        }{
+            \text{г}/\text{см}^2
+        }
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\section{Задача 2. Потери энергии в углероде и свинце}
+% ------------------------------------------------------------
+
+Сравним ионизационные потери одной и той же частицы
+при прохождении через углерод и свинец.
+
+Для углерода
+
+\begin{equation*}
+    Z_{\mathrm C}=6,
+    \qquad
+    A_{\mathrm C}\simeq12,
+\end{equation*}
+
+поэтому
+
+\begin{equation*}
+    \frac{Z_{\mathrm C}}{A_{\mathrm C}}
+    \simeq
+    \frac{6}{12}
+    =
+    \frac{1}{2}.
+\end{equation*}
+
+Для свинца
+
+\begin{equation*}
+    Z_{\mathrm{Pb}}=82,
+    \qquad
+    \frac{Z_{\mathrm{Pb}}}{A_{\mathrm{Pb}}}
+    \simeq
+    \frac{2}{5}.
+\end{equation*}
+
+При одинаковых $z$ и $\beta$ получаем
+
+\begin{equation*}
+    \frac{
+        \left(
+            -\dfrac{dE}{dx}
+        \right)_{\mathrm C}
+    }{
+        \left(
+            -\dfrac{dE}{dx}
+        \right)_{\mathrm{Pb}}
+    }
+    =
+    \frac{
+        \dfrac{1}{2}
+        \left[
+            11.2
+            +
+            \ln
+            \left(
+                \dfrac{
+                    (\beta\gamma)^2
+                }{
+                    6
+                }
+            \right)
+            -
+            \beta^2
+        \right]
+    }{
+        \dfrac{2}{5}
+        \left[
+            11.2
+            +
+            \ln
+            \left(
+                \dfrac{
+                    (\beta\gamma)^2
+                }{
+                    82
+                }
+            \right)
+            -
+            \beta^2
+        \right]
+    }.
+\end{equation*}
+
+Рассмотрим протон с кинетической энергией
+
+\begin{equation*}
+    T
+    =
+    10\,\text{МэВ}.
+\end{equation*}
+
+Его полная энергия
+
+\begin{equation*}
+    E
+    =
+    E_0+T
+    =
+    \gamma m_pc^2.
+\end{equation*}
+
+При
+
+\begin{equation*}
+    m_pc^2
+    \simeq
+    938\,\text{МэВ}
+\end{equation*}
+
+имеем
+
+\begin{equation*}
+    E
+    \simeq
+    948\,\text{МэВ}.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    \gamma
+    =
+    \frac{948}{938}.
+\end{equation*}
+
+Используем
+
+\begin{equation*}
+    \gamma
+    =
+    \frac{1}{
+        \sqrt{
+            1-\beta^2
+        }
+    }.
+\end{equation*}
+
+Отсюда
+
+\begin{equation*}
+    \beta^2
+    =
+    1-
+    \frac{1}{\gamma^2}
+    \simeq
+    0.021.
+\end{equation*}
+
+После подстановки получаем
+
+\begin{equation*}
+    \boxed{
+        \frac{
+            \left(
+                -\dfrac{dE}{dx}
+            \right)_{\mathrm C}
+        }{
+            \left(
+                -\dfrac{dE}{dx}
+            \right)_{\mathrm{Pb}}
+        }
+        \simeq
+        2.3
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\section{Задача 3. Зависимость потерь энергии от глубины}
+% ------------------------------------------------------------
+
+Рассмотрим протон с начальной кинетической энергией
+
+\begin{equation*}
+    T
+    \simeq
+    1\,\text{ГэВ},
+\end{equation*}
+
+влетающий в вещество.
+
+Необходимо определить характер зависимости
+
+\begin{equation*}
+    \frac{dE}{d\ell}
+    =
+    \frac{dE}{d\ell}(\ell).
+\end{equation*}
+
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % -----------------------------------------------------
+        % Границы вещества
+        % -----------------------------------------------------
+
+        \draw[
+            draw=rtextmuted,
+            line width=0.8pt
+        ]
+        (-0.4,-1.25) -- (-0.4,1.25);
+
+        \draw[
+            draw=rtextmuted,
+            line width=0.8pt
+        ]
+        (3.6,-1.25) -- (3.6,1.25);
+
+
+        % -----------------------------------------------------
+        % Протон до входа
+        % -----------------------------------------------------
+
+        \fill[rc3] (-3.3,0) circle (2.5pt);
+
+        \node[
+            above=5pt
+        ] at (-3.3,0) {$p$};
+
+        \draw[
+            ->,
+            draw=rc3,
+            line width=1.2pt
+        ]
+        (-3.2,0) -- (-0.45,0);
+
+        \node[
+            below=6pt
+        ] at (-1.8,0) {$T\simeq1\,\text{ГэВ}$};
+
+
+        % -----------------------------------------------------
+        % Траектория внутри вещества
+        % -----------------------------------------------------
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (-0.4,0) -- (2.9,0);
+
+        \fill[rc3] (2.95,0) circle (2.3pt);
+
+        \node[
+            above
+        ] at (1.3,0) {$\ell$};
+
+        \node[
+            below
+        ] at (1.6,-0.35) {вещество};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Прохождение протона с начальной кинетической энергией
+        порядка $1\,\text{ГэВ}$ через вещество.
+    }
+    \label{fig:proton_matter_depth}
+\end{rbox}
+
+
+Для оценки примем
+
+\begin{equation*}
+    \gamma
+    \simeq
+    2.
+\end{equation*}
+
+Из связи между $\gamma$ и $\beta$
+
+\begin{equation*}
+    \gamma
+    =
+    \frac{1}{
+        \sqrt{
+            1-\beta^2
+        }
+    }
+\end{equation*}
+
+следует
+
+\begin{equation*}
+    \beta
+    =
+    \sqrt{
+        1-
+        \frac{1}{\gamma^2}
+    }
+    =
+    \sqrt{
+        1-
+        \frac14
+    }
+    =
+    \frac{\sqrt3}{2}.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    \beta^2
+    =
+    \frac34.
+\end{equation*}
+
+Запишем приближённое выражение для ионизационных потерь:
+
+\begin{equation*}
+    -
+    \frac{dE}{d\ell}
+    \simeq
+    0.3
+    \frac{
+        Zz^2
+    }{
+        A\beta^2
+    }
+    \left[
+        11.2
+        +
+        \ln
+        \left(
+            \frac{
+                (\beta\gamma)^2
+            }{
+                Z
+            }
+        \right)
+        -
+        \beta^2
+    \right].
+\end{equation*}
+
+Аргумент логарифма в рассматриваемой области меняется
+примерно в пределах от $2$ до $3.5$, поэтому логарифмический
+член можно оценивать как
+
+\begin{equation*}
+    \ln(2\text{--}3.5).
+\end{equation*}
+
+Его изменение значительно слабее изменения множителя
+$1/\beta^2$. Поэтому для качественной оценки можно считать
+
+\begin{equation*}
+    \boxed{
+        -
+        \frac{dE}{d\ell}
+        =
+        \frac{C_1}{\beta^2}
+    }.
+\end{equation*}
+
+По мере торможения протона его движение становится
+нерелятивистским. Тогда кинетическая энергия равна
+
+\begin{equation*}
+    E
+    =
+    \frac{mv^2}{2}.
+\end{equation*}
+
+Так как
+
+\begin{equation*}
+    v=\beta c,
+\end{equation*}
+
+то
+
+\begin{equation*}
+    E
+    =
+    \frac{m\beta^2c^2}{2}.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    \beta^2
+    =
+    \frac{2E}{mc^2}.
+\end{equation*}
+
+Подставляя это выражение в
+
+\begin{equation*}
+    -
+    \frac{dE}{d\ell}
+    =
+    \frac{C_1}{\beta^2},
+\end{equation*}
+
+получаем
+
+\begin{equation*}
+    -
+    \frac{dE}{d\ell}
+    =
+    C_1
+    \frac{mc^2}{2E}.
+\end{equation*}
+
+Все постоянные множители объединим в $C_2$:
+
+\begin{equation*}
+    \boxed{
+        -
+        \frac{dE}{d\ell}
+        =
+        \frac{C_2}{E}
+    }.
+\end{equation*}
+
+Отсюда
+
+\begin{equation*}
+    -E\,dE
+    =
+    C_2\,d\ell.
+\end{equation*}
+
+Интегрируем от начальной энергии $E_0$
+до текущей энергии $E$:
+
+\begin{equation*}
+    -
+    \int_{E_0}^{E}
+    E\,dE
+    =
+    \int_0^\ell
+    C_2\,d\ell.
+\end{equation*}
+
+Получаем
+
+\begin{equation*}
+    -
+    \frac{
+        E^2-E_0^2
+    }{2}
+    =
+    C_2\ell.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    E_0^2-E^2
+    =
+    2C_2\ell.
+\end{equation*}
+
+Введём обозначение
+
+\begin{equation*}
+    C_3
+    =
+    2C_2.
+\end{equation*}
+
+Тогда
+
+\begin{equation*}
+    E_0^2-E^2
+    =
+    C_3\ell.
+\end{equation*}
+
+Отсюда энергия протона после прохождения расстояния $\ell$ равна
+
+\begin{equation*}
+    \boxed{
+        E(\ell)
+        =
+        \sqrt{
+            E_0^2-C_3\ell
+        }
+    }.
+\end{equation*}
+
+Дифференцируя,
+
+\begin{equation*}
+    \frac{dE}{d\ell}
+    =
+    -
+    \frac{
+        C_3
+    }{
+        2
+        \sqrt{
+            E_0^2-C_3\ell
+        }
+    }.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    \boxed{
+        -
+        \frac{dE}{d\ell}
+        =
+        \frac{
+            C_3
+        }{
+            2
+            \sqrt{
+                E_0^2-C_3\ell
+            }
+        }
+    }.
+\end{equation*}
+
+Таким образом, по мере уменьшения энергии частицы
+её удельные энергетические потери возрастают.
+
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % -----------------------------------------------------
+        % Оси
+        % -----------------------------------------------------
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,0) -- (7.0,0)
+        node[right] {$\ell$};
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,0) -- (0,4.5)
+        node[above] {$-\dfrac{dE}{d\ell}$};
+
+
+        % -----------------------------------------------------
+        % Брэгговская кривая
+        % -----------------------------------------------------
+
+        \draw[
+            draw=rc3,
+            line width=1.35pt,
+            smooth
+        ]
+        plot coordinates {
+            (0.25,0.62)
+            (0.80,0.65)
+            (1.40,0.69)
+            (2.00,0.75)
+            (2.60,0.84)
+            (3.20,0.96)
+            (3.75,1.13)
+            (4.20,1.37)
+            (4.60,1.72)
+            (4.95,2.22)
+            (5.22,2.92)
+            (5.40,3.67)
+            (5.50,4.05)
+            (5.62,3.15)
+            (5.78,2.05)
+            (5.98,1.15)
+            (6.20,0.48)
+        };
+
+
+        % -----------------------------------------------------
+        % Положение пика
+        % -----------------------------------------------------
+
+        \draw[
+            densely dashed,
+            draw=rtextmuted,
+            line width=0.7pt
+        ]
+        (5.50,0) -- (5.50,4.05);
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.8pt
+        ]
+        (4.15,3.65) -- (5.35,3.98);
+
+        \node[
+            above,
+            align=center
+        ] at (4.05,3.62) {
+            брэгговский\\
+            пик
+        };
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Качественная зависимость удельных энергетических потерь
+        тяжёлой заряженной частицы от пройденного расстояния.
+        Непосредственно перед остановкой частицы возникает
+        брэгговский пик.
+    }
+    \label{fig:bragg_peak}
+\end{rbox}
+
+
+Основная причина такого поведения следует из зависимости
+
+\begin{equation*}
+    -
+    \frac{dE}{d\ell}
+    \propto
+    \frac{1}{\beta^2}.
+\end{equation*}
+
+При торможении частицы
+
+\begin{equation*}
+    \beta
+    \downarrow
+    \qquad
+    \Longrightarrow
+    \qquad
+    -
+    \frac{dE}{d\ell}
+    \uparrow.
+\end{equation*}
+
+Поэтому наиболее интенсивное энерговыделение происходит
+в конце пробега тяжёлой заряженной частицы.
+
+\end{document}

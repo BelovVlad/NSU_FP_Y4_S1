@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1789365884.09924 "c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/final.tex" "c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/build_final/final.pdf" "final" 1789365919.22018 0
+["pdflatex"] 1789368030.86504 "C:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/final.tex" "build_final/final.pdf" "final" 1789368046.3034 0
   "C:/Users/Влад/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1789186734 367663 0b2063c86a3ec4b6ffeff0c569eb665b ""
   "C:/Users/Влад/AppData/Local/MiKTeX/fonts/tfm/lh/lh-t2a/labx1000.tfm" 1788279558 3300 6abb8e321227ead2a8e929e5abc72bd3 ""
   "C:/Users/Влад/AppData/Local/MiKTeX/fonts/tfm/lh/lh-t2a/labx1200.tfm" 1778839001 3308 eee81981029f67083258db36df06e523 ""
@@ -448,10 +448,11 @@
   "C:/Users/Влад/AppData/Local/Programs/MiKTeX/tex/latex/xpatch/xpatch.sty" 1585221260 8510 7803f78066c4f9d008405191a4b43073 ""
   "C:/Users/Влад/AppData/Local/Programs/MiKTeX/tex/latex/zref/zref-abspage.sty" 1773584792 2269 91cd03da61ab1da00145ba8a81560051 ""
   "C:/Users/Влад/AppData/Local/Programs/MiKTeX/tex/latex/zref/zref-base.sty" 1773584792 20785 8db5f0a2b2ce96dda9fac87ccab29449 ""
-  "c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/build_final/final.aux" 1789365918 15534 31a49f8c6bdccfc346be635fbc33ef3b "pdflatex"
-  "c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/build_final/final.out" 1789365918 3113 9d4da269e83ea2e3a7bbac03d675f0b2 "pdflatex"
-  "c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/build_final/final.toc" 1789365918 3008 029f0a4c707171a78a005eeff392c313 "pdflatex"
-  "c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/final.tex" 1789365811 1240 52e0610376034909125755188311902f ""
+  "C:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/final.tex" 1789365811 1240 52e0610376034909125755188311902f ""
+  "build_final/final.aux" 1789368045 15534 31a49f8c6bdccfc346be635fbc33ef3b "pdflatex"
+  "build_final/final.out" 1789368045 3113 9d4da269e83ea2e3a7bbac03d675f0b2 "pdflatex"
+  "build_final/final.toc" 1789368045 3008 029f0a4c707171a78a005eeff392c313 "pdflatex"
+  "final.tex" 1789365811 1240 52e0610376034909125755188311902f ""
   "image/chapter1.png" 1788706649 1136754 fcf84177bf7e7fb8dbae49c8eb60edb9 ""
   "image/lecture_01/delta_electron_scheme.png" 1788704755 1171014 38b360995f28dfb3f218958d14cd620d ""
   "image/lecture_01/delta_electron_spectrum.png" 1788705153 1098761 d6879820eccfe59bc2212fe6dc4ccd63 ""
@@ -460,7 +461,7 @@
   "image/lecture_01/landau_distribution.png" 1788706111 239832 16a5d8b7b9affc6f5f375d7eed17f0b7 ""
   "image/lecture_01/particle_through_matter.png" 1788705380 560928 6863946651828d3deb87ebf18593073a ""
   "parts/part1.tex" 1788706804 26127 179d0d792af8d0c920ab78c23ca39112 ""
-  "parts/part2.tex" 1789365715 57717 1689474197cdf60a20a10d718d570d44 ""
+  "parts/part2.tex" 1789367984 57705 1689474197cdf60a20a10d718d570d44 ""
   "style/boxes.tex" 1780326361 4811 f347a5095aaeb94a48954b5d16cba9b7 ""
   "style/colors.tex" 1787747667 7009 5dbc675840dc8eba7aeb12469a17c8d7 ""
   "style/commands.tex" 1780231537 9437 050546ea08d1f21bf008096b7fd394db ""
@@ -470,9 +471,9 @@
   "style/page-style.tex" 1780217322 3848 9d58d3d31cb8dabfa9f55fffb260ffbb ""
   "style/style.tex" 1780225090 369 355ddbe6eab2d953f16c6f1e0883cf2f ""
   (generated)
-  "c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/build_final/final.aux"
-  "c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/build_final/final.log"
-  "c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/build_final/final.out"
-  "c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/build_final/final.pdf"
-  "c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции/LaTeX/build_final/final.toc"
+  "build_final/final.aux"
+  "build_final/final.log"
+  "build_final/final.out"
+  "build_final/final.pdf"
+  "build_final/final.toc"
   (rewritten before read)
