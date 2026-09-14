@@ -6,10 +6,10 @@
 <meta name="color-scheme" content="dark">
 <title>PDF · ФФ НГУ</title>
 <style>
-:root{--bg:#0d1015;--bar:#12161c;--panel:#171c23;--line:#2b323d;--text:#eef1f5;--muted:#8993a1;--accent:#d45d68;--accent-soft:rgba(212,93,104,.14)}
+:root{--bg:#0d1015;--pdf-bg:#1e1e1e;--bar:#12161c;--panel:#171c23;--line:#2b323d;--text:#eef1f5;--muted:#8993a1;--accent:#d45d68;--accent-soft:rgba(212,93,104,.14)}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 button,input,a{font:inherit}.toolbar{height:58px;display:grid;grid-template-columns:auto minmax(100px,1fr) auto;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--bar)}
-.left,.controls,.right{display:flex;align-items:center;gap:8px}.controls{justify-content:center}.right{justify-content:flex-end}.btn{height:38px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--text);text-decoration:none;cursor:pointer}.btn:hover{border-color:rgba(212,93,104,.55);background:var(--accent-soft)}.btn.icon{width:38px;padding:0}.title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:700}.page-input{width:62px;height:34px;border:1px solid var(--line);border-radius:8px;background:#0f1318;color:var(--text);text-align:center;outline:none}.page-input:focus{border-color:var(--accent)}.page-total,.zoom-label{color:var(--muted);font-size:13px}.viewer{position:absolute;inset:58px 0 0;overflow:auto;background:#090b0f}.stage{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:24px}.canvas-wrap{position:relative;line-height:0;box-shadow:0 12px 38px rgba(0,0,0,.4)}canvas{display:block;max-width:none;background:white}.loading{position:fixed;left:50%;top:82px;z-index:5;transform:translateX(-50%);display:none;align-items:center;gap:9px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(18,22,28,.94);color:var(--muted);font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.28)}.loading.show{display:flex}.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse .8s infinite alternate}@keyframes pulse{to{opacity:.3}}.error{max-width:680px;margin:80px auto;padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);line-height:1.6}.error strong{color:var(--text)}
+.left,.controls,.right{display:flex;align-items:center;gap:8px}.controls{justify-content:center}.right{justify-content:flex-end}.btn{height:38px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--text);text-decoration:none;cursor:pointer}.btn:hover{border-color:rgba(212,93,104,.55);background:var(--accent-soft)}.btn.icon{width:38px;padding:0}.title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:700}.page-input{width:62px;height:34px;border:1px solid var(--line);border-radius:8px;background:#0f1318;color:var(--text);text-align:center;outline:none}.page-input:focus{border-color:var(--accent)}.page-total,.zoom-label{color:var(--muted);font-size:13px}.viewer{position:absolute;inset:58px 0 0;overflow:auto;background:var(--pdf-bg)}.stage{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:24px}.canvas-wrap{position:relative;line-height:0;box-shadow:0 8px 28px rgba(0,0,0,.5)}canvas{display:block;max-width:none;background:white}.loading{position:fixed;left:50%;top:82px;z-index:5;transform:translateX(-50%);display:none;align-items:center;gap:9px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(18,22,28,.95);color:var(--muted);font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.28)}.loading.show{display:flex}.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse .8s infinite alternate}@keyframes pulse{to{opacity:.3}}.error{max-width:680px;margin:80px auto;padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);line-height:1.6}.error strong{color:var(--text)}
 @media(max-width:760px){.toolbar{grid-template-columns:auto minmax(0,1fr);height:108px;align-content:center}.left{min-width:0}.controls{grid-column:1/-1;grid-row:2}.right{display:none}.viewer{inset:108px 0 0}.stage{padding:14px}.back-text{display:none}.loading{top:124px}}
 </style>
 </head>
@@ -35,128 +35,66 @@ button,input,a{font:inherit}.toolbar{height:58px;display:grid;grid-template-colu
 import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
 
+const OWNER='BelovVlad',REPO='NSU_Faculty_of_Physics-4th-year--1st-semester-',BRANCH='main';
 const params=new URLSearchParams(location.search);
 const raw=params.get('file');
 const subject=params.get('subject')||'';
 const titleParam=params.get('title')||'';
-const back=document.getElementById('back');
-const direct=document.getElementById('direct');
-const title=document.getElementById('title');
-const canvas=document.getElementById('canvas');
-const ctx=canvas.getContext('2d',{alpha:false});
-const pageInput=document.getElementById('page');
-const total=document.getElementById('total');
-const prev=document.getElementById('prev');
-const next=document.getElementById('next');
-const zoomOut=document.getElementById('zoomOut');
-const zoomIn=document.getElementById('zoomIn');
-const zoomLabel=document.getElementById('zoom');
-const fit=document.getElementById('fit');
-const viewer=document.getElementById('viewer');
-const stage=document.getElementById('stage');
-const loading=document.getElementById('loading');
-const loadingText=document.getElementById('loadingText');
+const $=id=>document.getElementById(id);
+const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText');
 
-let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=true;
-let pdfUrl='',renderSerial=0,preloadSerial=0;
-const pageCache=new Map();
-const warmedPages=new Set();
-
+let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=true,pdfUrl='',renderSerial=0,preloadSerial=0;
+const pageCache=new Map(),warmedPages=new Set();
 const showLoading=(text='Загрузка страницы…')=>{loadingText.textContent=text;loading.classList.add('show')};
 const hideLoading=()=>loading.classList.remove('show');
+const encPath=p=>p.split('/').map(encodeURIComponent).join('/');
 
 function fail(message){hideLoading();stage.innerHTML=`<div class="error"><strong>Не удалось открыть PDF.</strong><br>${message}<br><br>Можно открыть файл напрямую кнопкой «Файл ↗».</div>`}
-function savePage(){try{localStorage.setItem('nsu-pdf-page:'+pdfUrl,String(pageNum))}catch{}}
-function rememberedPage(){try{return Number(localStorage.getItem('nsu-pdf-page:'+pdfUrl))||1}catch{return 1}}
+function storageKey(){return 'nsu-pdf-page:'+(raw||pdfUrl)}
+function savePage(){try{localStorage.setItem(storageKey(),String(pageNum))}catch{}}
+function rememberedPage(){try{return Number(localStorage.getItem(storageKey()))||1}catch{return 1}}
 function updateControls(){pageInput.value=pageNum;total.textContent=`/ ${pdf?pdf.numPages:'—'}`;zoomLabel.textContent=`${Math.round(scale*100)}%`;prev.disabled=pageNum<=1;next.disabled=!pdf||pageNum>=pdf.numPages}
 
-async function getCachedPage(n){
-  if(pageCache.has(n))return pageCache.get(n);
-  const page=await pdf.getPage(n);
-  pageCache.set(n,page);
-  return page;
-}
-
-function trimPageCache(center){
-  for(const [n,page] of pageCache){
-    if(Math.abs(n-center)>1){
-      try{page.cleanup()}catch{}
-      pageCache.delete(n);
-      warmedPages.delete(n);
+async function resolvePdfUrl(path){
+  const localUrl=new URL('../'+path.replace(/^\/+/,''),location.href).href;
+  try{
+    const head=await fetch(localUrl,{method:'HEAD',cache:'no-store'});
+    const size=Number(head.headers.get('content-length')||0);
+    if(size>0&&size<1024){
+      const text=await fetch(localUrl,{cache:'no-store'}).then(r=>r.text());
+      if(text.startsWith('version https://git-lfs.github.com/spec/v1')){
+        return `https://media.githubusercontent.com/media/${OWNER}/${REPO}/${BRANCH}/${encPath(path)}`;
+      }
     }
-  }
+  }catch{}
+  return localUrl;
 }
 
+async function getCachedPage(n){if(pageCache.has(n))return pageCache.get(n);const page=await pdf.getPage(n);pageCache.set(n,page);return page}
+function trimPageCache(center){for(const [n,page] of pageCache){if(Math.abs(n-center)>1){try{page.cleanup()}catch{}pageCache.delete(n);warmedPages.delete(n)}}}
 async function preloadAround(center){
-  if(!pdf)return;
-  const serial=++preloadSerial;
-  const targets=[center-1,center+1].filter(n=>n>=1&&n<=pdf.numPages);
-
-  await Promise.allSettled(targets.map(async n=>{
-    if(warmedPages.has(n))return;
-    const page=await getCachedPage(n);
-
-    if(serial!==preloadSerial&&Math.abs(n-pageNum)>1){
-      try{page.cleanup()}catch{}
-      pageCache.delete(n);
-      warmedPages.delete(n);
-      return;
-    }
-
-    await page.getOperatorList();
-
-    if(Math.abs(n-pageNum)<=1){
-      warmedPages.add(n);
-    }else{
-      try{page.cleanup()}catch{}
-      pageCache.delete(n);
-      warmedPages.delete(n);
-    }
-  }));
-
+  if(!pdf)return;const serial=++preloadSerial;const targets=[center-1,center+1].filter(n=>n>=1&&n<=pdf.numPages);
+  await Promise.allSettled(targets.map(async n=>{if(warmedPages.has(n))return;const page=await getCachedPage(n);if(serial!==preloadSerial&&Math.abs(n-pageNum)>1){try{page.cleanup()}catch{}pageCache.delete(n);warmedPages.delete(n);return}await page.getOperatorList();if(Math.abs(n-pageNum)<=1)warmedPages.add(n);else{try{page.cleanup()}catch{}pageCache.delete(n);warmedPages.delete(n)}}));
   if(serial===preloadSerial)trimPageCache(center);
 }
 
 async function renderPage(){
-  if(!pdf)return;
-  const target=pageNum;
-  const serial=++renderSerial;
-  showLoading();
-  if(renderTask){try{renderTask.cancel()}catch{}}
-
+  if(!pdf)return;const target=pageNum,serial=++renderSerial;showLoading();if(renderTask){try{renderTask.cancel()}catch{}}
   try{
-    const page=await getCachedPage(target);
-    if(serial!==renderSerial)return;
-
-    const base=page.getViewport({scale:1});
-    if(fitWidth){const available=Math.max(280,viewer.clientWidth-(innerWidth<760?28:52));scale=Math.min(2.4,available/base.width)}
-    const viewport=page.getViewport({scale});
-    const ratio=window.devicePixelRatio||1;
-    canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);
-    canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;
-    renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});
-    await renderTask.promise;
-    if(serial!==renderSerial)return;
-
-    renderTask=null;
-    warmedPages.add(target);
-    updateControls();
-    savePage();
-    hideLoading();
-    viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});
-
-    trimPageCache(target);
-    void preloadAround(target);
-  }catch(err){
-    if(err?.name!=='RenderingCancelledException'&&serial===renderSerial)fail(err?.message||String(err));
-  }
+    const page=await getCachedPage(target);if(serial!==renderSerial)return;
+    const base=page.getViewport({scale:1});if(fitWidth){const available=Math.max(280,viewer.clientWidth-(innerWidth<760?28:52));scale=Math.min(2.4,available/base.width)}
+    const viewport=page.getViewport({scale}),ratio=window.devicePixelRatio||1;
+    canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;
+    renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});await renderTask.promise;if(serial!==renderSerial)return;
+    renderTask=null;warmedPages.add(target);updateControls();savePage();hideLoading();viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});trimPageCache(target);void preloadAround(target);
+  }catch(err){if(err?.name!=='RenderingCancelledException'&&serial===renderSerial)fail(err?.message||String(err))}
 }
 
-async function open(){if(!raw){fail('В ссылке не указан файл.');return}
-  pdfUrl=new URL('../'+raw.replace(/^\/+/,''),location.href).href;
-  direct.href=pdfUrl;title.textContent=titleParam||decodeURIComponent(raw.split('/').pop());document.title=(titleParam||'PDF')+' · ФФ НГУ';
-  showLoading('Открываю документ…');
+async function open(){
+  if(!raw){fail('В ссылке не указан файл.');return}
+  title.textContent=titleParam||decodeURIComponent(raw.split('/').pop());document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Проверяю файл…');
   try{
+    pdfUrl=await resolvePdfUrl(raw);direct.href=pdfUrl;showLoading('Открываю документ…');
     const task=pdfjsLib.getDocument({url:pdfUrl,disableRange:false,disableStream:true,disableAutoFetch:true,rangeChunkSize:262144});
     task.onProgress=p=>{if(p.total&&p.loaded)loadingText.textContent=`Загрузка: ${Math.min(100,Math.round(p.loaded/p.total*100))}%`};
     pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,rememberedPage()));updateControls();await renderPage();
@@ -164,12 +102,9 @@ async function open(){if(!raw){fail('В ссылке не указан файл.
 }
 
 back.onclick=()=>{if(history.length>1)history.back();else location.href='../'+(subject?`#subject=${encodeURIComponent(subject)}`:'')};
-prev.onclick=()=>{if(pageNum>1){pageNum--;renderPage()}};
-next.onclick=()=>{if(pdf&&pageNum<pdf.numPages){pageNum++;renderPage()}};
-pageInput.onchange=()=>{if(!pdf)return;const n=Math.max(1,Math.min(pdf.numPages,Number(pageInput.value)||1));pageNum=n;renderPage()};
-zoomOut.onclick=()=>{fitWidth=false;scale=Math.max(.35,scale-.15);renderPage()};
-zoomIn.onclick=()=>{fitWidth=false;scale=Math.min(4,scale+.15);renderPage()};
-fit.onclick=()=>{fitWidth=true;renderPage()};
+prev.onclick=()=>{if(pageNum>1){pageNum--;renderPage()}};next.onclick=()=>{if(pdf&&pageNum<pdf.numPages){pageNum++;renderPage()}};
+pageInput.onchange=()=>{if(!pdf)return;pageNum=Math.max(1,Math.min(pdf.numPages,Number(pageInput.value)||1));renderPage()};
+zoomOut.onclick=()=>{fitWidth=false;scale=Math.max(.35,scale-.15);renderPage()};zoomIn.onclick=()=>{fitWidth=false;scale=Math.min(4,scale+.15);renderPage()};fit.onclick=()=>{fitWidth=true;renderPage()};
 window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'&&pageNum>1){pageNum--;renderPage()}if(e.key==='ArrowRight'&&pdf&&pageNum<pdf.numPages){pageNum++;renderPage()}if(e.key==='Escape')back.click()});
 let resizeTimer;window.addEventListener('resize',()=>{if(!fitWidth)return;clearTimeout(resizeTimer);resizeTimer=setTimeout(renderPage,180)});
 open();
