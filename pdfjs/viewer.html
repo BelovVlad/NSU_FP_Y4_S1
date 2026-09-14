@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PDF Viewer</title>
+<style>
+html,body{margin:0;height:100%;background:#0d1015;color:#eef1f5;font-family:system-ui,sans-serif}
+#bar{height:54px;display:flex;align-items:center;gap:15px;padding:0 16px;background:#12161c;border-bottom:1px solid #2b323d}
+#back{color:#eef1f5;background:#171c23;border:1px solid #2b323d;border-radius:8px;padding:8px 14px;text-decoration:none}
+#title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+iframe{width:100%;height:calc(100% - 55px);border:0}
+</style>
+</head>
+<body>
+<div id="bar"><a id="back" href="../">← Материалы</a><span id="title">PDF</span></div>
+<iframe id="pdf"></iframe>
+<script>
+const p=new URLSearchParams(location.search).get('file');
+if(p){
+ document.getElementById('title').textContent=decodeURIComponent(p.split('/').pop());
+ document.getElementById('pdf').src='https://mozilla.github.io/pdf.js/web/viewer.html?file='+encodeURIComponent(new URL(p,location.origin).href);
+}
+</script>
+</body>
+</html>
