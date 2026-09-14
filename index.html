@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>ФФ НГУ — 4 курс, 1 семестр</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --panel-2: #1c2128;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #d45d68;
+      --accent-soft: rgba(212, 93, 104, .14);
+      --shadow: 0 14px 35px rgba(0,0,0,.22);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(212, 93, 104, .08), transparent 32rem),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 64px 0 36px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(32px, 6vw, 58px);
+      line-height: 1.03;
+      letter-spacing: -.045em;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .search {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      background: var(--panel);
+      color: var(--text);
+      font: inherit;
+    }
+
+    .search:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .repo-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .repo-link:hover { border-color: #59636e; }
+
+    .subjects {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      padding-bottom: 56px;
+    }
+
+    .subject {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(22, 27, 34, .92);
+      box-shadow: var(--shadow);
+    }
+
+    .subject-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 20px 22px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .subject-head:hover { background: rgba(255,255,255,.018); }
+
+    .subject-title {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -.02em;
+    }
+
+    .count {
+      flex: 0 0 auto;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #f19aa2;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .subject-body {
+      display: none;
+      padding: 0 16px 16px;
+    }
+
+    .subject.open .subject-body { display: block; }
+
+    .section {
+      margin-top: 10px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel-2);
+    }
+
+    .section h3 {
+      margin: 0 0 10px;
+      color: #c9d1d9;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .files {
+      display: grid;
+      gap: 8px;
+    }
+
+    .file {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .file:hover { background: rgba(255,255,255,.045); }
+
+    .file-icon {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--accent-soft);
+      color: #f19aa2;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .file-main { min-width: 0; }
+
+    .file-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+
+    .file-path {
+      overflow: hidden;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .open-mark {
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .status {
+      grid-column: 1 / -1;
+      padding: 40px 20px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    footer {
+      padding: 0 0 42px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      header { padding-top: 42px; }
+      .subjects { grid-template-columns: 1fr; }
+      .toolbar { grid-template-columns: 1fr; }
+      .repo-link { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="eyebrow">НГУ · Физический факультет</p>
+    <h1>4 курс · 1 семестр</h1>
+    <p class="lead">Лекции, семинары, литература и учебные материалы из репозитория. PDF открываются напрямую в браузере, Jupyter Notebook — через nbviewer.</p>
+
+    <div class="toolbar">
+      <input id="search" class="search" type="search" placeholder="Поиск по предметам и файлам…" autocomplete="off">
+      <a class="repo-link" href="https://github.com/BelovVlad/NSU_Faculty_of_Physics-4th-year--1st-semester-" target="_blank" rel="noopener">Открыть GitHub</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div id="subjects" class="subjects">
+      <div class="status">Загружаю материалы…</div>
+    </div>
+  </main>
+
+  <footer class="wrap">Материалы обновляются автоматически по содержимому ветки main.</footer>
+
+  <script>
+    const OWNER = 'BelovVlad';
+    const REPO = 'NSU_Faculty_of_Physics-4th-year--1st-semester-';
+    const BRANCH = 'main';
+
+    const SUBJECT_ORDER = ['ОВФ', 'СВЧ', 'ТДиСФ', 'ФКСВ', 'ФЭЧ', 'ФиХАиМ', 'База'];
+    const ALLOWED_EXTENSIONS = ['pdf', 'ipynb'];
+
+    const subjectsEl = document.getElementById('subjects');
+    const searchEl = document.getElementById('search');
+
+    let repoFiles = [];
+
+    function extension(path) {
+      return path.split('.').pop().toLowerCase();
+    }
+
+    function cleanSectionName(name) {
+      return name
+        .replace(/^\d+[_ .-]*/, '')
+        .replaceAll('_', ' ')
+        .trim() || 'Материалы';
+    }
+
+    function cleanFileName(path) {
+      const parts = path.split('/');
+      const filename = parts.at(-1).replace(/\.[^.]+$/, '');
+      const section = parts[1] || '';
+
+      if (filename.toLowerCase() === 'final') {
+        if (/лекц/i.test(section)) return 'Конспект лекций';
+        if (/семинар/i.test(section)) return 'Семинары';
+        return 'Итоговый материал';
+      }
+
+      if (filename.toUpperCase() === 'INDEX') return 'Оглавление';
+      return filename.replaceAll('_', ' ');
+    }
+
+    function encodePath(path) {
+      return path.split('/').map(encodeURIComponent).join('/');
+    }
+
+    function fileUrl(path) {
+      const ext = extension(path);
+      if (ext === 'pdf') return './' + encodePath(path);
+      if (ext === 'ipynb') {
+        return `https://nbviewer.org/github/${OWNER}/${REPO}/blob/${BRANCH}/${encodePath(path)}`;
+      }
+      return '#';
+    }
+
+    function sectionFor(path) {
+      const parts = path.split('/');
+      if (parts.length <= 2) return 'Материалы';
+      return cleanSectionName(parts[1]);
+    }
+
+    function sortFiles(a, b) {
+      return a.path.localeCompare(b.path, 'ru', { numeric: true, sensitivity: 'base' });
+    }
+
+    function render(filter = '') {
+      const q = filter.trim().toLocaleLowerCase('ru');
+      const bySubject = new Map();
+
+      for (const item of repoFiles) {
+        const subject = item.path.split('/')[0];
+        if (!SUBJECT_ORDER.includes(subject)) continue;
+
+        const haystack = `${subject} ${item.path}`.toLocaleLowerCase('ru');
+        if (q && !haystack.includes(q)) continue;
+
+        if (!bySubject.has(subject)) bySubject.set(subject, []);
+        bySubject.get(subject).push(item);
+      }
+
+      const orderedSubjects = SUBJECT_ORDER.filter(subject => bySubject.has(subject));
+
+      if (!orderedSubjects.length) {
+        subjectsEl.innerHTML = '<div class="status">Ничего не найдено.</div>';
+        return;
+      }
+
+      subjectsEl.innerHTML = orderedSubjects.map((subject, subjectIndex) => {
+        const files = bySubject.get(subject).sort(sortFiles);
+        const sections = new Map();
+
+        for (const file of files) {
+          const section = sectionFor(file.path);
+          if (!sections.has(section)) sections.set(section, []);
+          sections.get(section).push(file);
+        }
+
+        const sectionsHtml = [...sections.entries()].map(([section, sectionFiles]) => `
+          <div class="section">
+            <h3>${escapeHtml(section)}</h3>
+            <div class="files">
+              ${sectionFiles.map(file => {
+                const ext = extension(file.path);
+                const secondaryPath = file.path.split('/').slice(1, -1).join(' / ');
+                return `
+                  <a class="file" href="${fileUrl(file.path)}" target="_blank" rel="noopener">
+                    <span class="file-icon">${ext === 'pdf' ? 'PDF' : 'NB'}</span>
+                    <span class="file-main">
+                      <span class="file-name">${escapeHtml(cleanFileName(file.path))}</span>
+                      <span class="file-path">${escapeHtml(secondaryPath || subject)}</span>
+                    </span>
+                    <span class="open-mark">↗</span>
+                  </a>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `).join('');
+
+        return `
+          <section class="subject ${subjectIndex === 0 && !q ? 'open' : ''}">
+            <div class="subject-head" role="button" tabindex="0" aria-expanded="${subjectIndex === 0 && !q ? 'true' : 'false'}">
+              <h2 class="subject-title">${escapeHtml(subject)}</h2>
+              <span class="count">${files.length}</span>
+            </div>
+            <div class="subject-body">${sectionsHtml}</div>
+          </section>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.subject-head').forEach(head => {
+        const toggle = () => {
+          const subject = head.closest('.subject');
+          subject.classList.toggle('open');
+          head.setAttribute('aria-expanded', subject.classList.contains('open') ? 'true' : 'false');
+        };
+
+        head.addEventListener('click', toggle);
+        head.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggle();
+          }
+        });
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    async function loadRepository() {
+      try {
+        const api = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+        const response = await fetch(api, { headers: { 'Accept': 'application/vnd.github+json' } });
+        if (!response.ok) throw new Error(`GitHub API: ${response.status}`);
+
+        const data = await response.json();
+        repoFiles = (data.tree || []).filter(item => {
+          if (item.type !== 'blob') return false;
+          const ext = extension(item.path);
+          if (!ALLOWED_EXTENSIONS.includes(ext)) return false;
+          if (item.path.includes('/LaTeX/')) return false;
+          return true;
+        });
+
+        render();
+      } catch (error) {
+        console.error(error);
+        subjectsEl.innerHTML = `
+          <div class="status">
+            Не удалось автоматически получить список материалов.<br>
+            <a href="https://github.com/${OWNER}/${REPO}" target="_blank" rel="noopener">Открыть репозиторий на GitHub</a>
+          </div>
+        `;
+      }
+    }
+
+    searchEl.addEventListener('input', () => render(searchEl.value));
+    loadRepository();
+  </script>
+</body>
+</html>
