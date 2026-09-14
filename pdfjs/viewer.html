@@ -3,24 +3,105 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PDF Viewer</title>
+<meta name="color-scheme" content="dark">
+<title>PDF · ФФ НГУ</title>
 <style>
-html,body{margin:0;height:100%;background:#0d1015;color:#eef1f5;font-family:system-ui,sans-serif}
-#bar{height:54px;display:flex;align-items:center;gap:15px;padding:0 16px;background:#12161c;border-bottom:1px solid #2b323d}
-#back{color:#eef1f5;background:#171c23;border:1px solid #2b323d;border-radius:8px;padding:8px 14px;text-decoration:none}
-#title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-iframe{width:100%;height:calc(100% - 55px);border:0}
+:root{--bg:#0d1015;--bar:#12161c;--panel:#171c23;--line:#2b323d;--text:#eef1f5;--muted:#8993a1;--accent:#d45d68;--accent-soft:rgba(212,93,104,.14)}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,a{font:inherit}.toolbar{height:58px;display:grid;grid-template-columns:auto minmax(100px,1fr) auto;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--bar)}
+.left,.controls,.right{display:flex;align-items:center;gap:8px}.controls{justify-content:center}.right{justify-content:flex-end}.btn{height:38px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--text);text-decoration:none;cursor:pointer}.btn:hover{border-color:rgba(212,93,104,.55);background:var(--accent-soft)}.btn.icon{width:38px;padding:0}.title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:700}.page-input{width:62px;height:34px;border:1px solid var(--line);border-radius:8px;background:#0f1318;color:var(--text);text-align:center;outline:none}.page-input:focus{border-color:var(--accent)}.page-total,.zoom-label{color:var(--muted);font-size:13px}.viewer{position:absolute;inset:58px 0 0;overflow:auto;background:#090b0f}.stage{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:24px}.canvas-wrap{position:relative;line-height:0;box-shadow:0 12px 38px rgba(0,0,0,.4)}canvas{display:block;max-width:none;background:white}.loading{position:fixed;left:50%;top:82px;z-index:5;transform:translateX(-50%);display:none;align-items:center;gap:9px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(18,22,28,.94);color:var(--muted);font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.28)}.loading.show{display:flex}.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse .8s infinite alternate}@keyframes pulse{to{opacity:.3}}.error{max-width:680px;margin:80px auto;padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);line-height:1.6}.error strong{color:var(--text)}
+@media(max-width:760px){.toolbar{grid-template-columns:auto minmax(0,1fr);height:108px;align-content:center}.left{min-width:0}.controls{grid-column:1/-1;grid-row:2}.right{display:none}.viewer{inset:108px 0 0}.stage{padding:14px}.back-text{display:none}.loading{top:124px}}
 </style>
 </head>
 <body>
-<div id="bar"><a id="back" href="../">← Материалы</a><span id="title">PDF</span></div>
-<iframe id="pdf"></iframe>
-<script>
-const p=new URLSearchParams(location.search).get('file');
-if(p){
- document.getElementById('title').textContent=decodeURIComponent(p.split('/').pop());
- document.getElementById('pdf').src='https://mozilla.github.io/pdf.js/web/viewer.html?file='+encodeURIComponent(new URL(p,location.origin).href);
+<header class="toolbar">
+  <div class="left"><button id="back" class="btn" type="button">← <span class="back-text">Материалы</span></button><div id="title" class="title">PDF</div></div>
+  <div class="controls">
+    <button id="prev" class="btn icon" type="button" title="Предыдущая страница">‹</button>
+    <input id="page" class="page-input" type="number" min="1" value="1" aria-label="Номер страницы">
+    <span id="total" class="page-total">/ —</span>
+    <button id="next" class="btn icon" type="button" title="Следующая страница">›</button>
+    <button id="zoomOut" class="btn icon" type="button" title="Уменьшить">−</button>
+    <span id="zoom" class="zoom-label">100%</span>
+    <button id="zoomIn" class="btn icon" type="button" title="Увеличить">+</button>
+    <button id="fit" class="btn" type="button">По ширине</button>
+  </div>
+  <div class="right"><a id="direct" class="btn" href="#" target="_blank" rel="noopener">Файл ↗</a></div>
+</header>
+<div id="loading" class="loading"><span class="dot"></span><span id="loadingText">Загрузка страницы…</span></div>
+<main id="viewer" class="viewer"><div id="stage" class="stage"><div class="canvas-wrap"><canvas id="canvas"></canvas></div></div></main>
+
+<script type="module">
+import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
+
+const params=new URLSearchParams(location.search);
+const raw=params.get('file');
+const subject=params.get('subject')||'';
+const titleParam=params.get('title')||'';
+const back=document.getElementById('back');
+const direct=document.getElementById('direct');
+const title=document.getElementById('title');
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d',{alpha:false});
+const pageInput=document.getElementById('page');
+const total=document.getElementById('total');
+const prev=document.getElementById('prev');
+const next=document.getElementById('next');
+const zoomOut=document.getElementById('zoomOut');
+const zoomIn=document.getElementById('zoomIn');
+const zoomLabel=document.getElementById('zoom');
+const fit=document.getElementById('fit');
+const viewer=document.getElementById('viewer');
+const stage=document.getElementById('stage');
+const loading=document.getElementById('loading');
+const loadingText=document.getElementById('loadingText');
+
+let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=true;
+let pdfUrl='';
+const showLoading=(text='Загрузка страницы…')=>{loadingText.textContent=text;loading.classList.add('show')};
+const hideLoading=()=>loading.classList.remove('show');
+
+function fail(message){hideLoading();stage.innerHTML=`<div class="error"><strong>Не удалось открыть PDF.</strong><br>${message}<br><br>Можно открыть файл напрямую кнопкой «Файл ↗».</div>`}
+function savePage(){try{localStorage.setItem('nsu-pdf-page:'+pdfUrl,String(pageNum))}catch{}}
+function rememberedPage(){try{return Number(localStorage.getItem('nsu-pdf-page:'+pdfUrl))||1}catch{return 1}}
+function updateControls(){pageInput.value=pageNum;total.textContent=`/ ${pdf?pdf.numPages:'—'}`;zoomLabel.textContent=`${Math.round(scale*100)}%`;prev.disabled=pageNum<=1;next.disabled=!pdf||pageNum>=pdf.numPages}
+
+async function renderPage(){if(!pdf)return;showLoading();if(renderTask){try{renderTask.cancel()}catch{}}
+  try{
+    const page=await pdf.getPage(pageNum);
+    const base=page.getViewport({scale:1});
+    if(fitWidth){const available=Math.max(280,viewer.clientWidth-(innerWidth<760?28:52));scale=Math.min(2.4,available/base.width)}
+    const viewport=page.getViewport({scale});
+    const ratio=window.devicePixelRatio||1;
+    canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);
+    canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;
+    renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});
+    await renderTask.promise;renderTask=null;updateControls();savePage();hideLoading();viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});
+  }catch(err){if(err?.name!=='RenderingCancelledException')fail(err?.message||String(err))}
 }
+
+async function open(){if(!raw){fail('В ссылке не указан файл.');return}
+  pdfUrl=new URL('../'+raw.replace(/^\/+/,''),location.href).href;
+  direct.href=pdfUrl;title.textContent=titleParam||decodeURIComponent(raw.split('/').pop());document.title=(titleParam||'PDF')+' · ФФ НГУ';
+  showLoading('Открываю документ…');
+  try{
+    const task=pdfjsLib.getDocument({url:pdfUrl,disableRange:false,disableStream:true,disableAutoFetch:true,rangeChunkSize:262144});
+    task.onProgress=p=>{if(p.total&&p.loaded)loadingText.textContent=`Загрузка: ${Math.min(100,Math.round(p.loaded/p.total*100))}%`};
+    pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,rememberedPage()));updateControls();await renderPage();
+  }catch(err){fail(err?.message||String(err))}
+}
+
+back.onclick=()=>{if(history.length>1)history.back();else location.href='../'+(subject?`#subject=${encodeURIComponent(subject)}`:'')};
+prev.onclick=()=>{if(pageNum>1){pageNum--;renderPage()}};
+next.onclick=()=>{if(pdf&&pageNum<pdf.numPages){pageNum++;renderPage()}};
+pageInput.onchange=()=>{if(!pdf)return;const n=Math.max(1,Math.min(pdf.numPages,Number(pageInput.value)||1));pageNum=n;renderPage()};
+zoomOut.onclick=()=>{fitWidth=false;scale=Math.max(.35,scale-.15);renderPage()};
+zoomIn.onclick=()=>{fitWidth=false;scale=Math.min(4,scale+.15);renderPage()};
+fit.onclick=()=>{fitWidth=true;renderPage()};
+window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'&&pageNum>1){pageNum--;renderPage()}if(e.key==='ArrowRight'&&pdf&&pageNum<pdf.numPages){pageNum++;renderPage()}if(e.key==='Escape')back.click()});
+let resizeTimer;window.addEventListener('resize',()=>{if(!fitWidth)return;clearTimeout(resizeTimer);resizeTimer=setTimeout(renderPage,180)});
+open();
 </script>
 </body>
 </html>
