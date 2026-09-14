@@ -1,15 +1,24 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.5.31)  14 SEP 2026 13:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.5.31)  14 SEP 2026 13:02
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
 **"c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекци
-и/LaTeX/final.tex"
+и/LaTeX/parts/part2.tex"
 
 (c:/Users/Влад/Documents/Курс 4 Семестр 1/ФЭЧ/01_Лекции
-/LaTeX/final.tex
+/LaTeX/parts/part2.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
+
+(C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/subfiles\subfiles.cl
+s
+Document Class: subfiles 2020/11/14 v2.2 Multi-file projects (class)
+Preamble taken from file `../final.tex'
+(C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/import\import.sty
+Package: import 2020/04/01  v 6.2
+)
+(../final.tex
 (C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/base\report.cls
 Document Class: report 2025/01/22 v1.4n Standard LaTeX document class
 (C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/base\size12.clo
@@ -28,13 +37,11 @@ File: size12.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 \belowcaptionskip=\skip50
 \bibindent=\dimen148
 )
-(style/style.tex
+(../style/style.tex
 (C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/subfiles\subfiles.st
 y
 Package: subfiles 2020/11/14 v2.2 Multi-file projects (package)
- (C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/import\import.sty
-Package: import 2020/04/01  v 6.2
-)) (style/packages.tex
+) (../style/packages.tex
 (C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/cmap\cmap.sty
 Package: cmap 2021/02/06 v1.0j CMap support: searchable PDF
 )
@@ -2523,44 +2530,45 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 84.
 )
 \Hy@SectionHShift=\skip136
-)) (style/colors.tex) (style/page-style.tex) (style/boxes.tex)
-(style/figures.tex) (style/headings.tex) (style/commands.tex))
+)) (../style/colors.tex) (../style/page-style.tex)
+(../style/boxes.tex) (../style/figures.tex) (../style/headings.tex)
+(../style/commands.tex))))
 (c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
-\LaTeX\build_final\final.aux
+\LaTeX\build_parts\part2.aux
 Package babel Info: 'russian' activates 'russian' shorthands.
 (babel)             Reported on input line 9.
 )
-\openout1 = `final.aux'.
+\openout1 = `part2.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for T2A/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for LGR/cmr/m/n on input line 8.
-LaTeX Font Info:    Trying to load font information for LGR+cmr on input line 8
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for T2A/cmr/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for LGR/cmr/m/n on input line 5.
+LaTeX Font Info:    Trying to load font information for LGR+cmr on input line 5
 .
 
 (C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/cbfonts-fd\lgrcmr.fd
 File: lgrcmr.fd 2017/07/29 v1.2 Greek European Computer Regular
 )
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Info: Redefining \th on input line 8.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 5.
+LaTeX Font Info:    ... okay on input line 5.
+LaTeX Info: Redefining \th on input line 5.
 
 (C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf
 .mkii
@@ -2595,7 +2603,7 @@ Package caption Info: hyperref package is loaded.
 Package caption Info: listings package is loaded.
 Package caption Info: End \AtBeginDocument code.
 Package translations Info: no dictionary file `translations-basic-dictionary-ru
-ssian.trsl' found. on input line 8.
+ssian.trsl' found. on input line 5.
 
 (C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/translations/dicts\t
 ranslations-basic-dictionary-english.trsl
@@ -2603,25 +2611,38 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 8.
+or `english'. on input line 5.
 
 Package pgfplots notification 'compat/show suggested version=true': you might b
 enefit from \pgfplotsset{compat=1.18} (current compat level: 1.16).
 
 \c@lstlisting=\count457
-Package hyperref Info: Link coloring ON on input line 8.
+Package hyperref Info: Link coloring ON on input line 5.
 
 (c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
-\LaTeX\build_final\final.out)
+\LaTeX\build_parts\part2.out)
 (c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
-\LaTeX\build_final\final.out)
+\LaTeX\build_parts\part2.out)
 \@outlinefile=\write4
-\openout4 = `final.out'.
+\openout4 = `part2.out'.
+
+<<ot1.cmap>><<oml.cmap>><<oms.cmap>><<omx.cmap>>
+LaTeX Font Info:    Trying to load font information for U+msa on input line 18.
 
 
-Overfull \hbox (452.9679pt too wide) in paragraph at lines 34--35
- [][] 
- []
+(C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 18.
+
+
+(C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+
+Package caption Warning: The option `hypcap=true' will be ignored for this
+(caption)                particular \caption on input line 265.
+See the caption package documentation for explanation.
 
 [1
 Non-PDF special ignored!
@@ -2654,148 +2675,24 @@ Non-PDF special ignored!
 {C:/Users/Влад/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/�
 �лад/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/cm-super/cm-super-t2a.enc
 }]
-(c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
-\LaTeX\build_final\final.toc<<ot1.cmap>><<oml.cmap>><<oms.cmap>><<omx.cmap>>
-LaTeX Font Info:    Trying to load font information for U+msa on input line 4.
-
-(C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
-File: umsa.fd 2013/01/14 v3.01 AMS symbols A
-)
-LaTeX Font Info:    Trying to load font information for U+msb on input line 4.
-
-(C:\Users\Влад\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
-File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-))
-\tf@toc=\write5
-\openout5 = `final.toc'.
-
-
-pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.52 \newpage
-              [1
-
-]
-<image/chapter1.png, id=123, 1328.965pt x 1192.455pt>
-File: image/chapter1.png Graphic file (type png)
-<use image/chapter1.png>
-Package pdftex.def Info: image/chapter1.png  used on input line 54.
-(pdftex.def)             Requested size: 317.07614pt x 284.50288pt.
- [2
-
- <./image/chapter1.png>] (parts/part1.tex
-{\cyrillictext \CYRG \cyrl \cyra \cyrv \cyra } 1.
-<image/lecture_01/invariant_mass_peak.png, id=132, 1541.76pt x 1027.84pt>
-File: image/lecture_01/invariant_mass_peak.png Graphic file (type png)
-<use image/lecture_01/invariant_mass_peak.png>
-Package pdftex.def Info: image/lecture_01/invariant_mass_peak.png  used on inpu
-t line 49.
-(pdftex.def)             Requested size: 205.63869pt x 137.08995pt.
-
-Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 62.
-See the caption package documentation for explanation.
-
-[3
-
-
- <./image/lecture_01/invariant_mass_peak.png>]
-<image/lecture_01/delta_electron_scheme.png, id=154, 1541.76pt x 1027.84pt>
-File: image/lecture_01/delta_electron_scheme.png Graphic file (type png)
-<use image/lecture_01/delta_electron_scheme.png>
-Package pdftex.def Info: image/lecture_01/delta_electron_scheme.png  used on in
-put line 103.
-(pdftex.def)             Requested size: 329.02315pt x 219.33452pt.
-
-
-Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 115.
-See the caption package documentation for explanation.
-
-[4 <./image/lecture_01/delta_electron_scheme.png>] [5]
-<image/lecture_01/delta_electron_spectrum.png, id=168, 1541.76pt x 1027.84pt>
-File: image/lecture_01/delta_electron_spectrum.png Graphic file (type png)
-<use image/lecture_01/delta_electron_spectrum.png>
-Package pdftex.def Info: image/lecture_01/delta_electron_spectrum.png  used on 
-input line 380.
-(pdftex.def)             Requested size: 254.98996pt x 169.97836pt.
-
-
-Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 394.
-See the caption package documentation for explanation.
-
-[6]
-<image/lecture_01/particle_through_matter.png, id=176, 1780.6525pt x 890.32625p
-t>
-File: image/lecture_01/particle_through_matter.png Graphic file (type png)
-<use image/lecture_01/particle_through_matter.png>
-Package pdftex.def Info: image/lecture_01/particle_through_matter.png  used on 
-input line 494.
-(pdftex.def)             Requested size: 296.12021pt x 148.05223pt.
-
-
-Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 506.
-See the caption package documentation for explanation.
-
-[7 <./image/lecture_01/delta_electron_spectrum.png>] [8 <./image/lecture_01/par
-ticle_through_matter.png>]
-<image/lecture_01/ionization_losses_curve.png, id=192, 1780.6525pt x 890.32625p
-t>
-File: image/lecture_01/ionization_losses_curve.png Graphic file (type png)
-<use image/lecture_01/ionization_losses_curve.png>
-Package pdftex.def Info: image/lecture_01/ionization_losses_curve.png  used on 
-input line 609.
-(pdftex.def)             Requested size: 296.12021pt x 148.05223pt.
-
-
-Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 621.
-See the caption package documentation for explanation.
-
-[9 <./image/lecture_01/ionization_losses_curve.png>]
-<image/lecture_01/landau_distribution.png, id=200, 1810.765pt x 875.27pt>
-File: image/lecture_01/landau_distribution.png Graphic file (type png)
-<use image/lecture_01/landau_distribution.png>
-Package pdftex.def Info: image/lecture_01/landau_distribution.png  used on inpu
-t line 750.
-(pdftex.def)             Requested size: 296.12021pt x 143.13118pt.
-
-
-Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 764.
-See the caption package documentation for explanation.
-
-[10 <./image/lecture_01/landau_distribution.png>]) [11] (parts/part2.tex
-
-Package caption Warning: The option `hypcap=true' will be ignored for this
-(caption)                particular \caption on input line 265.
-See the caption package documentation for explanation.
-
-[12
-
-]
 
 Package caption Warning: The option `hypcap=true' will be ignored for this
 (caption)                particular \caption on input line 472.
 See the caption package documentation for explanation.
 
-[13]
+[2]
 
 Package caption Warning: The option `hypcap=true' will be ignored for this
 (caption)                particular \caption on input line 688.
 See the caption package documentation for explanation.
 
-[14] [15]
+[3] [4]
 
 Package caption Warning: The option `hypcap=true' will be ignored for this
 (caption)                particular \caption on input line 1109.
 See the caption package documentation for explanation.
 
-[16]
+[5]
 
 Package caption Warning: The option `hypcap=true' will be ignored for this
 (caption)                particular \caption on input line 1431.
@@ -2806,72 +2703,62 @@ Package caption Warning: The option `hypcap=true' will be ignored for this
 (caption)                particular \caption on input line 1590.
 See the caption package documentation for explanation.
 
-[17]
+[6]
 
 Package caption Warning: The option `hypcap=true' will be ignored for this
 (caption)                particular \caption on input line 1926.
 See the caption package documentation for explanation.
 
-[18] [19]
+[7] [8]
 
 Package caption Warning: The option `hypcap=true' will be ignored for this
 (caption)                particular \caption on input line 2163.
 See the caption package documentation for explanation.
 
-) [20]
+[9]
 (c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭЧ\01_Лекции
-\LaTeX\build_final\final.aux)
+\LaTeX\build_parts\part2.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2020/03/25>
  ***********
-Package rerunfilecheck Info: File `final.out' has not changed.
-(rerunfilecheck)             Checksum: 9D4DA269E83EA2E3A7BBAC03D675F0B2;3113.
+Package rerunfilecheck Info: File `part2.out' has not changed.
+(rerunfilecheck)             Checksum: D00FA1B47172B0487C5DB13E042FF075;1278.
  ) 
 Here is how much of TeX's memory you used:
- 62296 strings out of 467871
- 1465736 string characters out of 5416924
- 2231654 words of memory out of 5000000
- 89808 multiletter control sequences out of 15000+600000
- 661778 words of font info for 130 fonts, out of 8000000 for 9000
+ 62148 strings out of 467871
+ 1462154 string characters out of 5416924
+ 2227584 words of memory out of 5000000
+ 89729 multiletter control sequences out of 15000+600000
+ 655177 words of font info for 122 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 96i,7n,110p,1306b,1576s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 116i,7n,127p,1336b,1422s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
-cm/cmbx12.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmex10.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/font
-s/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/Влад/AppData/Local/Programs
-/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/Влад/AppData/Lo
-cal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/Влад
-/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Use
-rs/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.
-pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
-s/cm/cmr12.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/pub
-lic/amsfonts/cm/cmr6.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts
-/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/Влад/AppData/Local/Programs/Mi
-KTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/Влад/AppData/Local/P
-rograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Влад/App
-Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/�
-�лад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
-<C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
-/cmsy8.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/
-cm-super/sfbx1200.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/ty
-pe1/public/cm-super/sfbx1440.pfb><C:/Users/Влад/AppData/Local/Programs/MiKT
-eX/fonts/type1/public/cm-super/sfbx1728.pfb><C:/Users/Влад/AppData/Local/Pr
-ograms/MiKTeX/fonts/type1/public/cm-super/sfbx2488.pfb><C:/Users/Влад/AppDa
-ta/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfbx3583.pfb><C:/Users/В�
-�ад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfcc1728.pfb><C
-:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfrm
-0800.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm
--super/sfrm1000.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type
-1/public/cm-super/sfrm1095.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX
-/fonts/type1/public/cm-super/sfrm1200.pfb><C:/Users/Влад/AppData/Local/Prog
-rams/MiKTeX/fonts/type1/public/cm-super/sfrm1440.pfb><C:/Users/Влад/AppData
-/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfti1440.pfb><C:/Users/Вл�
-�д/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfti1728.pfb>
+cm/cmex10.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/publ
+ic/amsfonts/cm/cmmi10.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/font
+s/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/Влад/AppData/Local/Programs
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/Влад/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/Влад/
+AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/User
+s/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pf
+b><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmr7.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public
+/amsfonts/cm/cmr8.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Влад/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/Влад/AppData/Local/P
+rograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/Влад/AppD
+ata/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/В
+лад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfbx1200.pfb><
+C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfb
+x1728.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/type1/public/c
+m-super/sfrm0800.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTeX/fonts/typ
+e1/public/cm-super/sfrm1000.pfb><C:/Users/Влад/AppData/Local/Programs/MiKTe
+X/fonts/type1/public/cm-super/sfrm1095.pfb><C:/Users/Влад/AppData/Local/Pro
+grams/MiKTeX/fonts/type1/public/cm-super/sfrm1200.pfb>
 Output written on "c:/Users\Влад\Documents\Курс 4 Семестр 1\ФЭ
-Ч\01_Лекции\LaTeX\build_final\final.pdf" (21 pages, 7426115 bytes).
+Ч\01_Лекции\LaTeX\build_parts\part2.pdf" (9 pages, 297534 bytes).
 PDF statistics:
- 376 PDF objects out of 1000 (max. 8388607)
- 67 named destinations out of 1000 (max. 500000)
- 308 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 211 PDF objects out of 1000 (max. 8388607)
+ 32 named destinations out of 1000 (max. 500000)
+ 217 words of extra memory for PDF output out of 10000 (max. 10000000)
 

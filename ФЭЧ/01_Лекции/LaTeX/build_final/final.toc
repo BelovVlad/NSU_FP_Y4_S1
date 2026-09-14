@@ -15,3 +15,17 @@
 \contentsline {section}{\numberline {5}Флуктуации ионизационных потерь}{10}{section.1.5}%
 \contentsline {subsection}{Распределение Ландау}{10}{subsection*.10}%
 \contentsline {subsection}{Наиболее вероятная потеря энергии}{11}{subsection*.11}%
+\contentsline {section}{\numberline {6}Потери энергии электронов}{12}{section.1.6}%
+\contentsline {subsection}{Пробег частицы}{12}{subsection*.12}%
+\contentsline {section}{\numberline {7}Многократное рассеяние}{13}{section.1.7}%
+\contentsline {section}{\numberline {8}Радиационные потери энергии}{13}{section.1.8}%
+\contentsline {subsection}{Тормозное излучение}{14}{subsection*.13}%
+\contentsline {subsection}{Критическая энергия}{14}{subsection*.14}%
+\contentsline {subsection}{Спектр тормозного излучения}{15}{subsection*.15}%
+\contentsline {section}{\numberline {9}Взаимодействие фотонов с веществом}{16}{section.1.9}%
+\contentsline {subsection}{Рождение электрон-позитронной пары}{16}{subsection*.16}%
+\contentsline {subsection}{Фотоэффект}{16}{subsection*.17}%
+\contentsline {subsection}{Комптоновское рассеяние}{17}{subsection*.18}%
+\contentsline {subsection}{Сечение рождения пары}{17}{subsection*.19}%
+\contentsline {section}{\numberline {10}Электрон-фотонный ливень}{18}{section.1.10}%
+\contentsline {subsection}{Развитие электрон-фотонного ливня}{19}{subsection*.20}%
