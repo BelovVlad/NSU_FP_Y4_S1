@@ -385,11 +385,12 @@
 % ------------------------------------------------------------
 
 \newcommand{\practice}[3]{%
-    \phantomsection
+    \setcounter{chapter}{\numexpr#1-1\relax}%
+    \refstepcounter{chapter}%
     \addcontentsline{toc}{chapter}{Практическое занятие №#1. #3}%
     \begin{center}
         {\Large\bfseries Практическое занятие №#1}\\[0.3em]
-        {\small #2}\\[0.6em]
+        \ifstrempty{#2}{}{{\small #2}\\[0.6em]}%
         {\large\bfseries #3}
     \end{center}
     \vspace{0.4em}
