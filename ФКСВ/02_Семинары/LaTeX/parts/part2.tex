@@ -1,0 +1,1971 @@
+% !TeX root = part02.tex
+
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% ============================================================
+% Семинар 2
+% ============================================================
+
+\practice{2}{12.09.2026}{Колебания решётки}
+
+
+% ============================================================
+% Задача 1
+% ============================================================
+
+\section{Задача 1. Линейная цепочка с одним атомом в элементарной ячейке}
+
+\textbf{Условие.}
+Определить собственные моды, то есть фононный спектр,
+бесконечной одномерной цепочки, состоящей из одинаковых
+атомов массы $m$, соединённых одинаковыми пружинками
+жёсткости $\alpha$.
+
+
+% ------------------------------------------------------------
+% РИСУНОК 1
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % Пружины
+        \foreach \x in {-4,-2,0,2}{
+            \draw[
+                draw=rtext,
+                line width=0.8pt
+            ]
+            plot[
+                domain=0:1,
+                samples=70,
+                variable=\t
+            ]
+            (
+                {\x+0.28+1.44*\t},
+                {0.11*sin(1440*\t)}
+            );
+        }
+
+        % Продолжение цепочки
+        \node at (-5.0,0) {$\ldots$};
+        \node at (5.0,0) {$\ldots$};
+
+        % Атомы
+        \foreach \x in {-4,-2,2,4}{
+            \filldraw[
+                fill=rbgsecondary,
+                draw=rtext,
+                line width=0.9pt
+            ]
+            (\x,0) circle (0.28);
+
+            \node[above=5pt] at (\x,0) {$m$};
+        }
+
+        % n-й атом
+        \filldraw[
+            fill=rc3,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,0) circle (0.28);
+
+        \node[above=5pt] at (0,0) {$m$};
+        \node[below=5pt] at (0,0) {$n$};
+
+        % Жёсткости
+        \node[above] at (-3,0.18) {$\alpha$};
+        \node[above] at (-1,0.18) {$\alpha$};
+        \node[above] at (1,0.18) {$\alpha$};
+        \node[above] at (3,0.18) {$\alpha$};
+
+        % Период решётки
+        \draw[
+            <->,
+            draw=rtext,
+            line width=0.8pt
+        ]
+        (-2,-0.85)
+        --
+        (0,-0.85)
+        node[midway,below] {$a$};
+
+        % Смещение
+        \draw[
+            ->,
+            draw=rc3,
+            line width=1.0pt
+        ]
+        (0,0.55)
+        --
+        (0.9,0.55)
+        node[midway,above] {$u_n$};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Одномерная цепочка одинаковых атомов массы $m$,
+        соединённых пружинами жёсткости $\alpha$.
+        Расстояние между соседними положениями равновесия равно $a$,
+        а $u_n$ обозначает смещение $n$-го атома.
+    }
+
+    \label{fig:monoatomic_chain}
+\end{rbox}
+
+
+Рассмотрим одномерную цепочку одинаковых атомов.
+Положение равновесия $n$-го атома можно записать как
+%
+\begin{equation*}
+    x_n=na,
+\end{equation*}
+%
+где $a$ --- период решётки.
+
+Пусть
+%
+\begin{equation*}
+    u_n(t)
+\end{equation*}
+%
+--- смещение $n$-го атома от положения равновесия.
+
+
+% ------------------------------------------------------------
+% Лагранжиан
+% ------------------------------------------------------------
+
+\subsection*{Лагранжиан цепочки}
+
+Кинетическая энергия цепочки равна
+%
+\begin{equation*}
+    T
+    =
+    \sum_n
+    \frac{m}{2}
+    \dot u_n^{\,2}.
+\end{equation*}
+
+При малых колебаниях каждую связь между соседними атомами
+считаем гармонической.
+
+Удлинение пружины между атомами $n$ и $n+1$ равно
+%
+\begin{equation*}
+    u_{n+1}-u_n.
+\end{equation*}
+
+Поэтому потенциальная энергия этой пружины равна
+%
+\begin{equation*}
+    \frac{\alpha}{2}
+    (u_{n+1}-u_n)^2.
+\end{equation*}
+
+Суммарная потенциальная энергия цепочки имеет вид
+%
+\begin{equation*}
+    U
+    =
+    \sum_n
+    \frac{\alpha}{2}
+    (u_n-u_{n+1})^2.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    L=T-U,
+\end{equation*}
+%
+то есть
+%
+\begin{equation*}
+    \boxed{
+        L
+        =
+        \sum_n
+        \left[
+            \frac{m}{2}\dot u_n^{\,2}
+            -
+            \frac{\alpha}{2}
+            (u_n-u_{n+1})^2
+        \right]
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Уравнение движения
+% ------------------------------------------------------------
+
+\subsection*{Уравнение движения}
+
+Для каждой координаты $u_n$ записываем
+уравнение Эйлера--Лагранжа:
+%
+\begin{equation*}
+    \frac{d}{dt}
+    \frac{\partial L}{\partial\dot u_n}
+    -
+    \frac{\partial L}{\partial u_n}
+    =
+    0.
+\end{equation*}
+
+Сначала вычислим производную по скорости:
+%
+\begin{equation*}
+    \frac{\partial L}{\partial\dot u_n}
+    =
+    m\dot u_n,
+\end{equation*}
+%
+поэтому
+%
+\begin{equation*}
+    \frac{d}{dt}
+    \frac{\partial L}{\partial\dot u_n}
+    =
+    m\ddot u_n.
+\end{equation*}
+
+Теперь найдём
+%
+\begin{equation*}
+    \frac{\partial L}{\partial u_n}.
+\end{equation*}
+
+Координата $u_n$ входит сразу в два соседних упругих члена:
+%
+\begin{equation*}
+    -\frac{\alpha}{2}(u_n-u_{n+1})^2,
+    \qquad
+    -\frac{\alpha}{2}(u_{n-1}-u_n)^2.
+\end{equation*}
+
+Поэтому
+%
+\begin{align*}
+    \frac{\partial L}{\partial u_n}
+    &=
+    -\alpha(u_n-u_{n+1})
+    +
+    \alpha(u_{n-1}-u_n)
+    \\
+    &=
+    \alpha
+    \left(
+        u_{n+1}
+        +
+        u_{n-1}
+        -
+        2u_n
+    \right).
+\end{align*}
+
+Таким образом,
+%
+\begin{equation*}
+    \boxed{
+        m\ddot u_n
+        =
+        \alpha
+        \left(
+            u_{n+1}
+            +
+            u_{n-1}
+            -
+            2u_n
+        \right)
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Физический смысл силы
+% ------------------------------------------------------------
+
+\subsection*{Сила, действующая на атом}
+
+Правая часть уравнения движения представляет собой
+результирующую силу двух соседних пружин.
+
+Сила со стороны правой пружины:
+%
+\begin{equation*}
+    F_{n,n+1}
+    =
+    \alpha(u_{n+1}-u_n).
+\end{equation*}
+
+Сила со стороны левой пружины:
+%
+\begin{equation*}
+    F_{n,n-1}
+    =
+    \alpha(u_{n-1}-u_n).
+\end{equation*}
+
+Поэтому
+%
+\begin{align*}
+    F_n
+    &=
+    F_{n,n+1}
+    +
+    F_{n,n-1}
+    \\
+    &=
+    \alpha(u_{n+1}-u_n)
+    +
+    \alpha(u_{n-1}-u_n)
+    \\
+    &=
+    \alpha
+    \left(
+        u_{n+1}
+        +
+        u_{n-1}
+        -
+        2u_n
+    \right).
+\end{align*}
+
+Следовательно,
+%
+\begin{equation*}
+    m\ddot u_n
+    =
+    \alpha
+    \left(
+        u_{n+1}
+        +
+        u_{n-1}
+        -
+        2u_n
+    \right).
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Нормальная мода
+% ------------------------------------------------------------
+
+\subsection*{Нормальная мода}
+
+Ищем нормальное колебание в виде плоской волны:
+%
+\begin{equation*}
+    \boxed{
+        u_n
+        =
+        u
+        e^{-i\omega t+ikna}
+    }.
+\end{equation*}
+
+Здесь $k$ --- волновой вектор колебания,
+$\omega$ --- частота нормальной моды,
+а $a$ --- период цепочки.
+
+Для соседних атомов имеем
+%
+\begin{equation*}
+    u_{n+1}
+    =
+    u_n e^{ika},
+    \qquad
+    u_{n-1}
+    =
+    u_n e^{-ika}.
+\end{equation*}
+
+Кроме того,
+%
+\begin{equation*}
+    \ddot u_n
+    =
+    -\omega^2u_n.
+\end{equation*}
+
+Подставляем всё в уравнение движения:
+%
+\begin{equation*}
+    -m\omega^2u_n
+    =
+    \alpha u_n
+    \left(
+        e^{ika}
+        +
+        e^{-ika}
+        -
+        2
+    \right).
+\end{equation*}
+
+Сокращаем на ненулевую амплитуду $u_n$:
+%
+\begin{equation*}
+    -m\omega^2
+    =
+    \alpha
+    \left(
+        e^{ika}
+        +
+        e^{-ika}
+        -
+        2
+    \right).
+\end{equation*}
+
+Используем
+%
+\begin{equation*}
+    e^{ika}+e^{-ika}
+    =
+    2\cos ka.
+\end{equation*}
+
+Тогда
+%
+\begin{equation*}
+    -m\omega^2
+    =
+    2\alpha
+    \left(
+        \cos ka-1
+    \right),
+\end{equation*}
+%
+или
+%
+\begin{equation*}
+    m\omega^2
+    =
+    2\alpha
+    \left(
+        1-\cos ka
+    \right).
+\end{equation*}
+
+Используем тождество
+%
+\begin{equation*}
+    1-\cos x
+    =
+    2\sin^2\frac{x}{2}.
+\end{equation*}
+
+Получаем
+%
+\begin{equation*}
+    \boxed{
+        \omega^2(k)
+        =
+        \frac{4\alpha}{m}
+        \sin^2\frac{ka}{2}
+    }.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    \boxed{
+        \omega(k)
+        =
+        2\sqrt{\frac{\alpha}{m}}
+        \left|
+            \sin\frac{ka}{2}
+        \right|
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Периодичность спектра
+% ------------------------------------------------------------
+
+\subsection*{Периодичность спектра}
+
+Поскольку
+%
+\begin{equation*}
+    \sin^2
+    \left(
+        \frac{ka}{2}+\pi
+    \right)
+    =
+    \sin^2\frac{ka}{2},
+\end{equation*}
+%
+спектр периодичен по $k$:
+%
+\begin{equation*}
+    \boxed{
+        \omega
+        \left(
+            k+\frac{2\pi}{a}
+        \right)
+        =
+        \omega(k)
+    }.
+\end{equation*}
+
+Поэтому достаточно рассматривать первую зону Бриллюэна:
+%
+\begin{equation*}
+    \boxed{
+        -\frac{\pi}{a}
+        \leq
+        k
+        \leq
+        \frac{\pi}{a}
+    }.
+\end{equation*}
+
+В центре зоны,
+%
+\begin{equation*}
+    k=0,
+\end{equation*}
+%
+имеем
+%
+\begin{equation*}
+    \omega(0)=0.
+\end{equation*}
+
+На границе зоны,
+%
+\begin{equation*}
+    k=\pm\frac{\pi}{a},
+\end{equation*}
+%
+частота достигает максимального значения:
+%
+\begin{equation*}
+    \boxed{
+        \omega_{\max}
+        =
+        2\sqrt{\frac{\alpha}{m}}
+    }.
+\end{equation*}
+
+Или
+%
+\begin{equation*}
+    \boxed{
+        \omega_{\max}^{\,2}
+        =
+        \frac{4\alpha}{m}
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% РИСУНОК 2
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        x=0.72cm,
+        y=1.45cm,
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % Оси
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (-6.8,0)
+        --
+        (6.9,0)
+        node[right] {$k$};
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,0)
+        --
+        (0,2.25)
+        node[above] {$\omega$};
+
+        % Первая зона Бриллюэна
+        \draw[
+            draw=rtext,
+            dashed,
+            opacity=0.65
+        ]
+        (-3.1416,0)
+        --
+        (-3.1416,1.95);
+
+        \draw[
+            draw=rtext,
+            dashed,
+            opacity=0.65
+        ]
+        (3.1416,0)
+        --
+        (3.1416,1.95);
+
+        % Дисперсионная кривая
+        \draw[
+            draw=rc3,
+            line width=1.2pt,
+            domain=-6.2832:6.2832,
+            samples=250,
+            variable=\x
+        ]
+        plot
+        (
+            {\x},
+            {1.75*abs(sin(deg(\x/2)))}
+        );
+
+        % Деления
+        \foreach \x/\lab in {
+            -6.2832/{-\frac{2\pi}{a}},
+            -3.1416/{-\frac{\pi}{a}},
+             3.1416/{\frac{\pi}{a}},
+             6.2832/{\frac{2\pi}{a}}
+        }{
+            \draw[
+                draw=rtext,
+                line width=0.7pt
+            ]
+            (\x,0.06)
+            --
+            (\x,-0.06);
+
+            \node[below=3pt] at (\x,0) {$\lab$};
+        }
+
+        % Максимальная частота
+        \draw[
+            draw=rtext,
+            dashed,
+            opacity=0.55
+        ]
+        (-6.2,1.75)
+        --
+        (6.2,1.75);
+
+        \node[
+            left
+        ]
+        at (0,1.75)
+        {$2\sqrt{\alpha/m}$};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Дисперсионная зависимость
+        $\omega(k)=2\sqrt{\alpha/m}\,
+        |\sin(ka/2)|$
+        для одноатомной линейной цепочки.
+        Пунктиром отмечены границы первой зоны Бриллюэна.
+    }
+
+    \label{fig:monoatomic_dispersion}
+\end{rbox}
+
+
+Таким образом, спектр распространяющихся колебаний ограничен:
+%
+\begin{equation*}
+    \boxed{
+        0
+        \leq
+        \omega
+        \leq
+        2\sqrt{\frac{\alpha}{m}}
+    }.
+\end{equation*}
+
+Частоты
+%
+\begin{equation*}
+    \omega>\omega_{\max}
+\end{equation*}
+%
+не соответствуют распространяющимся нормальным модам
+идеальной цепочки.
+
+
+% ============================================================
+% Задача 2
+% ============================================================
+
+\section{Задача 2. Примесный атом в линейной цепочке: другая масса}
+
+\textbf{Условие.}
+Масса $M$ одного из атомов цепочки отличается
+от массы остальных атомов:
+%
+\begin{equation*}
+    M\neq m.
+\end{equation*}
+%
+Определить, как наличие примеси влияет на фононный спектр,
+и найти условие существования локализованного состояния.
+
+
+% ------------------------------------------------------------
+% РИСУНОК 3
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % Пружины
+        \foreach \x in {-4,-2,0,2}{
+            \draw[
+                draw=rtext,
+                line width=0.8pt
+            ]
+            plot[
+                domain=0:1,
+                samples=70,
+                variable=\t
+            ]
+            (
+                {\x+0.28+1.44*\t},
+                {0.11*sin(1440*\t)}
+            );
+        }
+
+        % Края цепочки
+        \node at (-5.0,0) {$\ldots$};
+        \node at (5.0,0) {$\ldots$};
+
+        % Обычные атомы
+        \foreach \x in {-4,-2,2,4}{
+            \filldraw[
+                fill=rbgsecondary,
+                draw=rtext,
+                line width=0.9pt
+            ]
+            (\x,0) circle (0.28);
+
+            \node[above=5pt] at (\x,0) {$m$};
+        }
+
+        % Примесь
+        \filldraw[
+            fill=rc3,
+            draw=rtext,
+            line width=1.0pt
+        ]
+        (0,0) circle (0.34);
+
+        \node[above=6pt] at (0,0) {$M$};
+        \node[below=6pt] at (0,0) {$n=0$};
+
+        % Жёсткости
+        \node[above] at (-3,0.18) {$\alpha$};
+        \node[above] at (-1,0.18) {$\alpha$};
+        \node[above] at (1,0.18) {$\alpha$};
+        \node[above] at (3,0.18) {$\alpha$};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Одномерная цепочка с примесным атомом массы $M$.
+        Все остальные атомы имеют массу $m$,
+        а жёсткости всех пружин одинаковы и равны $\alpha$.
+    }
+
+    \label{fig:mass_impurity}
+\end{rbox}
+
+
+Поместим примесный атом в узел
+%
+\begin{equation*}
+    n=0.
+\end{equation*}
+
+Для всех обычных атомов,
+%
+\begin{equation*}
+    n\neq0,
+\end{equation*}
+%
+уравнение движения имеет прежний вид:
+%
+\begin{equation*}
+    \boxed{
+        m\ddot u_n
+        =
+        \alpha
+        \left(
+            u_{n+1}
+            +
+            u_{n-1}
+            -
+            2u_n
+        \right)
+    }.
+\end{equation*}
+
+Для примесного атома получаем
+%
+\begin{equation*}
+    \boxed{
+        M\ddot u_0
+        =
+        \alpha
+        \left(
+            u_1
+            +
+            u_{-1}
+            -
+            2u_0
+        \right)
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Локализованная мода
+% ------------------------------------------------------------
+
+\subsection*{Локализованная мода}
+
+Для локализованного состояния амплитуда колебаний должна
+уменьшаться при удалении от примеси.
+
+Ищем решение в виде
+%
+\begin{equation*}
+    \boxed{
+        u_n
+        =
+        u_0
+        (-1)^n
+        e^{-\chi a|n|}
+        e^{-i\omega t}
+    },
+    \qquad
+    \chi>0.
+\end{equation*}
+
+Множитель
+%
+\begin{equation*}
+    e^{-\chi a|n|}
+\end{equation*}
+%
+отвечает за экспоненциальное затухание амплитуды
+при удалении от примесного атома.
+
+Множитель
+%
+\begin{equation*}
+    (-1)^n
+\end{equation*}
+%
+означает, что соседние атомы колеблются в противофазе.
+
+Такое решение можно представить как продолжение обычной
+плоской волны в область комплексных $k$:
+%
+\begin{equation*}
+    k
+    =
+    \frac{\pi}{a}
+    +
+    i\chi.
+\end{equation*}
+
+Действительно,
+%
+\begin{align*}
+    e^{ikna}
+    &=
+    e^{i(\pi/a+i\chi)na}
+    \\
+    &=
+    e^{i\pi n}
+    e^{-\chi na}
+    \\
+    &=
+    (-1)^n
+    e^{-\chi na}.
+\end{align*}
+
+Именно поэтому для локализованной моды появляется
+дополнительный множитель $(-1)^n$.
+
+
+% ------------------------------------------------------------
+% Уравнение для обычных атомов
+% ------------------------------------------------------------
+
+\subsection*{Уравнение вдали от примеси}
+
+Рассмотрим сначала область
+%
+\begin{equation*}
+    n>0.
+\end{equation*}
+
+Тогда
+%
+\begin{equation*}
+    u_{n+1}
+    =
+    -u_n e^{-\chi a},
+    \qquad
+    u_{n-1}
+    =
+    -u_n e^{\chi a}.
+\end{equation*}
+
+Кроме того,
+%
+\begin{equation*}
+    \ddot u_n
+    =
+    -\omega^2u_n.
+\end{equation*}
+
+Подставляем в уравнение движения обычного атома:
+%
+\begin{equation*}
+    -m\omega^2u_n
+    =
+    \alpha
+    \left(
+        -u_ne^{-\chi a}
+        -
+        u_ne^{\chi a}
+        -
+        2u_n
+    \right).
+\end{equation*}
+
+После сокращения на $u_n$:
+%
+\begin{equation*}
+    \boxed{
+        m\omega^2
+        =
+        \alpha
+        \left(
+            e^{\chi a}
+            +
+            e^{-\chi a}
+            +
+            2
+        \right)
+    }.
+\end{equation*}
+
+Аналогичное уравнение получается и для области $n<0$.
+
+
+% ------------------------------------------------------------
+% Уравнение для примесного атома
+% ------------------------------------------------------------
+
+\subsection*{Уравнение для примесного атома}
+
+Для ближайших соседей примеси имеем
+%
+\begin{equation*}
+    u_1
+    =
+    u_{-1}
+    =
+    -u_0e^{-\chi a}.
+\end{equation*}
+
+Подставляем это в уравнение для $n=0$:
+%
+\begin{equation*}
+    -M\omega^2u_0
+    =
+    \alpha
+    \left(
+        -2u_0e^{-\chi a}
+        -
+        2u_0
+    \right).
+\end{equation*}
+
+После сокращения:
+%
+\begin{equation*}
+    \boxed{
+        M\omega^2
+        =
+        2\alpha
+        \left(
+            1+e^{-\chi a}
+        \right)
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Условие локализации
+% ------------------------------------------------------------
+
+\subsection*{Условие существования локализованного состояния}
+
+Получены два выражения:
+%
+\begin{equation*}
+    m\omega^2
+    =
+    \alpha
+    \left(
+        e^{\chi a}
+        +
+        e^{-\chi a}
+        +
+        2
+    \right),
+\end{equation*}
+%
+и
+%
+\begin{equation*}
+    M\omega^2
+    =
+    2\alpha
+    \left(
+        1+e^{-\chi a}
+    \right).
+\end{equation*}
+
+Делим второе равенство на первое:
+%
+\begin{equation*}
+    \frac{M}{m}
+    =
+    \frac{
+        2(1+e^{-\chi a})
+    }{
+        e^{\chi a}
+        +
+        e^{-\chi a}
+        +
+        2
+    }.
+\end{equation*}
+
+Заметим, что
+%
+\begin{equation*}
+    e^{\chi a}
+    +
+    e^{-\chi a}
+    +
+    2
+    =
+    \left(
+        1+e^{\chi a}
+    \right)
+    \left(
+        1+e^{-\chi a}
+    \right).
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    \frac{M}{m}
+    =
+    \frac{2}{1+e^{\chi a}}.
+\end{equation*}
+
+Отсюда
+%
+\begin{equation*}
+    1+e^{\chi a}
+    =
+    \frac{2m}{M},
+\end{equation*}
+%
+и
+%
+\begin{equation*}
+    \boxed{
+        e^{\chi a}
+        =
+        \frac{2m}{M}-1
+    }.
+\end{equation*}
+
+Или
+%
+\begin{equation*}
+    \boxed{
+        \chi a
+        =
+        \ln
+        \left(
+            \frac{2m}{M}-1
+        \right)
+    }.
+\end{equation*}
+
+Для локализованного состояния необходимо
+%
+\begin{equation*}
+    \chi>0.
+\end{equation*}
+
+Значит,
+%
+\begin{equation*}
+    e^{\chi a}>1.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    \frac{2m}{M}-1>1,
+\end{equation*}
+%
+откуда
+%
+\begin{equation*}
+    \boxed{
+        M<m
+    }.
+\end{equation*}
+
+Таким образом, локализованная мода существует,
+если примесный атом легче атомов основной цепочки.
+
+
+% ------------------------------------------------------------
+% Частота локализованной моды
+% ------------------------------------------------------------
+
+\subsection*{Частота локализованного состояния}
+
+Используем
+%
+\begin{equation*}
+    e^{\chi a}
+    =
+    \frac{2m-M}{M}.
+\end{equation*}
+
+Тогда
+%
+\begin{align*}
+    \omega_{\mathrm{loc}}^{\,2}
+    &=
+    \frac{\alpha}{m}
+    \left(
+        e^{\chi a}
+        +
+        e^{-\chi a}
+        +
+        2
+    \right)
+    \\
+    &=
+    \frac{\alpha}{m}
+    \left(
+        \frac{2m-M}{M}
+        +
+        \frac{M}{2m-M}
+        +
+        2
+    \right).
+\end{align*}
+
+Приводим выражение в скобках к общему знаменателю:
+%
+\begin{align*}
+    \frac{2m-M}{M}
+    +
+    \frac{M}{2m-M}
+    +
+    2
+    &=
+    \frac{
+        (2m-M)^2
+        +
+        M^2
+        +
+        2M(2m-M)
+    }{
+        M(2m-M)
+    }
+    \\
+    &=
+    \frac{4m^2}{
+        M(2m-M)
+    }.
+\end{align*}
+
+Следовательно,
+%
+\begin{equation*}
+    \boxed{
+        \omega_{\mathrm{loc}}^{\,2}
+        =
+        \frac{
+            4\alpha m
+        }{
+            M(2m-M)
+        }
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Положение относительно фононной зоны
+% ------------------------------------------------------------
+
+\subsection*{Положение локализованной моды относительно фононной зоны}
+
+Для идеальной цепочки
+%
+\begin{equation*}
+    \omega_{\max}^{\,2}
+    =
+    \frac{4\alpha}{m}.
+\end{equation*}
+
+Рассмотрим отношение
+%
+\begin{equation*}
+    \frac{
+        \omega_{\mathrm{loc}}^{\,2}
+    }{
+        \omega_{\max}^{\,2}
+    }
+    =
+    \frac{
+        m^2
+    }{
+        M(2m-M)
+    }.
+\end{equation*}
+
+Сравним числитель и знаменатель:
+%
+\begin{align*}
+    m^2
+    -
+    M(2m-M)
+    &=
+    m^2
+    -
+    2mM
+    +
+    M^2
+    \\
+    &=
+    (m-M)^2.
+\end{align*}
+
+При
+%
+\begin{equation*}
+    M\neq m
+\end{equation*}
+%
+имеем
+%
+\begin{equation*}
+    (m-M)^2>0.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    \boxed{
+        \omega_{\mathrm{loc}}
+        >
+        \omega_{\max}
+    }.
+\end{equation*}
+
+То есть локализованная примесная мода находится
+выше полосы частот распространяющихся фононов идеальной цепочки.
+
+
+% ============================================================
+% Задача 3
+% ============================================================
+
+\section{Задача 3. Дефект жёсткости в линейной цепочке}
+
+\textbf{Условие.}
+Все атомы цепочки имеют одинаковую массу $m$,
+но жёсткость одной из пружин отличается от остальных.
+Пусть её жёсткость равна $\alpha_0$,
+тогда как все остальные связи имеют жёсткость $\alpha$.
+Определить условие существования локализованного состояния.
+
+
+% ------------------------------------------------------------
+% РИСУНОК 4
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % Обычная левая пружина
+        \draw[
+            draw=rtext,
+            line width=0.8pt
+        ]
+        plot[
+            domain=0:1,
+            samples=70,
+            variable=\t
+        ]
+        (
+            {-3.72+1.44*\t},
+            {0.11*sin(1440*\t)}
+        );
+
+        % Обычная пружина слева от дефекта
+        \draw[
+            draw=rtext,
+            line width=0.8pt
+        ]
+        plot[
+            domain=0:1,
+            samples=70,
+            variable=\t
+        ]
+        (
+            {-1.72+1.44*\t},
+            {0.11*sin(1440*\t)}
+        );
+
+        % Дефектная пружина
+        \draw[
+            draw=rc3,
+            line width=1.3pt
+        ]
+        plot[
+            domain=0:1,
+            samples=70,
+            variable=\t
+        ]
+        (
+            {0.28+1.44*\t},
+            {0.13*sin(1440*\t)}
+        );
+
+        % Обычная правая пружина
+        \draw[
+            draw=rtext,
+            line width=0.8pt
+        ]
+        plot[
+            domain=0:1,
+            samples=70,
+            variable=\t
+        ]
+        (
+            {2.28+1.44*\t},
+            {0.11*sin(1440*\t)}
+        );
+
+        % Края
+        \node at (-5.0,0) {$\ldots$};
+        \node at (5.0,0) {$\ldots$};
+
+        % Атомы
+        \foreach \x in {-4,-2,0,2,4}{
+            \filldraw[
+                fill=rbgsecondary,
+                draw=rtext,
+                line width=0.9pt
+            ]
+            (\x,0) circle (0.28);
+
+            \node[above=5pt] at (\x,0) {$m$};
+        }
+
+        % Номера около дефекта
+        \node[below=5pt] at (0,0) {$0$};
+        \node[below=5pt] at (2,0) {$1$};
+
+        % Жёсткости
+        \node[above] at (-3,0.18) {$\alpha$};
+        \node[above] at (-1,0.18) {$\alpha$};
+        \node[above,text=rc3] at (1,0.20) {$\alpha_0$};
+        \node[above] at (3,0.18) {$\alpha$};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Одномерная цепочка одинаковых атомов массы $m$
+        с одной дефектной связью.
+        Обычные пружины имеют жёсткость $\alpha$,
+        а пружина между атомами $0$ и $1$ ---
+        жёсткость $\alpha_0$.
+    }
+
+    \label{fig:spring_impurity}
+\end{rbox}
+
+
+Для атомов, не соседствующих с дефектной пружиной,
+уравнение движения остаётся обычным:
+%
+\begin{equation*}
+    \boxed{
+        m\ddot u_n
+        =
+        \alpha
+        \left(
+            u_{n+1}
+            +
+            u_{n-1}
+            -
+            2u_n
+        \right)
+    },
+    \qquad
+    n\neq0,1.
+\end{equation*}
+
+Для атома $n=0$:
+%
+\begin{equation*}
+    \boxed{
+        m\ddot u_0
+        =
+        \alpha(u_{-1}-u_0)
+        +
+        \alpha_0(u_1-u_0)
+    }.
+\end{equation*}
+
+Для атома $n=1$:
+%
+\begin{equation*}
+    \boxed{
+        m\ddot u_1
+        =
+        \alpha_0(u_0-u_1)
+        +
+        \alpha(u_2-u_1)
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Затухающая мода
+% ------------------------------------------------------------
+
+\subsection*{Затухающая мода}
+
+Как и в предыдущей задаче,
+для локализованного состояния вне дефекта берём решение,
+амплитуда которого экспоненциально уменьшается.
+
+Обозначим
+%
+\begin{equation*}
+    q=e^{-\chi a},
+    \qquad
+    0<q<1.
+\end{equation*}
+
+Тогда для ближайших к дефекту атомов
+%
+\begin{equation*}
+    u_{-1}
+    =
+    -q\,u_0,
+    \qquad
+    u_2
+    =
+    -q\,u_1.
+\end{equation*}
+
+Знак минус снова соответствует чередованию знака
+смещений соседних атомов.
+
+Вдали от дефекта получаем то же соотношение,
+что и в предыдущей задаче:
+%
+\begin{equation*}
+    \boxed{
+        m\omega^2
+        =
+        \alpha
+        \left(
+            e^{\chi a}
+            +
+            e^{-\chi a}
+            +
+            2
+        \right)
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Граничные уравнения
+% ------------------------------------------------------------
+
+\subsection*{Уравнения для атомов около дефекта}
+
+Положим
+%
+\begin{equation*}
+    u_0(t)
+    =
+    U_0e^{-i\omega t},
+    \qquad
+    u_1(t)
+    =
+    U_1e^{-i\omega t}.
+\end{equation*}
+
+Для атома $0$ имеем
+%
+\begin{equation*}
+    -m\omega^2U_0
+    =
+    \alpha(-qU_0-U_0)
+    +
+    \alpha_0(U_1-U_0).
+\end{equation*}
+
+После переноса знаков:
+%
+\begin{equation*}
+    m\omega^2U_0
+    =
+    \alpha(1+q)U_0
+    +
+    \alpha_0(U_0-U_1).
+\end{equation*}
+
+Аналогично для атома $1$:
+%
+\begin{equation*}
+    m\omega^2U_1
+    =
+    \alpha(1+q)U_1
+    +
+    \alpha_0(U_1-U_0).
+\end{equation*}
+
+Получаем систему
+%
+\begin{equation*}
+    \boxed{
+    \begin{aligned}
+        m\omega^2U_0
+        &=
+        \alpha(1+q)U_0
+        +
+        \alpha_0(U_0-U_1),
+        \\
+        m\omega^2U_1
+        &=
+        \alpha(1+q)U_1
+        +
+        \alpha_0(U_1-U_0).
+    \end{aligned}
+    }
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Симметричная и антисимметричная моды
+% ------------------------------------------------------------
+
+\subsection*{Симметрия относительно дефектной связи}
+
+Система симметрична относительно середины дефектной пружины,
+поэтому возможны два типа решения.
+
+Для симметричной моды
+%
+\begin{equation*}
+    U_1=U_0.
+\end{equation*}
+
+Тогда дефектная пружина не растягивается:
+%
+\begin{equation*}
+    U_1-U_0=0,
+\end{equation*}
+%
+и параметр $\alpha_0$ вообще выпадает из уравнения.
+
+Такое решение не даёт искомой локализованной моды,
+связанной с дефектной пружиной.
+
+Поэтому рассматриваем антисимметричную моду:
+%
+\begin{equation*}
+    \boxed{
+        U_1=-U_0
+    }.
+\end{equation*}
+
+Тогда
+%
+\begin{equation*}
+    U_0-U_1
+    =
+    2U_0.
+\end{equation*}
+
+Первое граничное уравнение принимает вид
+%
+\begin{equation*}
+    \boxed{
+        m\omega^2
+        =
+        \alpha
+        \left(
+            1+e^{-\chi a}
+        \right)
+        +
+        2\alpha_0
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Условие на chi
+% ------------------------------------------------------------
+
+\subsection*{Условие локализации}
+
+С другой стороны, вдали от дефекта
+%
+\begin{equation*}
+    m\omega^2
+    =
+    \alpha
+    \left(
+        e^{\chi a}
+        +
+        e^{-\chi a}
+        +
+        2
+    \right).
+\end{equation*}
+
+Приравниваем два выражения:
+%
+\begin{equation*}
+    \alpha
+    \left(
+        e^{\chi a}
+        +
+        e^{-\chi a}
+        +
+        2
+    \right)
+    =
+    \alpha
+    \left(
+        1+e^{-\chi a}
+    \right)
+    +
+    2\alpha_0.
+\end{equation*}
+
+Сокращаем одинаковые слагаемые:
+%
+\begin{equation*}
+    \alpha
+    \left(
+        e^{\chi a}+1
+    \right)
+    =
+    2\alpha_0.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    \boxed{
+        e^{\chi a}
+        =
+        \frac{2\alpha_0}{\alpha}-1
+    }.
+\end{equation*}
+
+Или
+%
+\begin{equation*}
+    \boxed{
+        \chi a
+        =
+        \ln
+        \left(
+            \frac{2\alpha_0}{\alpha}-1
+        \right)
+    }.
+\end{equation*}
+
+Для локализованного состояния необходимо
+%
+\begin{equation*}
+    \chi>0.
+\end{equation*}
+
+Поэтому
+%
+\begin{equation*}
+    e^{\chi a}>1.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    \frac{2\alpha_0}{\alpha}-1>1,
+\end{equation*}
+%
+откуда
+%
+\begin{equation*}
+    \boxed{
+        \alpha_0>\alpha
+    }.
+\end{equation*}
+
+Таким образом, локализованное состояние возникает,
+если дефектная связь жёстче остальных связей цепочки.
+
+
+% ------------------------------------------------------------
+% Частота локализованной моды
+% ------------------------------------------------------------
+
+\subsection*{Частота локализованной моды}
+
+Введём обозначение
+%
+\begin{equation*}
+    x
+    =
+    \frac{\alpha_0}{\alpha}.
+\end{equation*}
+
+Тогда
+%
+\begin{equation*}
+    e^{\chi a}
+    =
+    2x-1.
+\end{equation*}
+
+Используем выражение для частоты:
+%
+\begin{equation*}
+    \omega_{\mathrm{loc}}^{\,2}
+    =
+    \frac{\alpha}{m}
+    \left(
+        e^{\chi a}
+        +
+        e^{-\chi a}
+        +
+        2
+    \right).
+\end{equation*}
+
+Подставляем
+%
+\begin{equation*}
+    e^{\chi a}=2x-1,
+    \qquad
+    e^{-\chi a}
+    =
+    \frac{1}{2x-1}.
+\end{equation*}
+
+Получаем
+%
+\begin{equation*}
+    \omega_{\mathrm{loc}}^{\,2}
+    =
+    \frac{\alpha}{m}
+    \left(
+        2x-1
+        +
+        \frac{1}{2x-1}
+        +
+        2
+    \right).
+\end{equation*}
+
+Приводим к общему знаменателю:
+%
+\begin{align*}
+    2x-1
+    +
+    \frac{1}{2x-1}
+    +
+    2
+    &=
+    2x+1
+    +
+    \frac{1}{2x-1}
+    \\
+    &=
+    \frac{
+        (2x+1)(2x-1)+1
+    }{
+        2x-1
+    }
+    \\
+    &=
+    \frac{4x^2}{2x-1}.
+\end{align*}
+
+Следовательно,
+%
+\begin{equation*}
+    \boxed{
+        \omega_{\mathrm{loc}}^{\,2}
+        =
+        \frac{4\alpha}{m}
+        \frac{x^2}{2x-1}
+    },
+    \qquad
+    x=\frac{\alpha_0}{\alpha}.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Сравнение с верхней границей зоны
+% ------------------------------------------------------------
+
+\subsection*{Положение связанного состояния}
+
+Для идеальной цепочки
+%
+\begin{equation*}
+    \omega_{\max}^{\,2}
+    =
+    \frac{4\alpha}{m}.
+\end{equation*}
+
+Поэтому
+%
+\begin{equation*}
+    \frac{
+        \omega_{\mathrm{loc}}^{\,2}
+    }{
+        \omega_{\max}^{\,2}
+    }
+    =
+    \frac{x^2}{2x-1}.
+\end{equation*}
+
+При существовании локализованного состояния
+%
+\begin{equation*}
+    x>1.
+\end{equation*}
+
+Сравним это отношение с единицей:
+%
+\begin{equation*}
+    \frac{x^2}{2x-1}>1
+    \quad\Longleftrightarrow\quad
+    x^2>2x-1.
+\end{equation*}
+
+Переносим всё в левую часть:
+%
+\begin{equation*}
+    x^2-2x+1>0.
+\end{equation*}
+
+То есть
+%
+\begin{equation*}
+    (x-1)^2>0.
+\end{equation*}
+
+Для дефектной связи
+%
+\begin{equation*}
+    x\neq1,
+\end{equation*}
+%
+поэтому
+%
+\begin{equation*}
+    \boxed{
+        \omega_{\mathrm{loc}}
+        >
+        \omega_{\max}
+    }.
+\end{equation*}
+
+Следовательно, локализованное состояние,
+если оно существует, лежит выше разрешённой фононной полосы
+идеальной одномерной цепочки.
+
+\end{document}
