@@ -20,7 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          lfs: true
           fetch-depth: 1
 
       - uses: actions/setup-python@v5
@@ -39,5 +38,7 @@ jobs:
             echo "Search index unchanged"
           else
             git commit -m "Update search index"
-            git push
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
           fi
