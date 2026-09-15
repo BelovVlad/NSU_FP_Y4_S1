@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -57,36 +58,71 @@ def section_for(path: Path) -> str:
     return raw or "Материалы"
 
 
-def is_lfs_pointer(path: Path) -> bool:
+def lfs_pointer_text(path: Path) -> str | None:
     try:
         if path.stat().st_size > 2048:
-            return False
-        return path.read_text("utf-8", errors="ignore").startswith(
-            "version https://git-lfs.github.com/spec/v1"
-        )
+            return None
+        text = path.read_text("utf-8", errors="ignore")
+        return text if text.startswith("version https://git-lfs.github.com/spec/v1") else None
     except OSError:
-        return False
+        return None
+
+
+def actual_size(path: Path, pointer: str | None = None) -> int:
+    if pointer:
+        match = re.search(r"(?m)^size\s+(\d+)\s*$", pointer)
+        if match:
+            return int(match.group(1))
+    try:
+        return path.stat().st_size
+    except OSError:
+        return 0
+
+
+def last_commit_iso(rel: Path) -> str | None:
+    try:
+        value = subprocess.check_output(
+            ["git", "log", "-1", "--format=%cI", "--", rel.as_posix()],
+            cwd=ROOT,
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+        return value or None
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+
+def base_record(rel: Path, kind: str) -> dict:
+    full = ROOT / rel
+    pointer = lfs_pointer_text(full)
+    return {
+        "path": rel.as_posix(),
+        "type": kind,
+        "title": title_for(rel),
+        "subject": rel.parts[0],
+        "section": section_for(rel),
+        "size": actual_size(full, pointer),
+        "updated_at": last_commit_iso(rel),
+        "indexed": True,
+        "pages": [],
+        "_pointer": pointer,
+    }
 
 
 def pdf_record(rel: Path) -> dict:
     full = ROOT / rel
-    record = {
-        "path": rel.as_posix(),
-        "type": "pdf",
-        "title": title_for(rel),
-        "subject": rel.parts[0],
-        "section": section_for(rel),
-        "indexed": True,
-        "pages": [],
-    }
+    record = base_record(rel, "pdf")
+    pointer = record.pop("_pointer", None)
+    record["page_count"] = None
 
-    if is_lfs_pointer(full):
+    if pointer:
         record["indexed"] = False
         record["reason"] = "lfs"
         return record
 
     try:
         with fitz.open(full) as doc:
+            record["page_count"] = doc.page_count
             for number, page in enumerate(doc, 1):
                 text = clean_text(page.get_text("text", sort=True))
                 if text:
@@ -99,18 +135,14 @@ def pdf_record(rel: Path) -> dict:
 
 def notebook_record(rel: Path) -> dict:
     full = ROOT / rel
-    record = {
-        "path": rel.as_posix(),
-        "type": "ipynb",
-        "title": title_for(rel),
-        "subject": rel.parts[0],
-        "section": section_for(rel),
-        "indexed": True,
-        "pages": [],
-    }
+    record = base_record(rel, "ipynb")
+    record.pop("_pointer", None)
+    record["cell_count"] = None
     try:
         data = json.loads(full.read_text("utf-8"))
-        for number, cell in enumerate(data.get("cells", []), 1):
+        cells = data.get("cells", [])
+        record["cell_count"] = len(cells)
+        for number, cell in enumerate(cells, 1):
             source = cell.get("source", [])
             if isinstance(source, list):
                 source = "".join(source)
@@ -138,21 +170,37 @@ def iter_materials(subject: str):
             yield rel
 
 
+def compact_metadata(record: dict) -> dict:
+    keys = (
+        "path",
+        "type",
+        "title",
+        "subject",
+        "section",
+        "size",
+        "updated_at",
+        "page_count",
+        "cell_count",
+        "indexed",
+    )
+    return {key: record[key] for key in keys if key in record}
+
+
 def main() -> None:
     OUT.mkdir(exist_ok=True)
     for old in OUT.glob("part-*.json"):
         old.unlink()
 
-    manifest = {
-        "version": 1,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "shards": [],
-    }
+    generated_at = datetime.now(timezone.utc).isoformat()
+    manifest = {"version": 2, "generated_at": generated_at, "shards": []}
+    all_metadata: list[dict] = []
 
     for shard_no, subject in enumerate(ORDER):
         records = []
         for rel in iter_materials(subject) or []:
-            records.append(pdf_record(rel) if rel.suffix.lower() == ".pdf" else notebook_record(rel))
+            record = pdf_record(rel) if rel.suffix.lower() == ".pdf" else notebook_record(rel)
+            records.append(record)
+            all_metadata.append(compact_metadata(record))
 
         if not records:
             continue
@@ -173,6 +221,14 @@ def main() -> None:
 
     (OUT / "manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, separators=(",", ":")), "utf-8"
+    )
+    (OUT / "files.json").write_text(
+        json.dumps(
+            {"version": 1, "generated_at": generated_at, "files": all_metadata},
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ),
+        "utf-8",
     )
 
     total_records = sum(s["records"] for s in manifest["shards"])
