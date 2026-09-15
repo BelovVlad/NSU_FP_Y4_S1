@@ -64,6 +64,7 @@ const params=new URLSearchParams(location.search);
 const raw=params.get('file');
 const subject=params.get('subject')||'';
 const titleParam=params.get('title')||'';
+const pageParam=Number(params.get('page')||0);
 const $=id=>document.getElementById(id);
 const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText'),mPrev=$('mPrev'),mNext=$('mNext'),mPageInfo=$('mPageInfo'),searchToggle=$('searchToggle'),searchPanel=$('searchPanel'),searchInput=$('searchInput'),searchPrev=$('searchPrev'),searchNext=$('searchNext'),searchStatus=$('searchStatus'),searchClose=$('searchClose'),highlightLayer=$('highlightLayer');
 
@@ -175,7 +176,7 @@ async function open(){
     pdfUrl=await resolvePdfUrl(raw);direct.href=pdfUrl;showLoading('Открываю документ…');
     const task=pdfjsLib.getDocument({url:pdfUrl,disableRange:false,disableStream:true,disableAutoFetch:true,rangeChunkSize:262144});
     task.onProgress=p=>{if(p.total&&p.loaded)loadingText.textContent=`Загрузка: ${Math.min(100,Math.round(p.loaded/p.total*100))}%`};
-    pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,rememberedPage()));searchPage=pageNum;updateControls();await renderPage();
+    pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,pageParam||rememberedPage()));searchPage=pageNum;updateControls();await renderPage();
   }catch(err){fail(err?.message||String(err))}
 }
 
