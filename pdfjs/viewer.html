@@ -4,26 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#001a00">
 <title>PDF · ФФ НГУ</title>
 <style>
-:root{--bg:#001a00;--pdf-bg:#1e1e1e;--bar:#001500;--panel:#002600;--line:#1a4d26;--text:#33ff66;--text2:#66ff8c;--muted:#29cc52;--dim:#168b36;--accent:#00ff41;--accent-soft:rgba(51,255,102,.10);--glow:rgba(51,255,102,.30)}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:"Consolas","Cascadia Mono","Liberation Mono","Courier New",monospace;text-shadow:0 0 3px rgba(51,255,102,.18)}
-::selection{background:var(--text);color:var(--bg)}button,input,a{font:inherit}.toolbar{height:58px;display:grid;grid-template-columns:auto minmax(100px,1fr) auto;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--bar);position:relative;z-index:40;box-shadow:0 5px 20px rgba(0,0,0,.18)}
-.left,.controls,.right{display:flex;align-items:center;gap:8px}.left{min-width:0}.controls{justify-content:center}.right{justify-content:flex-end}.btn{height:38px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 11px;border:1px solid var(--line);border-radius:2px;background:#001900;color:var(--text);text-decoration:none;cursor:pointer}.btn:hover{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 8px rgba(0,255,65,.08)}.btn:disabled{opacity:.35;cursor:default}.btn.icon{width:38px;padding:0}.search-icon{font-size:21px;line-height:1}.title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2);font-size:14px;font-weight:700}.page-input{width:62px;height:34px;border:1px solid var(--line);border-radius:2px;background:#001200;color:var(--text2);text-align:center;outline:none;caret-color:var(--accent)}.page-input:focus,.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 1px rgba(0,255,65,.18)}.page-total,.zoom-label{color:var(--dim);font-size:12px}
-.search-panel{position:fixed;z-index:35;top:58px;left:0;right:0;height:52px;display:none;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--line);background:rgba(0,21,0,.98);box-shadow:0 6px 18px rgba(0,0,0,.22)}.search-panel.open{display:flex}.search-input{height:36px;min-width:120px;max-width:520px;flex:1;border:1px solid var(--line);border-radius:2px;background:#001200;color:var(--text2);padding:0 11px;outline:none;caret-color:var(--accent)}.search-input::placeholder{color:#177f32}.search-status{min-width:125px;color:var(--dim);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.search-panel .btn{height:36px}.search-close{font-size:18px}
-.viewer{position:absolute;inset:58px 0 0;overflow:auto;background:var(--pdf-bg)}body.search-open .viewer{inset:110px 0 0}.stage{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:24px}.canvas-wrap{position:relative;line-height:0;box-shadow:0 8px 28px rgba(0,0,0,.55)}canvas{display:block;max-width:none;background:white}.highlight-layer{position:absolute;left:0;top:0;pointer-events:none;overflow:hidden}.search-mark{position:absolute;background:rgba(90,255,120,.30);border:1px solid rgba(102,255,140,.75);border-radius:1px;box-shadow:0 0 6px rgba(51,255,102,.28)}
-.loading{position:fixed;left:50%;top:82px;z-index:50;transform:translateX(-50%);display:none;align-items:center;gap:9px;padding:8px 12px;border:1px solid var(--line);border-radius:2px;background:rgba(0,21,0,.96);color:var(--muted);font-size:12px;box-shadow:0 8px 24px rgba(0,0,0,.28)}body.search-open .loading{top:134px}.loading.show{display:flex}.dot{width:8px;height:8px;background:var(--accent);box-shadow:0 0 6px var(--glow);animation:pulse .8s infinite alternate}@keyframes pulse{to{opacity:.25}}.error{max-width:680px;margin:80px auto;padding:24px;border:1px solid var(--line);border-radius:2px;background:#001900;color:var(--muted);line-height:1.6}.error strong{color:var(--text2)}
-.crt-ui{position:fixed;inset:0;z-index:1000;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.13) 2px,rgba(0,0,0,.13) 3px);mix-blend-mode:multiply}.mobile-nav{display:none}
+:root{--bg:#0d1015;--pdf-bg:#1e1e1e;--bar:#12161c;--panel:#171c23;--line:#2b323d;--text:#eef1f5;--muted:#8993a1;--accent:#d45d68;--accent-soft:rgba(212,93,104,.14)}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,a{font:inherit}.toolbar{height:58px;display:grid;grid-template-columns:auto minmax(100px,1fr) auto;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--bar);position:relative;z-index:40}
+.left,.controls,.right{display:flex;align-items:center;gap:8px}.left{min-width:0}.controls{justify-content:center}.right{justify-content:flex-end}.btn{height:38px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--text);text-decoration:none;cursor:pointer}.btn:hover{border-color:rgba(212,93,104,.55);background:var(--accent-soft)}.btn:disabled{opacity:.42;cursor:default}.btn.icon{width:38px;padding:0}.search-icon{font-size:22px;line-height:1;transform:translateY(-1px)}.title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:700}.page-input{width:62px;height:34px;border:1px solid var(--line);border-radius:8px;background:#0f1318;color:var(--text);text-align:center;outline:none}.page-input:focus,.search-input:focus{border-color:var(--accent)}.page-total,.zoom-label{color:var(--muted);font-size:13px}
+.search-panel{position:fixed;z-index:35;top:58px;left:0;right:0;height:52px;display:none;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--line);background:rgba(18,22,28,.98);box-shadow:0 6px 18px rgba(0,0,0,.22)}.search-panel.open{display:flex}.search-input{height:36px;min-width:120px;max-width:520px;flex:1;border:1px solid var(--line);border-radius:9px;background:#0f1318;color:var(--text);padding:0 11px;outline:none}.search-status{min-width:125px;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.search-panel .btn{height:36px}.search-close{font-size:18px}
+.viewer{position:absolute;inset:58px 0 0;overflow:auto;background:var(--pdf-bg)}body.search-open .viewer{inset:110px 0 0}.stage{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:24px}.canvas-wrap{position:relative;line-height:0;box-shadow:0 8px 28px rgba(0,0,0,.5)}canvas{display:block;max-width:none;background:white}.highlight-layer{position:absolute;left:0;top:0;pointer-events:none;overflow:hidden}.search-mark{position:absolute;background:rgba(255,210,64,.38);border:1px solid rgba(255,210,64,.62);border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.loading{position:fixed;left:50%;top:82px;z-index:50;transform:translateX(-50%);display:none;align-items:center;gap:9px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(18,22,28,.95);color:var(--muted);font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.28)}body.search-open .loading{top:134px}.loading.show{display:flex}.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse .8s infinite alternate}@keyframes pulse{to{opacity:.3}}.error{max-width:680px;margin:80px auto;padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);line-height:1.6}.error strong{color:var(--text)}
+.mobile-nav{display:none}
 @media(max-width:760px){
-  .toolbar{grid-template-columns:minmax(0,1fr) auto;height:58px;gap:8px;padding:0 10px}.controls{display:none}.right{display:flex}.direct-link{display:none}.back-text{display:none}.left{gap:7px}.left .btn{width:42px;padding:0}.title{font-size:14px}.search-toggle{width:42px!important;height:42px!important}
+  .toolbar{grid-template-columns:minmax(0,1fr) auto;height:58px;gap:8px;padding:0 10px}.controls{display:none}.right{display:flex}.direct-link{display:none}.back-text{display:none}.left{gap:7px}.left .btn{width:42px;padding:0}.title{font-size:15px}.search-toggle{width:42px!important;height:42px!important}
   .viewer{inset:58px 0 64px}.stage{padding:10px}body.search-open .viewer{inset:142px 0 64px}
-  .search-panel{height:84px;padding:8px 10px;display:none;grid-template-columns:minmax(0,1fr) 36px 36px 36px;grid-template-rows:38px 22px;gap:5px 6px}.search-panel.open{display:grid}.search-input{width:100%;height:38px;min-width:0}.search-panel .btn{width:36px;height:36px;padding:0}.search-status{grid-column:1/-1;grid-row:2;min-width:0;text-align:center;font-size:10px}.search-close{grid-column:4;grid-row:1}.search-prev{grid-column:2;grid-row:1}.search-next{grid-column:3;grid-row:1}body.search-open .loading{top:154px}.loading{top:72px}
-  .mobile-nav{position:fixed;left:0;right:0;bottom:0;z-index:45;height:64px;display:grid;grid-template-columns:72px 1fr 72px;align-items:center;border-top:1px solid var(--line);background:rgba(0,21,0,.98);box-shadow:0 -6px 18px rgba(0,0,0,.22)}.m-btn{width:46px;height:46px;margin:auto;border:1px solid var(--line);border-radius:2px;background:#001900;color:var(--text);font-size:25px;line-height:1;cursor:pointer}.m-btn:active{background:var(--accent-soft);border-color:var(--accent)}.m-btn:disabled{opacity:.35}.m-page-info{text-align:center;color:var(--text2);font-size:14px;font-weight:700;letter-spacing:.02em}.m-page-info::before{content:'['}.m-page-info::after{content:']'}
-  .crt-ui{opacity:.55}
+  .search-panel{height:84px;padding:8px 10px;display:none;grid-template-columns:minmax(0,1fr) 36px 36px 36px;grid-template-rows:38px 22px;gap:5px 6px}.search-panel.open{display:grid}.search-input{width:100%;height:38px;min-width:0}.search-panel .btn{width:36px;height:36px;padding:0}.search-status{grid-column:1/-1;grid-row:2;min-width:0;text-align:center;font-size:11px}.search-close{grid-column:4;grid-row:1}.search-prev{grid-column:2;grid-row:1}.search-next{grid-column:3;grid-row:1}body.search-open .loading{top:154px}.loading{top:72px}
+  .mobile-nav{position:fixed;left:0;right:0;bottom:0;z-index:45;height:64px;display:grid;grid-template-columns:72px 1fr 72px;align-items:center;border-top:1px solid var(--line);background:rgba(18,22,28,.98);box-shadow:0 -6px 18px rgba(0,0,0,.18)}.m-btn{width:46px;height:46px;margin:auto;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--text);font-size:25px;line-height:1;cursor:pointer}.m-btn:active{background:var(--accent-soft);border-color:rgba(212,93,104,.55)}.m-btn:disabled{opacity:.4}.m-page-info{text-align:center;color:var(--text);font-size:15px;font-weight:700;letter-spacing:.01em}
 }
-@media(prefers-reduced-motion:reduce){.dot{animation:none}}
-@media(forced-colors:active),(prefers-contrast:more){.crt-ui{display:none}html,body{text-shadow:none}}
 </style>
 </head>
 <body>
@@ -37,20 +33,20 @@
     <button id="zoomOut" class="btn icon" type="button" title="Уменьшить">−</button>
     <span id="zoom" class="zoom-label">100%</span>
     <button id="zoomIn" class="btn icon" type="button" title="Увеличить">+</button>
-    <button id="fit" class="btn" type="button">ПО ШИРИНЕ</button>
+    <button id="fit" class="btn" type="button">По ширине</button>
   </div>
-  <div class="right"><button id="searchToggle" class="btn icon search-toggle" type="button" title="Поиск по PDF" aria-label="Поиск по PDF"><span class="search-icon">⌕</span></button><a id="direct" class="btn direct-link" href="#" target="_blank" rel="noopener">ФАЙЛ ↗</a></div>
+  <div class="right"><button id="searchToggle" class="btn icon search-toggle" type="button" title="Поиск по PDF" aria-label="Поиск по PDF"><span class="search-icon">⌕</span></button><a id="direct" class="btn direct-link" href="#" target="_blank" rel="noopener">Файл ↗</a></div>
 </header>
 
 <div id="searchPanel" class="search-panel" role="search">
-  <input id="searchInput" class="search-input" type="search" autocomplete="off" placeholder="> поиск по PDF..." aria-label="Поиск по PDF">
+  <input id="searchInput" class="search-input" type="search" autocomplete="off" placeholder="Поиск по PDF…" aria-label="Поиск по PDF">
   <button id="searchPrev" class="btn icon search-prev" type="button" title="Предыдущее совпадение">↑</button>
   <button id="searchNext" class="btn icon search-next" type="button" title="Следующее совпадение">↓</button>
-  <span id="searchStatus" class="search-status">ENTER — FIND</span>
+  <span id="searchStatus" class="search-status">Enter — найти</span>
   <button id="searchClose" class="btn icon search-close" type="button" title="Закрыть поиск">×</button>
 </div>
 
-<div id="loading" class="loading"><span class="dot"></span><span id="loadingText">ЗАГРУЗКА СТРАНИЦЫ...</span></div>
+<div id="loading" class="loading"><span class="dot"></span><span id="loadingText">Загрузка страницы…</span></div>
 <main id="viewer" class="viewer"><div id="stage" class="stage"><div class="canvas-wrap"><canvas id="canvas"></canvas><div id="highlightLayer" class="highlight-layer"></div></div></div></main>
 
 <nav class="mobile-nav" aria-label="Навигация по PDF">
@@ -58,7 +54,6 @@
   <div id="mPageInfo" class="m-page-info">1 / —</div>
   <button id="mNext" class="m-btn" type="button" title="Следующая страница">›</button>
 </nav>
-<div class="crt-ui" aria-hidden="true"></div>
 
 <script type="module">
 import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
@@ -75,12 +70,12 @@ const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=
 let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=true,pdfUrl='',renderSerial=0,preloadSerial=0;
 let searchQuery='',searchPage=0,searchOccurrence=-1,searchBusy=false,searchToken=0;
 const pageCache=new Map(),warmedPages=new Set(),textCache=new Map();
-const showLoading=(text='ЗАГРУЗКА СТРАНИЦЫ...')=>{loadingText.textContent=text;loading.classList.add('show')};
+const showLoading=(text='Загрузка страницы…')=>{loadingText.textContent=text;loading.classList.add('show')};
 const hideLoading=()=>loading.classList.remove('show');
 const encPath=p=>p.split('/').map(encodeURIComponent).join('/');
 const normalizeText=s=>(s||'').toLocaleLowerCase('ru-RU').replace(/\s+/g,' ').trim();
 
-function fail(message){hideLoading();stage.innerHTML=`<div class="error"><strong>ERROR: PDF НЕ ОТКРЫТ.</strong><br>${message}<br><br>Можно открыть файл напрямую кнопкой «ФАЙЛ ↗».</div>`}
+function fail(message){hideLoading();stage.innerHTML=`<div class="error"><strong>Не удалось открыть PDF.</strong><br>${message}<br><br>Можно открыть файл напрямую кнопкой «Файл ↗».</div>`}
 function storageKey(){return 'nsu-pdf-page:'+(raw||pdfUrl)}
 function savePage(){try{localStorage.setItem(storageKey(),String(pageNum))}catch{}}
 function rememberedPage(){try{return Number(localStorage.getItem(storageKey()))||1}catch{return 1}}
@@ -91,8 +86,8 @@ function updateControls(){
 }
 
 function openSearch(){searchPanel.classList.add('open');document.body.classList.add('search-open');setTimeout(()=>searchInput.focus(),0)}
-function closeSearch(){searchToken++;searchBusy=false;searchPanel.classList.remove('open');document.body.classList.remove('search-open');searchStatus.textContent='ENTER — FIND';clearHighlights()}
-function resetSearch(){searchToken++;searchBusy=false;searchQuery='';searchPage=pageNum;searchOccurrence=-1;searchStatus.textContent=searchInput.value.trim()?'ENTER — FIND':'ВВЕДИТЕ ТЕКСТ';clearHighlights()}
+function closeSearch(){searchToken++;searchBusy=false;searchPanel.classList.remove('open');document.body.classList.remove('search-open');searchStatus.textContent='Enter — найти';clearHighlights()}
+function resetSearch(){searchToken++;searchBusy=false;searchQuery='';searchPage=pageNum;searchOccurrence=-1;searchStatus.textContent=searchInput.value.trim()?'Enter — найти':'Введите текст';clearHighlights()}
 function clearHighlights(){highlightLayer.replaceChildren()}
 function findMatches(text,q){const hits=[];if(!q)return hits;let from=0;while(true){const i=text.indexOf(q,from);if(i<0)break;hits.push(i);from=i+Math.max(1,q.length)}return hits}
 
@@ -142,9 +137,9 @@ async function drawSearchHighlights(page,viewport){
 
 async function searchStep(direction){
   if(!pdf||searchBusy)return;
-  const q=normalizeText(searchInput.value);if(!q){searchStatus.textContent='ВВЕДИТЕ ТЕКСТ';searchInput.focus();return}
+  const q=normalizeText(searchInput.value);if(!q){searchStatus.textContent='Введите текст';searchInput.focus();return}
   if(q!==searchQuery){searchQuery=q;searchPage=pageNum;searchOccurrence=direction>0?-1:Number.POSITIVE_INFINITY}
-  searchBusy=true;const token=++searchToken;searchStatus.textContent='ПОИСК...';
+  searchBusy=true;const token=++searchToken;searchStatus.textContent='Ищу…';
   let n=searchPage||pageNum,first=true;
   try{
     for(let checked=0;checked<pdf.numPages;checked++){
@@ -154,11 +149,11 @@ async function searchStep(direction){
         if(direction>0){const candidate=searchOccurrence+1;if(candidate<matches.length)occ=candidate}
         else{const candidate=Number.isFinite(searchOccurrence)?searchOccurrence-1:matches.length-1;if(candidate>=0&&candidate<matches.length)occ=candidate}
       }else if(matches.length){occ=direction>0?0:matches.length-1}
-      if(occ>=0){searchPage=n;searchOccurrence=occ;pageNum=n;await renderPage();if(token!==searchToken)return;searchStatus.textContent=`${occ+1}/${matches.length} · СТР. ${n}`;searchBusy=false;return}
+      if(occ>=0){searchPage=n;searchOccurrence=occ;pageNum=n;await renderPage();if(token!==searchToken)return;searchStatus.textContent=`${occ+1}/${matches.length} на стр. ${n}`;searchBusy=false;return}
       n+=direction;if(n<1)n=pdf.numPages;if(n>pdf.numPages)n=1;first=false;
     }
-    if(token===searchToken){searchStatus.textContent='НЕ НАЙДЕНО';clearHighlights()}
-  }catch(err){if(token===searchToken)searchStatus.textContent='ОШИБКА ПОИСКА'}finally{if(token===searchToken)searchBusy=false}
+    if(token===searchToken){searchStatus.textContent='Не найдено';clearHighlights()}
+  }catch(err){if(token===searchToken)searchStatus.textContent='Ошибка поиска'}finally{if(token===searchToken)searchBusy=false}
 }
 
 async function renderPage(){
@@ -175,11 +170,11 @@ async function renderPage(){
 
 async function open(){
   if(!raw){fail('В ссылке не указан файл.');return}
-  title.textContent=titleParam||decodeURIComponent(raw.split('/').pop());document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('ПРОВЕРКА ФАЙЛА...');
+  title.textContent=titleParam||decodeURIComponent(raw.split('/').pop());document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Проверяю файл…');
   try{
-    pdfUrl=await resolvePdfUrl(raw);direct.href=pdfUrl;showLoading('ОТКРЫТИЕ ДОКУМЕНТА...');
+    pdfUrl=await resolvePdfUrl(raw);direct.href=pdfUrl;showLoading('Открываю документ…');
     const task=pdfjsLib.getDocument({url:pdfUrl,disableRange:false,disableStream:true,disableAutoFetch:true,rangeChunkSize:262144});
-    task.onProgress=p=>{if(p.total&&p.loaded)loadingText.textContent=`ЗАГРУЗКА: ${Math.min(100,Math.round(p.loaded/p.total*100))}%`};
+    task.onProgress=p=>{if(p.total&&p.loaded)loadingText.textContent=`Загрузка: ${Math.min(100,Math.round(p.loaded/p.total*100))}%`};
     pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,rememberedPage()));searchPage=pageNum;updateControls();await renderPage();
   }catch(err){fail(err?.message||String(err))}
 }
