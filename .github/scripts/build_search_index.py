@@ -9,7 +9,7 @@ from pathlib import Path
 import fitz  # PyMuPDF
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "search-index"
+OUT = ROOT / "docs" / "search-index"
 ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "База"]
 
 
@@ -208,12 +208,12 @@ def compact_metadata(record: dict) -> dict:
 
 
 def main() -> None:
-    OUT.mkdir(exist_ok=True)
+    OUT.mkdir(parents=True, exist_ok=True)
     for old in OUT.glob("part-*.json"):
         old.unlink()
 
     generated_at = datetime.now(timezone.utc).isoformat()
-    manifest = {"version": 3, "generated_at": generated_at, "shards": []}
+    manifest = {"version": 4, "generated_at": generated_at, "shards": []}
     all_metadata: list[dict] = []
 
     for shard_no, subject in enumerate(ORDER):
@@ -245,7 +245,7 @@ def main() -> None:
     )
     (OUT / "files.json").write_text(
         json.dumps(
-            {"version": 2, "generated_at": generated_at, "files": all_metadata},
+            {"version": 3, "generated_at": generated_at, "files": all_metadata},
             ensure_ascii=False,
             separators=(",", ":"),
         ),
