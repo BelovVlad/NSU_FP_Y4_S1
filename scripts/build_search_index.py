@@ -79,10 +79,28 @@ def actual_size(path: Path, pointer: str | None = None) -> int:
         return 0
 
 
-def last_commit_iso(rel: Path) -> str | None:
+def git_history_dates(rel: Path) -> tuple[str | None, str | None]:
+    """Return (updated_at, created_at) using the real per-file git history."""
+    try:
+        output = subprocess.check_output(
+            ["git", "log", "--follow", "--format=%cI", "--", rel.as_posix()],
+            cwd=ROOT,
+            text=True,
+            stderr=subprocess.DEVNULL,
+        )
+        dates = [line.strip() for line in output.splitlines() if line.strip()]
+        if not dates:
+            return None, None
+        return dates[0], dates[-1]
+    except (OSError, subprocess.CalledProcessError):
+        return None, None
+
+
+def content_version(rel: Path) -> str | None:
+    """Stable cache key that changes whenever the tracked file contents change."""
     try:
         value = subprocess.check_output(
-            ["git", "log", "-1", "--format=%cI", "--", rel.as_posix()],
+            ["git", "rev-parse", f"HEAD:{rel.as_posix()}"],
             cwd=ROOT,
             text=True,
             stderr=subprocess.DEVNULL,
@@ -95,6 +113,7 @@ def last_commit_iso(rel: Path) -> str | None:
 def base_record(rel: Path, kind: str) -> dict:
     full = ROOT / rel
     pointer = lfs_pointer_text(full)
+    updated_at, created_at = git_history_dates(rel)
     return {
         "path": rel.as_posix(),
         "type": kind,
@@ -102,7 +121,9 @@ def base_record(rel: Path, kind: str) -> dict:
         "subject": rel.parts[0],
         "section": section_for(rel),
         "size": actual_size(full, pointer),
-        "updated_at": last_commit_iso(rel),
+        "updated_at": updated_at,
+        "created_at": created_at,
+        "version": content_version(rel),
         "indexed": True,
         "pages": [],
         "_pointer": pointer,
@@ -179,6 +200,8 @@ def compact_metadata(record: dict) -> dict:
         "section",
         "size",
         "updated_at",
+        "created_at",
+        "version",
         "page_count",
         "cell_count",
         "indexed",
@@ -192,7 +215,7 @@ def main() -> None:
         old.unlink()
 
     generated_at = datetime.now(timezone.utc).isoformat()
-    manifest = {"version": 2, "generated_at": generated_at, "shards": []}
+    manifest = {"version": 3, "generated_at": generated_at, "shards": []}
     all_metadata: list[dict] = []
 
     for shard_no, subject in enumerate(ORDER):
@@ -224,7 +247,7 @@ def main() -> None:
     )
     (OUT / "files.json").write_text(
         json.dumps(
-            {"version": 1, "generated_at": generated_at, "files": all_metadata},
+            {"version": 2, "generated_at": generated_at, "files": all_metadata},
             ensure_ascii=False,
             separators=(",", ":"),
         ),
