@@ -1,0 +1,2445 @@
+% !TeX root = part03.tex
+
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% ============================================================
+% Практическое занятие 3
+% ============================================================
+
+\practice{3}{17.09.2026}{Взаимодействие с веществом: продолжение}
+
+
+% ============================================================
+% Многократное рассеяние
+% ============================================================
+
+\section*{Многократное рассеяние}
+
+При прохождении заряженной частицы через вещество
+она многократно рассеивается в кулоновских полях атомов вещества.
+
+Каждое отдельное рассеяние обычно происходит на небольшой угол.
+Однако большое число последовательных отклонений приводит
+к заметному изменению направления движения частицы.
+
+Поскольку отклонения вправо и влево равновероятны,
+
+\begin{equation*}
+    \langle\theta\rangle=0.
+\end{equation*}
+
+Поэтому характерный угол многократного рассеяния определяется
+не средним углом, а среднеквадратичным отклонением
+
+\begin{equation*}
+    \sqrt{\langle\theta^2\rangle}.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Рисунок: многократное рассеяние
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % Входящая траектория
+        \draw[
+            ->,
+            draw=rtext,
+            line width=1.0pt
+        ]
+        (-4.2,0) -- (-2.3,0);
+
+        % Слой вещества
+        \draw[
+            draw=rtextmuted,
+            line width=0.8pt
+        ]
+        (-2.2,-1.7) rectangle (2.0,1.7);
+
+        % Траектория внутри вещества
+        \draw[
+            draw=rc3,
+            line width=1.45pt
+        ]
+        (-2.2,0)
+        -- (-1.55,0.12)
+        -- (-0.95,-0.10)
+        -- (-0.25,0.20)
+        -- (0.35,0.08)
+        -- (1.0,0.37)
+        -- (2.0,0.55);
+
+        % Выходящая траектория
+        \draw[
+            ->,
+            draw=rc3,
+            line width=1.45pt
+        ]
+        (2.0,0.55) -- (4.15,1.20);
+
+        % Невозмущённое направление
+        \draw[
+            dashed,
+            draw=rtextmuted,
+            line width=0.75pt
+        ]
+        (2.0,0.55) -- (4.15,0.55);
+
+        % Угол
+        \draw[
+            draw=rtext,
+            line width=0.8pt
+        ]
+        (2.75,0.55)
+        arc[
+            start angle=0,
+            end angle=17,
+            radius=0.75
+        ];
+
+        \node at (3.05,0.78) {$\theta$};
+
+        \node[
+            above,
+            font=\small
+        ]
+        at (-3.25,0)
+        {частица};
+
+        \node[
+            below,
+            font=\small
+        ]
+        at (-0.10,-1.7)
+        {вещество};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Многократное рассеяние заряженной частицы
+        при прохождении через слой вещества.
+        Отдельные малые отклонения складываются
+        в конечный угол $\theta$.
+    }
+    \label{fig:multiple_scattering_scheme}
+\end{rbox}
+
+
+Для частицы с зарядом $ze$, проходящей слой вещества,
+средний квадрат угла рассеяния можно записать в виде
+
+\begin{equation*}
+    \langle\theta^2\rangle
+    =
+    16\pi
+    \frac{N_A}{A}
+    z^2
+    \frac{
+        Z(Z+1)r_e^2
+    }{
+        (\beta pc)^2
+    }
+    (m_ec^2)^2
+    \ln\left(183Z^{-1/3}\right)X.
+\end{equation*}
+
+Здесь
+
+\begin{equation*}
+    \beta=\frac{v}{c},
+\end{equation*}
+
+$p$ --- импульс налетающей частицы,
+$z$ --- её заряд в единицах элементарного заряда,
+$Z$ и $A$ --- зарядовое и массовое числа вещества,
+$r_e$ --- классический радиус электрона,
+а $X$ --- пройденная толщина вещества.
+
+Введём \rtxt{3}{радиационную длину} $X_0$:
+
+\begin{equation*}
+    \frac{1}{X_0}
+    =
+    4\alpha r_e^2
+    \frac{N_A}{A}
+    Z(Z+1)
+    \ln\left(183Z^{-1/3}\right).
+\end{equation*}
+
+Тогда выражение для среднего квадрата угла принимает вид
+
+\begin{equation*}
+    \langle\theta^2\rangle
+    =
+    \frac{4\pi}{\alpha}
+    (m_ec^2)^2
+    \frac{z^2}{(\beta pc)^2}
+    \frac{X}{X_0}.
+\end{equation*}
+
+После подстановки численных констант получаем
+\rtxt{3}{формулу Росси}:
+
+\begin{equation*}
+    \boxed{
+        \sqrt{\langle\theta^2\rangle}
+        =
+        \frac{
+            13.6\ \text{МэВ}
+        }{
+            \beta pc
+        }
+        z
+        \sqrt{\frac{X}{X_0}}
+    }.
+\end{equation*}
+
+Здесь угол измеряется в радианах,
+а $pc$ необходимо подставлять в МэВ.
+
+Из формулы видно, что характерный угол рассеяния
+
+\begin{equation*}
+    \sqrt{\langle\theta^2\rangle}
+    \propto
+    \sqrt{\frac{X}{X_0}},
+\end{equation*}
+
+то есть возрастает с толщиной вещества,
+но уменьшается с ростом импульса частицы.
+
+
+% ============================================================
+% Задача 1
+% ============================================================
+
+\section{Задача 1. Многократное рассеяние протона}
+
+Рассмотрим протон с кинетической энергией
+
+\begin{equation*}
+    E=5\ \text{МэВ},
+\end{equation*}
+
+проходящий слой вещества толщиной $1$ см.
+
+Для расчёта используем отношение
+
+\begin{equation*}
+    \frac{X}{X_0}
+    =
+    \frac{1}{36.08}.
+\end{equation*}
+
+Требуется оценить характерный диапазон углов
+многократного рассеяния.
+
+Масса протона имеет порядок
+
+\begin{equation*}
+    m_pc^2\simeq1\ \text{ГэВ}.
+\end{equation*}
+
+Так как
+
+\begin{equation*}
+    E\ll m_pc^2,
+\end{equation*}
+
+протон можно считать нерелятивистским.
+
+Для него
+
+\begin{equation*}
+    E
+    =
+    \frac{m_pv^2}{2}
+    =
+    \frac{p^2}{2m_p}.
+\end{equation*}
+
+Отсюда
+
+\begin{equation*}
+    p=\sqrt{2m_pE},
+    \qquad
+    v=\sqrt{\frac{2E}{m_p}}.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    \beta
+    =
+    \frac{v}{c}
+    =
+    \frac{1}{c}
+    \sqrt{\frac{2E}{m_p}}.
+\end{equation*}
+
+В формуле Росси входит произведение $\beta pc$.
+Запишем
+
+\begin{equation*}
+    \beta pc
+    =
+    \frac{v}{c}pc
+    =
+    pv.
+\end{equation*}
+
+Поскольку
+
+\begin{equation*}
+    p=m_pv,
+\end{equation*}
+
+получаем
+
+\begin{equation*}
+    pv
+    =
+    m_pv^2
+    =
+    2E.
+\end{equation*}
+
+Таким образом,
+
+\begin{equation*}
+    \boxed{
+        \beta pc=2E
+    }.
+\end{equation*}
+
+При $E=5$ МэВ
+
+\begin{equation*}
+    \beta pc
+    =
+    10\ \text{МэВ}.
+\end{equation*}
+
+Для протона
+
+\begin{equation*}
+    z=1.
+\end{equation*}
+
+Тогда
+
+\begin{align*}
+    \sqrt{\langle\theta^2\rangle}
+    &=
+    \frac{13.6}{10}
+    \sqrt{\frac{1}{36.08}}
+    \\[3pt]
+    &\simeq
+    0.23.
+\end{align*}
+
+Следовательно,
+
+\begin{equation*}
+    \boxed{
+        \sqrt{\langle\theta^2\rangle}
+        \simeq
+        0.23\ \text{рад}
+    }.
+\end{equation*}
+
+Это соответствует примерно
+
+\begin{equation*}
+    0.23\ \text{рад}
+    \simeq
+    13^\circ.
+\end{equation*}
+
+Для основной части распределения возьмём диапазон примерно
+в три среднеквадратичных отклонения:
+
+\begin{equation*}
+    \theta_{\min}\simeq0,
+\end{equation*}
+
+\begin{equation*}
+    \theta_{\max}
+    \simeq
+    3\sqrt{\langle\theta^2\rangle}.
+\end{equation*}
+
+Поэтому
+
+\begin{equation*}
+    \theta_{\max}
+    \simeq
+    3\cdot0.23
+    \simeq
+    0.69\ \text{рад}.
+\end{equation*}
+
+Окончательно
+
+\begin{equation*}
+    \boxed{
+        0
+        \lesssim
+        \theta
+        \lesssim
+        0.69\ \text{рад}
+    }.
+\end{equation*}
+
+
+% ============================================================
+% Тормозное излучение
+% ============================================================
+
+\section*{Тормозное излучение}
+
+При движении заряженной частицы в кулоновском поле ядра
+её траектория искривляется.
+Следовательно, частица движется с ускорением
+и испускает электромагнитное излучение.
+
+Такое излучение называется
+\rtxt{3}{тормозным излучением}.
+
+
+% ------------------------------------------------------------
+% Рисунок: тормозное излучение
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % Ядро
+        \fill[
+            rtext
+        ]
+        (0,-1.0) circle (2.8pt);
+
+        \node[
+            below=4pt
+        ]
+        at (0,-1.0)
+        {$Ze$};
+
+        % Электронная траектория
+        \draw[
+            ->,
+            draw=rc3,
+            line width=1.5pt
+        ]
+        (-4.0,0.65)
+        .. controls
+            (-1.9,0.65)
+            and
+            (-0.7,0.55)
+        ..
+        (0.10,0.20)
+        .. controls
+            (0.85,-0.10)
+            and
+            (1.85,-0.15)
+        ..
+        (3.5,0.25);
+
+        \node[
+            above
+        ]
+        at (-3.25,0.65)
+        {$e^-$};
+
+        % Фотон
+        \draw[
+            draw=rc3,
+            line width=1.0pt
+        ]
+        (0.35,0.12)
+        -- (0.65,0.38)
+        -- (0.95,0.20)
+        -- (1.25,0.46)
+        -- (1.55,0.28)
+        -- (1.85,0.54)
+        -- (2.15,0.36)
+        -- (2.45,0.62);
+
+        \draw[
+            ->,
+            draw=rc3,
+            line width=1.0pt
+        ]
+        (2.45,0.62) -- (2.8,0.75);
+
+        \node[
+            above
+        ]
+        at (2.15,0.62)
+        {$\gamma$};
+
+        % Прицельный параметр
+        \draw[
+            dashed,
+            draw=rtextmuted,
+            line width=0.75pt
+        ]
+        (0,-1.0) -- (0,0.42);
+
+        \node[
+            left
+        ]
+        at (0,-0.25)
+        {$b$};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Тормозное излучение электрона
+        при отклонении в кулоновском поле ядра.
+    }
+    \label{fig:bremsstrahlung_practice3}
+\end{rbox}
+
+
+Мощность излучения ускоренно движущегося заряда
+пропорциональна квадрату ускорения:
+
+\begin{equation*}
+    P\propto a^2.
+\end{equation*}
+
+Кулоновская сила имеет порядок
+
+\begin{equation*}
+    F_{\text{кул}}
+    \sim
+    \frac{Ze^2}{b^2}.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    a
+    =
+    \frac{F_{\text{кул}}}{m}
+    \sim
+    \frac{Ze^2}{mb^2}.
+\end{equation*}
+
+Отсюда
+
+\begin{equation*}
+    \boxed{
+        P\propto\frac{1}{m^2}
+    }.
+\end{equation*}
+
+Поэтому тормозное излучение особенно существенно
+для лёгких заряженных частиц, прежде всего для электронов.
+
+Для тяжёлых частиц из-за большой массы
+тормозными потерями во многих случаях можно пренебречь.
+
+
+% ------------------------------------------------------------
+\subsection*{Изменение энергии электрона}
+% ------------------------------------------------------------
+
+Радиационные потери электрона удобно записать через $X_0$:
+
+\begin{equation*}
+    -
+    \frac{dE}{dx}
+    =
+    \frac{E}{X_0}.
+\end{equation*}
+
+Разделим переменные:
+
+\begin{equation*}
+    \frac{dE}{E}
+    =
+    -
+    \frac{dx}{X_0}.
+\end{equation*}
+
+Интегрируя,
+
+\begin{equation*}
+    \ln E
+    =
+    -
+    \frac{x}{X_0}
+    +C.
+\end{equation*}
+
+При
+
+\begin{equation*}
+    x=0,
+    \qquad
+    E=E_0,
+\end{equation*}
+
+получаем
+
+\begin{equation*}
+    C=\ln E_0.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    \ln\frac{E}{E_0}
+    =
+    -
+    \frac{x}{X_0},
+\end{equation*}
+
+и
+
+\begin{equation*}
+    \boxed{
+        E(x)
+        =
+        E_0
+        e^{-x/X_0}
+    }.
+\end{equation*}
+
+При прохождении одной радиационной длины,
+
+\begin{equation*}
+    x=X_0,
+\end{equation*}
+
+энергия уменьшается до
+
+\begin{equation*}
+    E
+    =
+    \frac{E_0}{e}.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Критическая энергия
+% ------------------------------------------------------------
+
+\subsection*{Критическая энергия}
+
+При сравнительно небольших энергиях электрона
+основную роль играют ионизационные потери.
+
+При больших энергиях начинают преобладать
+радиационные потери.
+
+\rtxt{3}{Критическая энергия} $E_{\text{кр}}$
+определяется условием равенства этих двух механизмов:
+
+\begin{equation*}
+    \left(
+        -
+        \frac{dE}{dx}
+    \right)_{\text{ион}}
+    =
+    \left(
+        -
+        \frac{dE}{dx}
+    \right)_{\text{торм}}.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Рисунок: критическая энергия
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % Оси
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,0) -- (7.0,0)
+        node[right] {$E$};
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,0) -- (0,4.5)
+        node[above] {$-\dfrac{dE}{dx}$};
+
+        % Ионизационные потери
+        \draw[
+            draw=rtextmuted,
+            line width=1.2pt
+        ]
+        (0.5,3.6)
+        .. controls
+            (1.1,1.9)
+            and
+            (2.1,1.25)
+        ..
+        (3.0,1.15)
+        .. controls
+            (4.3,1.12)
+            and
+            (5.2,1.35)
+        ..
+        (6.25,1.65);
+
+        % Радиационные потери
+        \draw[
+            draw=rc3,
+            line width=1.45pt
+        ]
+        (0.7,0.25) -- (6.2,3.65);
+
+        % Критическая энергия
+        \draw[
+            dashed,
+            draw=rtextmuted,
+            line width=0.75pt
+        ]
+        (2.55,0) -- (2.55,1.4);
+
+        \fill[
+            rc3
+        ]
+        (2.55,1.4) circle (2pt);
+
+        \node[
+            below=4pt
+        ]
+        at (2.55,0)
+        {$E_{\text{кр}}$};
+
+        \node[
+            right,
+            font=\small
+        ]
+        at (5.3,3.1)
+        {радиационные};
+
+        \node[
+            right,
+            font=\small
+        ]
+        at (4.5,1.25)
+        {ионизационные};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Качественное сравнение ионизационных
+        и радиационных потерь.
+        В точке $E_{\text{кр}}$ их вклады совпадают.
+    }
+    \label{fig:critical_energy}
+\end{rbox}
+
+
+Для электрона используется оценка
+
+\begin{equation*}
+    \boxed{
+        E_{\text{кр}}^{e}
+        \simeq
+        \frac{800}{Z}\ \text{МэВ}
+    }.
+\end{equation*}
+
+Для частицы массы $M$
+
+\begin{equation*}
+    \boxed{
+        E_{\text{кр}}^{M}
+        =
+        E_{\text{кр}}^{e}
+        \left(
+            \frac{M}{m_e}
+        \right)^2
+    }.
+\end{equation*}
+
+Следовательно, для тяжёлых частиц критическая энергия
+быстро возрастает как квадрат отношения масс.
+
+
+% ============================================================
+% Задача 2
+% ============================================================
+
+\section{Задача 2. Потери энергии электрона и мюона в алюминии}
+
+Рассмотрим слой алюминия толщиной
+
+\begin{equation*}
+    l=1\ \text{см}.
+\end{equation*}
+
+Начальная энергия частицы
+
+\begin{equation*}
+    E_0=10\ \text{ГэВ}.
+\end{equation*}
+
+Для алюминия
+
+\begin{equation*}
+    Z=13,
+    \qquad
+    A\simeq27,
+    \qquad
+    \rho\simeq2.7\ \frac{\text{г}}{\text{см}^3}.
+\end{equation*}
+
+Массовая толщина слоя равна
+
+\begin{equation*}
+    X
+    =
+    \rho l
+    =
+    2.7\ \frac{\text{г}}{\text{см}^2}.
+\end{equation*}
+
+Радиационная длина алюминия
+
+\begin{equation*}
+    X_0
+    \simeq
+    24.1\ \frac{\text{г}}{\text{см}^2}.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection*{1. Электрон}
+% ------------------------------------------------------------
+
+Оценим критическую энергию электрона:
+
+\begin{equation*}
+    E_{\text{кр}}^{e}
+    \simeq
+    \frac{800}{13}\ \text{МэВ}.
+\end{equation*}
+
+В грубой оценке семинара
+
+\begin{equation*}
+    E_{\text{кр}}^{e}
+    \sim
+    80\ \text{МэВ}.
+\end{equation*}
+
+При этом
+
+\begin{equation*}
+    10\ \text{ГэВ}
+    \gg
+    E_{\text{кр}}^{e}.
+\end{equation*}
+
+Следовательно, для электрона основными являются
+радиационные потери.
+
+Используем
+
+\begin{equation*}
+    E
+    =
+    E_0
+    e^{-X/X_0}.
+\end{equation*}
+
+Подставляем:
+
+\begin{align*}
+    E
+    &=
+    10
+    \exp\left(
+        -\frac{2.7}{24.1}
+    \right)
+    \text{ГэВ}
+    \\[3pt]
+    &\simeq
+    9\ \text{ГэВ}.
+\end{align*}
+
+Следовательно,
+
+\begin{equation*}
+    \Delta E
+    =
+    E_0-E
+    \simeq
+    1\ \text{ГэВ}.
+\end{equation*}
+
+Относительная потеря энергии составляет
+
+\begin{equation*}
+    \boxed{
+        \frac{\Delta E}{E_0}
+        \sim
+        10\%
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection*{2. Мюон}
+% ------------------------------------------------------------
+
+Для мюона
+
+\begin{equation*}
+    m_\mu c^2
+    \simeq
+    100\ \text{МэВ}.
+\end{equation*}
+
+Критическая энергия равна
+
+\begin{equation*}
+    E_{\text{кр}}^\mu
+    =
+    E_{\text{кр}}^e
+    \left(
+        \frac{m_\mu}{m_e}
+    \right)^2.
+\end{equation*}
+
+Используя оценки
+
+\begin{equation*}
+    E_{\text{кр}}^e
+    \simeq
+    80\ \text{МэВ},
+    \qquad
+    m_\mu c^2
+    \simeq
+    100\ \text{МэВ},
+    \qquad
+    m_ec^2
+    \simeq
+    0.5\ \text{МэВ},
+\end{equation*}
+
+получаем
+
+\begin{align*}
+    E_{\text{кр}}^\mu
+    &\simeq
+    80
+    \left(
+        \frac{100}{0.5}
+    \right)^2
+    \text{МэВ}
+    \\[3pt]
+    &\simeq
+    3.2\cdot10^3\ \text{ГэВ}.
+\end{align*}
+
+Следовательно,
+
+\begin{equation*}
+    10\ \text{ГэВ}
+    \ll
+    E_{\text{кр}}^\mu,
+\end{equation*}
+
+и тормозным излучением для мюона можно пренебречь.
+
+Основными остаются ионизационные потери.
+
+Используем приближённую формулу
+
+\begin{equation*}
+    -
+    \frac{dE}{dx}
+    =
+    0.3
+    \frac{
+        Zz^2
+    }{
+        A\beta^2
+    }
+    \left[
+        11.2
+        +
+        \ln
+        \left(
+            \frac{
+                (\beta\gamma)^2
+            }{
+                Z
+            }
+        \right)
+        -
+        \beta^2
+    \right]
+    \frac{
+        \text{МэВ}\cdot\text{см}^2
+    }{
+        \text{г}
+    }.
+\end{equation*}
+
+Для мюона с энергией $10$ ГэВ
+
+\begin{equation*}
+    \gamma
+    =
+    \frac{E}{m_\mu c^2}
+    \simeq
+    \frac{10\ \text{ГэВ}}{100\ \text{МэВ}}
+    \simeq
+    100.
+\end{equation*}
+
+При этом
+
+\begin{equation*}
+    \beta\simeq1.
+\end{equation*}
+
+Для алюминия и $z=1$
+
+\begin{align*}
+    -
+    \frac{dE}{dx}
+    &\simeq
+    0.3
+    \frac{13}{27}
+    \left[
+        11.2
+        +
+        \ln
+        \left(
+            \frac{10000}{13}
+        \right)
+        -
+        1
+    \right]
+    \\[3pt]
+    &\simeq
+    2.5\,
+    \frac{
+        \text{МэВ}\cdot\text{см}^2
+    }{
+        \text{г}
+    }.
+\end{align*}
+
+Тогда
+
+\begin{align*}
+    \Delta E
+    &=
+    \left(
+        -
+        \frac{dE}{dx}
+    \right)X
+    \\[3pt]
+    &\simeq
+    2.5\cdot2.7\ \text{МэВ}
+    \\[3pt]
+    &\simeq
+    6.8\ \text{МэВ}.
+\end{align*}
+
+% В рукописной записи стоит 7.5 МэВ.
+% Арифметически 2.5 * 2.7 = 6.75 МэВ.
+
+Относительная потеря энергии
+
+\begin{equation*}
+    \frac{\Delta E}{E}
+    \simeq
+    \frac{6.8\ \text{МэВ}}{10^4\ \text{МэВ}}
+    \simeq
+    6.8\cdot10^{-4}.
+\end{equation*}
+
+То есть
+
+\begin{equation*}
+    \boxed{
+        \frac{\Delta E}{E}
+        <0.1\%
+    }.
+\end{equation*}
+
+Таким образом, в одном и том же слое алюминия
+электрон теряет заметную долю энергии за счёт
+тормозного излучения, тогда как для мюона
+потери остаются преимущественно ионизационными.
+
+
+% ============================================================
+% Черенковское излучение
+% ============================================================
+
+\section*{Черенковское излучение}
+
+Если заряженная частица движется в прозрачной среде
+со скоростью, превышающей фазовую скорость света в этой среде,
+
+\begin{equation*}
+    v>\frac{c}{n},
+\end{equation*}
+
+возникает \rtxt{3}{черенковское излучение}.
+
+Излучение формирует конус с углом $\theta$
+относительно направления движения частицы.
+
+% ------------------------------------------------------------
+% Рисунок: геометрия черенковского излучения
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % -----------------------------------------------------
+        % Основные точки
+        % -----------------------------------------------------
+
+        % A — точка, где частица находилась раньше
+        % B — текущее положение частицы
+        % C — точка касания волнового фронта с оболочкой конуса
+
+        \coordinate (A) at (-1.4,0);
+        \coordinate (B) at (2.6,0);
+        \coordinate (C) at (-0.4,1.732);
+
+
+        % -----------------------------------------------------
+        % Направление движения частицы
+        % -----------------------------------------------------
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=1.0pt
+        ]
+        (-3.6,0) -- (3.4,0);
+
+        \node[
+            above=4pt
+        ]
+        at (-3.0,0)
+        {$v$};
+
+
+        % -----------------------------------------------------
+        % Текущее положение частицы
+        % -----------------------------------------------------
+
+        \fill[
+            rc3
+        ]
+        (B) circle (2.5pt);
+
+
+        % -----------------------------------------------------
+        % Образующие конуса
+        % -----------------------------------------------------
+
+        \draw[
+            draw=rc3,
+            line width=1.35pt
+        ]
+        (B) -- (-3.0,3.23);
+
+        \draw[
+            draw=rc3,
+            line width=1.35pt
+        ]
+        (B) -- (-3.0,-3.23);
+
+
+        % -----------------------------------------------------
+        % Волновые фронты
+        %
+        % Каждый фронт построен от положения,
+        % в котором частица находилась раньше.
+        % Они касаются образующих конуса.
+        % -----------------------------------------------------
+
+        \draw[
+            draw=rtextmuted,
+            line width=0.75pt
+        ]
+        ({-3.0 + 2.8*cos(-60)}, {2.8*sin(-60)})
+        arc[
+            start angle=-60,
+            end angle=60,
+            radius=2.8
+        ];
+
+        \draw[
+            draw=rtextmuted,
+            line width=0.75pt
+        ]
+        ({-1.4 + 2.0*cos(-60)}, {2.0*sin(-60)})
+        arc[
+            start angle=-60,
+            end angle=60,
+            radius=2.0
+        ];
+
+        \draw[
+            draw=rtextmuted,
+            line width=0.75pt
+        ]
+        ({0.0 + 1.3*cos(-60)}, {1.3*sin(-60)})
+        arc[
+            start angle=-60,
+            end angle=60,
+            radius=1.3
+        ];
+
+        \draw[
+            draw=rtextmuted,
+            line width=0.75pt
+        ]
+        ({1.0 + 0.8*cos(-60)}, {0.8*sin(-60)})
+        arc[
+            start angle=-60,
+            end angle=60,
+            radius=0.8
+        ];
+
+
+        % -----------------------------------------------------
+        % Радиус волнового фронта AC
+        % Это направление распространения света.
+        % -----------------------------------------------------
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=1.05pt
+        ]
+        (A) -- (C);
+
+        \node[
+            left=3pt
+        ]
+        at (-0.90,0.95)
+        {$\dfrac{ct}{n}$};
+
+
+        % -----------------------------------------------------
+        % Путь частицы AB
+        % -----------------------------------------------------
+
+        \draw[
+            draw=rtextmuted,
+            line width=0.8pt
+        ]
+        (A) -- (B);
+
+        \node[
+            below=5pt
+        ]
+        at (0.60,0)
+        {$vt$};
+
+
+        % -----------------------------------------------------
+        % Прямой угол:
+        % AC перпендикулярно касательной BC
+        % -----------------------------------------------------
+
+        \draw[
+            draw=rtext,
+            line width=0.8pt
+        ]
+        (-0.515,1.533)
+        -- (-0.342,1.433)
+        -- (-0.227,1.632);
+
+
+        % -----------------------------------------------------
+        % Угол Черенкова theta
+        %
+        % ВАЖНО:
+        % theta — угол между направлением движения AB
+        % и радиусом волнового фронта AC,
+        % а НЕ между осью и образующей конуса.
+        % -----------------------------------------------------
+
+        \draw[
+            draw=rtext,
+            line width=0.85pt
+        ]
+        (-0.75,0)
+        arc[
+            start angle=0,
+            end angle=60,
+            radius=0.65
+        ];
+
+        \node
+        at (-0.83,0.34)
+        {$\theta$};
+
+
+        % -----------------------------------------------------
+        % Обозначения точек
+        % -----------------------------------------------------
+
+        \fill[rc3] (A) circle (1.8pt);
+        \fill[rc3] (C) circle (1.8pt);
+
+        \node[
+            below=5pt
+        ]
+        at (A)
+        {$A$};
+
+        \node[
+            below=5pt
+        ]
+        at (B)
+        {$B$};
+
+        \node[
+            above left=2pt
+        ]
+        at (C)
+        {$C$};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Геометрия черенковского излучения.
+        За время $t$ частица проходит расстояние $AB=vt$,
+        а электромагнитная волна распространяется
+        на расстояние $AC=ct/n$.
+        Радиус $AC$ перпендикулярен образующей конуса $BC$.
+    }
+    \label{fig:cherenkov_cone}
+
+\end{rbox}
+Из геометрии рисунка
+
+\begin{equation*}
+    AB=vt,
+    \qquad
+    AC=\frac{ct}{n}.
+\end{equation*}
+
+Поскольку $AC$ является радиусом волнового фронта
+в точке касания,
+
+\begin{equation*}
+    AC\perp BC.
+\end{equation*}
+
+Поэтому треугольник $ABC$ прямоугольный,
+а для угла Черенкова $\theta$ получаем
+
+\begin{equation*}
+    \cos\theta
+    =
+    \frac{AC}{AB}.
+\end{equation*}
+
+Подставляя $AC$ и $AB$,
+
+\begin{equation*}
+    \cos\theta
+    =
+    \frac{ct/n}{vt}
+    =
+    \frac{c}{nv}.
+\end{equation*}
+
+Так как
+
+\begin{equation*}
+    \beta=\frac{v}{c},
+\end{equation*}
+
+окончательно
+
+\begin{equation*}
+    \boxed{
+        \cos\theta
+        =
+        \frac{1}{\beta n}
+    }.
+\end{equation*}
+
+Для существования действительного угла необходимо
+
+\begin{equation*}
+    \frac{1}{\beta n}\leq1.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    \beta n\geq1.
+\end{equation*}
+
+На пороге возникновения излучения
+
+\begin{equation*}
+    \beta n=1,
+\end{equation*}
+
+поэтому
+
+\begin{equation*}
+    \boxed{
+        \beta_{\text{пор}}
+        =
+        \frac{1}{n}
+    }.
+\end{equation*}
+
+
+% ============================================================
+% Задача 3
+% ============================================================
+
+\section{Задача 3. Порог черенковского излучения}
+
+Сравним пороговую кинетическую энергию электрона
+для возникновения черенковского излучения
+в алмазе и стекле.
+
+Показатели преломления равны
+
+\begin{equation*}
+    n_{\text{алмаз}}
+    =
+    2.4,
+    \qquad
+    n_{\text{стекло}}
+    =
+    2.2.
+\end{equation*}
+
+Пороговая скорость определяется условием
+
+\begin{equation*}
+    \beta_{\text{пор}}
+    =
+    \frac{1}{n}.
+\end{equation*}
+
+Для алмаза
+
+\begin{equation*}
+    \beta_{\text{пор}}^{\text{алм}}
+    =
+    \frac{1}{2.4}
+    =
+    \frac{5}{12}.
+\end{equation*}
+
+Для стекла
+
+\begin{equation*}
+    \beta_{\text{пор}}^{\text{ст}}
+    =
+    \frac{1}{2.2}
+    =
+    \frac{5}{11}.
+\end{equation*}
+
+Обе скорости имеют порядок
+
+\begin{equation*}
+    \beta\sim\frac12,
+\end{equation*}
+
+поэтому необходимо использовать
+релятивистское выражение для энергии.
+
+Лоренц-фактор
+
+\begin{equation*}
+    \gamma
+    =
+    \frac{1}{
+        \sqrt{1-\beta^2}
+    }.
+\end{equation*}
+
+Полная энергия электрона
+
+\begin{equation*}
+    E
+    =
+    \gamma m_ec^2.
+\end{equation*}
+
+Нас интересует кинетическая энергия:
+
+\begin{equation*}
+    T
+    =
+    E-m_ec^2
+    =
+    (\gamma-1)m_ec^2.
+\end{equation*}
+
+В оценке из семинара
+
+\begin{equation*}
+    \gamma_{\text{алм}}
+    \simeq
+    \frac{12}{11},
+    \qquad
+    \gamma_{\text{ст}}
+    \simeq
+    \frac{11}{10}.
+\end{equation*}
+
+Используя
+
+\begin{equation*}
+    m_ec^2=511\ \text{кэВ},
+\end{equation*}
+
+для алмаза получаем
+
+\begin{align*}
+    T_{\text{алм}}
+    &\simeq
+    \left(
+        \frac{12}{11}-1
+    \right)
+    511\ \text{кэВ}
+    \\[3pt]
+    &=
+    \frac{511}{11}\ \text{кэВ}
+    \\[3pt]
+    &\simeq
+    46\ \text{кэВ}.
+\end{align*}
+
+Для стекла
+
+\begin{align*}
+    T_{\text{ст}}
+    &\simeq
+    \left(
+        \frac{11}{10}-1
+    \right)
+    511\ \text{кэВ}
+    \\[3pt]
+    &\simeq
+    51\ \text{кэВ}.
+\end{align*}
+
+Следовательно,
+
+\begin{equation*}
+    \boxed{
+        T_{\text{алм}}
+        <
+        T_{\text{ст}}
+    }.
+\end{equation*}
+
+Это связано с тем, что
+
+\begin{equation*}
+    n_{\text{алмаз}}
+    >
+    n_{\text{стекло}},
+\end{equation*}
+
+а значит пороговая скорость в алмазе меньше.
+
+
+% ============================================================
+% Взаимодействие гамма-квантов с веществом
+% ============================================================
+
+\section*{Взаимодействие $\gamma$-квантов с веществом}
+
+Рассмотрим два механизма взаимодействия
+$\gamma$-квантов с веществом:
+
+\begin{itemize}
+    \item фотоэффект;
+    \item эффект Комптона.
+\end{itemize}
+
+
+% ============================================================
+% Фотоэффект
+% ============================================================
+
+\subsection*{Фотоэффект}
+
+При фотоэффекте $\gamma$-квант полностью поглощается атомом,
+а один из связанных электронов покидает атомную оболочку:
+
+\begin{equation*}
+    \gamma+\text{атом}
+    \longrightarrow
+    \text{атом}^{+}+e^-.
+\end{equation*}
+
+Основной вклад в сечение фотоэффекта дают электроны
+внутренних оболочек, прежде всего $K$-оболочки.
+
+Полное сечение можно оценить через сечение на $K$-оболочке:
+
+\begin{equation*}
+    \boxed{
+        \sigma_{\text{ph}}
+        \simeq
+        \frac{5}{4}
+        \left(
+            \sigma_{\text{ph}}
+        \right)_K
+    }.
+\end{equation*}
+
+При
+
+\begin{equation*}
+    E_K
+    \ll
+    E_\gamma
+    \ll
+    m_ec^2
+\end{equation*}
+
+имеем
+
+\begin{equation*}
+    \boxed{
+        \left(
+            \sigma_{\text{ph}}
+        \right)_K
+        \simeq
+        10^{-33}
+        \frac{
+            Z^5
+        }{
+            E_\gamma^{3.5}
+        }
+        \ \text{см}^2
+    }.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    \sigma_{\text{ph}}
+    \propto
+    Z^5,
+\end{equation*}
+
+а по энергии
+
+\begin{equation*}
+    \sigma_{\text{ph}}
+    \propto
+    E_\gamma^{-3.5}.
+\end{equation*}
+
+При больших энергиях,
+
+\begin{equation*}
+    E_\gamma
+    \gg
+    m_ec^2,
+\end{equation*}
+
+зависимость от энергии становится более слабой:
+
+\begin{equation*}
+    \boxed{
+        \left(
+            \sigma_{\text{ph}}
+        \right)_K
+        \simeq
+        1.4\cdot10^{-33}
+        \frac{
+            Z^5
+        }{
+            E_\gamma
+        }
+    }.
+\end{equation*}
+
+Энергия связи электрона на $K$-оболочке
+оценивается как
+
+\begin{equation*}
+    \boxed{
+        E_K
+        \simeq
+        14Z^2\ \text{эВ}
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Качественный график фотоэффекта
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,0) -- (6.5,0)
+        node[right] {$E_\gamma$};
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,0) -- (0,4.0)
+        node[above] {$\sigma_{\text{ph}}$};
+
+        \draw[
+            draw=rc3,
+            line width=1.5pt
+        ]
+        (0.45,3.55)
+        .. controls
+            (0.75,2.3)
+            and
+            (1.6,1.2)
+        ..
+        (2.7,0.72)
+        .. controls
+            (3.8,0.38)
+            and
+            (4.9,0.23)
+        ..
+        (6.0,0.15);
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Качественная зависимость сечения фотоэффекта
+        от энергии $\gamma$-кванта.
+    }
+    \label{fig:photoeffect_cross_section}
+\end{rbox}
+
+
+% ============================================================
+% Эффект Комптона
+% ============================================================
+
+\subsection*{Эффект Комптона}
+
+При комптоновском рассеянии $\gamma$-квант
+не поглощается полностью, а передаёт электрону
+лишь часть своей энергии:
+
+\begin{equation*}
+    \gamma+e^-
+    \longrightarrow
+    \gamma'+e'.
+\end{equation*}
+
+Для одного электрона при малых энергиях,
+
+\begin{equation*}
+    E_\gamma
+    \ll
+    m_ec^2,
+\end{equation*}
+
+сечение переходит в томсоновское:
+
+\begin{equation*}
+    \boxed{
+        \sigma_C^e
+        =
+        \frac{8}{3}
+        \pi r_e^2
+    }.
+\end{equation*}
+
+При больших энергиях,
+
+\begin{equation*}
+    E_\gamma
+    \gg
+    m_ec^2,
+\end{equation*}
+
+получаем
+
+\begin{equation*}
+    \boxed{
+        \sigma_C^e
+        =
+        \pi r_e^2
+        \frac{
+            m_ec^2
+        }{
+            E_\gamma
+        }
+        \left[
+            \ln
+            \left(
+                \frac{
+                    2E_\gamma
+                }{
+                    m_ec^2
+                }
+            \right)
+            +
+            \frac12
+        \right]
+    }.
+\end{equation*}
+
+То есть при больших энергиях сечение
+приближённо уменьшается как
+
+\begin{equation*}
+    \sigma_C^e
+    \sim
+    \frac{
+        \ln E_\gamma
+    }{
+        E_\gamma
+    }.
+\end{equation*}
+
+В атоме имеется $Z$ электронов,
+поэтому сечение на атоме равно
+
+\begin{equation*}
+    \boxed{
+        \sigma_C
+        =
+        Z\sigma_C^e
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Качественный график Комптона
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,0) -- (6.5,0)
+        node[right] {$E_\gamma$};
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,0) -- (0,3.8)
+        node[above] {$\sigma_C$};
+
+        % Низкоэнергетическое плато
+        \draw[
+            draw=rc3,
+            line width=1.5pt
+        ]
+        (0.45,2.55)
+        .. controls
+            (1.4,2.55)
+            and
+            (2.1,2.52)
+        ..
+        (2.75,2.45)
+        .. controls
+            (3.35,2.28)
+            and
+            (3.65,1.70)
+        ..
+        (4.15,1.12)
+        .. controls
+            (4.7,0.63)
+            and
+            (5.3,0.36)
+        ..
+        (6.0,0.22);
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Качественная энергетическая зависимость
+        сечения комптоновского рассеяния.
+    }
+    \label{fig:compton_cross_section}
+\end{rbox}
+
+
+% ============================================================
+% Задача 4
+% ============================================================
+
+\section{Задача 4. Кинематика комптоновского рассеяния}
+
+Рассмотрим процесс
+
+\begin{equation*}
+    \gamma+e^-
+    \longrightarrow
+    \gamma'+e'.
+\end{equation*}
+
+Начальный электрон покоится.
+
+Пусть исходный фотон имеет энергию $E_\gamma$,
+а рассеянный фотон --- энергию $E_\gamma'$.
+Угол между направлениями исходного и рассеянного фотонов
+обозначим через $\theta$.
+
+Требуется найти
+
+\begin{equation*}
+    E_\gamma'
+    =
+    E_\gamma'(E_\gamma,\theta).
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Рисунок: эффект Комптона
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        \coordinate (O) at (0,0);
+
+        % Начальный фотон
+        \draw[
+            draw=rc3,
+            line width=1.0pt
+        ]
+        (-4.0,0)
+        -- (-3.65,0.17)
+        -- (-3.30,-0.17)
+        -- (-2.95,0.17)
+        -- (-2.60,-0.17)
+        -- (-2.25,0.17)
+        -- (-1.90,-0.17)
+        -- (-1.55,0.17)
+        -- (-1.20,-0.17)
+        -- (-0.85,0.17)
+        -- (-0.50,0);
+
+        \draw[
+            ->,
+            draw=rc3,
+            line width=1.0pt
+        ]
+        (-0.50,0) -- (O);
+
+        \node[
+            above
+        ]
+        at (-2.3,0.25)
+        {$\gamma,\ E_\gamma$};
+
+        % Начальный электрон
+        \fill[
+            rtext
+        ]
+        (O) circle (2.6pt);
+
+        \node[
+            below=5pt
+        ]
+        at (O)
+        {$e^-$};
+
+        % Рассеянный фотон
+        \draw[
+            draw=rc3,
+            line width=1.0pt
+        ]
+        (0,0)
+        -- (0.32,0.30)
+        -- (0.58,0.20)
+        -- (0.90,0.50)
+        -- (1.16,0.40)
+        -- (1.48,0.70)
+        -- (1.74,0.60)
+        -- (2.06,0.90)
+        -- (2.32,0.80);
+
+        \draw[
+            ->,
+            draw=rc3,
+            line width=1.0pt
+        ]
+        (2.32,0.80) -- (2.75,1.02);
+
+        \node[
+            above
+        ]
+        at (2.0,0.95)
+        {$\gamma',\ E_\gamma'$};
+
+        % Электрон отдачи
+        \draw[
+            ->,
+            draw=rtext,
+            line width=1.1pt
+        ]
+        (O) -- (2.5,-1.35);
+
+        \node[
+            below
+        ]
+        at (2.0,-1.10)
+        {$e'$};
+
+        % Исходное направление
+        \draw[
+            dashed,
+            draw=rtextmuted,
+            line width=0.7pt
+        ]
+        (O) -- (3.1,0);
+
+        % Угол theta
+        \draw[
+            draw=rtext,
+            line width=0.8pt
+        ]
+        (0.85,0)
+        arc[
+            start angle=0,
+            end angle=22,
+            radius=0.85
+        ];
+
+        \node at (1.15,0.22) {$\theta$};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Кинематика комптоновского рассеяния.
+        Начальный электрон покоится,
+        а рассеянный фотон вылетает под углом $\theta$.
+    }
+    \label{fig:compton_kinematics}
+\end{rbox}
+
+
+Запишем закон сохранения четырёхимпульса:
+
+\begin{equation*}
+    P_\gamma+P_e
+    =
+    P_\gamma'+P_e'.
+\end{equation*}
+
+Отсюда
+
+\begin{equation*}
+    P_e'
+    =
+    P_\gamma+P_e-P_\gamma'.
+\end{equation*}
+
+В лабораторной системе отсчёта начальный электрон покоится:
+
+\begin{equation*}
+    P_e
+    =
+    \left(
+        m_ec,
+        \vec 0
+    \right).
+\end{equation*}
+
+Для фотонов
+
+\begin{equation*}
+    P_\gamma^2
+    =
+    P_\gamma'^2
+    =
+    0.
+\end{equation*}
+
+Для конечного электрона
+
+\begin{equation*}
+    P_e'^2
+    =
+    m_e^2c^2.
+\end{equation*}
+
+Поэтому возведём равенство
+
+\begin{equation*}
+    P_e'
+    =
+    P_\gamma+P_e-P_\gamma'
+\end{equation*}
+
+в квадрат:
+
+\begin{equation*}
+    P_e'^2
+    =
+    \left(
+        P_\gamma+P_e-P_\gamma'
+    \right)^2.
+\end{equation*}
+
+Получаем
+
+\begin{align*}
+    m_e^2c^2
+    &=
+    P_\gamma^2
+    +
+    P_e^2
+    +
+    P_\gamma'^2
+    +
+    2P_\gamma P_e
+    -
+    2P_\gamma P_\gamma'
+    -
+    2P_eP_\gamma'
+    \\[3pt]
+    &=
+    m_e^2c^2
+    +
+    2P_\gamma P_e
+    -
+    2P_\gamma P_\gamma'
+    -
+    2P_eP_\gamma'.
+\end{align*}
+
+Сокращая $m_e^2c^2$, имеем
+
+\begin{equation*}
+    P_\gamma P_e
+    -
+    P_\gamma P_\gamma'
+    -
+    P_eP_\gamma'
+    =
+    0.
+\end{equation*}
+
+Поскольку начальный электрон покоится,
+
+\begin{equation*}
+    P_\gamma P_e
+    =
+    m_eE_\gamma,
+\end{equation*}
+
+и
+
+\begin{equation*}
+    P_eP_\gamma'
+    =
+    m_eE_\gamma'.
+\end{equation*}
+
+Скалярное произведение четырёхимпульсов
+двух фотонов равно
+
+\begin{equation*}
+    P_\gamma P_\gamma'
+    =
+    \frac{
+        E_\gamma E_\gamma'
+    }{
+        c^2
+    }
+    (1-\cos\theta).
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    m_eE_\gamma
+    -
+    m_eE_\gamma'
+    -
+    \frac{
+        E_\gamma E_\gamma'
+    }{
+        c^2
+    }
+    (1-\cos\theta)
+    =
+    0.
+\end{equation*}
+
+Умножая на $c^2$, получаем
+
+\begin{equation*}
+    m_ec^2
+    \left(
+        E_\gamma-E_\gamma'
+    \right)
+    =
+    E_\gamma E_\gamma'
+    (1-\cos\theta).
+\end{equation*}
+
+Перенесём члены с $E_\gamma'$ в правую часть:
+
+\begin{equation*}
+    m_ec^2E_\gamma
+    =
+    E_\gamma'
+    \left[
+        m_ec^2
+        +
+        E_\gamma
+        (1-\cos\theta)
+    \right].
+\end{equation*}
+
+Отсюда
+
+\begin{equation*}
+    \boxed{
+        E_\gamma'
+        =
+        \frac{
+            E_\gamma
+        }{
+            1+
+            \dfrac{
+                E_\gamma
+            }{
+                m_ec^2
+            }
+            (1-\cos\theta)
+        }
+    }.
+\end{equation*}
+
+Это формула энергии рассеянного фотона
+в эффекте Комптона.
+
+При рассеянии строго вперёд
+
+\begin{equation*}
+    \theta=0,
+\end{equation*}
+
+и поэтому
+
+\begin{equation*}
+    E_\gamma'
+    =
+    E_\gamma.
+\end{equation*}
+
+При обратном рассеянии
+
+\begin{equation*}
+    \theta=\pi,
+\end{equation*}
+
+поэтому
+
+\begin{equation*}
+    1-\cos\theta=2,
+\end{equation*}
+
+и минимальная энергия рассеянного фотона равна
+
+\begin{equation*}
+    \boxed{
+        E_{\gamma,\min}'
+        =
+        \frac{
+            E_\gamma
+        }{
+            1+
+            \dfrac{
+                2E_\gamma
+            }{
+                m_ec^2
+            }
+        }
+    }.
+\end{equation*}
+
+По закону сохранения энергии
+
+\begin{equation*}
+    E_\gamma+m_ec^2
+    =
+    E_\gamma'+E_e'.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    E_e'
+    =
+    E_\gamma
+    +
+    m_ec^2
+    -
+    E_\gamma'.
+\end{equation*}
+
+Кинетическая энергия электрона отдачи равна
+
+\begin{equation*}
+    T_e
+    =
+    E_e'-m_ec^2.
+\end{equation*}
+
+Поэтому
+
+\begin{equation*}
+    T_e
+    =
+    E_\gamma-E_\gamma'.
+\end{equation*}
+
+Подставляя найденное выражение для энергии фотона,
+
+\begin{equation*}
+    \boxed{
+        T_e
+        =
+        E_\gamma
+        \left[
+            1-
+            \frac{
+                1
+            }{
+                1+
+                \dfrac{
+                    E_\gamma
+                }{
+                    m_ec^2
+                }
+                (1-\cos\theta)
+            }
+        \right]
+    }.
+\end{equation*}
+
+
+\end{document}
