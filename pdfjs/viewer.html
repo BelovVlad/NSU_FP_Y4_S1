@@ -76,6 +76,7 @@ const subject=params.get('subject')||'';
 const titleParam=params.get('title')||'';
 const pageParam=Number(params.get('page')||0);
 const findParam=params.get('find')||'';
+const versionParam=params.get('v')||'';
 const $=id=>document.getElementById(id);
 const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText'),mPrev=$('mPrev'),mNext=$('mNext'),mPageInfo=$('mPageInfo'),searchToggle=$('searchToggle'),searchPanel=$('searchPanel'),searchInput=$('searchInput'),searchPrev=$('searchPrev'),searchNext=$('searchNext'),searchStatus=$('searchStatus'),searchClose=$('searchClose'),highlightLayer=$('highlightLayer'),annotationLayer=$('annotationLayer'),outlineToggle=$('outlineToggle'),outlinePanel=$('outlinePanel'),outlineTree=$('outlineTree'),outlineClose=$('outlineClose'),outlineBackdrop=$('outlineBackdrop');
 
@@ -109,13 +110,13 @@ function clearAnnotations(){annotationLayer.replaceChildren()}
 function findMatches(text,q){const hits=[];if(!q)return hits;let from=0;while(true){const i=text.indexOf(q,from);if(i<0)break;hits.push(i);from=i+Math.max(1,q.length)}return hits}
 
 async function resolvePdfUrl(path){
-  const localUrl=new URL('../'+path.replace(/^\/+/,''),location.href).href;
+  const local=new URL('../'+path.replace(/^\/+/,''),location.href);if(versionParam)local.searchParams.set('v',versionParam);const localUrl=local.href;
   try{
     const head=await fetch(localUrl,{method:'HEAD',cache:'no-store'});
     const size=Number(head.headers.get('content-length')||0);
     if(size>0&&size<1024){
       const text=await fetch(localUrl,{cache:'no-store'}).then(r=>r.text());
-      if(text.startsWith('version https://git-lfs.github.com/spec/v1'))return `https://media.githubusercontent.com/media/${OWNER}/${REPO}/${BRANCH}/${encPath(path)}`;
+      if(text.startsWith('version https://git-lfs.github.com/spec/v1')){const media=new URL(`https://media.githubusercontent.com/media/${OWNER}/${REPO}/${BRANCH}/${encPath(path)}`);if(versionParam)media.searchParams.set('v',versionParam);return media.href}
     }
   }catch{}
   return localUrl;
