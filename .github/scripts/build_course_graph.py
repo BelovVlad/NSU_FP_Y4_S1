@@ -9,7 +9,7 @@ from pathlib import Path
 import fitz
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "search-index" / "course-graph.json"
+OUT = ROOT / "docs" / "search-index" / "course-graph.json"
 SUBJECTS = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ"]
 MAX_TOTAL_NODES = 320
 MAX_TOC_PER_PDF = 80
@@ -71,7 +71,7 @@ def add_link(links: list[dict], seen: set[tuple[str, str]], source: str, target:
 
 
 def main() -> None:
-    OUT.parent.mkdir(exist_ok=True)
+    OUT.parent.mkdir(parents=True, exist_ok=True)
     nodes: list[dict] = []
     links: list[dict] = []
     seen_links: set[tuple[str, str]] = set()
@@ -186,7 +186,7 @@ def main() -> None:
         node["degree"] = degree.get(node["id"], 0)
 
     payload = {
-        "version": 1,
+        "version": 2,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "nodes": nodes,
         "links": links,
