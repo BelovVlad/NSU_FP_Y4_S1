@@ -5,1452 +5,885 @@
 \begin{document}
 
 % ============================================================
-% Лекция 08.09
-% Решение нелинейных уравнений
+% Задача 1
 % ============================================================
 
-\chapter{Решение нелинейных уравнений}
+\newpage
+\section{Задача 1. Распад $\varphi$-мезона на каоны}
 
-\rsubtitle{Методы дихотомии, простых итераций и Ньютона}
+$\varphi$-мезон движется в лабораторной системе отсчёта
+со скоростью $\beta c$ и на лету распадается на пару заряженных
+каонов
+%
+\begin{equation*}
+    \varphi \rightarrow K^+ + K^-.
+\end{equation*}
+%
+В системе покоя $\varphi$-мезона оба каона имеют одинаковые
+по модулю скорости
+%
+\begin{equation*}
+    v'=\beta'c.
+\end{equation*}
 
-\captionsetup{
-    font=footnotesize,
-    labelfont=bf,
-    skip=5pt
-}
+Требуется определить максимальный угол, который может составлять
+направление движения одного из каонов с направлением движения
+$\varphi$-мезона в лабораторной системе, а также максимальный угол
+между двумя каонами в лабораторной системе.
 
-% Общий стиль рисунков лекции.
-\tikzset{
-    ovfaxis/.style={
-        -{Stealth[length=2.2mm]},
-        white,
-        line width=0.85pt
-    },
-    ovfcurve/.style={
-        rc4,
-        line width=1.55pt
-    },
-    ovfcurvealt/.style={
-        white!80,
-        line width=1.05pt
-    },
-    ovfguide/.style={
-        white!45,
-        dashed,
-        line width=0.70pt
-    },
-    ovfiter/.style={
-        rc2,
-        -{Stealth[length=1.8mm]},
-        line width=1.0pt
-    },
-    ovftangent/.style={
-        rc2,
-        line width=1.0pt
-    },
-    ovfpoint/.style={
-        circle,
-        fill=rc3,
-        draw=none,
-        inner sep=1.7pt
+
+% ------------------------------------------------------------
+% Схема
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext,font=\small}
+    ]
+
+        % =====================================================
+        % Система покоя phi-мезона
+        % =====================================================
+
+        \begin{scope}[xshift=-3.7cm]
+
+            \coordinate (O1) at (0,0);
+
+            % Оси
+            \draw[
+                ->,
+                draw=rtext,
+                line width=0.8pt
+            ]
+            (-0.4,0) -- (3.1,0)
+            node[right] {$x'$};
+
+            \draw[
+                ->,
+                draw=rtext,
+                line width=0.8pt
+            ]
+            (0,-1.9) -- (0,2.2)
+            node[above] {$y'$};
+
+            % Вершина распада
+            \fill[rc3] (O1) circle (2.3pt);
+
+            % K+
+            \draw[
+                ->,
+                draw=rtext,
+                line width=1pt
+            ]
+            (O1) -- ++(2.1,1.45);
+
+            \node[above right] at (1.85,1.28)
+            {$K^+,\ \beta'c$};
+
+            % K-
+            \draw[
+                ->,
+                draw=rtext,
+                line width=1pt
+            ]
+            (O1) -- ++(-2.1,-1.45);
+
+            \node[below left] at (-1.75,-1.2)
+            {$K^-,\ \beta'c$};
+
+            % Угол theta'
+            \draw[
+                draw=rtext,
+                line width=0.8pt
+            ]
+            (0.85,0)
+            arc[
+                start angle=0,
+                end angle=35,
+                radius=0.85
+            ];
+
+            \node at (1.08,0.35) {$\theta'$};
+
+            \node[above] at (0,2.45)
+            {\textbf{С.О. $\varphi$-мезона}};
+
+        \end{scope}
+
+
+        % =====================================================
+        % Лабораторная система
+        % =====================================================
+
+        \begin{scope}[xshift=3.7cm]
+
+            \coordinate (O2) at (0,0);
+
+            % Ось x
+            \draw[
+                ->,
+                draw=rtext,
+                line width=0.8pt
+            ]
+            (-2.8,0) -- (3.2,0)
+            node[right] {$x$};
+
+            % Ось y
+            \draw[
+                ->,
+                draw=rtext,
+                line width=0.8pt
+            ]
+            (0,-1.9) -- (0,2.2)
+            node[above] {$y$};
+
+            % phi до распада
+            \draw[
+                ->,
+                draw=rc3,
+                line width=1.1pt
+            ]
+            (-2.6,0) -- (O2);
+
+            \node[above] at (-1.35,0)
+            {$\varphi,\ \beta c$};
+
+            \fill[rc3] (O2) circle (2.3pt);
+
+            % K+
+            \draw[
+                ->,
+                draw=rtext,
+                line width=1pt
+            ]
+            (O2) -- ++(2.25,1.55);
+
+            \node[above right] at (2.05,1.4) {$K^+$};
+
+            % K-
+            \draw[
+                ->,
+                draw=rtext,
+                line width=1pt
+            ]
+            (O2) -- ++(2.25,-1.25);
+
+            \node[below right] at (2.0,-1.1) {$K^-$};
+
+            % theta_1
+            \draw[
+                draw=rtext,
+                line width=0.8pt
+            ]
+            (0.85,0)
+            arc[
+                start angle=0,
+                end angle=35,
+                radius=0.85
+            ];
+
+            \node at (1.08,0.36) {$\theta_1$};
+
+            % theta_2
+            \draw[
+                draw=rtext,
+                line width=0.8pt
+            ]
+            (0.9,0)
+            arc[
+                start angle=0,
+                end angle=-29,
+                radius=0.9
+            ];
+
+            \node at (1.12,-0.31) {$\theta_2$};
+
+            % Угол Psi
+            \draw[
+                draw=rc3,
+                line width=0.9pt
+            ]
+            (1.72,1.18)
+            arc[
+                start angle=35,
+                end angle=-29,
+                radius=2.1
+            ];
+
+            \node[text=rc3] at (2.15,0.25) {$\Psi$};
+
+            \node[above] at (0,2.45)
+            {\textbf{Лабораторная С.О.}};
+
+        \end{scope}
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
     }
-}
 
-% Функция, используемая на рисунках метода Ньютона и секущих.
-\pgfmathdeclarefunction{ovff}{1}{%
-    \pgfmathparse{0.25*(#1-1.2)^3 + 0.8*(#1-1.2)}%
-}
-\pgfmathdeclarefunction{ovffp}{1}{%
-    \pgfmathparse{0.75*(#1-1.2)^2 + 0.8}%
-}
-
-
-% ============================================================
-\section{Постановка задачи}
-% ============================================================
-
-Будем рассматривать численное решение нелинейного уравнения
-одной вещественной переменной
-%
-\begin{equation*}
-    f(x)=0.
-\end{equation*}
-
-В общем случае такое уравнение не удаётся решить аналитически.
-Простейший пример --- уравнение
-%
-\begin{equation*}
-    x=\cos x,
-\end{equation*}
-%
-которое можно переписать в стандартном виде
-%
-\begin{equation*}
-    x-\cos x=0.
-\end{equation*}
-
-Геометрически его корень определяется как точка пересечения графиков
-$y=x$ и $y=\cos x$.
-
-\begin{center}
-\begin{tikzpicture}[x=2.45cm,y=2.45cm]
-    \draw[ovfaxis] (-0.35,0) -- (2.15,0)
-        node[below left=1pt,text=white] {$x$};
-    \draw[ovfaxis] (0,-0.55) -- (0,1.45)
-        node[left=1pt,text=white] {$y$};
-
-    \draw[ovfcurvealt,domain=-0.25:1.35,samples=2]
-        plot (\x,{\x});
-    \draw[ovfcurve,domain=-0.25:2.0,samples=100,smooth]
-        plot (\x,{cos(deg(\x))});
-
-    \fill[rc3] (0.7391,0.7391) circle (1.6pt);
-
-    \node[text=white!85,anchor=south west]
-        at (1.15,1.15) {$y=x$};
-    \node[text=rc4,anchor=south west]
-        at (1.25,0.28) {$y=\cos x$};
-    \node[text=white!80,anchor=north west]
-        at (0.78,0.70) {$x^*$};
-\end{tikzpicture}
-
-\captionof{figure}{Геометрическая интерпретация уравнения $x=\cos x$.}
-\end{center}
-
-Аналогично уравнение
-%
-\begin{equation*}
-    x=\tan x
-\end{equation*}
-%
-можно записать как
-%
-\begin{equation*}
-    x-\tan x=0.
-\end{equation*}
-
-В отличие от предыдущего примера, такое уравнение имеет несколько
-вещественных корней.
-
-\begin{center}
-\begin{tikzpicture}[x=0.75cm,y=0.75cm]
-    \clip (-5.3,-4.2) rectangle (5.3,4.2);
-
-    \draw[ovfaxis] (-5.15,0) -- (5.15,0)
-        node[below,text=white] {$x$};
-    \draw[ovfaxis] (0,-4.0) -- (0,4.0)
-        node[left,text=white] {$y$};
-
-    \draw[ovfcurvealt,domain=-4.1:4.1,samples=2]
-        plot (\x,{\x});
-
-    \foreach \a/\b in {
-        -4.68/-1.62,
-        -1.52/1.52,
-        1.62/4.68
-    }{
-        \draw[ovfcurve,domain=\a:\b,samples=120,smooth]
-            plot (\x,{tan(deg(\x))});
+    \captionof{figure}{
+        Распад $\varphi\rightarrow K^+K^-$
+        в системе покоя $\varphi$-мезона
+        и в лабораторной системе отсчёта.
     }
-
-    \foreach \x in {-4.4934,0,4.4934}{
-        \fill[rc3] (\x,\x) circle (1.5pt);
-    }
-
-    \node[text=white!85,anchor=south west]
-        at (2.7,2.7) {$y=x$};
-    \node[text=rc4,anchor=south east]
-        at (1.15,3.2) {$y=\tan x$};
-\end{tikzpicture}
-
-\captionof{figure}{Несколько ветвей $y=\tan x$ и прямая $y=x$.}
-\end{center}
-
-Таким образом, прежде чем применять численный метод, необходимо
-выбрать интересующий нас корень и локализовать его на некотором
-отрезке.
+    \label{fig:phi_to_kaons}
+\end{rbox}
 
 
-% ============================================================
-\section{Изоляция корня}
-% ============================================================
+\textbf{Максимальный угол одного каона относительно направления
+движения $\varphi$-мезона.}
 
-Пусть требуется найти корень $x^*$ уравнения
+Направим ось $x$ вдоль скорости $\varphi$-мезона.
+Пусть в системе покоя $\varphi$-мезона каон вылетает под углом
+$\theta'$ к этой оси.
+
+Используем формулу преобразования угла, полученную ранее:
 %
 \begin{equation*}
-    f(x)=0.
-\end{equation*}
-
-Найдём интервал
-%
-\begin{equation*}
-    [a,b],
-\end{equation*}
-%
-содержащий интересующий нас корень. Будем считать, что на этом
-интервале выполняются следующие условия:
-
-\begin{enumerate}[label=\arabic*)]
-    \item на $[a,b]$ находится только один корень $x^*$;
-    \item функция $f(x)$ монотонна на $[a,b]$;
-    \item функция $f(x)$ непрерывна на $[a,b]$;
-    \item значения функции на концах имеют разные знаки либо один
-    из концов сам является корнем:
-    %
-    \begin{equation*}
-        f(a)f(b)\leq0.
-    \end{equation*}
-\end{enumerate}
-
-Для непрерывной функции последнее условие гарантирует существование
-хотя бы одного корня внутри отрезка. Дополнительное условие
-единственности позволяет говорить именно об изолированном корне.
-
-\begin{center}
-\begin{tikzpicture}[x=1.5cm,y=1.0cm]
-    \draw[ovfaxis] (-0.15,0) -- (5.8,0)
-        node[below,text=white] {$x$};
-    \draw[ovfaxis] (0,-2.3) -- (0,2.7)
-        node[left,text=white] {$y$};
-
-    \draw[ovfcurve,domain=0.15:5.45,samples=120,smooth]
-        plot (\x,{0.34*(\x-1.5)*(\x-4.5)});
-
-    \draw[ovfguide] (0.70,0) -- (0.70,{0.34*(0.70-1.5)*(0.70-4.5)});
-    \draw[ovfguide] (2.40,0) -- (2.40,{0.34*(2.40-1.5)*(2.40-4.5)});
-
-    \fill[rc3] (1.5,0) circle (1.7pt);
-    \fill[rc3] (4.5,0) circle (1.7pt);
-
-    \node[text=white,below] at (0.70,0) {$a$};
-    \node[text=white,below] at (2.40,0) {$b$};
-    \node[text=white!85,above] at (1.5,0) {$x_1^*$};
-    \node[text=white!85,above] at (4.5,0) {$x_2^*$};
-    \node[text=rc4,anchor=south west] at (4.25,1.0) {$y=f(x)$};
-\end{tikzpicture}
-
-\captionof{figure}{Изоляция одного корня на отрезке $[a,b]$.}
-\end{center}
-
-
-% ============================================================
-\section{Метод дихотомии}
-% ============================================================
-
-\subsection{Построение последовательности отрезков}
-
-Пусть первоначально
-%
-\begin{equation*}
-    a_0=a,
-    \qquad
-    b_0=b,
-\end{equation*}
-%
-и
-%
-\begin{equation*}
-    f(a_0)f(b_0)\leq0.
-\end{equation*}
-
-На первом шаге делим исходный отрезок пополам и вычисляем его
-середину:
-%
-\begin{equation*}
-    x_1=\frac{a_0+b_0}{2}.
-\end{equation*}
-
-Если
-%
-\begin{equation*}
-    f(a_0)f(x_1)\leq0,
-\end{equation*}
-%
-то выбираем левую половину:
-%
-\begin{equation*}
-    a_1=a_0,
-    \qquad
-    b_1=x_1.
-\end{equation*}
-
-Если же
-%
-\begin{equation*}
-    f(a_0)f(x_1)>0,
-\end{equation*}
-%
-то корень находится в правой половине и полагаем
-%
-\begin{equation*}
-    a_1=x_1,
-    \qquad
-    b_1=b_0.
-\end{equation*}
-
-В обоих случаях сохраняется условие
-%
-\begin{equation*}
-    f(a_1)f(b_1)\leq0,
-\end{equation*}
-%
-а ширина нового интервала в два раза меньше исходной:
-%
-\begin{equation*}
-    b_1-a_1
+    \tan\theta
     =
-    \frac{b_0-a_0}{2}.
+    \frac{
+        \sin\theta'
+    }{
+        \gamma
+        \left(
+            \dfrac{\beta}{\beta'}
+            +
+            \cos\theta'
+        \right)
+    },
+    \qquad
+    \gamma
+    =
+    \frac{1}{\sqrt{1-\beta^2}}.
 \end{equation*}
 
+Сначала рассмотрим случай
+%
+\begin{equation*}
+    \beta>\beta'.
+\end{equation*}
+%
 Введём обозначение
 %
 \begin{equation*}
-    \delta_0=b_0-a_0.
+    a
+    =
+    \frac{\beta}{\beta'},
+    \qquad
+    a>1.
 \end{equation*}
-%
+
 Тогда
 %
 \begin{equation*}
-    \delta_1=\frac{\delta_0}{2}.
+    \tan\theta
+    =
+    \frac{1}{\gamma}
+    \frac{
+        \sin\theta'
+    }{
+        a+\cos\theta'
+    }.
 \end{equation*}
 
-\begin{center}
-\begin{tikzpicture}[x=2.0cm,y=1.15cm]
-    \draw[ovfaxis] (-0.15,0) -- (3.25,0)
-        node[below,text=white] {$x$};
-    \draw[ovfaxis] (0,-1.4) -- (0,2.3)
-        node[left,text=white] {$y$};
-
-    \draw[ovfcurve,domain=0.55:2.75,samples=100,smooth]
-        plot (\x,{1.15*(\x*\x-2)});
-
-    \pgfmathsetmacro{\aa}{1.0}
-    \pgfmathsetmacro{\bb}{2.0}
-    \pgfmathsetmacro{\xxone}{1.5}
-
-    \draw[ovfguide] (\aa,0) -- (\aa,{1.15*(\aa*\aa-2)});
-    \draw[ovfguide] (\bb,0) -- (\bb,{1.15*(\bb*\bb-2)});
-    \draw[ovfguide] (\xxone,0) -- (\xxone,{1.15*(\xxone*\xxone-2)});
-
-    \fill[rc3] ({sqrt(2)},0) circle (1.7pt);
-
-    \node[text=white,below] at (\aa,0) {$a_0$};
-    \node[text=white,below] at (\bb,0) {$b_0$};
-    \node[text=white!85,below] at (\xxone,0) {$x_1$};
-    \node[text=white!85,above left] at ({sqrt(2)},0) {$x^*$};
-    \node[text=rc4,anchor=south west] at (2.15,1.35) {$y=f(x)$};
-\end{tikzpicture}
-
-\captionof{figure}{Первый шаг метода дихотомии.}
-\end{center}
-
-На втором шаге повторяем ту же процедуру уже для отрезка
-$[a_1,b_1]$:
-%
-\begin{equation*}
-    x_2=\frac{a_1+b_1}{2}.
-\end{equation*}
-
-После выбора нужной половины получаем
-%
-\begin{equation*}
-    b_2-a_2
-    =
-    \delta_2
-    =
-    \frac{b_0-a_0}{2^2}
-    =
-    \frac{\delta_0}{2^2}.
-\end{equation*}
-
-Продолжая процесс, на $n$-м шаге имеем
-%
-\begin{equation*}
-    x_n
-    =
-    \frac{a_{n-1}+b_{n-1}}{2},
-\end{equation*}
-%
-а ширина нового интервала равна
+Максимум угла $\theta$ соответствует максимуму $\tan\theta$.
+Дифференцируем:
 %
 \begin{align*}
-    b_n-a_n
+    \frac{d}{d\theta'}
+    \left(
+        \frac{\sin\theta'}{a+\cos\theta'}
+    \right)
     &=
-    \frac{b_{n-1}-a_{n-1}}{2}
-    \\
+    \frac{
+        \cos\theta'(a+\cos\theta')
+        +
+        \sin^2\theta'
+    }{
+        (a+\cos\theta')^2
+    }
+    \\[3pt]
     &=
-    \frac{b_0-a_0}{2^n}
-    \\
-    &=
-    \frac{\delta_0}{2^n}.
+    \frac{
+        a\cos\theta'+1
+    }{
+        (a+\cos\theta')^2
+    }.
 \end{align*}
 
-Таким образом,
+Следовательно, условие экстремума имеет вид
 %
 \begin{equation*}
-    \delta_n
-    =
-    \frac{\delta_0}{2^n}.
-\end{equation*}
-
-
-\subsection{Число шагов}
-
-Условием остановки итерационного процесса можно взять достижение
-заданной точности
-%
-\begin{equation*}
-    \delta_n\leq\varepsilon.
-\end{equation*}
-
-Тогда
-%
-\begin{equation*}
-    \frac{\delta_0}{2^N}\leq\varepsilon,
+    a\cos\theta'+1=0,
 \end{equation*}
 %
 откуда
 %
 \begin{equation*}
-    2^N\geq\frac{\delta_0}{\varepsilon}.
-\end{equation*}
-
-Следовательно, необходимое число шагов оценивается как
-%
-\begin{equation*}
-    N
-    \approx
-    \log_2\frac{\delta_0}{\varepsilon}
+    \cos\theta'_{\mathrm{ext}}
     =
-    \frac{\ln(\delta_0/\varepsilon)}{\ln2}.
-\end{equation*}
-
-Если в качестве приближения к корню брать середину текущего
-интервала, то максимальная абсолютная погрешность вдвое меньше его
-ширины:
-%
-\begin{equation*}
-    \left|x_n-x^*\right|
-    \leq
-    \frac{b_{n-1}-a_{n-1}}{2}.
-\end{equation*}
-
-
-\subsection{Сходимость метода}
-
-Последовательность левых границ
-%
-\begin{equation*}
-    \{a_n\}
-\end{equation*}
-%
-монотонно возрастает и ограничена сверху. Последовательность правых
-границ
-%
-\begin{equation*}
-    \{b_n\}
-\end{equation*}
-%
-монотонно убывает и ограничена снизу. Поэтому обе
-последовательности имеют пределы:
-%
-\begin{equation*}
-    a_n\to A,
-    \qquad
-    b_n\to B.
-\end{equation*}
-
-Но
-%
-\begin{equation*}
-    b_n-a_n
+    -\frac{1}{a}
     =
-    \frac{\delta_0}{2^n}
-    \underset{n\to\infty}{\longrightarrow}
-    0,
-\end{equation*}
-%
-следовательно,
-%
-\begin{equation*}
-    A=B=C.
-\end{equation*}
-
-На каждом шаге сохраняется условие
-%
-\begin{equation*}
-    f(a_n)f(b_n)\leq0.
-\end{equation*}
-
-Переходя к пределу и используя непрерывность функции $f(x)$,
-получаем
-%
-\begin{equation*}
-    f(C)f(C)\leq0.
-\end{equation*}
-
-То есть
-%
-\begin{equation*}
-    [f(C)]^2\leq0.
-\end{equation*}
-
-Поскольку квадрат вещественного числа неотрицателен,
-%
-\begin{equation*}
-    f(C)=0.
-\end{equation*}
-
-Следовательно,
-%
-\begin{equation*}
-    C=x^*,
-\end{equation*}
-%
-и
-%
-\begin{equation*}
-    x_n
-    =
-    \frac{a_{n-1}+b_{n-1}}{2}
-    \underset{n\to\infty}{\longrightarrow}
-    x^*.
-\end{equation*}
-
-Таким образом, метод дихотомии обладает гарантированной сходимостью
-для непрерывной функции при наличии изменения знака на концах
-отрезка. Недостаток метода --- сравнительно невысокая скорость
-сходимости.
-
-
-% ============================================================
-\section{Метод простых итераций}
-% ============================================================
-
-\subsection{Переход к уравнению на неподвижную точку}
-
-Исходное уравнение
-%
-\begin{equation*}
-    f(x)=0
-\end{equation*}
-%
-перепишем в эквивалентном виде
-%
-\begin{equation*}
-    x=\varphi(x).
-\end{equation*}
-
-Например, простейший вариант такого преобразования имеет вид
-%
-\begin{equation*}
-    f(x)=0
-    \quad\Longleftrightarrow\quad
-    x+f(x)=x,
-\end{equation*}
-%
-то есть
-%
-\begin{equation*}
-    \varphi(x)=x+f(x).
-\end{equation*}
-
-После этого строим итерационный процесс
-%
-\begin{equation*}
-    x_{n+1}=\varphi(x_n),
-    \qquad
-    n=0,1,2,\ldots
-\end{equation*}
-
-Выбираем начальное приближение $x_0$ и последовательно вычисляем
-%
-\begin{equation*}
-    x_1=\varphi(x_0),
-    \qquad
-    x_2=\varphi(x_1),
-    \qquad
-    x_3=\varphi(x_2),
-    \ldots
-\end{equation*}
-
-\begin{center}
-\begin{tikzpicture}[x=3.0cm,y=3.0cm]
-    \pgfmathsetmacro{\xzero}{1.70}
-    \pgfmathsetmacro{\xone}{0.6+0.3*cos(deg(\xzero))}
-    \pgfmathsetmacro{\xtwo}{0.6+0.3*cos(deg(\xone))}
-    \pgfmathsetmacro{\xthree}{0.6+0.3*cos(deg(\xtwo))}
-
-    \draw[ovfaxis] (-0.05,0) -- (1.95,0)
-        node[below,text=white] {$x$};
-    \draw[ovfaxis] (0,-0.05) -- (0,1.45)
-        node[left,text=white] {$y$};
-
-    \draw[ovfcurvealt,domain=0:1.45,samples=2]
-        plot (\x,{\x});
-    \draw[ovfcurve,domain=0:1.85,samples=100,smooth]
-        plot (\x,{0.6+0.3*cos(deg(\x))});
-
-    \draw[ovfiter] (\xzero,0) -- (\xzero,\xone);
-    \draw[ovfiter] (\xzero,\xone) -- (\xone,\xone);
-    \draw[ovfiter] (\xone,\xone) -- (\xone,\xtwo);
-    \draw[ovfiter] (\xone,\xtwo) -- (\xtwo,\xtwo);
-    \draw[ovfiter] (\xtwo,\xtwo) -- (\xtwo,\xthree);
-    \draw[ovfiter] (\xtwo,\xthree) -- (\xthree,\xthree);
-
-    \node[text=white,below] at (\xzero,0) {$x_0$};
-    \node[text=white,below] at (\xone,0) {$x_1$};
-    \node[text=white,below] at (\xtwo,0) {$x_2$};
-
-    \node[text=white!85,anchor=south west]
-        at (1.05,1.05) {$y=x$};
-    \node[text=rc4,anchor=south west]
-        at (1.05,0.63) {$y=\varphi(x)$};
-\end{tikzpicture}
-
-\captionof{figure}{Геометрическая схема метода простых итераций.}
-\end{center}
-
-
-\subsection{Условие сходимости}
-
-Пусть $[a,b]$ --- интервал, содержащий корень $x^*$, причём
-%
-\begin{equation*}
-    \varphi([a,b])\subset[a,b].
-\end{equation*}
-
-Пусть функция $\varphi(x)$ непрерывно дифференцируема на $[a,b]$ и
-существует число $q<1$ такое, что
-%
-\begin{equation*}
-    |\varphi'(x)|\leq q<1,
-    \qquad
-    x\in[a,b].
-\end{equation*}
-
-Тогда итерационный процесс
-%
-\begin{equation*}
-    x_{n+1}=\varphi(x_n)
-\end{equation*}
-%
-сходится к единственной неподвижной точке $x^*$ на этом интервале.
-
-Действительно, для корня
-%
-\begin{equation*}
-    x^*=\varphi(x^*).
-\end{equation*}
-
-Поэтому
-%
-\begin{align*}
-    |x_n-x^*|
-    &=
-    |\varphi(x_{n-1})-\varphi(x^*)|.
-\end{align*}
-
-По теореме Лагранжа существует точка $\xi_{n-1}$ между
-$x_{n-1}$ и $x^*$ такая, что
-%
-\begin{align*}
-    |x_n-x^*|
-    &=
-    |\varphi'(\xi_{n-1})|
-    |x_{n-1}-x^*|
-    \\
-    &\leq
-    q|x_{n-1}-x^*|.
-\end{align*}
-
-Для предыдущего шага аналогично
-%
-\begin{equation*}
-    |x_{n-1}-x^*|
-    \leq
-    q|x_{n-2}-x^*|.
-\end{equation*}
-
-Следовательно,
-%
-\begin{align*}
-    |x_n-x^*|
-    &\leq
-    q^2|x_{n-2}-x^*|
-    \\
-    &\leq
-    \ldots
-    \\
-    &\leq
-    q^n|x_0-x^*|.
-\end{align*}
-
-Так как
-%
-\begin{equation*}
-    0\leq q<1,
-\end{equation*}
-%
-то
-%
-\begin{equation*}
-    q^n\underset{n\to\infty}{\longrightarrow}0,
-\end{equation*}
-%
-и поэтому
-%
-\begin{equation*}
-    x_n\underset{n\to\infty}{\longrightarrow}x^*.
-\end{equation*}
-
-
-\subsection{Сходящийся и расходящийся процессы}
-
-Условие
-%
-\begin{equation*}
-    |\varphi'(x)|<1
-\end{equation*}
-%
-соответствует сжимающему отображению: расстояние до неподвижной
-точки уменьшается после каждой итерации. Если же в окрестности корня
-%
-\begin{equation*}
-    |\varphi'(x^*)|>1,
-\end{equation*}
-%
-то неподвижная точка становится отталкивающей и итерации обычно
-расходятся.
-
-\begin{center}
-\begin{minipage}{0.46\linewidth}
-\centering
-\begin{tikzpicture}[x=2.1cm,y=2.1cm]
-    \draw[ovfaxis] (-0.05,0) -- (2.0,0);
-    \draw[ovfaxis] (0,-0.05) -- (0,2.0);
-
-    \draw[ovfcurvealt] (0,0) -- (1.85,1.85);
-    \draw[ovfcurve,domain=0:1.85,samples=2]
-        plot (\x,{1+0.55*(\x-1)});
-
-    \node[text=white!85,anchor=south west] at (1.35,1.35) {$y=x$};
-    \node[text=rc4,anchor=north west] at (1.28,1.15) {$y=\varphi(x)$};
-    \node[text=white,below] at (1,0) {$x^*$};
-    \fill[rc3] (1,1) circle (1.5pt);
-\end{tikzpicture}
-
-{\footnotesize $|\varphi'(x^*)|<1$: корень притягивает итерации.}
-\end{minipage}
-\hfill
-\begin{minipage}{0.46\linewidth}
-\centering
-\begin{tikzpicture}[x=2.1cm,y=2.1cm]
-    \draw[ovfaxis] (-0.05,0) -- (2.0,0);
-    \draw[ovfaxis] (0,-0.05) -- (0,2.0);
-
-    \draw[ovfcurvealt] (0,0) -- (1.85,1.85);
-    \draw[ovfcurve,domain=0.22:1.72,samples=2]
-        plot (\x,{1+1.25*(\x-1)});
-
-    \node[text=white!85,anchor=south west] at (1.35,1.35) {$y=x$};
-    \node[text=rc4,anchor=south east] at (0.75,0.55) {$y=\varphi(x)$};
-    \node[text=white,below] at (1,0) {$x^*$};
-    \fill[rc3] (1,1) circle (1.5pt);
-\end{tikzpicture}
-
-{\footnotesize $|\varphi'(x^*)|>1$: корень отталкивает итерации.}
-\end{minipage}
-\end{center}
-
-Ограничение $|\varphi'|<1$ является достаточным, но не необходимым
-условием сходимости. В более общем случае достаточно, чтобы само
-отображение уменьшало расстояние до искомой неподвижной точки.
-
-
-\subsection{Скорость сходимости}
-
-Пусть начальное приближение $x_0$ уже достаточно близко к корню.
-Разложим $\varphi(x_0)$ около $x^*$:
-%
-\begin{equation*}
-    \varphi(x_0)
-    \approx
-    \varphi(x^*)
-    +
-    \varphi'(x^*)(x_0-x^*).
-\end{equation*}
-
-Так как
-%
-\begin{equation*}
-    \varphi(x^*)=x^*,
-\end{equation*}
-%
-то
-%
-\begin{align*}
-    x_1-x^*
-    &\approx
-    \varphi'(x^*)(x_0-x^*).
-\end{align*}
-
-Введём абсолютную погрешность
-%
-\begin{equation*}
-    \delta_n=|x_n-x^*|.
-\end{equation*}
-
-Тогда
-%
-\begin{equation*}
-    \delta_1
-    \approx
-    |\varphi'(x^*)|\,\delta_0.
-\end{equation*}
-
-На следующем шаге
-%
-\begin{equation*}
-    \delta_2
-    \approx
-    |\varphi'(x^*)|\,\delta_1
-    \approx
-    |\varphi'(x^*)|^2\delta_0.
-\end{equation*}
-
-Продолжая,
-%
-\begin{equation*}
-    \delta_n
-    \approx
-    |\varphi'(x^*)|^n\delta_0.
-\end{equation*}
-
-Если требуется достичь точности $\varepsilon$, то
-%
-\begin{equation*}
-    \varepsilon
-    \approx
-    |\varphi'(x^*)|^N\delta_0.
-\end{equation*}
-
-Следовательно,
-%
-\begin{equation*}
-    N
-    \approx
-    \frac{\ln(\delta_0/\varepsilon)}
-    {-\ln|\varphi'(x^*)|}.
-\end{equation*}
-
-Сравнивая эту оценку с методом дихотомии, получаем, что метод
-простых итераций сходится быстрее при
-%
-\begin{equation*}
-    |\varphi'(x^*)|<\frac12.
-\end{equation*}
-
-Особенно быстрой будет сходимость при
-%
-\begin{equation*}
-    \varphi'(x^*)=0,
-\end{equation*}
-%
-однако в этом случае линейная оценка уже недостаточна и необходимо
-учитывать следующие члены разложения Тейлора.
-
-
-\subsection{Переход к обратной функции}
-
-Если
-%
-\begin{equation*}
-    |\varphi'(x)|>1,
-\end{equation*}
-%
-то прямой итерационный процесс
-%
-\begin{equation*}
-    x_{n+1}=\varphi(x_n)
-\end{equation*}
-%
-может расходиться. Если обратную функцию удобно вычислять, можно
-перейти от
-%
-\begin{equation*}
-    x=\varphi(x)
-\end{equation*}
-%
-к эквивалентному уравнению
-%
-\begin{equation*}
-    x=\varphi^{-1}(x).
+    -\frac{\beta'}{\beta}.
 \end{equation*}
 
 При этом
 %
 \begin{equation*}
-    (\varphi^{-1})'(x)
+    \sin\theta'_{\mathrm{ext}}
     =
-    \frac{1}{\varphi'(\varphi^{-1}(x))}.
-\end{equation*}
-
-В окрестности неподвижной точки
-%
-\begin{equation*}
-    |(\varphi^{-1})'(x^*)|
-    =
-    \frac{1}{|\varphi'(x^*)|}
-    <1,
-\end{equation*}
-%
-так что итерации для обратной функции становятся сходящимися.
-
-
-\subsection{Корректирующий множитель}
-
-Вместо простейшего представления
-%
-\begin{equation*}
-    x=x+f(x)
-\end{equation*}
-%
-можно использовать эквивалентное уравнение
-%
-\begin{equation*}
-    x=x-\lambda f(x),
-    \qquad
-    \lambda\neq0.
-\end{equation*}
-
-Определим
-%
-\begin{equation*}
-    \widetilde\varphi(x)
-    =
-    x-\lambda f(x).
-\end{equation*}
-
-Тогда
-%
-\begin{equation*}
-    \widetilde\varphi'(x)
-    =
-    1-\lambda f'(x).
-\end{equation*}
-
-Для сходимости достаточно потребовать
-%
-\begin{equation*}
-    |1-\lambda f'(x)|<1.
-\end{equation*}
-
-Раскрывая это неравенство,
-%
-\begin{align*}
-    -1
-    &<
-    1-\lambda f'(x)
-    <
-    1,
-    \\
-    -2
-    &<
-    -\lambda f'(x)
-    <
-    0,
-\end{align*}
-%
-то есть
-%
-\begin{equation*}
-    0<\lambda f'(x)<2.
-\end{equation*}
-
-Поэтому знак $\lambda$ следует выбирать совпадающим со знаком
-$f'(x)$. Если производная не меняет знак на всём рабочем интервале,
-то достаточное условие можно записать как
-%
-\begin{equation*}
-    0<|\lambda|
-    <
-    \frac{2}
-    {\displaystyle\max_{x\in[a,b]}|f'(x)|}.
-\end{equation*}
-
-При этом для ускорения сходимости значение $\lambda$ желательно
-выбирать как можно ближе к
-%
-\begin{equation*}
-    \frac{1}{f'(x^*)}.
-\end{equation*}
-
-Итерационный процесс принимает вид
-%
-\begin{equation*}
-    x_{n+1}
-    =
-    x_n-\lambda f(x_n).
-\end{equation*}
-
-\begin{center}
-\begin{tikzpicture}[x=1.8cm,y=1.0cm]
-    \pgfmathsetmacro{\xn}{3.0}
-    \pgfmathsetmacro{\fyn}{ovff(\xn)}
-    \pgfmathsetmacro{\slope}{1.90}
-    \pgfmathsetmacro{\xnext}{\xn-\fyn/\slope}
-
-    \draw[ovfaxis] (-0.10,0) -- (3.65,0)
-        node[below,text=white] {$x$};
-    \draw[ovfaxis] (0,-1.3) -- (0,3.55)
-        node[left,text=white] {$y$};
-
-    \draw[ovfcurve,domain=0.15:3.25,samples=120,smooth]
-        plot (\x,{ovff(\x)});
-
-    \draw[ovftangent]
-        (\xnext,0)
-        --
-        (\xn,\fyn);
-
-    \draw[ovfguide] (\xn,0) -- (\xn,\fyn);
-    \fill[rc3] (\xn,\fyn) circle (1.6pt);
-    \fill[rc3] (1.2,0) circle (1.6pt);
-
-    \node[text=white,below] at (\xn,0) {$x_n$};
-    \node[text=white,below] at (\xnext,0) {$x_{n+1}$};
-    \node[text=white!85,below] at (1.2,0) {$x^*$};
-    \node[text=rc4,anchor=south west] at (2.45,1.65) {$y=f(x)$};
-
-    \draw[white!65,line width=0.7pt]
-        (\xnext+0.28,0)
-        arc[start angle=0,end angle=58,radius=0.28];
-    \node[text=white!75] at (\xnext+0.34,0.38) {$\alpha$};
-\end{tikzpicture}
-
-\captionof{figure}{Итерация с корректирующим множителем:
-наклон прямой задаётся величиной $1/\lambda$.}
-\end{center}
-
-Если угол прямой с осью $x$ обозначить через $\alpha$, то
-%
-\begin{equation*}
-    \tan\alpha=\frac{1}{\lambda}.
-\end{equation*}
-
-Именно эта геометрическая интерпретация приводит к следующему
-ускорению метода: вместо прямой с постоянным наклоном будем на каждом
-шаге использовать касательную к графику $y=f(x)$.
-
-
-% ============================================================
-\section{Метод Ньютона}
-% ============================================================
-
-\subsection{Формула метода}
-
-Для касательной к графику $y=f(x)$ в точке $x_n$ имеем
-%
-\begin{equation*}
-    \tan\alpha=f'(x_n).
-\end{equation*}
-
-Сравнивая это с
-%
-\begin{equation*}
-    \tan\alpha=\frac{1}{\lambda},
-\end{equation*}
-%
-выбираем
-%
-\begin{equation*}
-    \lambda(x_n)=\frac{1}{f'(x_n)}.
-\end{equation*}
-
-Тогда итерационный процесс принимает вид
-%
-\begin{equation*}
-    x_{n+1}
-    =
-    x_n
-    -
-    \frac{f(x_n)}{f'(x_n)}.
-\end{equation*}
-
-Это \rtxt{3}{метод Ньютона}, или метод Ньютона--Рафсона.
-
-Геометрически на каждом шаге проводим касательную к графику
-$y=f(x)$ в точке $(x_n,f(x_n))$. Точка пересечения этой касательной
-с осью $x$ даёт следующее приближение $x_{n+1}$.
-
-\begin{center}
-\begin{tikzpicture}[x=1.75cm,y=0.95cm]
-    \pgfmathsetmacro{\xzero}{3.0}
-    \pgfmathsetmacro{\fzero}{ovff(\xzero)}
-    \pgfmathsetmacro{\fpzero}{ovffp(\xzero)}
-    \pgfmathsetmacro{\xone}{\xzero-\fzero/\fpzero}
-    \pgfmathsetmacro{\fone}{ovff(\xone)}
-    \pgfmathsetmacro{\fpone}{ovffp(\xone)}
-    \pgfmathsetmacro{\xtwo}{\xone-\fone/\fpone}
-
-    \draw[ovfaxis] (-0.10,0) -- (3.65,0)
-        node[below,text=white] {$x$};
-    \draw[ovfaxis] (0,-1.3) -- (0,3.65)
-        node[left,text=white] {$y$};
-
-    \draw[ovfcurve,domain=0.15:3.25,samples=120,smooth]
-        plot (\x,{ovff(\x)});
-
-    \draw[ovftangent,domain=\xone:3.20,samples=2]
-        plot (\x,{\fzero+\fpzero*(\x-\xzero)});
-    \draw[ovftangent,domain=\xtwo:2.55,samples=2]
-        plot (\x,{\fone+\fpone*(\x-\xone)});
-
-    \draw[ovfguide] (\xzero,0) -- (\xzero,\fzero);
-    \draw[ovfguide] (\xone,0) -- (\xone,\fone);
-
-    \fill[rc3] (\xzero,\fzero) circle (1.6pt);
-    \fill[rc3] (\xone,\fone) circle (1.6pt);
-    \fill[rc3] (1.2,0) circle (1.6pt);
-
-    \node[text=white,below] at (\xzero,0) {$x_0$};
-    \node[text=white,below] at (\xone,0) {$x_1$};
-    \node[text=white,below] at (\xtwo,0) {$x_2$};
-    \node[text=white!85,below] at (1.2,0) {$x^*$};
-    \node[text=rc4,anchor=south west] at (2.45,1.60) {$y=f(x)$};
-\end{tikzpicture}
-
-\captionof{figure}{Геометрическая схема метода Ньютона.}
-\end{center}
-
-
-\subsection{Квадратичная сходимость}
-
-Оценим погрешность вблизи простого корня $x^*$, для которого
-%
-\begin{equation*}
-    f(x^*)=0,
-    \qquad
-    f'(x^*)\neq0.
-\end{equation*}
-
-Введём знаковую погрешность
-%
-\begin{equation*}
-    R_n=x^*-x_n.
-\end{equation*}
-
-Тогда
-%
-\begin{equation*}
-    x_n-x^*=-R_n.
-\end{equation*}
-
-Из формулы Ньютона
-%
-\begin{equation*}
-    x_{n+1}
-    =
-    x_n
-    -
-    \frac{f(x_n)}{f'(x_n)}
-\end{equation*}
-%
-получаем
-%
-\begin{align*}
-    R_{n+1}
-    &=
-    x^*-x_{n+1}
-    \\
-    &=
-    x^*-x_n
-    +
-    \frac{f(x_n)}{f'(x_n)}
-    \\
-    &=
-    R_n
-    +
-    \frac{f(x_n)}{f'(x_n)}.
-\end{align*}
-
-Разложим функцию около корня:
-%
-\begin{align*}
-    f(x_n)
-    &\approx
-    f(x^*)
-    +
-    f'(x^*)(x_n-x^*)
-    +
-    \frac12 f''(x^*)(x_n-x^*)^2
-    \\
-    &=
-    -f'(x^*)R_n
-    +
-    \frac12 f''(x^*)R_n^2.
-\end{align*}
-
-Аналогично для производной
-%
-\begin{align*}
-    f'(x_n)
-    &\approx
-    f'(x^*)
-    +
-    f''(x^*)(x_n-x^*)
-    \\
-    &=
-    f'(x^*)
-    -
-    f''(x^*)R_n.
-\end{align*}
-
-Подставим эти выражения в формулу для $R_{n+1}$:
-%
-\begin{align*}
-    R_{n+1}
-    &\approx
-    R_n
-    +
-    \frac{
-        -f'(x^*)R_n
-        +
-        \dfrac12 f''(x^*)R_n^2
-    }{
-        f'(x^*)
-        -
-        f''(x^*)R_n
-    }.
-\end{align*}
-
-Приведём два слагаемых к общему знаменателю:
-%
-\begin{align*}
-    R_{n+1}
-    &\approx
-    \frac{
-        R_n\bigl(f'(x^*)-f''(x^*)R_n\bigr)
-        -
-        f'(x^*)R_n
-        +
-        \dfrac12 f''(x^*)R_n^2
-    }{
-        f'(x^*)-f''(x^*)R_n
+    \sqrt{
+        1-\frac{\beta'^2}{\beta^2}
     }
-    \\
-    &=
+    =
     \frac{
-        -\dfrac12 f''(x^*)R_n^2
-    }{
-        f'(x^*)-f''(x^*)R_n
-    }.
-\end{align*}
-
-Вынесем $f'(x^*)$ из знаменателя:
-%
-\begin{equation*}
-    R_{n+1}
-    \approx
-    -
-    \frac12
-    \frac{f''(x^*)}{f'(x^*)}
-    \frac{R_n^2}
-    {1-\dfrac{f''(x^*)}{f'(x^*)}R_n}.
+        \sqrt{\beta^2-\beta'^2}
+    }{\beta}.
 \end{equation*}
 
-Вблизи корня $|R_n|$ мало, поэтому
+Подставляя это в формулу для угла, получаем
 %
 \begin{equation*}
-    \left|
-        \frac{f''(x^*)}{f'(x^*)}R_n
-    \right|
-    \ll1.
+    \tan\theta_{\max}
+    =
+    \frac{
+        \beta'
+    }{
+        \gamma\sqrt{\beta^2-\beta'^2}
+    }.
+\end{equation*}
+
+Для перехода к синусу используем
+%
+\begin{equation*}
+    \sin\theta
+    =
+    \frac{\tan\theta}{
+        \sqrt{1+\tan^2\theta}
+    }.
+\end{equation*}
+
+Тогда
+%
+\begin{equation*}
+    1+\tan^2\theta_{\max}
+    =
+    1+
+    \frac{
+        \beta'^2
+    }{
+        \gamma^2(\beta^2-\beta'^2)
+    }.
+\end{equation*}
+
+С учётом
+%
+\begin{equation*}
+    \gamma^{-2}=1-\beta^2
+\end{equation*}
+%
+после упрощения получаем
+%
+\begin{equation*}
+    \sin\theta_{\max}
+    =
+    \frac{
+        \gamma'\beta'
+    }{
+        \gamma\beta
+    },
+    \qquad
+    \gamma'
+    =
+    \frac{1}{\sqrt{1-\beta'^2}}.
+\end{equation*}
+
+Таким образом, при $\beta>\beta'$
+%
+\begin{equation*}
+    \boxed{
+        \theta_{\max}
+        =
+        \arcsin
+        \frac{
+            \gamma'\beta'
+        }{
+            \gamma\beta
+        }
+    }.
+\end{equation*}
+
+Рассмотрим теперь случай
+%
+\begin{equation*}
+    \beta<\beta'.
+\end{equation*}
+
+Можно выбрать каон, который в системе покоя $\varphi$-мезона
+вылетает строго назад:
+%
+\begin{equation*}
+    \theta'=\pi.
+\end{equation*}
+
+Для него
+%
+\begin{equation*}
+    p'_x=-p',
+    \qquad
+    p'_y=0.
+\end{equation*}
+
+После преобразования Лоренца
+%
+\begin{equation*}
+    p_x
+    =
+    \gamma
+    \left(
+        -p'
+        +
+        \beta\frac{E'}{c}
+    \right).
+\end{equation*}
+
+Так как
+%
+\begin{equation*}
+    p'
+    =
+    \beta'\frac{E'}{c},
+\end{equation*}
+%
+имеем
+%
+\begin{equation*}
+    p_x
+    =
+    \gamma\frac{E'}{c}
+    (\beta-\beta').
+\end{equation*}
+
+При $\beta<\beta'$ выполняется
+%
+\begin{equation*}
+    p_x<0,
+    \qquad
+    p_y=0,
+\end{equation*}
+%
+поэтому каон в лабораторной системе может лететь строго назад:
+%
+\begin{equation*}
+    \boxed{
+        \theta_{\max}=\pi,
+        \qquad
+        \beta<\beta'
+    }.
+\end{equation*}
+
+При
+%
+\begin{equation*}
+    \beta=\beta'
+\end{equation*}
+%
+каон, вылетевший точно назад, в лабораторной системе покоится:
+%
+\begin{equation*}
+    p_x=p_y=0.
+\end{equation*}
+
+Чтобы определить предельный угол, положим
+%
+\begin{equation*}
+    \theta'
+    =
+    \pi-\delta,
+    \qquad
+    \delta\rightarrow0^+.
+\end{equation*}
+
+Тогда
+%
+\begin{equation*}
+    \sin\theta'
+    \simeq
+    \delta,
+    \qquad
+    \cos\theta'
+    \simeq
+    -1+\frac{\delta^2}{2}.
+\end{equation*}
+
+При $\beta=\beta'$ компоненты импульса имеют вид
+%
+\begin{equation*}
+    p_y
+    \simeq
+    \beta'\frac{E'}{c}\,\delta,
+    \qquad
+    p_x
+    \simeq
+    \gamma\beta'\frac{E'}{c}\,
+    \frac{\delta^2}{2}.
 \end{equation*}
 
 Следовательно,
 %
 \begin{equation*}
-    R_{n+1}
-    \approx
-    -
-    \frac12
-    \frac{f''(x^*)}{f'(x^*)}
-    R_n^2.
+    \tan\theta
+    =
+    \frac{p_y}{p_x}
+    \simeq
+    \frac{2}{\gamma\delta}
+    \longrightarrow
+    \infty,
 \end{equation*}
-
-Для абсолютной погрешности
+%
+то есть
 %
 \begin{equation*}
-    \delta_n=|R_n|
+    \boxed{
+        \theta_{\max}
+        \rightarrow
+        \frac{\pi}{2},
+        \qquad
+        \beta=\beta'
+    }.
+\end{equation*}
+
+Итак,
+%
+\begin{equation*}
+    \boxed{
+        \theta_{\max}
+        =
+        \begin{cases}
+            \pi,
+            & \beta<\beta',
+            \\[5pt]
+            \dfrac{\pi}{2},
+            & \beta=\beta',
+            \\[8pt]
+            \displaystyle
+            \arcsin
+            \frac{\gamma'\beta'}{\gamma\beta},
+            & \beta>\beta'.
+        \end{cases}
+    }
+\end{equation*}
+
+
+\textbf{Максимальный угол между каонами.}
+
+Положим
+%
+\begin{equation*}
+    x=\cos\theta',
+    \qquad
+    y=\sin\theta'
+    =
+    \sqrt{1-x^2},
+    \qquad
+    a=\frac{\beta}{\beta'}.
+\end{equation*}
+
+Для двух каонов в системе покоя $\varphi$-мезона продольные
+компоненты импульса имеют противоположные знаки.
+Поэтому в лабораторной системе
+%
+\begin{equation*}
+    \tan\theta_1
+    =
+    \frac{
+        y
+    }{
+        \gamma(a+x)
+    },
+    \qquad
+    \tan\theta_2
+    =
+    \frac{
+        y
+    }{
+        \gamma(a-x)
+    }.
+\end{equation*}
+
+При $\beta>\beta'$ оба каона движутся в передней полусфере,
+и угол между ними равен
+%
+\begin{equation*}
+    \Psi
+    =
+    \theta_1+\theta_2.
+\end{equation*}
+
+Используя формулу сложения тангенсов,
+%
+\begin{equation*}
+    \tan\Psi
+    =
+    \frac{
+        \tan\theta_1+\tan\theta_2
+    }{
+        1-\tan\theta_1\tan\theta_2
+    },
 \end{equation*}
 %
 получаем
 %
 \begin{equation*}
-    \delta_{n+1}
-    \approx
-    \frac12
-    \left|
-        \frac{f''(x^*)}{f'(x^*)}
-    \right|
-    \delta_n^2.
-\end{equation*}
-
-Таким образом, погрешность следующего приближения пропорциональна
-квадрату предыдущей погрешности:
-%
-\begin{equation*}
-    \delta_{n+1}\sim\delta_n^2.
-\end{equation*}
-
-Поэтому метод Ньютона обладает \rtxt{3}{квадратичной сходимостью}.
-При достаточно хорошем начальном приближении число верных знаков
-примерно удваивается после каждой итерации.
-
-
-\subsection{Недостатки метода}
-
-Метод Ньютона очень быстро сходится вблизи простого корня, но имеет
-два существенных недостатка.
-
-Во-первых, он чувствителен к начальному приближению. Если $x_0$
-выбрано вне области притяжения искомого корня, процесс может
-расходиться либо сойтись к другому корню.
-
-Во-вторых, на каждом шаге необходимо вычислять производную
-%
-\begin{equation*}
-    f'(x_n).
-\end{equation*}
-
-Последний недостаток приводит к методу секущих.
-
-
-% ============================================================
-\section{Метод секущих}
-% ============================================================
-
-В методе Ньютона заменим производную приближённым значением,
-полученным по двум последним точкам:
-%
-\begin{equation*}
-    f'(x_n)
-    \approx
+    \tan\Psi
+    =
     \frac{
-        f(x_n)-f(x_{n-1})
+        2a\gamma\sqrt{1-x^2}
     }{
-        x_n-x_{n-1}
+        \gamma^2(a^2-x^2)
+        -
+        (1-x^2)
     }.
 \end{equation*}
 
-Подставляя эту оценку в формулу Ньютона,
-%
-\begin{align*}
-    x_{n+1}
-    &=
-    x_n
-    -
-    \frac{f(x_n)}{f'(x_n)}
-    \\
-    &\approx
-    x_n
-    -
-    \frac{
-        f(x_n)
-    }{
-        \dfrac{f(x_n)-f(x_{n-1})}{x_n-x_{n-1}}
-    }
-    \\
-    &=
-    x_n
-    -
-    f(x_n)
-    \frac{x_n-x_{n-1}}
-    {f(x_n)-f(x_{n-1})}.
-\end{align*}
-
-Итак,
+Для поиска максимума введём
 %
 \begin{equation*}
-    x_{n+1}
+    s=x^2.
+\end{equation*}
+
+Тогда
+%
+\begin{equation*}
+    \tan^2\Psi
     =
-    x_n
-    -
-    f(x_n)
-    \frac{x_n-x_{n-1}}
-    {f(x_n)-f(x_{n-1})}.
+    \frac{
+        4a^2\gamma^2(1-s)
+    }{
+        \left[
+            \gamma^2a^2
+            -
+            1
+            -
+            (\gamma^2-1)s
+        \right]^2
+    }.
 \end{equation*}
 
-Этот процесс является двухшаговым: для нахождения $x_{n+1}$
-необходимо знать два предыдущих приближения $x_{n-1}$ и $x_n$.
-
-Геометрически вместо касательной используется секущая, проведённая
-через точки
+Условие экстремума удобно записать как
 %
 \begin{equation*}
-    (x_{n-1},f(x_{n-1}))
-    \qquad\text{и}\qquad
-    (x_n,f(x_n)).
+    \frac{d}{ds}
+    \ln\tan^2\Psi
+    =
+    0.
+\end{equation*}
+
+Отсюда
+%
+\begin{equation*}
+    -\frac{1}{1-s}
+    +
+    \frac{
+        2(\gamma^2-1)
+    }{
+        \gamma^2a^2
+        -
+        1
+        -
+        (\gamma^2-1)s
+    }
+    =
+    0.
+\end{equation*}
+
+После упрощения
+%
+\begin{equation*}
+    s_{\mathrm{ext}}
+    =
+    1+\frac{1}{\beta^2}-\frac{1}{\beta'^2}.
+\end{equation*}
+
+Так как $s=\cos^2\theta'$, положение максимума зависит
+от величины $\beta$.
+
+Если
+%
+\begin{equation*}
+    s_{\mathrm{ext}}\leq0,
 \end{equation*}
 %
-Её пересечение с осью $x$ задаёт следующее приближение.
+то максимум достигается на границе $s=0$, то есть
+%
+\begin{equation*}
+    \cos\theta'=0,
+    \qquad
+    \theta'=\frac{\pi}{2}.
+\end{equation*}
 
-\begin{center}
-\begin{tikzpicture}[x=1.75cm,y=0.95cm]
-    \pgfmathsetmacro{\xzero}{3.0}
-    \pgfmathsetmacro{\xone}{2.35}
-    \pgfmathsetmacro{\fzero}{ovff(\xzero)}
-    \pgfmathsetmacro{\fone}{ovff(\xone)}
-    \pgfmathsetmacro{\xtwo}{
-        \xone-\fone*(\xone-\xzero)/(\fone-\fzero)
+Условие $s_{\mathrm{ext}}\leq0$ можно переписать в виде
+%
+\begin{equation*}
+    \beta
+    \geq
+    \gamma'\beta'.
+\end{equation*}
+
+В этом случае оба каона в системе покоя $\varphi$-мезона
+вылетают поперёк направления буста. В лабораторной системе
+они расположены симметрично, причём
+%
+\begin{equation*}
+    \tan\theta_1
+    =
+    \tan\theta_2
+    =
+    \frac{
+        \beta'
+    }{
+        \gamma\beta
+    }.
+\end{equation*}
+
+Поэтому
+%
+\begin{equation*}
+    \boxed{
+        \Psi_{\max}
+        =
+        2\arctan
+        \frac{
+            \beta'
+        }{
+            \gamma\beta
+        },
+        \qquad
+        \beta\geq\gamma'\beta'
+    }.
+\end{equation*}
+
+Если же
+%
+\begin{equation*}
+    \beta'
+    <
+    \beta
+    <
+    \gamma'\beta',
+\end{equation*}
+%
+экстремум находится внутри допустимого интервала:
+%
+\begin{equation*}
+    \cos^2\theta'_{\mathrm{ext}}
+    =
+    1+\frac{1}{\beta^2}-\frac{1}{\beta'^2}.
+\end{equation*}
+
+Подставляя это значение в выражение для $\tan\Psi$, получаем
+%
+\begin{equation*}
+    \tan\Psi_{\max}
+    =
+    \sqrt{
+        \frac{
+            1-\beta^2
+        }{
+            \beta^2-\beta'^2
+        }
+    }.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    \boxed{
+        \Psi_{\max}
+        =
+        \arctan
+        \sqrt{
+            \frac{
+                1-\beta^2
+            }{
+                \beta^2-\beta'^2
+            }
+        },
+        \qquad
+        \beta'<\beta<\gamma'\beta'
+    }.
+\end{equation*}
+
+При $\beta<\beta'$ можно выбрать один каон, летящий в системе
+покоя $\varphi$-мезона вперёд, а второй --- строго назад.
+После перехода в лабораторную систему первый остаётся направленным
+вперёд, а второй --- назад. Поэтому
+%
+\begin{equation*}
+    \boxed{
+        \Psi_{\max}
+        =
+        \pi,
+        \qquad
+        \beta<\beta'
+    }.
+\end{equation*}
+
+При $\beta=\beta'$ строго задний каон покоится.
+При приближении к этому случаю угол между направлениями стремится к
+%
+\begin{equation*}
+    \boxed{
+        \Psi_{\max}
+        \rightarrow
+        \frac{\pi}{2},
+        \qquad
+        \beta=\beta'
+    }.
+\end{equation*}
+
+Окончательно
+%
+\begin{equation*}
+    \boxed{
+        \Psi_{\max}
+        =
+        \begin{cases}
+            \pi,
+            & \beta<\beta',
+            \\[5pt]
+            \dfrac{\pi}{2},
+            & \beta=\beta',
+            \\[8pt]
+            \displaystyle
+            \arctan
+            \sqrt{
+                \frac{
+                    1-\beta^2
+                }{
+                    \beta^2-\beta'^2
+                }
+            },
+            & \beta'<\beta<\gamma'\beta',
+            \\[12pt]
+            \displaystyle
+            2\arctan
+            \frac{
+                \beta'
+            }{
+                \gamma\beta
+            },
+            & \beta\geq\gamma'\beta'.
+        \end{cases}
     }
-    \pgfmathsetmacro{\ftwo}{ovff(\xtwo)}
-    \pgfmathsetmacro{\xthree}{
-        \xtwo-\ftwo*(\xtwo-\xone)/(\ftwo-\fone)
-    }
-
-    \draw[ovfaxis] (-0.10,0) -- (3.65,0)
-        node[below,text=white] {$x$};
-    \draw[ovfaxis] (0,-1.3) -- (0,3.65)
-        node[left,text=white] {$y$};
-
-    \draw[ovfcurve,domain=0.15:3.25,samples=120,smooth]
-        plot (\x,{ovff(\x)});
-
-    \draw[ovftangent]
-        (\xzero,\fzero)
-        --
-        (\xtwo,0);
-
-    \draw[ovftangent]
-        (\xone,\fone)
-        --
-        (\xthree,0);
-
-    \draw[ovfguide] (\xzero,0) -- (\xzero,\fzero);
-    \draw[ovfguide] (\xone,0) -- (\xone,\fone);
-    \draw[ovfguide] (\xtwo,0) -- (\xtwo,\ftwo);
-
-    \fill[rc3] (\xzero,\fzero) circle (1.6pt);
-    \fill[rc3] (\xone,\fone) circle (1.6pt);
-    \fill[rc3] (\xtwo,\ftwo) circle (1.6pt);
-    \fill[rc3] (1.2,0) circle (1.6pt);
-
-    \node[text=white,below] at (\xzero,0) {$x_0$};
-    \node[text=white,below] at (\xone,0) {$x_1$};
-    \node[text=white,below] at (\xtwo,0) {$x_2$};
-    \node[text=white,below] at (\xthree,0) {$x_3$};
-    \node[text=white!85,below] at (1.2,0) {$x^*$};
-    \node[text=rc4,anchor=south west] at (2.45,1.60) {$y=f(x)$};
-\end{tikzpicture}
-
-\captionof{figure}{Геометрическая схема метода секущих.}
-\end{center}
-
-Метод секущих не требует явного вычисления $f'(x)$ и обычно сходится
-быстрее метода простых итераций, хотя порядок его сходимости ниже,
-чем квадратичный порядок метода Ньютона.
+\end{equation*}
 
 \end{document}
