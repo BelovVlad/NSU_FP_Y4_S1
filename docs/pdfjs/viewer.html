@@ -110,7 +110,7 @@ function clearAnnotations(){annotationLayer.replaceChildren()}
 function findMatches(text,q){const hits=[];if(!q)return hits;let from=0;while(true){const i=text.indexOf(q,from);if(i<0)break;hits.push(i);from=i+Math.max(1,q.length)}return hits}
 
 async function resolvePdfUrl(path){
-  const local=new URL('../'+path.replace(/^\/+/,''),location.href);if(versionParam)local.searchParams.set('v',versionParam);const localUrl=local.href;
+  const local=new URL('../../'+path.replace(/^\/+/,''),location.href);if(versionParam)local.searchParams.set('v',versionParam);const localUrl=local.href;
   try{
     const head=await fetch(localUrl,{method:'HEAD',cache:'no-store'});
     const size=Number(head.headers.get('content-length')||0);
