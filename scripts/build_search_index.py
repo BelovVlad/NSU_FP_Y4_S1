@@ -8,8 +8,8 @@ from pathlib import Path
 
 import fitz  # PyMuPDF
 
-ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "docs" / "search-index"
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / "search-index"
 ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "База"]
 
 
@@ -80,6 +80,7 @@ def actual_size(path: Path, pointer: str | None = None) -> int:
 
 
 def git_history_dates(rel: Path) -> tuple[str | None, str | None]:
+    """Return (updated_at, created_at) using the real per-file git history."""
     try:
         output = subprocess.check_output(
             ["git", "log", "--follow", "--format=%cI", "--", rel.as_posix()],
@@ -96,6 +97,7 @@ def git_history_dates(rel: Path) -> tuple[str | None, str | None]:
 
 
 def content_version(rel: Path) -> str | None:
+    """Stable cache key that changes whenever the tracked file contents change."""
     try:
         value = subprocess.check_output(
             ["git", "rev-parse", f"HEAD:{rel.as_posix()}"],
@@ -146,7 +148,7 @@ def pdf_record(rel: Path) -> dict:
                 text = clean_text(page.get_text("text", sort=True))
                 if text:
                     record["pages"].append({"n": number, "t": text})
-    except Exception as exc:
+    except Exception as exc:  # keep metadata search even for malformed/scanned PDFs
         record["indexed"] = False
         record["reason"] = type(exc).__name__
     return record
@@ -208,12 +210,12 @@ def compact_metadata(record: dict) -> dict:
 
 
 def main() -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
+    OUT.mkdir(exist_ok=True)
     for old in OUT.glob("part-*.json"):
         old.unlink()
 
     generated_at = datetime.now(timezone.utc).isoformat()
-    manifest = {"version": 4, "generated_at": generated_at, "shards": []}
+    manifest = {"version": 3, "generated_at": generated_at, "shards": []}
     all_metadata: list[dict] = []
 
     for shard_no, subject in enumerate(ORDER):
@@ -245,7 +247,7 @@ def main() -> None:
     )
     (OUT / "files.json").write_text(
         json.dumps(
-            {"version": 3, "generated_at": generated_at, "files": all_metadata},
+            {"version": 2, "generated_at": generated_at, "files": all_metadata},
             ensure_ascii=False,
             separators=(",", ":"),
         ),
