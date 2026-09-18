@@ -8,8 +8,8 @@ from pathlib import Path
 
 import fitz  # PyMuPDF
 
-ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "search-index"
+ROOT = Path(__file__).resolve().parents[2]
+OUT = ROOT / "docs" / "search-index"
 ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "База"]
 
 
@@ -210,7 +210,7 @@ def compact_metadata(record: dict) -> dict:
 
 
 def main() -> None:
-    OUT.mkdir(exist_ok=True)
+    OUT.mkdir(parents=True, exist_ok=True)
     for old in OUT.glob("part-*.json"):
         old.unlink()
 
