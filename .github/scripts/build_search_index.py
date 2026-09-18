@@ -209,6 +209,200 @@ def compact_metadata(record: dict) -> dict:
     return {key: record[key] for key in keys if key in record}
 
 
+
+def natural_key(path: Path) -> tuple:
+    parts = re.split(r"(\d+)", path.name)
+    return tuple(int(p) if p.isdigit() else p.lower() for p in parts)
+
+
+def normalize_title(text: str) -> str:
+    text = re.sub(r"\\texorpdfstring\{([^{}]*)\}\{([^{}]*)\}", r"\2", text)
+    text = re.sub(r"\\[A-Za-z@]+\*?(?:\[[^\]]*\])?", " ", text)
+    text = text.replace("{", " ").replace("}", " ")
+    text = re.sub(r"[^0-9A-Za-zА-Яа-яЁё]+", " ", text)
+    return re.sub(r"\s+", " ", text).strip().lower()
+
+
+def iso_date(value: str | None) -> str | None:
+    if not value:
+        return None
+    value = value.strip()
+    try:
+        return datetime.strptime(value, "%d.%m.%Y").date().isoformat()
+    except ValueError:
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00")).date().isoformat()
+        except ValueError:
+            return value
+
+
+def section_titles_from_tex(text: str) -> list[str]:
+    titles = []
+    for match in re.finditer(r"\\section\{([^{}]+)\}", text, re.S):
+        title = clean_text(match.group(1))
+        title = re.sub(r"^Задача\s+\d+[.:]?\s*", "", title, flags=re.I)
+        if title and title not in titles:
+            titles.append(title)
+    return titles
+
+
+def first_page_for_title(doc: fitz.Document, title: str, toc: list[list]) -> int | None:
+    wanted = normalize_title(title)
+    if not wanted:
+        return None
+
+    best_page = None
+    best_score = 0
+    wanted_words = [w for w in wanted.split() if len(w) >= 4]
+
+    for row in toc:
+        if len(row) < 3:
+            continue
+        toc_title, page = str(row[1]), int(row[2])
+        norm = normalize_title(toc_title)
+        if not norm:
+            continue
+        if norm == wanted:
+            return page
+        score = 0
+        if wanted in norm or norm in wanted:
+            score += 8
+        score += sum(1 for w in wanted_words if w in norm)
+        if score > best_score:
+            best_score, best_page = score, page
+
+    if best_score >= max(3, min(6, len(wanted_words))):
+        return best_page
+
+    # Fallback: search the rendered PDF text. This handles custom macros
+    # whose visible heading is not exposed as a PDF bookmark.
+    probe = wanted_words[:6]
+    if probe:
+        for page_no in range(doc.page_count):
+            try:
+                page_text = normalize_title(doc.load_page(page_no).get_text("text", sort=True))
+            except Exception:
+                continue
+            hits = sum(1 for w in probe if w in page_text)
+            if hits >= max(2, min(len(probe), 4)):
+                return page_no + 1
+    return None
+
+
+def structured_group(subject: str, folder: str, label: str) -> dict | None:
+    base = ROOT / subject / folder
+    parts_dir = base / "LaTeX" / "parts"
+    pdf_path = base / "final.pdf"
+    if not parts_dir.exists() or not pdf_path.exists():
+        return None
+
+    part_files = sorted(parts_dir.glob("part*.tex"), key=natural_key)
+    if not part_files:
+        return None
+
+    items: list[dict] = []
+    is_lecture = label == "Лекции"
+
+    for ordinal, part in enumerate(part_files, 1):
+        try:
+            text = part.read_text("utf-8", errors="ignore")
+        except OSError:
+            continue
+
+        rel = part.relative_to(ROOT)
+        updated_at, created_at = git_history_dates(rel)
+
+        if is_lecture:
+            chapter = re.search(r"\\chapter\{([^{}]+)\}", text, re.S)
+            if not chapter:
+                continue
+            title = clean_text(chapter.group(1))
+            subtitle_match = re.search(r"\\rsubtitle\{([^{}]+)\}", text, re.S)
+            subtitle = clean_text(subtitle_match.group(1)) if subtitle_match else ""
+            number = ordinal
+            date = iso_date(created_at or updated_at)
+        else:
+            practice = re.search(
+                r"\\practice\{([^{}]+)\}\{([^{}]+)\}\{([^{}]+)\}",
+                text,
+                re.S,
+            )
+            if not practice:
+                continue
+            raw_number, raw_date, raw_title = practice.groups()
+            try:
+                number = int(raw_number.strip())
+            except ValueError:
+                number = ordinal
+            title = clean_text(raw_title)
+            date = iso_date(raw_date)
+            sections = section_titles_from_tex(text)
+            subtitle = " · ".join(sections[:2])
+
+        items.append(
+            {
+                "id": f"{subject}:{label}:{number}",
+                "number": number,
+                "title": title,
+                "subtitle": subtitle,
+                "date": date,
+                "source": rel.as_posix(),
+                "page": None,
+                "end_page": None,
+            }
+        )
+
+    if not items:
+        return None
+
+    page_count = None
+    pointer = lfs_pointer_text(pdf_path)
+    if not pointer:
+        try:
+            with fitz.open(pdf_path) as doc:
+                page_count = doc.page_count
+                toc = doc.get_toc(simple=True) or []
+                for item in items:
+                    item["page"] = first_page_for_title(doc, item["title"], toc)
+        except Exception:
+            pass
+
+    # Fill page ranges from the next known item.
+    known = [i for i in items if isinstance(i.get("page"), int)]
+    for idx, item in enumerate(known):
+        nxt = known[idx + 1]["page"] if idx + 1 < len(known) else None
+        if nxt:
+            item["end_page"] = max(item["page"], nxt - 1)
+        elif page_count:
+            item["end_page"] = page_count
+
+    return {
+        "subject": subject,
+        "section": label,
+        "pdf_path": pdf_path.relative_to(ROOT).as_posix(),
+        "page_count": page_count,
+        "items": items,
+    }
+
+
+def build_structure(generated_at: str) -> None:
+    groups = []
+    for subject in ORDER:
+        for folder, label in (("01_Лекции", "Лекции"), ("02_Семинары", "Семинары")):
+            group = structured_group(subject, folder, label)
+            if group:
+                groups.append(group)
+
+    payload = {
+        "version": 1,
+        "generated_at": generated_at,
+        "groups": groups,
+    }
+    (OUT / "structure.json").write_text(
+        json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
+        "utf-8",
+    )
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for old in OUT.glob("part-*.json"):
@@ -253,6 +447,8 @@ def main() -> None:
         ),
         "utf-8",
     )
+
+    build_structure(generated_at)
 
     total_records = sum(s["records"] for s in manifest["shards"])
     total_locations = sum(s["locations"] for s in manifest["shards"])
