@@ -363,7 +363,11 @@ def structured_group(subject: str, folder: str, label: str) -> dict | None:
                 page_count = doc.page_count
                 toc = doc.get_toc(simple=True) or []
                 for item in items:
-                    item["page"] = first_page_for_title(doc, item["title"], toc)
+                    if label == "Семинары":
+                        practice_title = f"Практическое занятие {item['number']}"
+                        item["page"] = first_page_for_title(doc, practice_title, toc)
+                    if not item["page"]:
+                        item["page"] = first_page_for_title(doc, item["title"], toc)
         except Exception:
             pass
 
