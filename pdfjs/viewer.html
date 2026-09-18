@@ -222,7 +222,7 @@ async function searchStep(direction){
 async function renderPage(){
   if(!pdf)return;const target=pageNum,serial=++renderSerial;showLoading();clearAnnotations();if(renderTask){try{renderTask.cancel()}catch{}}
   try{
-    const page=await getCachedPage(target);if(serial!==renderSerial)return;const base=page.getViewport({scale:1});if(fitWidth){const available=Math.max(280,viewer.clientWidth-(innerWidth<760?20:52));scale=Math.min(2.4,available/base.width)}
+    const page=await getCachedPage(target);if(serial!==renderSerial)return;const base=page.getViewport({scale:1});if(fitWidth){const mobile=window.matchMedia('(max-width:760px)').matches;const available=Math.max(120,viewer.clientWidth-(mobile?20:52));scale=Math.min(2.4,available/base.width)}
     const viewport=page.getViewport({scale}),ratio=window.devicePixelRatio||1;canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;highlightLayer.style.width=annotationLayer.style.width=`${Math.floor(viewport.width)}px`;highlightLayer.style.height=annotationLayer.style.height=`${Math.floor(viewport.height)}px`;
     renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});await renderTask.promise;if(serial!==renderSerial)return;renderTask=null;warmedPages.add(target);updateControls();savePage();hideLoading();viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});trimPageCache(target);await Promise.allSettled([drawSearchHighlights(page,viewport),renderAnnotations(page,viewport)]);void preloadAround(target);
   }catch(err){if(err?.name!=='RenderingCancelledException'&&serial===renderSerial)fail(err?.message||String(err))}
@@ -233,7 +233,7 @@ async function open(){
   title.textContent=titleParam||decodeURIComponent(raw.split('/').pop());document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Проверяю файл…');
   try{
     pdfUrl=await resolvePdfUrl(raw);direct.href=pdfUrl;showLoading('Открываю документ…');const task=pdfjsLib.getDocument({url:pdfUrl,disableRange:false,disableStream:true,disableAutoFetch:true,rangeChunkSize:262144});task.onProgress=p=>{if(p.total&&p.loaded)loadingText.textContent=`Загрузка: ${Math.min(100,Math.round(p.loaded/p.total*100))}%`};
-    pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,pageParam||rememberedPage()));searchPage=pageNum;scale=1;fitWidth=false;updateControls();await renderPage();if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
+    pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,pageParam||rememberedPage()));searchPage=pageNum;scale=1;fitWidth=window.matchMedia('(max-width:760px)').matches;updateControls();await renderPage();if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
   }catch(err){fail(err?.message||String(err))}
 }
 
