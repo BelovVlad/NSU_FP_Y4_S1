@@ -109,7 +109,7 @@ function clearHighlights(){highlightLayer.replaceChildren()}
 function clearAnnotations(){annotationLayer.replaceChildren()}
 function findMatches(text,q){const hits=[];if(!q)return hits;let from=0;while(true){const i=text.indexOf(q,from);if(i<0)break;hits.push(i);from=i+Math.max(1,q.length)}return hits}
 
-async function resolvePdfUrl(path){const u=new URL(`https://media.githubusercontent.com/media/${OWNER}/${REPO}/${BRANCH}/${encPath(path)}`);if(versionParam)u.searchParams.set('v',versionParam);return u.href
+async function resolvePdfUrl(path){const u=new URL(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${encPath(path)}`);if(versionParam)u.searchParams.set('v',versionParam);return u.href
 }
 
 async function getCachedPage(n){if(pageCache.has(n))return pageCache.get(n);const page=await pdf.getPage(n);pageCache.set(n,page);return page}
@@ -222,7 +222,7 @@ async function open(){
   if(!raw){fail('В ссылке не указан файл.');return}
   title.textContent=titleParam||decodeURIComponent(raw.split('/').pop());document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Проверяю файл…');
   try{
-    pdfUrl=await resolvePdfUrl(raw);direct.href=pdfUrl;showLoading('Открываю документ…');const task=pdfjsLib.getDocument({url:pdfUrl,disableRange:false,disableStream:true,disableAutoFetch:true,rangeChunkSize:262144});task.onProgress=p=>{if(p.total&&p.loaded)loadingText.textContent=`Загрузка: ${Math.min(100,Math.round(p.loaded/p.total*100))}%`};
+    pdfUrl=await resolvePdfUrl(raw);direct.href=pdfUrl;showLoading('Открываю документ…');const task=pdfjsLib.getDocument({url:pdfUrl});task.onProgress=p=>{if(p.total&&p.loaded)loadingText.textContent=`Загрузка: ${Math.min(100,Math.round(p.loaded/p.total*100))}%`};
     pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,pageParam||rememberedPage()));searchPage=pageNum;scale=1;fitWidth=false;updateControls();await renderPage();if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
   }catch(err){fail(err?.message||String(err))}
 }
