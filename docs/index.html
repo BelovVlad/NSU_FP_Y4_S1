@@ -908,6 +908,56 @@ body.music-na19x.music-glitch-crush .pdf-fullscreen-frame{
 .giscus-wrap .giscus{min-height:150px}
 .giscus-wrap .giscus-frame{display:block;min-height:150px;border:0}
 
+
+/* Fullscreen PDF dark loader */
+.pdf-fullscreen-frame{
+  position:relative;z-index:1;opacity:0;
+  background:var(--bg);
+  transition:opacity .16s ease
+}
+.pdf-fullscreen.ready .pdf-fullscreen-frame{opacity:1}
+.pdf-fullscreen-loader{
+  position:absolute;z-index:4;inset:0;display:grid;place-items:center;
+  background:
+    radial-gradient(540px 300px at 50% 44%,color-mix(in srgb,var(--accent) 8%,transparent),transparent 70%),
+    var(--bg);
+  opacity:1;visibility:visible;
+  transition:opacity .18s ease,visibility .18s ease;
+  pointer-events:none
+}
+.pdf-fullscreen.ready .pdf-fullscreen-loader{opacity:0;visibility:hidden}
+.pdf-loader-core{display:grid;justify-items:center;gap:14px;color:var(--muted)}
+.pdf-loader-ring{
+  position:relative;width:46px;height:46px;border-radius:50%;
+  border:2px solid color-mix(in srgb,var(--line) 76%,var(--accent) 24%);
+  border-top-color:var(--accent);
+  border-right-color:color-mix(in srgb,var(--accent) 68%,var(--cream) 32%);
+  box-shadow:0 0 24px color-mix(in srgb,var(--accent) 12%,transparent);
+  animation:pdfLoaderSpin 1.05s linear infinite
+}
+.pdf-loader-ring::after{
+  content:"";position:absolute;inset:9px;border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);
+  animation:pdfLoaderPulse 1.4s ease-in-out infinite
+}
+.pdf-loader-text{font-size:11px;font-weight:700;letter-spacing:.06em}
+.pdf-loader-sub{margin-top:-8px;color:color-mix(in srgb,var(--muted) 82%,transparent);font-size:9px}
+@keyframes pdfLoaderSpin{to{transform:rotate(360deg)}}
+@keyframes pdfLoaderPulse{0%,100%{opacity:.22;transform:scale(.82)}50%{opacity:.9;transform:scale(1.08)}}
+body.music-na19 .pdf-fullscreen-loader{
+  background:
+    radial-gradient(560px 320px at 50% 44%,rgba(83,200,197,.11),transparent 70%),
+    var(--bg)
+}
+body.music-na19x .pdf-fullscreen-loader{
+  background:
+    radial-gradient(560px 320px at 50% 44%,rgba(247,251,253,.10),transparent 70%),
+    var(--bg)
+}
+@media(prefers-reduced-motion:reduce){
+  .pdf-loader-ring,.pdf-loader-ring::after{animation:none}
+}
+
 </style>
 </head>
 <body>
@@ -979,6 +1029,13 @@ body.music-na19x.music-glitch-crush .pdf-fullscreen-frame{
     <span class="music-glitch-band band-b"></span>
     <span class="music-glitch-band band-c"></span>
   </div>
+  <div id="pdfFullscreenLoader" class="pdf-fullscreen-loader" aria-hidden="true">
+    <div class="pdf-loader-core">
+      <div class="pdf-loader-ring"></div>
+      <div id="pdfFullscreenLoaderText" class="pdf-loader-text">Открываю PDF…</div>
+      <div class="pdf-loader-sub">Подготавливаю страницу</div>
+    </div>
+  </div>
   <iframe id="pdfFullscreenFrame" class="pdf-fullscreen-frame" title="PDF" allow="fullscreen" allowfullscreen></iframe>
 </div>
 
@@ -1021,7 +1078,7 @@ const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll
 hydrateIcons();
 const initialSubject=hashSubject();
 const state={view:(ORDER.includes(initialSubject)?'subjects':'home'),subject:(ORDER.includes(initialSubject)?initialSubject:'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
-const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicLabel=$('#musicLabel'),musicGlyph=$('#musicGlyph'),musicMore=$('#musicMore'),musicPanel=$('#musicPanel'),musicVolume=$('#musicVolume'),musicVolumeValue=$('#musicVolumeValue'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame');
+const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicLabel=$('#musicLabel'),musicGlyph=$('#musicGlyph'),musicMore=$('#musicMore'),musicPanel=$('#musicPanel'),musicVolume=$('#musicVolume'),musicVolumeValue=$('#musicVolumeValue'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame'),pdfFullscreenLoader=$('#pdfFullscreenLoader'),pdfFullscreenLoaderText=$('#pdfFullscreenLoaderText');
 let searchRun=0,searchTimer=0,searchPromise=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
 function syncSubjectHash(){if(state.view!=='subjects'||!ORDER.includes(state.subject))return;const h='#subject='+encodeURIComponent(state.subject);if(location.hash!==h)history.replaceState(null,'',h)}
@@ -1356,19 +1413,31 @@ async function openPdfFullscreen(url,title='PDF'){
   const themed=new URL(url,location.href);
   const theme=currentPdfTheme();
   if(theme)themed.searchParams.set('theme',theme);else themed.searchParams.delete('theme');
-  pdfFullscreenFrame.src=themed.href;
+
+  pdfFullscreen.classList.remove('ready');
   pdfFullscreen.classList.add('open');
   pdfFullscreen.setAttribute('aria-hidden','false');
   document.body.classList.add('pdf-open');
   pdfFullscreen.dataset.requestedFullscreen='1';
+  if(pdfFullscreenLoaderText)pdfFullscreenLoaderText.textContent='Открываю PDF…';
+
+  // Keep the iframe fully hidden until the viewer has rendered its first page.
+  // This prevents the browser's white about:blank frame from flashing in fullscreen.
+  pdfFullscreenFrame.src='about:blank';
+
+  let fullscreenPromise=null;
   try{
     if(document.fullscreenElement!==pdfFullscreen&&pdfFullscreen.requestFullscreen){
-      await pdfFullscreen.requestFullscreen();
+      fullscreenPromise=pdfFullscreen.requestFullscreen();
     }
   }catch{}
+
+  // The fullscreen surface is already dark before the new document is attached.
+  requestAnimationFrame(()=>{pdfFullscreenFrame.src=themed.href});
+  try{if(fullscreenPromise)await fullscreenPromise}catch{}
 }
 async function closePdfFullscreen(fromFullscreenChange=false){
-  pdfFullscreen.classList.remove('open');
+  pdfFullscreen.classList.remove('open','ready');
   pdfFullscreen.setAttribute('aria-hidden','true');
   document.body.classList.remove('pdf-open');
   pdfFullscreen.dataset.requestedFullscreen='0';
@@ -1392,8 +1461,14 @@ document.addEventListener('click',e=>{
   void openPdfFullscreen(href);
 },true);
 window.addEventListener('message',e=>{
-  if(e.origin!==location.origin||e.data?.type!=='nsu-close-pdf')return;
-  void closePdfFullscreen();
+  if(e.origin!==location.origin)return;
+  if(e.data?.type==='nsu-close-pdf'){
+    void closePdfFullscreen();
+    return;
+  }
+  if(e.data?.type==='nsu-pdf-ready'&&e.source===pdfFullscreenFrame.contentWindow){
+    pdfFullscreen.classList.add('ready');
+  }
 });
 
 function setActiveNav(view){

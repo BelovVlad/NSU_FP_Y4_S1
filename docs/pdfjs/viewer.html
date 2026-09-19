@@ -138,7 +138,7 @@ const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=
 
 const CSS_UNITS=96/72;
 let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=false,pdfUrl='',renderSerial=0,preloadSerial=0;
-let searchQuery='',searchPage=0,searchOccurrence=-1,searchBusy=false,searchToken=0;
+let searchQuery='',searchPage=0,searchOccurrence=-1,searchBusy=false,searchToken=0,searchSource='auto';
 let outlineLoaded=false,outlineEntries=[];
 const pageCache=new Map(),warmedPages=new Set(),textCache=new Map(),annotationCache=new Map();
 let indexedSearchPromise=null,indexedSearchPages=null,indexedSearchAvailable=false;
@@ -153,8 +153,12 @@ const normalizeText=s=>(s||'')
   .replace(/[\u2010-\u2015]/g,'-')
   .replace(/\s+/g,' ')
   .trim();
+function notifyParentPdfReady(){
+  if(window.parent===window)return;
+  try{window.parent.postMessage({type:'nsu-pdf-ready'},location.origin)}catch{}
+}
 
-function fail(message){hideLoading();stage.innerHTML=`<div class="error"><strong>Не удалось открыть PDF.</strong><br>${message}<br><br>Можно открыть файл напрямую кнопкой «Файл ↗».</div>`}
+function fail(message){hideLoading();stage.innerHTML=`<div class="error"><strong>Не удалось открыть PDF.</strong><br>${message}<br><br>Можно открыть файл напрямую кнопкой «Файл ↗».</div>`;notifyParentPdfReady()}
 function storageKey(){return 'nsu-pdf-page:'+(raw||pdfUrl)}
 function savePage(){try{localStorage.setItem(storageKey(),String(pageNum))}catch{}}
 function rememberedPage(){try{return Number(localStorage.getItem(storageKey()))||1}catch{return 1}}
@@ -169,7 +173,7 @@ function closeOutline(){outlinePanel.classList.remove('open');document.body.clas
 async function openOutline(){if(!pdf)return;closeSearch();outlinePanel.classList.add('open');document.body.classList.add('outline-open');if(!outlineLoaded)await loadOutline()}
 function openSearch(){closeOutline();searchPanel.classList.add('open');document.body.classList.add('search-open');setTimeout(()=>searchInput.focus(),0)}
 function closeSearch(){searchToken++;searchBusy=false;searchPanel.classList.remove('open');document.body.classList.remove('search-open');searchStatus.textContent='Enter — найти';clearHighlights()}
-function resetSearch(){searchToken++;searchBusy=false;searchQuery='';searchPage=pageNum;searchOccurrence=-1;searchStatus.textContent=searchInput.value.trim()?'Enter — найти':'Введите текст';clearHighlights()}
+function resetSearch(){searchToken++;searchBusy=false;searchQuery='';searchPage=pageNum;searchOccurrence=-1;searchSource='auto';searchStatus.textContent=searchInput.value.trim()?'Enter — найти':'Введите текст';clearHighlights()}
 function clearHighlights(){highlightLayer.replaceChildren()}
 function clearAnnotations(){annotationLayer.replaceChildren()}
 function findMatches(text,q){const hits=[];if(!q)return hits;let from=0;while(true){const i=text.indexOf(q,from);if(i<0)break;hits.push(i);from=i+Math.max(1,q.length)}return hits}
@@ -326,6 +330,42 @@ function renderOutlineNodes(items,container,depth=0){
 }
 async function loadOutline(){outlineLoaded=true;outlineEntries=[];outlineTree.innerHTML='<div class="outline-empty">Загружаю структуру документа…</div>';try{const items=await pdf.getOutline();outlineTree.replaceChildren();if(!items?.length){outlineTree.innerHTML='<div class="outline-empty">В этом PDF нет встроенных закладок. Кликабельные ссылки внутри самого PDF при этом продолжают работать.</div>';return}renderOutlineNodes(items,outlineTree,0);updateOutlineActive()}catch{outlineTree.innerHTML='<div class="outline-empty">Не удалось прочитать встроенное оглавление.</div>'}}
 
+async function scanSearchSource(direction,q,token,source){
+  let n=searchPage||pageNum,first=true;
+  for(let checked=0;checked<pdf.numPages;checked++){
+    let text='';
+    if(source==='index'){
+      const pages=await loadIndexedSearchPages();
+      text=pages.get(n)||'';
+    }else{
+      text=(await getPageSearchData(n)).text;
+    }
+    if(token!==searchToken)return null;
+
+    const matches=findMatches(text,q);
+    let occ=-1;
+    if(first&&n===searchPage){
+      if(direction>0){
+        const candidate=searchOccurrence+1;
+        if(candidate<matches.length)occ=candidate;
+      }else{
+        const candidate=Number.isFinite(searchOccurrence)?searchOccurrence-1:matches.length-1;
+        if(candidate>=0&&candidate<matches.length)occ=candidate;
+      }
+    }else if(matches.length){
+      occ=direction>0?0:matches.length-1;
+    }
+
+    if(occ>=0)return{page:n,occ,count:matches.length,source};
+
+    n+=direction;
+    if(n<1)n=pdf.numPages;
+    if(n>pdf.numPages)n=1;
+    first=false;
+  }
+  return null;
+}
+
 async function searchStep(direction){
   if(!pdf||searchBusy)return;
   const q=normalizeText(searchInput.value);
@@ -335,56 +375,43 @@ async function searchStep(direction){
     searchQuery=q;
     searchPage=pageNum;
     searchOccurrence=direction>0?-1:Number.POSITIVE_INFINITY;
+    searchSource='auto';
   }
 
   searchBusy=true;
   const token=++searchToken;
   searchStatus.textContent='Ищу…';
-  let n=searchPage||pageNum,first=true;
 
   try{
-    // The site already has a generated text index for every PDF page.
-    // Use it for navigation/search; PDF.js text extraction remains a fallback
-    // and is still used to draw highlights on the rendered page.
     await loadIndexedSearchPages();
     if(token!==searchToken)return;
 
-    for(let checked=0;checked<pdf.numPages;checked++){
-      const text=await getSearchTextForPage(n);
+    let sources;
+    if(searchSource==='index'||searchSource==='pdf')sources=[searchSource];
+    else sources=indexedSearchAvailable?['index','pdf']:['pdf'];
+
+    let found=null;
+    for(const source of sources){
+      found=await scanSearchSource(direction,q,token,source);
       if(token!==searchToken)return;
+      if(found)break;
 
-      const matches=findMatches(text,q);
-      let occ=-1;
+      // If the generated index has no occurrence, restore the old PDF.js
+      // text search instead of incorrectly reporting "not found".
+      if(searchSource!=='auto')break;
+      searchOccurrence=direction>0?-1:Number.POSITIVE_INFINITY;
+    }
 
-      if(first&&n===searchPage){
-        if(direction>0){
-          const candidate=searchOccurrence+1;
-          if(candidate<matches.length)occ=candidate;
-        }else{
-          const candidate=Number.isFinite(searchOccurrence)?searchOccurrence-1:matches.length-1;
-          if(candidate>=0&&candidate<matches.length)occ=candidate;
-        }
-      }else if(matches.length){
-        occ=direction>0?0:matches.length-1;
-      }
-
-      if(occ>=0){
-        searchPage=n;
-        searchOccurrence=occ;
-        pageNum=n;
-        await renderPage();
-        if(token!==searchToken)return;
-        searchStatus.textContent=indexedSearchAvailable
-          ? `${occ+1}/${matches.length} на стр. ${n} · индекс`
-          : `${occ+1}/${matches.length} на стр. ${n}`;
-        searchBusy=false;
-        return;
-      }
-
-      n+=direction;
-      if(n<1)n=pdf.numPages;
-      if(n>pdf.numPages)n=1;
-      first=false;
+    if(found){
+      searchSource=found.source;
+      searchPage=found.page;
+      searchOccurrence=found.occ;
+      pageNum=found.page;
+      await renderPage();
+      if(token!==searchToken)return;
+      searchStatus.textContent=`${found.occ+1}/${found.count} на стр. ${found.page} · ${found.source==='index'?'индекс':'PDF'}`;
+      searchBusy=false;
+      return;
     }
 
     if(token===searchToken){
@@ -417,7 +444,7 @@ async function open(){
   title.textContent=titleParam||decodeURIComponent(raw.split('/').pop());document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Проверяю файл…');
   try{
     pdfUrl=await resolvePdfUrl(raw);direct.href=pdfUrl;showLoading('Открываю документ…');const task=pdfjsLib.getDocument({url:pdfUrl,disableRange:false,disableStream:true,disableAutoFetch:true,rangeChunkSize:262144});task.onProgress=p=>{if(p.total&&p.loaded)loadingText.textContent=`Загрузка: ${Math.min(100,Math.round(p.loaded/p.total*100))}%`};
-    pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,pageParam||rememberedPage()));searchPage=pageNum;scale=1;fitWidth=window.matchMedia('(max-width:760px)').matches;updateControls();void loadIndexedSearchPages();await renderPage();if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
+    pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,pageParam||rememberedPage()));searchPage=pageNum;scale=1;fitWidth=window.matchMedia('(max-width:760px)').matches;updateControls();void loadIndexedSearchPages();await renderPage();notifyParentPdfReady();if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
   }catch(err){fail(err?.message||String(err))}
 }
 

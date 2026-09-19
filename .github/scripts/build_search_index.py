@@ -173,6 +173,14 @@ def pdf_record(rel: Path) -> dict:
     except Exception as exc:  # keep metadata search even for malformed/scanned PDFs
         record["indexed"] = False
         record["reason"] = type(exc).__name__
+
+    # Compiled lecture/seminar PDFs can occasionally expose incomplete text
+    # through a PDF extractor. Merge the author's LaTeX source into the
+    # corresponding start page so global search remains reliable.
+    try:
+        enrich_pdf_record_from_sources(record, rel)
+    except Exception:
+        pass
     return record
 
 
@@ -463,6 +471,70 @@ def structured_group(subject: str, folder: str, label: str) -> dict | None:
         "page_count": page_count,
         "items": items,
     }
+
+
+
+def latex_search_text(text: str) -> str:
+    """Plain searchable prose from a lecture/seminar LaTeX source."""
+    text = re.sub(r"(?m)(?<!\\)%[^\n]*", " ", text)
+    text = re.sub(r"\\begin\{[^{}]*\}|\\end\{[^{}]*\}", " ", text)
+    text = re.sub(r"\\[A-Za-zА-Яа-я@]+\*?(?:\[[^\]]*\])?", " ", text)
+    text = text.replace("{", " ").replace("}", " ")
+    text = text.replace("$", " ").replace("&", " ")
+    text = re.sub(r"\\.", " ", text)
+    return clean_text(text)
+
+
+def enrich_pdf_record_from_sources(record: dict, rel: Path) -> None:
+    if len(rel.parts) < 3 or rel.suffix.lower() != ".pdf":
+        return
+
+    subject = rel.parts[0]
+    folder = rel.parts[1]
+    folder_labels = {
+        "01_Лекции": "Лекции",
+        "02_Семинары": "Семинары",
+    }
+    label = folder_labels.get(folder)
+    if not label:
+        return
+
+    group = structured_group(subject, folder, label)
+    if not group or group.get("pdf_path") != rel.as_posix():
+        return
+
+    by_page = {int(p["n"]): p for p in record.get("pages", []) if p.get("n")}
+    changed = False
+
+    for item in group.get("items", []):
+        page_no = item.get("page")
+        source = item.get("source")
+        if not isinstance(page_no, int) or not source:
+            continue
+
+        source_path = ROOT / source
+        if not source_path.exists():
+            continue
+
+        try:
+            source_text = latex_search_text(source_path.read_text("utf-8", errors="ignore"))
+        except OSError:
+            continue
+
+        if len(source_text) < 24:
+            continue
+
+        page_rec = by_page.get(page_no)
+        if page_rec is None:
+            page_rec = {"n": page_no, "t": source_text}
+            record.setdefault("pages", []).append(page_rec)
+            by_page[page_no] = page_rec
+        else:
+            page_rec["t"] = clean_text((page_rec.get("t") or "") + " " + source_text)
+        changed = True
+
+    if changed:
+        record["pages"].sort(key=lambda p: int(p.get("n") or 0))
 
 
 QM_LECTURE_META = {
