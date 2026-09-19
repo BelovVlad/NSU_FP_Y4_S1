@@ -246,7 +246,11 @@ async function renderPage(){
   if(!pdf)return;const target=pageNum,serial=++renderSerial;showLoading();clearAnnotations();if(renderTask){try{renderTask.cancel()}catch{}}
   try{
     const page=await getCachedPage(target);if(serial!==renderSerial)return;const base=page.getViewport({scale:1});if(fitWidth){const mobile=window.matchMedia('(max-width:760px)').matches;const available=Math.max(120,viewer.clientWidth-(mobile?20:52));scale=Math.min(2.4,available/base.width)}
-    const viewport=page.getViewport({scale}),ratio=window.devicePixelRatio||1;canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;highlightLayer.style.width=annotationLayer.style.width=`${Math.floor(viewport.width)}px`;highlightLayer.style.height=annotationLayer.style.height=`${Math.floor(viewport.height)}px`;
+    const viewport=page.getViewport({scale});
+    const dpr=window.devicePixelRatio||1;
+    const quality=scale<=1.15?2.25:scale<=1.75?1.75:1;
+    const ratio=Math.max(dpr,quality);
+    canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;highlightLayer.style.width=annotationLayer.style.width=`${Math.floor(viewport.width)}px`;highlightLayer.style.height=annotationLayer.style.height=`${Math.floor(viewport.height)}px`;
     renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});await renderTask.promise;if(serial!==renderSerial)return;renderTask=null;warmedPages.add(target);updateControls();savePage();hideLoading();viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});trimPageCache(target);await Promise.allSettled([drawSearchHighlights(page,viewport),renderAnnotations(page,viewport)]);void preloadAround(target);
   }catch(err){if(err?.name!=='RenderingCancelledException'&&serial===renderSerial)fail(err?.message||String(err))}
 }
