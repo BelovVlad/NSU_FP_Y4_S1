@@ -334,16 +334,7 @@ const META={
   'База':{name:'База знаний'}
 };
 const HERO_IMAGE='assets/nsu-academic-hero.webp';
-const FILES=[
-{% for file in site.static_files %}
-  {% assign ext = file.extname | downcase %}
-  {% unless file.path contains '/LaTeX/' %}
-    {% if ext == '.pdf' or ext == '.ipynb' %}
-      {path:{{ file.path | remove_first:'/' | jsonify }},name:{{ file.name | jsonify }},ext:{{ ext | jsonify }}},
-    {% endif %}
-  {% endunless %}
-{% endfor %}
-];
+let FILES=[];
 
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 const state={view:'subjects',subject:(ORDER.includes(hashSubject())?hashSubject():'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
@@ -762,15 +753,31 @@ function render(){
 }
 
 async function loadMeta(){
+  main.innerHTML='<div class="empty">Загружаю материалы…</div>';
   try{
     const [data,structure]=await Promise.all([
-      fetch('search-index/files.json',{cache:'no-store'}).then(r=>r.json()),
-      fetch('search-index/structure.json',{cache:'no-store'}).then(r=>r.ok?r.json():({groups:[]})).catch(()=>({groups:[]}))
+      fetch('search-index/files.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('files.json '+r.status);return r.json()}),
+      fetch('search-index/structure.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():({groups:[]})).catch(()=>({groups:[]}))
     ]);
-    (data.files||[]).forEach(x=>state.meta.set(x.path,x));
+    const rows=(data.files||[]).filter(x=>x?.path&&/\.(pdf|ipynb)$/i.test(x.path)&&!x.path.includes('/LaTeX/'));
+    FILES=rows.map(x=>({
+      path:x.path,
+      name:x.path.split('/').pop(),
+      ext:'.'+String(x.type||x.path.split('.').pop()).replace(/^\./,'').toLowerCase()
+    }));
+    state.meta.clear();
+    rows.forEach(x=>state.meta.set(x.path,x));
     state.structure=structure||{groups:[]};
-  }catch(e){}
-  render();
+    const hs=hashSubject();
+    if(ORDER.includes(hs))state.subject=hs;
+    else if(!FILES.some(x=>subjectOf(x)===state.subject))state.subject=ORDER.find(x=>FILES.some(f=>subjectOf(f)===x))||'ФиХАиМ';
+    renderSubjectNav();
+    setActiveNav(state.view);
+    render();
+  }catch(e){
+    console.error(e);
+    main.innerHTML='<section class="search-view"><div class="panel"><div class="empty">Не удалось загрузить материалы. Обновите страницу через Ctrl+F5.</div></div></section>';
+  }
 }
 
 $('.nav-btn').forEach(b=>b.onclick=()=>{
@@ -800,7 +807,7 @@ window.addEventListener('hashchange',()=>{
   const hs=hashSubject();if(!ORDER.includes(hs)||hs===state.subject)return;
   state.view='subjects';state.subject=hs;state.section='';state.selected=null;state.selectedEntry=null;setActiveNav('subjects');renderSubjectNav();render();
 });
-if(ORDER.includes(hashSubject())){state.view='subjects';setActiveNav('subjects')}renderSubjectNav();render();loadMeta();
+if(ORDER.includes(hashSubject())){state.view='subjects';setActiveNav('subjects')}loadMeta();
 </script>
 </body>
 </html>
