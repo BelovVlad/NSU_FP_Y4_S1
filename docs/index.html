@@ -780,7 +780,7 @@ async function loadMeta(){
   }
 }
 
-$('.nav-btn').forEach(b=>b.onclick=()=>{
+$$('.nav-btn').forEach(b=>b.onclick=()=>{
   state.view=b.dataset.view;
   if(state.view!=='subjects')clearSubjectHash();
   setActiveNav(state.view);renderSubjectNav();
