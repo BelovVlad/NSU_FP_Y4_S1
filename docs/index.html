@@ -303,10 +303,10 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 .music-toggle:hover{border-color:var(--line);background:rgba(255,255,255,.025);color:var(--text)}
 .music-pearl-shell{width:36px;height:38px;display:grid;place-items:center;filter:drop-shadow(0 0 5px rgba(179,72,217,.28));transition:filter .35s ease}
 .music-pearl{width:24px;height:auto;display:block;object-fit:contain;image-rendering:pixelated;transform-origin:50% 50%}
-.music-toggle.playing .music-pearl{animation:pearlSpin 7.5s linear infinite}
+
 .music-copy{min-width:0}.music-label{display:block;overflow:hidden;color:var(--cream);font-size:11px;font-weight:760;text-overflow:ellipsis;white-space:nowrap}
 .music-glyph{justify-self:end;color:#8b9299;font-size:12px;line-height:1}.music-toggle.playing .music-glyph{color:var(--accent)}
-@keyframes pearlSpin{to{transform:rotate(360deg)}}
+
 body,body .sidebar,body .topbar,body .panel,body .nav-btn,body .subject-btn,body .tab,body .hero,body .searchbox input{
   transition:background-color .5s ease,border-color .5s ease,color .5s ease,box-shadow .5s ease
 }
@@ -637,6 +637,64 @@ body:not(.music-active) .action{
   border-color:#303a44
 }
 
+
+/* Atmosphere mini-player */
+.music-row{display:grid;grid-template-columns:minmax(0,1fr) 28px;align-items:stretch;gap:4px}
+.music-toggle{grid-template-columns:38px minmax(0,1fr) 22px}
+.music-more{
+  width:28px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--muted);
+  cursor:pointer;font-size:16px;line-height:1;transition:background .2s ease,border-color .2s ease,color .2s ease,transform .2s ease
+}
+.music-more:hover{border-color:var(--line);background:rgba(255,255,255,.025);color:var(--text)}
+.music-more.open{transform:rotate(180deg);color:var(--accent)}
+.music-panel{
+  margin-top:7px;padding:9px;border:1px solid var(--line2);border-radius:9px;
+  background:color-mix(in srgb,var(--panel) 92%,transparent)
+}
+.music-volume-row{display:grid;grid-template-columns:auto minmax(0,1fr) 32px;align-items:center;gap:8px;color:var(--muted);font-size:9px}
+.music-volume{width:100%;accent-color:var(--accent);cursor:pointer}
+.music-volume-value{text-align:right;font-variant-numeric:tabular-nums}
+.music-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.music-action{
+  min-height:29px;padding:0 7px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);
+  color:var(--text2);cursor:pointer;font-size:9px
+}
+.music-action:hover{border-color:var(--accent);color:var(--cream)}
+.music-stop{color:var(--muted)}
+.music-toggle.playing .music-pearl{animation:pearlSpin 13s linear infinite}
+.music-toggle.playing .music-pearl-shell{animation:pearlBreath 3.8s ease-in-out infinite}
+@keyframes pearlBreath{0%,100%{transform:scale(1);opacity:.94}50%{transform:scale(1.045);opacity:1}}
+@keyframes pearlSpin{to{transform:rotate(360deg)}}
+
+/* Rare NA 19x arrival: one soft bleach transition + subtle grain */
+body.music-na19x::after{
+  content:"";position:fixed;z-index:3;inset:0;pointer-events:none;opacity:.028;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  mix-blend-mode:screen
+}
+body.music-rare-arrival .shell{animation:rareArrival 1.35s ease-out both}
+@keyframes rareArrival{
+  0%{filter:brightness(1) saturate(1)}
+  34%{filter:brightness(1.15) saturate(.35)}
+  100%{filter:brightness(1) saturate(1)}
+}
+body.music-rare-arrival .hero-art img{animation:rareHeroArrival 1.35s ease-out both}
+@keyframes rareHeroArrival{
+  0%{filter:grayscale(1) brightness(1.18) contrast(.86)}
+  35%{filter:grayscale(1) brightness(1.34) contrast(.78)}
+  100%{filter:grayscale(1) brightness(1.18) contrast(.86)}
+}
+@media(max-width:720px){
+  body.music-na19x::after{display:none}
+  .music-toggle.playing .music-pearl-shell{filter:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .music-toggle.playing .music-pearl,
+  .music-toggle.playing .music-pearl-shell,
+  body.music-rare-arrival .shell,
+  body.music-rare-arrival .hero-art img{animation:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -662,11 +720,25 @@ body:not(.music-active) .action{
     <div class="subjects-label">Предметы</div>
     <nav id="subjectNav" class="subject-nav"></nav>
     <div class="music-control">
-      <button id="musicToggle" class="music-toggle" type="button" aria-pressed="false" title="Halcyon Memories · 90% NA 19 / 10% NA 19x">
-        <span class="music-pearl-shell" aria-hidden="true"><img class="music-pearl" src="assets/ui/music_pearl.png" alt=""></span>
-        <span class="music-copy"><span id="musicLabel" class="music-label">Включить эмбиенс</span></span>
-        <span id="musicGlyph" class="music-glyph" aria-hidden="true">▶</span>
-      </button>
+      <div class="music-row">
+        <button id="musicToggle" class="music-toggle" type="button" aria-pressed="false" title="Атмосфера">
+          <span class="music-pearl-shell" aria-hidden="true"><img class="music-pearl" src="assets/ui/music_pearl.png" alt=""></span>
+          <span class="music-copy"><span id="musicLabel" class="music-label">Атмосфера</span></span>
+          <span id="musicGlyph" class="music-glyph" aria-hidden="true">▶</span>
+        </button>
+        <button id="musicMore" class="music-more" type="button" aria-expanded="false" aria-controls="musicPanel" title="Настройки атмосферы">⌄</button>
+      </div>
+      <div id="musicPanel" class="music-panel" hidden>
+        <div class="music-volume-row">
+          <span>Громкость</span>
+          <input id="musicVolume" class="music-volume" type="range" min="0" max="100" value="28" step="1" aria-label="Громкость атмосферы">
+          <span id="musicVolumeValue" class="music-volume-value">28%</span>
+        </div>
+        <div class="music-actions">
+          <button id="musicVariant" class="music-action" type="button">Другой вариант</button>
+          <button id="musicStop" class="music-action music-stop" type="button">Выключить</button>
+        </div>
+      </div>
       <audio id="siteMusic" preload="none" loop></audio>
     </div>
     <div class="sidebar-bottom">
@@ -728,7 +800,7 @@ let FILES=[];
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 hydrateIcons();
 const state={view:'subjects',subject:(ORDER.includes(hashSubject())?hashSubject():'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
-const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicLabel=$('#musicLabel'),musicGlyph=$('#musicGlyph'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame');
+const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicLabel=$('#musicLabel'),musicGlyph=$('#musicGlyph'),musicMore=$('#musicMore'),musicPanel=$('#musicPanel'),musicVolume=$('#musicVolume'),musicVolumeValue=$('#musicVolumeValue'),musicVariant=$('#musicVariant'),musicStop=$('#musicStop'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame');
 let searchRun=0,searchTimer=0,searchPromise=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
 function syncSubjectHash(){if(state.view!=='subjects'||!ORDER.includes(state.subject))return;const h='#subject='+encodeURIComponent(state.subject);if(location.hash!==h)history.replaceState(null,'',h)}
@@ -803,11 +875,6 @@ function sortedEntries(items){
 }
 function githubUrl(f){return 'https://github.com/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(f.path)}
 function nbviewerUrl(f){return 'https://nbviewer.org/github/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(f.path)}
-function currentPdfTheme(){
-  if(document.body.classList.contains('music-na19x'))return'na19x';
-  if(document.body.classList.contains('music-na19'))return'na19';
-  return'';
-}
 function viewerUrl(f,page=0,titleOverride=''){
   let url='pdfjs/viewer.html?file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
   if(page)url+='&page='+encodeURIComponent(page);
@@ -822,11 +889,19 @@ function keywords(f){
 
 
 let activeMusicTrack=null;
-function chooseMusicTrack(){
-  activeMusicTrack=Math.random()<0.10?MUSIC_TRACKS[1]:MUSIC_TRACKS[0];
+let musicLongPressTimer=null,musicLongPressed=false;
+
+function chooseMusicTrack(forceId=''){
+  if(forceId)activeMusicTrack=MUSIC_TRACKS.find(t=>t.id===forceId)||MUSIC_TRACKS[0];
+  else activeMusicTrack=Math.random()<0.10?MUSIC_TRACKS[1]:MUSIC_TRACKS[0];
   musicAudio.src=activeMusicTrack.src;
-  musicAudio.volume=.28;
+  musicAudio.volume=Number(musicVolume.value)/100;
   return activeMusicTrack;
+}
+function currentPdfTheme(){
+  if(document.body.classList.contains('music-na19x'))return'na19x';
+  if(document.body.classList.contains('music-na19'))return'na19';
+  return'';
 }
 function broadcastPdfTheme(){
   const theme=currentPdfTheme();
@@ -835,15 +910,22 @@ function broadcastPdfTheme(){
   });
 }
 function setMusicTheme(on){
+  const wasRare=document.body.classList.contains('music-na19x');
   document.body.classList.remove('music-active','music-na19','music-na19x');
   if(on&&activeMusicTrack)document.body.classList.add('music-active',activeMusicTrack.theme);
+  if(on&&activeMusicTrack?.id==='na19x'&&!wasRare){
+    document.body.classList.remove('music-rare-arrival');
+    void document.body.offsetWidth;
+    document.body.classList.add('music-rare-arrival');
+    setTimeout(()=>document.body.classList.remove('music-rare-arrival'),1450);
+  }
   requestAnimationFrame(broadcastPdfTheme);
 }
 function syncMusicUi(playing){
   musicToggle.classList.toggle('playing',playing);
   musicToggle.setAttribute('aria-pressed',playing?'true':'false');
   musicGlyph.textContent=playing?'Ⅱ':'▶';
-  musicLabel.textContent=playing?'Эмбиенс играет':(activeMusicTrack?'Продолжить эмбиенс':'Включить эмбиенс');
+  musicLabel.textContent='Атмосфера';
   setMusicTheme(playing);
 }
 async function toggleMusic(){
@@ -851,14 +933,58 @@ async function toggleMusic(){
   if(!musicAudio.paused){musicAudio.pause();return}
   try{await musicAudio.play()}catch(e){
     console.error('Music playback failed',e);
-    musicLabel.textContent='Не удалось запустить';
     setMusicTheme(false);
   }
 }
-musicToggle.addEventListener('click',toggleMusic);
+function setMusicPanel(open){
+  musicPanel.hidden=!open;
+  musicMore.classList.toggle('open',open);
+  musicMore.setAttribute('aria-expanded',open?'true':'false');
+}
+async function switchMusicVariant(){
+  const wasPlaying=!musicAudio.paused;
+  const next=activeMusicTrack?.id==='na19x'?'na19':'na19x';
+  chooseMusicTrack(next);
+  musicAudio.currentTime=0;
+  if(wasPlaying){
+    try{await musicAudio.play()}catch{}
+  }else{
+    syncMusicUi(false);
+  }
+}
+function stopMusic(){
+  musicAudio.pause();
+  musicAudio.currentTime=0;
+  musicAudio.removeAttribute('src');
+  musicAudio.load();
+  activeMusicTrack=null;
+  syncMusicUi(false);
+  setMusicPanel(false);
+}
+musicToggle.addEventListener('click',e=>{
+  if(musicLongPressed){musicLongPressed=false;e.preventDefault();return}
+  void toggleMusic();
+});
+musicMore.addEventListener('click',()=>setMusicPanel(musicPanel.hidden));
+musicVolume.addEventListener('input',()=>{
+  const value=Number(musicVolume.value);
+  musicAudio.volume=value/100;
+  musicVolumeValue.textContent=value+'%';
+});
+musicVariant.addEventListener('click',()=>void switchMusicVariant());
+musicStop.addEventListener('click',stopMusic);
+musicToggle.addEventListener('pointerdown',()=>{
+  musicLongPressed=false;
+  clearTimeout(musicLongPressTimer);
+  musicLongPressTimer=setTimeout(()=>{
+    musicLongPressed=true;
+    setMusicPanel(true);
+  },560);
+});
+['pointerup','pointercancel','pointerleave'].forEach(type=>musicToggle.addEventListener(type,()=>clearTimeout(musicLongPressTimer)));
 musicAudio.addEventListener('play',()=>syncMusicUi(true));
 musicAudio.addEventListener('pause',()=>syncMusicUi(false));
-musicAudio.addEventListener('error',()=>{musicLabel.textContent='Аудиофайл недоступен';syncMusicUi(false)});
+musicAudio.addEventListener('error',()=>syncMusicUi(false));
 
 async function openPdfFullscreen(url,title='PDF'){
   if(!url)return;
