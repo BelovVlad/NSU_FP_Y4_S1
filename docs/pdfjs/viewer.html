@@ -266,7 +266,14 @@ async function open(){
 }
 
 function go(delta){if(!pdf)return;const n=pageNum+delta;if(n<1||n>pdf.numPages)return;pageNum=n;renderPage()}
-back.onclick=()=>{if(history.length>1)history.back();else location.href='../'+(subject?`#subject=${encodeURIComponent(subject)}`:'')};
+back.onclick=()=>{
+  if(window.parent!==window){
+    window.parent.postMessage({type:'nsu-close-pdf'},location.origin);
+    return;
+  }
+  if(history.length>1)history.back();
+  else location.href='../'+(subject?`#subject=${encodeURIComponent(subject)}`:'');
+};
 outlineToggle.onclick=()=>outlinePanel.classList.contains('open')?closeOutline():void openOutline();outlineClose.onclick=closeOutline;outlineBackdrop.onclick=closeOutline;
 prev.onclick=()=>go(-1);next.onclick=()=>go(1);mPrev.onclick=()=>go(-1);mNext.onclick=()=>go(1);
 pageInput.onchange=()=>{if(!pdf)return;pageNum=Math.max(1,Math.min(pdf.numPages,Number(pageInput.value)||1));renderPage()};

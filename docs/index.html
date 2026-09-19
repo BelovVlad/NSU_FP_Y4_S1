@@ -296,8 +296,8 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
   cursor:pointer;text-align:left;transition:background .22s ease,border-color .22s ease,color .22s ease,box-shadow .22s ease
 }
 .music-toggle:hover{border-color:var(--line);background:rgba(255,255,255,.025);color:var(--text)}
-.music-pearl-shell{width:36px;height:36px;display:grid;place-items:center;filter:drop-shadow(0 0 5px rgba(179,72,217,.28));transition:filter .35s ease}
-.music-pearl{width:34px;height:34px;display:block;object-fit:contain;image-rendering:pixelated;transform-origin:50% 50%}
+.music-pearl-shell{width:36px;height:38px;display:grid;place-items:center;filter:drop-shadow(0 0 5px rgba(179,72,217,.28));transition:filter .35s ease}
+.music-pearl{width:24px;height:auto;display:block;object-fit:contain;image-rendering:pixelated;transform-origin:50% 50%}
 .music-toggle.playing .music-pearl{animation:pearlSpin 7.5s linear infinite}
 .music-copy{min-width:0}.music-title{display:block;overflow:hidden;color:#d7cfda;font-size:11px;font-weight:750;text-overflow:ellipsis;white-space:nowrap}
 .music-status{display:block;margin-top:2px;overflow:hidden;color:#6f7a84;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
@@ -313,17 +313,27 @@ body.music-na19{
   --music-accent-rgb:83,200,197
 }
 body.music-na19x{
-  --bg:#0c0f12;--bg2:#11161a;--side:#0e1316;--panel:#151a1e;--panel2:#1a2025;
-  --line:#39444b;--line2:#283137;--text:#f7f8f7;--text2:#d7dcde;--muted:#98a3aa;
-  --cream:#f2f3ef;--warm:#c8d0d4;--accent:#e6ecef;--accent2:#87949c;--soft:rgba(230,236,239,.12);
-  --music-accent-rgb:230,236,239
+  --bg:#171b1e;--bg2:#1d2226;--side:#1a1f23;--panel:#252b30;--panel2:#30373d;
+  --line:#68747c;--line2:#465158;--text:#ffffff;--text2:#edf1f3;--muted:#b9c1c6;
+  --cream:#ffffff;--warm:#e8edf0;--accent:#f6fbfd;--accent2:#cbd5da;--soft:rgba(246,251,253,.18);
+  --music-accent-rgb:246,251,253
 }
 body.music-na19 .sidebar{
   background:radial-gradient(430px 310px at 18% 88%,rgba(34,154,157,.22),transparent 66%),linear-gradient(180deg,#071012 0%,#081719 72%,#0a1516 100%)
 }
 body.music-na19x .sidebar{
-  background:radial-gradient(430px 310px at 18% 88%,rgba(232,238,242,.13),transparent 66%),linear-gradient(180deg,#0d1114 0%,#12171b 72%,#0f1316 100%)
+  background:
+    radial-gradient(440px 320px at 18% 88%,rgba(248,252,253,.28),transparent 66%),
+    linear-gradient(180deg,#1b2024 0%,#252b30 72%,#20262a 100%)
 }
+body.music-na19x::before{
+  content:"";position:fixed;z-index:1;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.055),transparent 35%,rgba(235,244,248,.035) 72%,transparent);
+  mix-blend-mode:screen
+}
+body.music-na19x .shell{position:relative;z-index:2}
+body.music-na19x .music-pearl{filter:saturate(.72) brightness(1.16)}
+
 body.music-active .topbar{background:color-mix(in srgb,var(--bg) 89%,transparent)}
 body.music-active .hero{
   background:radial-gradient(560px 230px at 88% 24%,rgba(var(--music-accent-rgb),.13),transparent 64%),linear-gradient(180deg,color-mix(in srgb,var(--bg2) 94%,transparent),color-mix(in srgb,var(--bg) 48%,transparent))
@@ -411,6 +421,49 @@ body.music-active .recent-date{color:var(--muted)}
 
 
 
+
+/* NA 19x bleached pass */
+body.music-na19x .panel,
+body.music-na19x .file-row,
+body.music-na19x .stat,
+body.music-na19x .course-card,
+body.music-na19x .extra-card,
+body.music-na19x .preview-file-path,
+body.music-na19x .search-preview-text{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.025)
+}
+body.music-na19x .file-row.active{
+  background:linear-gradient(90deg,rgba(246,251,253,.28),rgba(246,251,253,.11));
+  box-shadow:inset 2px 0 0 #f8fcfd
+}
+body.music-na19x .sort-select,
+body.music-na19x .searchbox input,
+body.music-na19x .ghost-btn,
+body.music-na19x .menu-btn,
+body.music-na19x .preview-open-full,
+body.music-na19x .action,
+body.music-na19x .search-filter-chip,
+body.music-na19x .search-page-hit,
+body.music-na19x .search-hit-nav button{
+  background:#343b40;
+  border-color:#68747c;
+  color:#f4f7f8
+}
+body.music-na19x .preview-frame-wrap,
+body.music-na19x .search-preview-frame-wrap,
+body.music-na19x .preview-info-only,
+body.music-na19x .preview-file-pane{background:#1b2024}
+body.music-na19x .preview-frame,
+body.music-na19x .search-preview-frame{border-color:#707b82;background:#252b30}
+body.music-na19x .panel-count,
+body.music-na19x .subject-count{background:#40484e;color:#fff}
+body.music-na19x .music-toggle.playing{
+  border-color:rgba(255,255,255,.46);
+  background:rgba(255,255,255,.10);
+  box-shadow:inset 0 0 24px rgba(255,255,255,.045)
+}
+body.music-na19x .music-pearl-shell{filter:drop-shadow(0 0 9px rgba(255,255,255,.82))}
+
 /* In-page PDF fullscreen: keeps the site audio alive */
 .pdf-fullscreen{
   position:fixed;z-index:200;inset:0;display:none;grid-template-rows:48px minmax(0,1fr);
@@ -484,7 +537,7 @@ body.pdf-open{overflow:hidden}
     <button id="pdfFullscreenClose" class="pdf-fullscreen-close" type="button" aria-label="Закрыть PDF">×</button>
     <div id="pdfFullscreenTitle" class="pdf-fullscreen-title">PDF</div>
   </div>
-  <iframe id="pdfFullscreenFrame" class="pdf-fullscreen-frame" title="PDF"></iframe>
+  <iframe id="pdfFullscreenFrame" class="pdf-fullscreen-frame" title="PDF" allow="fullscreen" allowfullscreen></iframe>
 </div>
 
 <script>
@@ -645,32 +698,56 @@ musicAudio.addEventListener('play',()=>syncMusicUi(true));
 musicAudio.addEventListener('pause',()=>syncMusicUi(false));
 musicAudio.addEventListener('error',()=>{musicStatus.textContent='Аудиофайл недоступен';syncMusicUi(false)});
 
-function openPdfFullscreen(url,title='PDF'){
+async function openPdfFullscreen(url,title='PDF'){
   if(!url)return;
   pdfFullscreenFrame.src=url;
   pdfFullscreenTitle.textContent=title||'PDF';
   pdfFullscreen.classList.add('open');
   pdfFullscreen.setAttribute('aria-hidden','false');
   document.body.classList.add('pdf-open');
+  pdfFullscreen.dataset.requestedFullscreen='1';
+  try{
+    if(document.fullscreenElement!==pdfFullscreen&&pdfFullscreen.requestFullscreen){
+      await pdfFullscreen.requestFullscreen();
+    }
+  }catch{
+    // Fixed overlay remains open if browser fullscreen is unavailable/denied.
+  }
 }
-function closePdfFullscreen(){
+async function closePdfFullscreen(fromFullscreenChange=false){
   pdfFullscreen.classList.remove('open');
   pdfFullscreen.setAttribute('aria-hidden','true');
   document.body.classList.remove('pdf-open');
+  pdfFullscreen.dataset.requestedFullscreen='0';
   pdfFullscreenFrame.src='about:blank';
+  if(!fromFullscreenChange&&document.fullscreenElement===pdfFullscreen){
+    try{await document.exitFullscreen()}catch{}
+  }
 }
-pdfFullscreenClose.addEventListener('click',closePdfFullscreen);
+pdfFullscreenClose.addEventListener('click',()=>void closePdfFullscreen());
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement&&pdfFullscreen.dataset.requestedFullscreen==='1'&&pdfFullscreen.classList.contains('open')){
+    void closePdfFullscreen(true);
+  }
+});
+// Capture the click before any anchor can navigate away from the site.
+// Keeping this document alive is what keeps Halcyon Memories playing.
 document.addEventListener('click',e=>{
-  const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary');
+  const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary,a[href*="pdfjs/viewer.html"]');
   if(!a)return;
   const href=a.getAttribute('href')||'';
   if(!href.includes('pdfjs/viewer.html'))return;
   e.preventDefault();
+  e.stopImmediatePropagation();
   const title=
     document.querySelector('.preview-title')?.textContent?.trim()||
     document.querySelector('.search-preview-title')?.textContent?.trim()||
     'PDF';
-  openPdfFullscreen(href,title);
+  void openPdfFullscreen(href,title);
+},true);
+window.addEventListener('message',e=>{
+  if(e.origin!==location.origin||e.data?.type!=='nsu-close-pdf')return;
+  void closePdfFullscreen();
 });
 
 
