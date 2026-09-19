@@ -296,17 +296,26 @@ html,body{max-width:100%;overflow-x:hidden}
   .table-scroll .math-placeholder mjx-container{font-size:82%!important}
 }
 
-/* Notebook math natural-width pass v4 */
+/* Notebook math natural-width pass v5 */
 .math-placeholder.math-display{
   width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;text-align:center;
   -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
 }
 .math-placeholder.math-display > mjx-container,
 .math-placeholder.math-display > mjx-container[jax="CHTML"]{
-  display:inline-block!important;width:max-content!important;min-width:max-content!important;max-width:none!important;
-  margin:.32em auto!important;text-align:left!important;vertical-align:middle;
+  display:block!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:.32em auto!important;
+  text-align:center!important;
 }
-.math-placeholder.math-inline > mjx-container{width:auto!important;min-width:0!important;max-width:none!important}
+.math-placeholder.math-inline > mjx-container{
+  display:inline!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+}
 
 /* Notebook readable type v4 */
 .markdown-body{font-size:14.25px;line-height:1.56}
@@ -446,7 +455,7 @@ function internalMaterialUrl(path){
   const low=path.toLowerCase();
   if(low.endsWith('.ipynb')){
     const u=new URL('viewer.html',location.href);
-    u.searchParams.set('build','6');
+    u.searchParams.set('build','7');
     u.searchParams.set('file',path);
     u.searchParams.set('title',path.split('/').pop().replace(/\.ipynb$/i,'').replace(/_/g,' '));
     if(theme)u.searchParams.set('theme',theme);
