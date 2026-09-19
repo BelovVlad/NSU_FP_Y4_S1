@@ -299,8 +299,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 .music-pearl-shell{width:36px;height:38px;display:grid;place-items:center;filter:drop-shadow(0 0 5px rgba(179,72,217,.28));transition:filter .35s ease}
 .music-pearl{width:24px;height:auto;display:block;object-fit:contain;image-rendering:pixelated;transform-origin:50% 50%}
 .music-toggle.playing .music-pearl{animation:pearlSpin 7.5s linear infinite}
-.music-copy{min-width:0}.music-title{display:block;overflow:hidden;color:#d7cfda;font-size:11px;font-weight:750;text-overflow:ellipsis;white-space:nowrap}
-.music-status{display:block;margin-top:2px;overflow:hidden;color:#6f7a84;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+.music-copy{min-width:0}.music-label{display:block;overflow:hidden;color:var(--cream);font-size:11px;font-weight:760;text-overflow:ellipsis;white-space:nowrap}
 .music-glyph{justify-self:end;color:#8b9299;font-size:12px;line-height:1}.music-toggle.playing .music-glyph{color:var(--accent)}
 @keyframes pearlSpin{to{transform:rotate(360deg)}}
 body,body .sidebar,body .topbar,body .panel,body .nav-btn,body .subject-btn,body .tab,body .hero,body .searchbox input{
@@ -466,22 +465,89 @@ body.music-na19x .music-pearl-shell{filter:drop-shadow(0 0 9px rgba(255,255,255,
 
 /* In-page PDF fullscreen: keeps the site audio alive */
 .pdf-fullscreen{
-  position:fixed;z-index:200;inset:0;display:none;grid-template-rows:48px minmax(0,1fr);
-  background:var(--bg);color:var(--text)
+  position:fixed;z-index:200;inset:0;display:none;background:var(--bg);color:var(--text)
 }
-.pdf-fullscreen.open{display:grid}
-.pdf-fullscreen-bar{
-  display:flex;align-items:center;gap:10px;padding:0 12px;border-bottom:1px solid var(--line);
-  background:color-mix(in srgb,var(--bg2) 94%,var(--accent) 6%);box-shadow:0 8px 28px rgba(0,0,0,.28)
-}
-.pdf-fullscreen-close{
-  width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;
-  background:var(--panel);color:var(--text);cursor:pointer;font-size:22px;line-height:1
-}
-.pdf-fullscreen-close:hover{border-color:var(--accent);color:var(--cream)}
-.pdf-fullscreen-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--cream);font-size:12px;font-weight:700}
-.pdf-fullscreen-frame{width:100%;height:100%;border:0;background:#0a1016}
+.pdf-fullscreen.open{display:block}
+.pdf-fullscreen-frame{display:block;width:100%;height:100%;border:0;background:var(--bg)}
 body.pdf-open{overflow:hidden}
+
+
+/* Halcyon final palette pass */
+body.music-active .file-row{background:transparent}
+body.music-active .file-row:hover{background:rgba(var(--music-accent-rgb),.075)}
+body.music-active .file-row.active{
+  background:linear-gradient(90deg,rgba(var(--music-accent-rgb),.31),rgba(var(--music-accent-rgb),.11))!important;
+  box-shadow:inset 2px 0 0 var(--accent)!important
+}
+body.music-active .entry-no,body.music-active .file-ico{color:var(--accent)!important}
+body.music-active .panel-title,
+body.music-active .preview-title,
+body.music-active .file-name,
+body.music-active .search-group-title,
+body.music-active .course-code,
+body.music-active .stat-num{color:var(--cream)!important}
+body.music-active .hero{background:var(--bg2)}
+body.music-active .hero-art{background:var(--bg2)}
+body.music-na19 .hero-art img{opacity:.50;filter:saturate(.62) hue-rotate(118deg) brightness(.78) contrast(1.03)}
+body.music-na19x .hero-art img{opacity:.25;filter:grayscale(1) brightness(1.18) contrast(.86)}
+body.music-active .hero-art:after{
+  background:
+    linear-gradient(90deg,var(--bg2) 0%,color-mix(in srgb,var(--bg2) 94%,transparent) 20%,color-mix(in srgb,var(--bg2) 62%,transparent) 48%,color-mix(in srgb,var(--bg2) 18%,transparent) 76%,transparent 100%),
+    linear-gradient(180deg,color-mix(in srgb,var(--bg2) 6%,transparent),color-mix(in srgb,var(--bg2) 32%,transparent));
+  box-shadow:none
+}
+body.music-active .hero h1,
+body.music-active .hero-sub{color:var(--cream)}
+body.music-active .person-chip{
+  border-color:rgba(var(--music-accent-rgb),.22);
+  background:color-mix(in srgb,var(--bg2) 76%,transparent);
+  color:var(--muted)
+}
+body.music-active .person-chip strong{color:var(--text)}
+body.music-na19x{
+  --bg:#171b1e;--bg2:#1f2428;--side:#1a1f23;--panel:#272d32;--panel2:#32393f;
+  --line:#69757d;--line2:#4a555c;--text:#ffffff;--text2:#edf2f4;--muted:#b9c3c8;
+  --cream:#ffffff;--warm:#e5ecef;--accent:#f7fbfd;--accent2:#cfd9de;--soft:rgba(247,251,253,.18);
+  --music-accent-rgb:247,251,253
+}
+body.music-na19x .topbar{background:rgba(31,36,40,.94)}
+body.music-na19x .panel{
+  background:linear-gradient(180deg,#2b3237,#252b30);
+  border-color:#647078
+}
+body.music-na19x .sort-select,
+body.music-na19x .searchbox input,
+body.music-na19x .ghost-btn,
+body.music-na19x .menu-btn,
+body.music-na19x .preview-open-full,
+body.music-na19x .action,
+body.music-na19x .search-filter-chip,
+body.music-na19x .search-page-hit,
+body.music-na19x .search-hit-nav button{
+  background:#363e44!important;border-color:#737f87!important;color:#f7fafb!important
+}
+body.music-na19x .file-row:hover{background:rgba(255,255,255,.07)}
+body.music-na19x .file-row.active{
+  background:linear-gradient(90deg,rgba(255,255,255,.24),rgba(255,255,255,.08))!important
+}
+body.music-na19x .panel-count,
+body.music-na19x .subject-count{background:#424b51!important;color:#fff!important}
+body.music-na19x .preview-frame-wrap,
+body.music-na19x .search-preview-frame-wrap,
+body.music-na19x .preview-info-only,
+body.music-na19x .preview-file-pane{background:#20262a!important}
+body.music-na19x .preview-frame,
+body.music-na19x .search-preview-frame{background:#272d32!important;border-color:#69757d!important}
+body.music-na19x .music-toggle.playing{
+  border-color:rgba(255,255,255,.48);
+  background:linear-gradient(90deg,rgba(255,255,255,.13),rgba(255,255,255,.06));
+  box-shadow:inset 0 0 24px rgba(255,255,255,.04)
+}
+.filtered-list{overflow:hidden}
+.filtered-list .file-list{padding:8px 10px 10px}
+.filtered-list .file-row{margin:2px 0;border-radius:8px}
+.filtered-list .file-row:first-child{margin-top:0}
+.filtered-list .file-row:last-child{margin-bottom:0}
 
 </style>
 </head>
@@ -510,7 +576,7 @@ body.pdf-open{overflow:hidden}
     <div class="music-control">
       <button id="musicToggle" class="music-toggle" type="button" aria-pressed="false" title="Halcyon Memories · 90% NA 19 / 10% NA 19x">
         <span class="music-pearl-shell" aria-hidden="true"><img class="music-pearl" src="assets/ui/music_pearl.png" alt=""></span>
-        <span class="music-copy"><span class="music-title">Halcyon Memories</span><span id="musicStatus" class="music-status">Включить музыку</span></span>
+        <span class="music-copy"><span id="musicLabel" class="music-label">Включить эмбиенс</span></span>
         <span id="musicGlyph" class="music-glyph" aria-hidden="true">▶</span>
       </button>
       <audio id="siteMusic" preload="none" loop></audio>
@@ -533,10 +599,6 @@ body.pdf-open{overflow:hidden}
 
 
 <div id="pdfFullscreen" class="pdf-fullscreen" aria-hidden="true">
-  <div class="pdf-fullscreen-bar">
-    <button id="pdfFullscreenClose" class="pdf-fullscreen-close" type="button" aria-label="Закрыть PDF">×</button>
-    <div id="pdfFullscreenTitle" class="pdf-fullscreen-title">PDF</div>
-  </div>
   <iframe id="pdfFullscreenFrame" class="pdf-fullscreen-frame" title="PDF" allow="fullscreen" allowfullscreen></iframe>
 </div>
 
@@ -578,7 +640,7 @@ let FILES=[];
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 hydrateIcons();
 const state={view:'subjects',subject:(ORDER.includes(hashSubject())?hashSubject():'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
-const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicStatus=$('#musicStatus'),musicGlyph=$('#musicGlyph'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame'),pdfFullscreenClose=$('#pdfFullscreenClose'),pdfFullscreenTitle=$('#pdfFullscreenTitle');
+const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicLabel=$('#musicLabel'),musicGlyph=$('#musicGlyph'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame');
 let searchRun=0,searchTimer=0,searchPromise=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
 function syncSubjectHash(){if(state.view!=='subjects'||!ORDER.includes(state.subject))return;const h='#subject='+encodeURIComponent(state.subject);if(location.hash!==h)history.replaceState(null,'',h)}
@@ -653,10 +715,16 @@ function sortedEntries(items){
 }
 function githubUrl(f){return 'https://github.com/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(f.path)}
 function nbviewerUrl(f){return 'https://nbviewer.org/github/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(f.path)}
+function currentPdfTheme(){
+  if(document.body.classList.contains('music-na19x'))return'na19x';
+  if(document.body.classList.contains('music-na19'))return'na19';
+  return'';
+}
 function viewerUrl(f,page=0,titleOverride=''){
   let url='pdfjs/viewer.html?file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
   if(page)url+='&page='+encodeURIComponent(page);
   if(fileMeta(f).version)url+='&v='+encodeURIComponent(fileMeta(f).version);
+  const theme=currentPdfTheme();if(theme)url+='&theme='+encodeURIComponent(theme);
   return url;
 }
 function keywords(f){
@@ -672,16 +740,22 @@ function chooseMusicTrack(){
   musicAudio.volume=.28;
   return activeMusicTrack;
 }
+function broadcastPdfTheme(){
+  const theme=currentPdfTheme();
+  document.querySelectorAll('iframe.preview-frame,iframe.search-preview-frame,iframe.pdf-fullscreen-frame').forEach(frame=>{
+    try{frame.contentWindow?.postMessage({type:'nsu-pdf-theme',theme},location.origin)}catch{}
+  });
+}
 function setMusicTheme(on){
   document.body.classList.remove('music-active','music-na19','music-na19x');
   if(on&&activeMusicTrack)document.body.classList.add('music-active',activeMusicTrack.theme);
+  requestAnimationFrame(broadcastPdfTheme);
 }
 function syncMusicUi(playing){
   musicToggle.classList.toggle('playing',playing);
   musicToggle.setAttribute('aria-pressed',playing?'true':'false');
   musicGlyph.textContent=playing?'Ⅱ':'▶';
-  if(activeMusicTrack)musicStatus.textContent=activeMusicTrack.label+(playing?' · играет':' · пауза');
-  else musicStatus.textContent='Включить музыку';
+  musicLabel.textContent=playing?'Эмбиенс играет':(activeMusicTrack?'Продолжить эмбиенс':'Включить эмбиенс');
   setMusicTheme(playing);
 }
 async function toggleMusic(){
@@ -689,19 +763,21 @@ async function toggleMusic(){
   if(!musicAudio.paused){musicAudio.pause();return}
   try{await musicAudio.play()}catch(e){
     console.error('Music playback failed',e);
-    musicStatus.textContent='Не удалось запустить';
+    musicLabel.textContent='Не удалось запустить';
     setMusicTheme(false);
   }
 }
 musicToggle.addEventListener('click',toggleMusic);
 musicAudio.addEventListener('play',()=>syncMusicUi(true));
 musicAudio.addEventListener('pause',()=>syncMusicUi(false));
-musicAudio.addEventListener('error',()=>{musicStatus.textContent='Аудиофайл недоступен';syncMusicUi(false)});
+musicAudio.addEventListener('error',()=>{musicLabel.textContent='Аудиофайл недоступен';syncMusicUi(false)});
 
 async function openPdfFullscreen(url,title='PDF'){
   if(!url)return;
-  pdfFullscreenFrame.src=url;
-  pdfFullscreenTitle.textContent=title||'PDF';
+  const themed=new URL(url,location.href);
+  const theme=currentPdfTheme();
+  if(theme)themed.searchParams.set('theme',theme);else themed.searchParams.delete('theme');
+  pdfFullscreenFrame.src=themed.href;
   pdfFullscreen.classList.add('open');
   pdfFullscreen.setAttribute('aria-hidden','false');
   document.body.classList.add('pdf-open');
@@ -710,9 +786,7 @@ async function openPdfFullscreen(url,title='PDF'){
     if(document.fullscreenElement!==pdfFullscreen&&pdfFullscreen.requestFullscreen){
       await pdfFullscreen.requestFullscreen();
     }
-  }catch{
-    // Fixed overlay remains open if browser fullscreen is unavailable/denied.
-  }
+  }catch{}
 }
 async function closePdfFullscreen(fromFullscreenChange=false){
   pdfFullscreen.classList.remove('open');
@@ -724,14 +798,11 @@ async function closePdfFullscreen(fromFullscreenChange=false){
     try{await document.exitFullscreen()}catch{}
   }
 }
-pdfFullscreenClose.addEventListener('click',()=>void closePdfFullscreen());
 document.addEventListener('fullscreenchange',()=>{
   if(!document.fullscreenElement&&pdfFullscreen.dataset.requestedFullscreen==='1'&&pdfFullscreen.classList.contains('open')){
     void closePdfFullscreen(true);
   }
 });
-// Capture the click before any anchor can navigate away from the site.
-// Keeping this document alive is what keeps Halcyon Memories playing.
 document.addEventListener('click',e=>{
   const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary,a[href*="pdfjs/viewer.html"]');
   if(!a)return;
@@ -739,17 +810,12 @@ document.addEventListener('click',e=>{
   if(!href.includes('pdfjs/viewer.html'))return;
   e.preventDefault();
   e.stopImmediatePropagation();
-  const title=
-    document.querySelector('.preview-title')?.textContent?.trim()||
-    document.querySelector('.search-preview-title')?.textContent?.trim()||
-    'PDF';
-  void openPdfFullscreen(href,title);
+  void openPdfFullscreen(href);
 },true);
 window.addEventListener('message',e=>{
   if(e.origin!==location.origin||e.data?.type!=='nsu-close-pdf')return;
   void closePdfFullscreen();
 });
-
 
 function setActiveNav(view){
   $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
@@ -1064,7 +1130,7 @@ async function runSearch(q){
 }
 function renderFiltered(title,predicate){
   const list=FILES.filter(predicate);
-  main.innerHTML='<section class="search-view"><h1 class="search-title">'+esc(title)+'</h1><div class="search-note">'+list.length+' файл(ов)</div><div class="panel">'+fileRows(list)+'</div></section>';
+  main.innerHTML='<section class="search-view"><h1 class="search-title">'+esc(title)+'</h1><div class="search-note">'+list.length+' файл(ов)</div><div class="panel filtered-list"><div class="file-list">'+fileRows(list)+'</div></div></section>';
   $$('.file-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
 }
 

@@ -7,6 +7,28 @@
 <title>PDF · ФФ НГУ</title>
 <style>
 :root{--bg:#0d1015;--pdf-bg:#1e1e1e;--bar:#12161c;--panel:#171c23;--line:#2b323d;--text:#eef1f5;--muted:#8993a1;--accent:#d45d68;--accent-soft:rgba(212,93,104,.14);--outlineW:320px}
+
+body.theme-na19{
+  --bg:#071112;--pdf-bg:#0a1718;--bar:#0c1a1b;--panel:#102123;--line:#31565a;
+  --text:#eff8f6;--muted:#88aaa9;--accent:#53c8c5;--accent-soft:rgba(83,200,197,.14)
+}
+body.theme-na19x{
+  --bg:#171b1e;--pdf-bg:#20262a;--bar:#252b30;--panel:#30373d;--line:#68757d;
+  --text:#ffffff;--muted:#b9c3c8;--accent:#f7fbfd;--accent-soft:rgba(247,251,253,.14)
+}
+body.theme-na19 .search-panel,body.theme-na19 .outline-panel,body.theme-na19 .mobile-nav,body.theme-na19 .loading{
+  background:rgba(12,26,27,.98)
+}
+body.theme-na19x .search-panel,body.theme-na19x .outline-panel,body.theme-na19x .mobile-nav,body.theme-na19x .loading{
+  background:rgba(37,43,48,.98)
+}
+body.theme-na19 .page-input,body.theme-na19 .search-input{background:#0b1819}
+body.theme-na19x .page-input,body.theme-na19x .search-input{background:#2d3439}
+body.theme-na19 .outline-link.depth-0{background:#102123;border-color:#31565a}
+body.theme-na19x .outline-link.depth-0{background:#30373d;border-color:#68757d}
+body.theme-na19 .outline-link.depth-1{border-left-color:#396368;background:rgba(83,200,197,.025)}
+body.theme-na19x .outline-link.depth-1{border-left-color:#78858d;background:rgba(255,255,255,.025)}
+
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 button,input,a{font:inherit}.toolbar{height:58px;display:grid;grid-template-columns:auto minmax(100px,1fr) auto;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--bar);position:relative;z-index:40}
 .left,.controls,.right{display:flex;align-items:center;gap:8px}.left{min-width:0}.controls{justify-content:center}.right{justify-content:flex-end}.btn{height:38px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 11px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--text);text-decoration:none;cursor:pointer}.btn:hover{border-color:rgba(212,93,104,.55);background:var(--accent-soft)}.btn:disabled{opacity:.42;cursor:default}.btn.icon{width:38px;padding:0}.search-icon{font-size:22px;line-height:1;transform:translateY(-1px)}.outline-icon{font-size:17px;line-height:1}.title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:700}.page-input{width:62px;height:34px;border:1px solid var(--line);border-radius:8px;background:#0f1318;color:var(--text);text-align:center;outline:none}.page-input:focus,.search-input:focus{border-color:var(--accent)}.page-total,.zoom-label{color:var(--muted);font-size:13px}
@@ -100,6 +122,17 @@ const titleParam=params.get('title')||'';
 const pageParam=Number(params.get('page')||0);
 const findParam=params.get('find')||'';
 const versionParam=params.get('v')||'';
+const themeParam=params.get('theme')||'';
+function applyViewerTheme(theme){
+  document.body.classList.remove('theme-na19','theme-na19x');
+  if(theme==='na19')document.body.classList.add('theme-na19');
+  else if(theme==='na19x')document.body.classList.add('theme-na19x');
+}
+applyViewerTheme(themeParam);
+window.addEventListener('message',e=>{
+  if(e.origin!==location.origin||e.data?.type!=='nsu-pdf-theme')return;
+  applyViewerTheme(e.data.theme||'');
+});
 const $=id=>document.getElementById(id);
 const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText'),mPrev=$('mPrev'),mNext=$('mNext'),mPageInfo=$('mPageInfo'),searchToggle=$('searchToggle'),searchPanel=$('searchPanel'),searchInput=$('searchInput'),searchPrev=$('searchPrev'),searchNext=$('searchNext'),searchStatus=$('searchStatus'),searchClose=$('searchClose'),highlightLayer=$('highlightLayer'),annotationLayer=$('annotationLayer'),outlineToggle=$('outlineToggle'),outlinePanel=$('outlinePanel'),outlineTree=$('outlineTree'),outlineClose=$('outlineClose'),outlineBackdrop=$('outlineBackdrop');
 
