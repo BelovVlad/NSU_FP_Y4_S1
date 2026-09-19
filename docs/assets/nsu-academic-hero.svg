@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 600" role="img" aria-label="Physics night observatory">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#071018"/>
+      <stop offset=".46" stop-color="#0b141d"/>
+      <stop offset=".78" stop-color="#111923"/>
+      <stop offset="1" stop-color="#151820"/>
+    </linearGradient>
+    <linearGradient id="horizon" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#6e2a2f" stop-opacity=".42"/>
+      <stop offset=".55" stop-color="#2c1820" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#111821" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="galaxy" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#e7c0a7" stop-opacity=".95"/>
+      <stop offset=".18" stop-color="#b46b69" stop-opacity=".7"/>
+      <stop offset=".45" stop-color="#68507b" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#263342" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="dome" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#222a31"/>
+      <stop offset=".55" stop-color="#11171d"/>
+      <stop offset=".72" stop-color="#53272b"/>
+      <stop offset=".83" stop-color="#d36b5e"/>
+      <stop offset="1" stop-color="#171d22"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+
+  <rect width="1800" height="600" fill="url(#sky)"/>
+  <rect y="275" width="1800" height="325" fill="url(#horizon)"/>
+
+  <g opacity=".9" fill="#d7dde3">
+    <circle cx="770" cy="70" r="1.8"/><circle cx="824" cy="128" r="1.2"/><circle cx="900" cy="62" r="1.1"/>
+    <circle cx="958" cy="154" r="1.5"/><circle cx="1040" cy="92" r="1.3"/><circle cx="1120" cy="122" r="1.6"/>
+    <circle cx="1188" cy="54" r="1.2"/><circle cx="1264" cy="145" r="1.1"/><circle cx="1370" cy="84" r="1.6"/>
+    <circle cx="1460" cy="132" r="1.2"/><circle cx="1556" cy="68" r="1.5"/><circle cx="1660" cy="118" r="1.1"/>
+    <circle cx="1010" cy="202" r="1.2"/><circle cx="1210" cy="212" r="1.2"/><circle cx="1325" cy="191" r="1.5"/>
+  </g>
+
+  <ellipse cx="1180" cy="120" rx="190" ry="84" fill="url(#galaxy)" transform="rotate(-18 1180 120)" opacity=".75"/>
+  <ellipse cx="1180" cy="120" rx="68" ry="18" fill="none" stroke="#dca49a" stroke-opacity=".22" stroke-width="2" transform="rotate(-18 1180 120)"/>
+  <circle cx="1118" cy="136" r="5" fill="#d85d55" filter="url(#glow)"/>
+  <circle cx="1118" cy="136" r="2.2" fill="#ffb7a9"/>
+
+  <g fill="none" stroke="#c7cbd0" stroke-opacity=".22" stroke-width="1.6">
+    <ellipse cx="1295" cy="160" rx="220" ry="80" transform="rotate(7 1295 160)"/>
+    <ellipse cx="1295" cy="160" rx="154" ry="154" transform="rotate(54 1295 160)"/>
+    <ellipse cx="1295" cy="160" rx="154" ry="154" transform="rotate(126 1295 160)"/>
+    <circle cx="1295" cy="160" r="8" fill="#d8dde2" stroke="none" opacity=".65"/>
+  </g>
+
+  <g opacity=".23" fill="#d8dde2" font-family="Georgia,serif">
+    <text x="1015" y="278" font-size="26">iℏ ∂ψ/∂t = − ℏ²/(2m) ∇²ψ</text>
+    <text x="1465" y="150" font-size="25">F = G m₁m₂/r²</text>
+  </g>
+
+  <path d="M0 430 C180 405 300 432 450 412 S720 397 880 430 S1130 390 1310 417 S1560 405 1800 425 V600 H0Z" fill="#071018"/>
+  <path d="M0 458 C190 438 350 470 540 447 S820 432 1010 463 S1310 425 1500 455 S1660 442 1800 457 V600 H0Z" fill="#081119" opacity=".92"/>
+
+  <g fill="#c56557" opacity=".58">
+    <circle cx="900" cy="452" r="2"/><circle cx="934" cy="446" r="1.7"/><circle cx="970" cy="456" r="1.5"/>
+    <circle cx="1010" cy="449" r="2"/><circle cx="1050" cy="460" r="1.6"/><circle cx="1088" cy="451" r="1.5"/>
+    <circle cx="1134" cy="459" r="2"/><circle cx="1180" cy="451" r="1.5"/><circle cx="1218" cy="460" r="1.6"/>
+  </g>
+
+  <g transform="translate(1325 285)">
+    <rect x="65" y="170" width="330" height="82" rx="3" fill="#10161b"/>
+    <rect x="95" y="140" width="270" height="40" fill="#171d23"/>
+    <path d="M110 140 A120 120 0 0 1 350 140Z" fill="url(#dome)" stroke="#3b4248" stroke-width="2"/>
+    <path d="M230 20 A120 120 0 0 1 350 140H230Z" fill="#0d1318" opacity=".8"/>
+    <path d="M225 22 L248 22 L258 140 L230 140Z" fill="#b64a45" opacity=".75"/>
+    <path d="M228 22 L238 22 L247 140 L233 140Z" fill="#f18a73" opacity=".5"/>
+    <g fill="#c85f52" opacity=".72">
+      <rect x="112" y="184" width="18" height="42"/><rect x="151" y="184" width="18" height="42"/>
+      <rect x="190" y="184" width="18" height="42"/><rect x="229" y="184" width="18" height="42"/>
+      <rect x="268" y="184" width="18" height="42"/><rect x="307" y="184" width="18" height="42"/>
+    </g>
+    <rect x="40" y="242" width="380" height="18" fill="#0b1015"/>
+  </g>
+
+  <g transform="translate(1490 480)">
+    <rect x="0" y="30" width="160" height="30" rx="3" fill="#181d22" transform="rotate(-5 0 30)"/>
+    <rect x="18" y="10" width="160" height="30" rx="3" fill="#20242a" transform="rotate(2 18 10)"/>
+    <path d="M115 75 L250 58" stroke="#ad6a55" stroke-width="6" stroke-linecap="round"/>
+    <path d="M122 75 L250 58" stroke="#2b3137" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <rect width="860" height="600" fill="url(#sky)" opacity=".52"/>
+</svg>

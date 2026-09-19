@@ -8,7 +8,7 @@
 
 GitHub Pages:
 
-https://belovvlad.github.io/NSU_Faculty_of_Physics-4th-year--1st-semester-/
+https://belovvlad.github.io/NSU_FP_Y4_S1/
 
 На сайте доступны:
 

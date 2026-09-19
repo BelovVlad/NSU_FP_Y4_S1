@@ -6,6 +6,7 @@ on:
     paths:
       - '**/*.pdf'
       - '**/*.ipynb'
+      - '**/*.tex'
       - '.github/scripts/build_search_index.py'
       - '.github/workflows/build-search-index.yml'
   workflow_dispatch:

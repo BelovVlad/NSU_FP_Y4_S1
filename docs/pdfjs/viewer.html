@@ -69,7 +69,7 @@ button,input,a{font:inherit}.toolbar{height:58px;display:grid;grid-template-colu
 import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
 
-const OWNER='BelovVlad',REPO='NSU_Faculty_of_Physics-4th-year--1st-semester-',BRANCH='main';
+const OWNER='BelovVlad',REPO='NSU_FP_Y4_S1',BRANCH='main';
 const params=new URLSearchParams(location.search);
 function currentMaterialPath(path){
   if(!path)return path;
@@ -119,7 +119,7 @@ function clearAnnotations(){annotationLayer.replaceChildren()}
 function findMatches(text,q){const hits=[];if(!q)return hits;let from=0;while(true){const i=text.indexOf(q,from);if(i<0)break;hits.push(i);from=i+Math.max(1,q.length)}return hits}
 
 async function resolvePdfUrl(path){
-  const local=new URL('../'+path.replace(/^\/+/,''),location.href);if(versionParam)local.searchParams.set('v',versionParam);const localUrl=local.href;
+  const local=new URL('../../'+path.replace(/^\/+/,''),location.href);if(versionParam)local.searchParams.set('v',versionParam);const localUrl=local.href;
   try{
     const head=await fetch(localUrl,{method:'HEAD',cache:'no-store'});
     const size=Number(head.headers.get('content-length')||0);

@@ -184,7 +184,7 @@ def iter_materials(subject: str):
         if not full.is_file():
             continue
         rel = full.relative_to(ROOT)
-        if "LaTeX" in rel.parts:
+        if "LaTeX" in rel.parts or ".ipynb_checkpoints" in rel.parts:
             continue
         suffix = full.suffix.lower()
         if suffix in {".pdf", ".ipynb"}:
@@ -208,6 +208,254 @@ def compact_metadata(record: dict) -> dict:
     )
     return {key: record[key] for key in keys if key in record}
 
+
+
+def natural_key(path: Path) -> tuple:
+    parts = re.split(r"(\d+)", path.name)
+    return tuple(int(p) if p.isdigit() else p.lower() for p in parts)
+
+
+def normalize_title(text: str) -> str:
+    text = re.sub(r"\\texorpdfstring\{([^{}]*)\}\{([^{}]*)\}", r"\2", text)
+    text = re.sub(r"\\[A-Za-z@]+\*?(?:\[[^\]]*\])?", " ", text)
+    text = text.replace("{", " ").replace("}", " ")
+    text = re.sub(r"[^0-9A-Za-zА-Яа-яЁё]+", " ", text)
+    return re.sub(r"\s+", " ", text).strip().lower()
+
+
+def iso_date(value: str | None) -> str | None:
+    if not value:
+        return None
+    value = value.strip()
+    try:
+        return datetime.strptime(value, "%d.%m.%Y").date().isoformat()
+    except ValueError:
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00")).date().isoformat()
+        except ValueError:
+            return value
+
+
+def tex_arguments(text: str, command: str, count: int = 1) -> list[tuple[str, ...]]:
+    """Read heading arguments, including nested braces and optional numbers."""
+    text = re.sub(r"(?m)(?<!\\)%[^\n]*", "", text)
+    pattern = re.compile(r"\\" + re.escape(command) + r"\*?(?:\[[^\]]*\])?\s*(?=\{)")
+    results = []
+    for match in pattern.finditer(text):
+        pos = match.end()
+        args = []
+        for _ in range(count):
+            while pos < len(text) and text[pos].isspace():
+                pos += 1
+            if pos >= len(text) or text[pos] != "{":
+                break
+            start = pos + 1
+            depth = 1
+            pos += 1
+            while pos < len(text) and depth:
+                if text[pos] == "\\" and pos + 1 < len(text) and text[pos + 1] in "{}%":
+                    pos += 2
+                    continue
+                if text[pos] == "{":
+                    depth += 1
+                elif text[pos] == "}":
+                    depth -= 1
+                pos += 1
+            if depth:
+                break
+            args.append(text[start:pos - 1])
+        if len(args) == count:
+            results.append(tuple(args))
+    return results
+
+
+def heading_title(text: str) -> str:
+    # Prefer the author's plain PDF title for headings containing mathematics.
+    for math_title, pdf_title in tex_arguments(text, "texorpdfstring", 2):
+        text = text.replace(r"\texorpdfstring{" + math_title + "}{" + pdf_title + "}", pdf_title)
+    return clean_text(text)
+
+
+def section_titles_from_tex(text: str) -> list[str]:
+    titles = []
+    # New notes use \task[number]{title}; retain older \section headings too.
+    headings = tex_arguments(text, "task") or tex_arguments(text, "section")
+    for (heading,) in headings:
+        title = heading_title(heading)
+        title = re.sub(r"^Задача\s+\d+[.:]?\s*", "", title, flags=re.I)
+        if title and title not in titles:
+            titles.append(title)
+    return titles
+
+
+def first_page_for_title(doc: fitz.Document, title: str, toc: list[list]) -> int | None:
+    wanted = normalize_title(title)
+    if not wanted:
+        return None
+
+    # Numbers distinguish seminars with identical or closely related topics.
+    practice = re.fullmatch(r"практическое занятие (\d+)", wanted)
+    if practice:
+        prefix = re.compile(r"^практическое занятие " + practice.group(1) + r"(?:\s|$)")
+        for row in toc:
+            if len(row) >= 3 and prefix.match(normalize_title(str(row[1]))):
+                return int(row[2])
+        return None
+
+    best_page = None
+    best_score = 0
+    wanted_words = [w for w in wanted.split() if len(w) >= 4]
+
+    for row in toc:
+        if len(row) < 3:
+            continue
+        toc_title, page = str(row[1]), int(row[2])
+        norm = normalize_title(toc_title)
+        if not norm:
+            continue
+        if norm == wanted:
+            return page
+        score = 0
+        if wanted in norm or norm in wanted:
+            score += 8
+        score += sum(1 for w in wanted_words if w in norm)
+        if score > best_score:
+            best_score, best_page = score, page
+
+    if best_score >= max(3, min(6, len(wanted_words))):
+        return best_page
+
+    # Fallback: search the rendered PDF text. This handles custom macros
+    # whose visible heading is not exposed as a PDF bookmark.
+    probe = wanted_words[:6]
+    if probe:
+        for page_no in range(doc.page_count):
+            try:
+                page_text = normalize_title(doc.load_page(page_no).get_text("text", sort=True))
+            except Exception:
+                continue
+            hits = sum(1 for w in probe if w in page_text)
+            if hits >= max(2, min(len(probe), 4)):
+                return page_no + 1
+    return None
+
+
+def structured_group(subject: str, folder: str, label: str) -> dict | None:
+    base = ROOT / subject / folder
+    parts_dir = base / "LaTeX" / "parts"
+    pdf_path = base / f"{subject}_{label}.pdf"
+    if not pdf_path.exists():
+        pdf_path = base / "final.pdf"  # Older, not yet renamed projects.
+    if not parts_dir.exists() or not pdf_path.exists():
+        return None
+
+    part_files = sorted(parts_dir.glob("part*.tex"), key=natural_key)
+    if not part_files:
+        return None
+
+    items: list[dict] = []
+    is_lecture = label == "Лекции"
+
+    for ordinal, part in enumerate(part_files, 1):
+        try:
+            text = part.read_text("utf-8", errors="ignore")
+        except OSError:
+            continue
+
+        rel = part.relative_to(ROOT)
+        updated_at, created_at = git_history_dates(rel)
+
+        if is_lecture:
+            # A part can continue the previous chapter with a section.
+            headings = tex_arguments(text, "chapter") or tex_arguments(text, "section")
+            if not headings:
+                continue
+            title = heading_title(headings[0][0])
+            subtitles = tex_arguments(text, "rsubtitle")
+            subtitle = heading_title(subtitles[0][0]) if subtitles else ""
+            number = ordinal
+            date = iso_date(created_at or updated_at)
+        else:
+            practice = tex_arguments(text, "practice", 3)
+            if not practice:
+                continue
+            raw_number, raw_date, raw_title = practice[0]
+            try:
+                number = int(raw_number.strip())
+            except ValueError:
+                number = ordinal
+            title = heading_title(raw_title)
+            date = iso_date(raw_date)
+            sections = section_titles_from_tex(text)
+            subtitle = " · ".join(sections[:2])
+
+        items.append(
+            {
+                "id": f"{subject}:{label}:{number}",
+                "number": number,
+                "title": title,
+                "subtitle": subtitle,
+                "date": date,
+                "source": rel.as_posix(),
+                "page": None,
+                "end_page": None,
+            }
+        )
+
+    if not items:
+        return None
+
+    page_count = None
+    pointer = lfs_pointer_text(pdf_path)
+    if not pointer:
+        try:
+            with fitz.open(pdf_path) as doc:
+                page_count = doc.page_count
+                toc = doc.get_toc(simple=True) or []
+                for item in items:
+                    if label == "Семинары":
+                        practice_title = f"Практическое занятие {item['number']}"
+                        item["page"] = first_page_for_title(doc, practice_title, toc)
+                    if not item["page"]:
+                        item["page"] = first_page_for_title(doc, item["title"], toc)
+        except Exception:
+            pass
+
+    # Fill page ranges from the next known item.
+    known = [i for i in items if isinstance(i.get("page"), int)]
+    for idx, item in enumerate(known):
+        nxt = known[idx + 1]["page"] if idx + 1 < len(known) else None
+        if nxt:
+            item["end_page"] = max(item["page"], nxt - 1)
+        elif page_count:
+            item["end_page"] = page_count
+
+    return {
+        "subject": subject,
+        "section": label,
+        "pdf_path": pdf_path.relative_to(ROOT).as_posix(),
+        "page_count": page_count,
+        "items": items,
+    }
+
+
+def build_structure(generated_at: str) -> None:
+    groups = []
+    for subject in ORDER:
+        for folder, label in (("01_Лекции", "Лекции"), ("02_Семинары", "Семинары")):
+            group = structured_group(subject, folder, label)
+            if group:
+                groups.append(group)
+
+    payload = {
+        "version": 1,
+        "generated_at": generated_at,
+        "groups": groups,
+    }
+    (OUT / "structure.json").write_text(
+        json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
+        "utf-8",
+    )
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
@@ -253,6 +501,8 @@ def main() -> None:
         ),
         "utf-8",
     )
+
+    build_structure(generated_at)
 
     total_records = sum(s["records"] for s in manifest["shards"])
     total_locations = sum(s["locations"] for s in manifest["shards"])
