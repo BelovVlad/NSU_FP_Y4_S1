@@ -1,0 +1,985 @@
+% !TeX root = part03.tex
+
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% ============================================================
+% Лекция 15.09
+% Численное интегрирование
+% ============================================================
+
+\chapter{Численное интегрирование}
+
+\rsubtitle{Методы прямоугольников, трапеций, Симпсона и Рунге}
+
+\captionsetup{
+    font=footnotesize,
+    labelfont=bf,
+    skip=5pt
+}
+
+% Общий стиль рисунков лекции — тот же принцип, что и в part2.tex.
+\tikzset{
+    ovfaxis/.style={
+        -{Stealth[length=2.2mm]},
+        rtext,
+        line width=0.85pt
+    },
+    ovfcurve/.style={
+        rc4,
+        line width=1.55pt
+    },
+    ovfapprox/.style={
+        rtext!88,
+        line width=1.0pt
+    },
+    ovfguide/.style={
+        rtext!45,
+        dashed,
+        line width=0.70pt
+    },
+    ovfmesh/.style={
+        rtext!55,
+        line width=0.65pt
+    },
+    ovferror/.style={
+        rc2,
+        line width=0.95pt
+    },
+    ovfpoint/.style={
+        circle,
+        fill=rc3,
+        draw=none,
+        inner sep=1.65pt
+    }
+}
+
+\pgfmathdeclarefunction{ovfintf}{1}{%
+    \pgfmathparse{0.15 + 2.6*(1-exp(-0.52*(#1)))}%
+}
+
+% ============================================================
+\section{Постановка задачи}
+% ============================================================
+
+Рассмотрим задачу численного вычисления определённого интеграла
+%
+\begin{equation*}
+    I=\int_a^b f(x)\,dx.
+\end{equation*}
+%
+Геометрически интеграл соответствует площади под графиком функции
+$y=f(x)$ на отрезке $[a,b]$.
+
+Разобьём интервал $[a,b]$ на $N$ одинаковых частей и введём
+равномерную сетку
+%
+\begin{equation*}
+    x_i=a+ih,
+    \qquad
+    i=0,1,\ldots,N,
+\end{equation*}
+%
+где
+%
+\begin{equation*}
+    h=\frac{b-a}{N}=\operatorname{const},
+    \qquad
+    x_0=a,
+    \qquad
+    x_N=b.
+\end{equation*}
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[every node/.style={text=rtext},x=1.65cm,y=1.0cm]
+        \path[pattern=north east lines,pattern color=rc3!65!rbg]
+            (0.7,0) -- plot[domain=0.7:5.8,samples=100] (\x,{ovfintf(\x)})
+            -- (5.8,0) -- cycle;
+        \foreach \x in {0.7,1.55,2.4,3.25,4.1,4.95,5.8}{
+            \draw[ovfguide] (\x,0) -- (\x,{ovfintf(\x)});
+            \draw[ovfmesh] (\x,-0.055) -- (\x,0.055);
+        }
+        \draw[ovfaxis] (-0.15,0) -- (6.25,0) node[right] {$x$};
+        \draw[ovfaxis] (0,-0.15) -- (0,3.35) node[left] {$y$};
+        \draw[ovfcurve,domain=0.45:6.0,samples=100] plot (\x,{ovfintf(\x)});
+        \foreach \x/\lab in {0.7/{a=x_0},1.55/{x_1},2.4/{x_2},3.25/{x_{i-1}},4.1/{x_i},4.95/{\cdots},5.8/{b=x_N}}
+            \node[below=3pt] at (\x,0) {$\lab$};
+        \draw[ovfmesh,{Stealth[length=1.5mm]}-{Stealth[length=1.5mm]}]
+            (3.25,0.58) -- (4.1,0.58) node[midway,fill=rbg,inner sep=2pt] {$h$};
+        \node[draw=rc3,circle,fill=rbg,text=rc3,inner sep=3pt] at (4.85,1.45) {$S$};
+        \node[text=rc4,above=5pt] at (5.25,{ovfintf(5.25)}) {$y=f(x)$};
+    \end{tikzpicture}
+
+    \captionof{figure}{Разбиение отрезка интегрирования на равномерную сетку.}
+    \label{fig:ovf_integral_grid}
+\end{rbox}
+
+Точное значение интеграла обозначим через $I$, а значение, полученное
+численным методом на сетке с шагом $h$, --- через $S_h$. Тогда
+%
+\begin{equation*}
+    I=S_h+R(h),
+\end{equation*}
+%
+где
+%
+\begin{equation*}
+    R(h)=I-S_h
+\end{equation*}
+%
+--- остаточный член, или погрешность численного интегрирования.
+
+\subsection{Квадратурные формулы как интерполяция}
+
+На каждом маленьком интервале
+%
+\begin{equation*}
+    [x_{i-1},x_i]
+\end{equation*}
+%
+будем заменять исходную функцию $f(x)$ более простой функцией
+$\varphi(x)$, которую легко проинтегрировать.
+
+Если использовать полином степени $n=0$, то $\varphi(x)$ является
+постоянной. Возможны три естественных варианта:
+%
+\begin{align*}
+    \varphi(x)&=f(x_{i-1})
+    &&\text{--- метод левых прямоугольников},\\[2pt]
+    \varphi(x)&=f(x_i)
+    &&\text{--- метод правых прямоугольников},\\[2pt]
+    \varphi(x)&=f\!\left(\frac{x_{i-1}+x_i}{2}\right)
+    &&\text{--- формула средних}.
+\end{align*}
+
+Если $n=1$, функцию заменяем линейным интерполяционным полиномом,
+проходящим через значения на концах интервала:
+%
+\begin{equation*}
+    \varphi(x)
+    =
+    \frac{x_i-x}{x_i-x_{i-1}}f(x_{i-1})
+    +
+    \frac{x-x_{i-1}}{x_i-x_{i-1}}f(x_i).
+\end{equation*}
+%
+Интегрирование этой прямой приводит к \rtxt{3}{методу трапеций}.
+
+Если $n=2$, используем квадратичную интерполяцию по трём точкам.
+В результате получаем \rtxt{3}{формулу Симпсона}.
+
+
+% ============================================================
+\section{Методы прямоугольников}
+% ============================================================
+
+\subsection{Метод левых прямоугольников}
+
+На каждом интервале $[x_{i-1},x_i]$ заменим функцию постоянным
+значением в левой точке:
+%
+\begin{equation*}
+    f(x)\approx f(x_{i-1}).
+\end{equation*}
+%
+Тогда площадь под функцией на одном интервале приближается площадью
+прямоугольника $f(x_{i-1})h$, а на всём отрезке
+%
+\begin{equation*}
+    \boxed{
+    S_h^{(L)}
+    =
+    \sum_{i=1}^{N} f(x_{i-1})h
+    }.
+\end{equation*}
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[every node/.style={text=rtext,font=\small},x=0.82cm,y=1.0cm]
+        % Общая сетка и увеличенная отдельная ячейка.
+        \foreach \xa/\xb in {0.7/1.55,1.55/2.4,2.4/3.25,3.25/4.1,4.1/4.95,4.95/5.8}{
+            \pgfmathsetmacro{\yy}{ovfintf(\xa)}
+            \path[pattern=north east lines,pattern color=rc3!65!rbg] (\xa,0) rectangle (\xb,\yy);
+            \draw[ovfapprox] (\xa,0) -- (\xa,\yy) -- (\xb,\yy) -- (\xb,0);
+        }
+        \draw[ovfaxis] (-0.15,0) -- (6.35,0) node[right] {$x$};
+        \draw[ovfaxis] (0,-0.15) -- (0,3.2) node[left] {$y$};
+        \draw[ovfcurve,domain=0.45:6.0,samples=100] plot (\x,{ovfintf(\x)});
+        \node[below=3pt] at (0.7,0) {$a$};
+        \node[below=3pt] at (5.8,0) {$b$};
+        \node[text=rc4,above=4pt] at (4.5,{ovfintf(4.5)}) {$y=f(x)$};
+        \begin{scope}[shift={(9.4,0)},x=1.13cm]
+            \pgfmathsetmacro{\ya}{ovfintf(1)}
+            \pgfmathsetmacro{\yb}{ovfintf(3.8)}
+            \pgfmathsetmacro{\yr}{ovfintf(1.0)}
+            \path[pattern=north east lines,pattern color=rc3!65!rbg] (1,0) rectangle (3.8,\yr);
+            \path[fill=rc2,fill opacity=0.23] (1,\yr)
+                -- plot[domain=1:3.8,samples=80] (\x,{ovfintf(\x)}) -- (3.8,\yr) -- cycle;
+            \draw[ovfguide] (0,\ya) -- (1,\ya);
+            \draw[ovfguide] (0,\yb) -- (3.8,\yb);
+            \draw[ovfguide] (1,0) -- (1,\ya);
+            \draw[ovfguide] (3.8,0) -- (3.8,\yb);
+            \draw[ovfapprox] (1,0) -- (1,\yr) -- (3.8,\yr) -- (3.8,0);
+            \draw[ovfaxis] (-0.15,0) -- (4.55,0) node[right] {$x$};
+            \draw[ovfaxis] (0,-0.15) -- (0,3.2) node[left] {$y$};
+            \draw[ovfcurve,domain=0.55:4.2,samples=80] plot (\x,{ovfintf(\x)});
+            \node[ovfpoint] at (1.0,\yr) {};
+            \node[left=3pt] at (0,\ya) {$f(x_{i-1})$};
+            \node[left=3pt] at (0,\yb) {$f(x_i)$};
+            \node[below=3pt] at (1,0) {$x_{i-1}$};
+            \node[below=3pt] at (3.8,0) {$x_i$};
+            \draw[ovfmesh,{Stealth[length=1.4mm]}-{Stealth[length=1.4mm]}]
+                (1,0.45) -- (3.8,0.45) node[midway,fill=rbg,inner sep=2pt] {$h$};
+            \node[text=rc2,anchor=west] (err) at (2.8,3.05) {$R_i^{(L)}>0$};
+            \draw[ovferror,-{Stealth[length=1.4mm]}] (err.south) to[bend right=15] (3.0,1.65);
+            \node[fill=rbg,inner sep=2pt,text=rc3] at (2.4,0.95) {$S_i$};
+        \end{scope}
+    \end{tikzpicture}
+
+    \captionof{figure}{Метод левых прямоугольников.}
+    \label{fig:ovf_left_rectangles}
+\end{rbox}
+
+Точное значение интеграла представим как сумму интегралов по ячейкам:
+%
+\begin{equation*}
+    I
+    =
+    \int_a^b f(x)\,dx
+    =
+    \sum_{i=1}^{N}
+    \int_{x_{i-1}}^{x_i} f(x)\,dx.
+\end{equation*}
+%
+Поэтому
+%
+\begin{align*}
+    R_L(h)
+    &=I-S_h^{(L)}\\
+    &=
+    \sum_{i=1}^{N}
+    \left[
+        \int_{x_{i-1}}^{x_i} f(x)\,dx
+        -f(x_{i-1})h
+    \right].
+\end{align*}
+
+Чтобы оценить погрешность, разложим функцию в ряд Тейлора около
+левой точки $x_{i-1}$:
+%
+\begin{equation*}
+    f(x)
+    =
+    f(x_{i-1})
+    +f'(x_{i-1})(x-x_{i-1})
+    +\frac12 f''(x_{i-1})(x-x_{i-1})^2
+    +O(h^3).
+\end{equation*}
+
+Интегрируя по одному интервалу, получаем
+%
+\begin{align*}
+    \int_{x_{i-1}}^{x_i}f(x)\,dx
+    &=
+    f(x_{i-1})h
+    +f'(x_{i-1})
+    \int_{x_{i-1}}^{x_i}(x-x_{i-1})\,dx
+    +O(h^3)\\
+    &=
+    f(x_{i-1})h
+    +\frac12 f'(x_{i-1})h^2
+    +O(h^3).
+\end{align*}
+
+После вычитания площади прямоугольника остаётся локальная ошибка
+%
+\begin{equation*}
+    R_i
+    =
+    \frac12 f'(x_{i-1})h^2+O(h^3).
+\end{equation*}
+
+Суммируя по всей сетке,
+%
+\begin{align*}
+    R_L(h)
+    &=
+    \sum_{i=1}^{N}
+    \left[
+        \frac12 f'(x_{i-1})h^2+O(h^3)
+    \right]\\
+    &=
+    \frac{h}{2}
+    \sum_{i=1}^{N}f'(x_{i-1})h
+    +O(h^2).
+\end{align*}
+
+При $h\to0$ сумма переходит в интеграл:
+%
+\begin{equation*}
+    \sum_{i=1}^{N}f'(x_{i-1})h
+    \longrightarrow
+    \int_a^b f'(x)\,dx.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    \boxed{
+    R_L(h)
+    =
+    \frac{h}{2}\int_a^b f'(x)\,dx
+    +O(h^2)
+    }
+    =O(h).
+\end{equation*}
+
+Таким образом, метод левых прямоугольников имеет
+\rtxt{3}{первый порядок точности}.
+
+
+\subsection{Метод правых прямоугольников}
+
+Теперь на каждом интервале используем значение функции в правом конце:
+%
+\begin{equation*}
+    f(x)\approx f(x_i).
+\end{equation*}
+%
+Получаем
+%
+\begin{equation*}
+    \boxed{
+    S_h^{(R)}
+    =
+    \sum_{i=1}^{N} f(x_i)h
+    }.
+\end{equation*}
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[every node/.style={text=rtext,font=\small},x=0.82cm,y=1.0cm]
+        % Общая сетка и увеличенная отдельная ячейка.
+        \foreach \xa/\xb in {0.7/1.55,1.55/2.4,2.4/3.25,3.25/4.1,4.1/4.95,4.95/5.8}{
+            \pgfmathsetmacro{\yy}{ovfintf(\xb)}
+            \path[pattern=north east lines,pattern color=rc3!65!rbg] (\xa,0) rectangle (\xb,\yy);
+            \draw[ovfapprox] (\xa,0) -- (\xa,\yy) -- (\xb,\yy) -- (\xb,0);
+        }
+        \draw[ovfaxis] (-0.15,0) -- (6.35,0) node[right] {$x$};
+        \draw[ovfaxis] (0,-0.15) -- (0,3.2) node[left] {$y$};
+        \draw[ovfcurve,domain=0.45:6.0,samples=100] plot (\x,{ovfintf(\x)});
+        \node[below=3pt] at (0.7,0) {$a$};
+        \node[below=3pt] at (5.8,0) {$b$};
+        \node[text=rc4,above=4pt] at (4.5,{ovfintf(4.5)}) {$y=f(x)$};
+        \begin{scope}[shift={(9.4,0)},x=1.13cm]
+            \pgfmathsetmacro{\ya}{ovfintf(1)}
+            \pgfmathsetmacro{\yb}{ovfintf(3.8)}
+            \pgfmathsetmacro{\yr}{ovfintf(3.8)}
+            \path[pattern=north east lines,pattern color=rc3!65!rbg] (1,0) rectangle (3.8,\yr);
+            \path[fill=rc2,fill opacity=0.23] (1,\yr)
+                -- plot[domain=1:3.8,samples=80] (\x,{ovfintf(\x)}) -- (3.8,\yr) -- cycle;
+            \draw[ovfguide] (0,\ya) -- (1,\ya);
+            \draw[ovfguide] (0,\yb) -- (3.8,\yb);
+            \draw[ovfguide] (1,0) -- (1,\ya);
+            \draw[ovfguide] (3.8,0) -- (3.8,\yb);
+            \draw[ovfapprox] (1,0) -- (1,\yr) -- (3.8,\yr) -- (3.8,0);
+            \draw[ovfaxis] (-0.15,0) -- (4.55,0) node[right] {$x$};
+            \draw[ovfaxis] (0,-0.15) -- (0,3.2) node[left] {$y$};
+            \draw[ovfcurve,domain=0.55:4.2,samples=80] plot (\x,{ovfintf(\x)});
+            \node[ovfpoint] at (3.8,\yr) {};
+            \node[left=3pt] at (0,\ya) {$f(x_{i-1})$};
+            \node[left=3pt] at (0,\yb) {$f(x_i)$};
+            \node[below=3pt] at (1,0) {$x_{i-1}$};
+            \node[below=3pt] at (3.8,0) {$x_i$};
+            \draw[ovfmesh,{Stealth[length=1.4mm]}-{Stealth[length=1.4mm]}]
+                (1,0.45) -- (3.8,0.45) node[midway,fill=rbg,inner sep=2pt] {$h$};
+            \node[text=rc2,anchor=west] (err) at (2.8,3.05) {$R_i^{(R)}<0$};
+            \draw[ovferror,-{Stealth[length=1.4mm]}] (err.south) to[bend right=15] (1.6,1.95);
+            \node[fill=rbg,inner sep=2pt,text=rc3] at (2.4,0.95) {$S_i$};
+        \end{scope}
+    \end{tikzpicture}
+
+    \captionof{figure}{Метод правых прямоугольников.}
+    \label{fig:ovf_right_rectangles}
+\end{rbox}
+
+Разложение относительно правой точки $x_i$ приводит к тому же по
+модулю, но противоположному по знаку главному члену погрешности:
+%
+\begin{equation*}
+    \boxed{
+    R_R(h)
+    =
+    -\frac{h}{2}\int_a^b f'(x)\,dx
+    +O(h^2)
+    }
+    =O(h).
+\end{equation*}
+
+Следовательно, метод правых прямоугольников также имеет первый
+порядок точности. При этом
+%
+\begin{equation*}
+    R_L(h)
+    \simeq
+    +\frac{h}{2}\int_a^b f'(x)\,dx,
+    \qquad
+    R_R(h)
+    \simeq
+    -\frac{h}{2}\int_a^b f'(x)\,dx.
+\end{equation*}
+%
+Главные части погрешностей имеют одинаковый модуль и противоположные
+знаки. Это позволяет построить метод более высокого порядка точности.
+
+
+% ============================================================
+\section{Метод трапеций}
+% ============================================================
+
+Для левых и правых прямоугольников имеем
+%
+\begin{equation*}
+    I=S_L+R_L(h),
+    \qquad
+    I=S_R+R_R(h).
+\end{equation*}
+
+Сложим эти равенства и разделим результат на два:
+%
+\begin{equation*}
+    I
+    =
+    \frac{S_L+S_R}{2}
+    +
+    \frac{R_L(h)+R_R(h)}{2}.
+\end{equation*}
+
+Поскольку главные члены погрешностей порядка $O(h)$ имеют
+противоположные знаки, они сокращаются. В результате
+%
+\begin{equation*}
+    I
+    =
+    \sum_{i=1}^{N}
+    \frac{f(x_{i-1})+f(x_i)}{2}h
+    +O(h^2).
+\end{equation*}
+
+Таким образом, получаем квадратурную формулу трапеций
+%
+\begin{equation*}
+    \boxed{
+    S_h^{(T)}
+    =
+    \sum_{i=1}^{N}
+    \frac{f(x_{i-1})+f(x_i)}{2}\,h
+    }.
+\end{equation*}
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[every node/.style={text=rtext},x=1.55cm,y=1.1cm]
+        \pgfmathsetmacro{\ya}{ovfintf(1)}
+        \pgfmathsetmacro{\yb}{ovfintf(3.8)}
+        \path[pattern=north east lines,pattern color=rc3!65!rbg]
+            (1,0) -- (1,\ya) -- (3.8,\yb) -- (3.8,0) -- cycle;
+        \draw[ovfguide] (0,\ya) -- (1,\ya);
+        \draw[ovfguide] (0,\yb) -- (3.8,\yb);
+        \draw[ovfapprox] (1,0) -- (1,\ya) -- (3.8,\yb) -- (3.8,0);
+        \draw[ovfaxis] (-0.1,0) -- (4.65,0) node[right] {$x$};
+        \draw[ovfaxis] (0,-0.1) -- (0,3.15) node[left] {$y$};
+        \draw[ovfcurve,domain=0.55:4.25,samples=100] plot (\x,{ovfintf(\x)});
+        \node[ovfpoint] at (1,\ya) {};
+        \node[ovfpoint] at (3.8,\yb) {};
+        \node[left=4pt] at (0,\ya) {$f(x_{i-1})$};
+        \node[left=4pt] at (0,\yb) {$f(x_i)$};
+        \node[below=3pt] at (1,0) {$x_{i-1}$};
+        \node[below=3pt] at (3.8,0) {$x_i$};
+        \node[text=rc4,above=5pt] at (3.85,{ovfintf(3.85)}) {$y=f(x)$};
+        \node[fill=rbg,inner sep=3pt,text=rc3] (trap) at (2.45,0.85) {трапеция};
+        \draw[rtext!85,-{Stealth[length=1.6mm]}] (trap.north) -- (2.9,1.98);
+        \draw[ovfmesh,{Stealth[length=1.5mm]}-{Stealth[length=1.5mm]}]
+            (1,0.3) -- (3.8,0.3) node[midway,fill=rbg,inner sep=2pt] {$h$};
+    \end{tikzpicture}
+
+    \captionof{figure}{На каждом интервале график функции заменяется хордой.}
+    \label{fig:ovf_trapezoid}
+\end{rbox}
+
+\subsection{Погрешность метода трапеций}
+
+Обозначим середину $i$-го интервала через
+%
+\begin{equation*}
+    c_i=\frac{x_{i-1}+x_i}{2}.
+\end{equation*}
+%
+Тогда
+%
+\begin{equation*}
+    x_{i-1}=c_i-\frac h2,
+    \qquad
+    x_i=c_i+\frac h2.
+\end{equation*}
+
+Разложим функцию около середины интервала:
+%
+\begin{equation*}
+    f(x)
+    =
+    f(c_i)
+    +f'(c_i)(x-c_i)
+    +\frac12 f''(c_i)(x-c_i)^2
+    +O(h^3).
+\end{equation*}
+
+При интегрировании по симметричному промежутку линейный член исчезает:
+%
+\begin{equation*}
+    \int_{-h/2}^{h/2}t\,dt=0.
+\end{equation*}
+%
+Поэтому
+%
+\begin{align*}
+    \int_{x_{i-1}}^{x_i}f(x)\,dx
+    &=
+    f(c_i)h
+    +\frac12 f''(c_i)
+    \int_{-h/2}^{h/2}t^2\,dt
+    +O(h^5)\\
+    &=
+    f(c_i)h
+    +\frac{1}{24}f''(c_i)h^3
+    +O(h^5).
+\end{align*}
+
+Теперь разложим значения на концах интервала:
+%
+\begin{align*}
+    f\!\left(c_i-\frac h2\right)
+    &=
+    f(c_i)-\frac h2 f'(c_i)
+    +\frac{h^2}{8}f''(c_i)
+    +O(h^3),\\
+    f\!\left(c_i+\frac h2\right)
+    &=
+    f(c_i)+\frac h2 f'(c_i)
+    +\frac{h^2}{8}f''(c_i)
+    +O(h^3).
+\end{align*}
+
+Следовательно,
+%
+\begin{equation*}
+    \frac h2
+    \left[
+        f(x_{i-1})+f(x_i)
+    \right]
+    =
+    f(c_i)h
+    +\frac18 f''(c_i)h^3
+    +O(h^5).
+\end{equation*}
+
+Локальная погрешность равна
+%
+\begin{equation*}
+    R_i^{(T)}
+    =
+    -\frac1{12}f''(c_i)h^3
+    +O(h^5).
+\end{equation*}
+
+После суммирования по всей сетке
+%
+\begin{align*}
+    R_T(h)
+    &=
+    -\frac{h^2}{12}
+    \sum_{i=1}^{N}f''(c_i)h
+    +O(h^4)\\
+    &=
+    \boxed{
+    -\frac{h^2}{12}\int_a^b f''(x)\,dx
+    +O(h^4)
+    }.
+\end{align*}
+
+Следовательно,
+%
+\begin{equation*}
+    R_T(h)=O(h^2),
+\end{equation*}
+%
+и метод трапеций имеет \rtxt{3}{второй порядок точности}.
+
+
+% ============================================================
+\section{Формула средних}
+% ============================================================
+
+В методе средних функцию на каждом интервале заменяем её значением
+в центральной точке
+%
+\begin{equation*}
+    c_i=\frac{x_{i-1}+x_i}{2}.
+\end{equation*}
+
+Получаем
+%
+\begin{equation*}
+    \boxed{
+    S_h^{(M)}
+    =
+    \sum_{i=1}^{N}
+    f\!\left(\frac{x_{i-1}+x_i}{2}\right)h
+    }.
+\end{equation*}
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[every node/.style={text=rtext},x=1.55cm,y=1.1cm]
+        \pgfmathsetmacro{\ym}{ovfintf(2.4)}
+        \path[pattern=north east lines,pattern color=rc3!65!rbg] (1,0) rectangle (3.8,\ym);
+        \path[fill=rc2,fill opacity=0.28] (1,\ym)
+            -- plot[domain=1:2.4,samples=50] (\x,{ovfintf(\x)}) -- cycle;
+        \path[fill=rc2,fill opacity=0.28] (2.4,\ym)
+            -- plot[domain=2.4:3.8,samples=50] (\x,{ovfintf(\x)}) -- (3.8,\ym) -- cycle;
+        \draw[ovfguide] (0,\ym) -- (1,\ym);
+        \draw[ovfguide] (2.4,0) -- (2.4,\ym);
+        \draw[ovfguide] (3.8,\ym) -- (3.8,{ovfintf(3.8)});
+        \draw[ovfapprox] (1,0) -- (1,\ym) -- (3.8,\ym) -- (3.8,0);
+        \draw[ovfaxis] (-0.1,0) -- (4.65,0) node[right] {$x$};
+        \draw[ovfaxis] (0,-0.1) -- (0,3.15) node[left] {$y$};
+        \draw[ovfcurve,domain=0.55:4.25,samples=100] plot (\x,{ovfintf(\x)});
+        \node[ovfpoint] at (2.4,\ym) {};
+        \node[left=4pt] at (0,\ym) {$f(c_i)$};
+        \node[below=3pt] at (1,0) {$x_{i-1}$};
+        \node[below=3pt] at (3.8,0) {$x_i$};
+        \node[below=3pt] at (2.4,0) {$c_i$};
+        \node[text=rc4,above=5pt] at (3.9,{ovfintf(3.9)}) {$y=f(x)$};
+        \node[text=rc2] (minus) at (0.95,2.6) {$-$};
+        \draw[ovferror,-{Stealth[length=1.4mm]}] (minus.south) -- (1.45,1.77);
+        \node[text=rc2] (plus) at (3.1,2.9) {$+$};
+        \draw[ovferror,-{Stealth[length=1.4mm]}] (plus.south) -- (3.25,2.11);
+        \draw[ovfmesh,{Stealth[length=1.4mm]}-{Stealth[length=1.4mm]}]
+            (1,0.52) -- (2.4,0.52) node[midway,fill=rbg,inner sep=2pt] {$h/2$};
+        \draw[ovfmesh,{Stealth[length=1.4mm]}-{Stealth[length=1.4mm]}]
+            (2.4,0.52) -- (3.8,0.52) node[midway,fill=rbg,inner sep=2pt] {$h/2$};
+    \end{tikzpicture}
+
+    \captionof{figure}{Формула средних: высота прямоугольника берётся в центре интервала.}
+    \label{fig:ovf_midpoint}
+\end{rbox}
+
+Остаточный член имеет вид
+%
+\begin{equation*}
+    R_M(h)
+    =
+    \sum_{i=1}^{N}
+    \left[
+        \int_{x_{i-1}}^{x_i}f(x)\,dx
+        -f(c_i)h
+    \right].
+\end{equation*}
+
+Снова используем разложение около середины:
+%
+\begin{equation*}
+    f(x)
+    =
+    f(c_i)
+    +f'(c_i)(x-c_i)
+    +\frac12 f''(c_i)(x-c_i)^2
+    +O(h^3).
+\end{equation*}
+
+Нечётный член исчезает при интегрировании, поэтому
+%
+\begin{align*}
+    \int_{x_{i-1}}^{x_i}f(x)\,dx-f(c_i)h
+    &=
+    \frac12 f''(c_i)
+    \int_{-h/2}^{h/2}t^2\,dt
+    +O(h^5)\\
+    &=
+    \frac1{24}f''(c_i)h^3
+    +O(h^5).
+\end{align*}
+
+Суммируя по всем интервалам,
+%
+\begin{align*}
+    R_M(h)
+    &=
+    \frac{h^2}{24}
+    \sum_{i=1}^{N}f''(c_i)h
+    +O(h^4)\\
+    &=
+    \boxed{
+    \frac{h^2}{24}\int_a^b f''(x)\,dx
+    +O(h^4)
+    }.
+\end{align*}
+
+Следовательно,
+%
+\begin{equation*}
+    R_M(h)=O(h^2),
+\end{equation*}
+%
+то есть формула средних имеет второй порядок точности.
+
+Сравним главные члены погрешностей формулы трапеций и формулы средних:
+%
+\begin{equation*}
+    R_T(h)
+    \simeq
+    -\frac{h^2}{12}\int_a^b f''(x)\,dx,
+    \qquad
+    R_M(h)
+    \simeq
+    +\frac{h^2}{24}\int_a^b f''(x)\,dx.
+\end{equation*}
+%
+Их знаки противоположны, причём
+%
+\begin{equation*}
+    R_T(h)\simeq -2R_M(h).
+\end{equation*}
+
+
+% ============================================================
+\section{Метод Симпсона}
+% ============================================================
+
+Используем найденное соотношение между погрешностями трапеций и
+средних. Имеем
+%
+\begin{equation*}
+    I=S_T+R_T,
+    \qquad
+    I=S_M+R_M.
+\end{equation*}
+
+Умножим второе равенство на $2$ и сложим с первым:
+%
+\begin{equation*}
+    3I
+    =
+    S_T+2S_M+R_T+2R_M.
+\end{equation*}
+
+Но главные члены второго порядка взаимно уничтожаются:
+%
+\begin{align*}
+    R_T+2R_M
+    &\simeq
+    -\frac{h^2}{12}\int_a^b f''(x)\,dx
+    +2\cdot\frac{h^2}{24}\int_a^b f''(x)\,dx\\
+    &=0.
+\end{align*}
+
+Следовательно,
+%
+\begin{equation*}
+    I
+    =
+    \frac{S_T+2S_M}{3}
+    +O(h^4).
+\end{equation*}
+
+Подставляя формулы трапеций и средних, получаем
+%
+\begin{align*}
+    S_h^{(S)}
+    &=
+    \frac13
+    \sum_{i=1}^{N}
+    \left[
+        2f\!\left(\frac{x_{i-1}+x_i}{2}\right)
+        +\frac{f(x_{i-1})+f(x_i)}{2}
+    \right]h\\[3pt]
+    &=
+    \boxed{
+    \sum_{i=1}^{N}
+    \frac{
+        f(x_{i-1})
+        +4f\!\left(\dfrac{x_{i-1}+x_i}{2}\right)
+        +f(x_i)
+    }{6}\,h
+    }.
+\end{align*}
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[every node/.style={text=rtext},x=1.55cm,y=1.12cm]
+        \def\xa{0.9}
+        \def\xb{3.7}
+        \def\xm{2.3}
+        \pgfmathsetmacro{\ya}{ovfintf(\xa)}
+        \pgfmathsetmacro{\ym}{ovfintf(\xm)}
+        \pgfmathsetmacro{\yb}{ovfintf(\xb)}
+        \foreach \xx/\yy/\lab in {\xa/\ya/{f(x_{i-1})},\xm/\ym/{f(c_i)},\xb/\yb/{f(x_i)}}{
+            \draw[ovfguide] (0,\yy) -- (\xx,\yy) -- (\xx,0);
+            \node[left=4pt,font=\small] at (0,\yy) {$\lab$};
+        }
+        \draw[ovfaxis] (-0.1,0) -- (4.55,0) node[right] {$x$};
+        \draw[ovfaxis] (0,-0.1) -- (0,3.15) node[left] {$y$};
+        \draw[ovfcurve,domain=0.5:4.15,samples=100] plot (\x,{ovfintf(\x)});
+        \draw[ovfapprox,densely dashed,domain=\xa:\xb,samples=80]
+            plot (\x,{\ya*((\x-\xm)*(\x-\xb))/((\xa-\xm)*(\xa-\xb))
+                +\ym*((\x-\xa)*(\x-\xb))/((\xm-\xa)*(\xm-\xb))
+                +\yb*((\x-\xa)*(\x-\xm))/((\xb-\xa)*(\xb-\xm))});
+        \foreach \xx/\yy in {\xa/\ya,\xm/\ym,\xb/\yb}
+            \node[ovfpoint] at (\xx,\yy) {};
+        \node[below=3pt] at (\xa,0) {$x_{i-1}$};
+        \node[below=3pt] at (\xm,0) {$c_i$};
+        \node[below=3pt] at (\xb,0) {$x_i$};
+        \node[text=rc4,above=5pt] at (3.75,{ovfintf(3.75)}) {$y=f(x)$};
+        \node (quad) at (3.45,1.12) {$\varphi_2(x)$};
+        \draw[rtext!85,-{Stealth[length=1.4mm]}] (quad.north) -- (3.1,2.23);
+        \draw[ovfmesh,{Stealth[length=1.4mm]}-{Stealth[length=1.4mm]}]
+            (\xa,0.38) -- (\xb,0.38) node[midway,fill=rbg,inner sep=2pt] {$h$};
+    \end{tikzpicture}
+
+    \captionof{figure}{В формуле Симпсона функция заменяется квадратичной интерполяцией по трём точкам.}
+    \label{fig:ovf_simpson}
+\end{rbox}
+
+Для остаточного члена формулы Симпсона получаем
+%
+\begin{equation*}
+    \boxed{
+    R_S(h)
+    =
+    -\frac{h^4}{2880}
+    \int_a^b f^{(4)}(x)\,dx
+    +O(h^6)
+    }.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    R_S(h)=O(h^4),
+\end{equation*}
+%
+и метод Симпсона имеет \rtxt{3}{четвёртый порядок точности}.
+
+\textit{Замечание.}
+В этой записи $h=x_i-x_{i-1}$ --- ширина целого интервала, на котором
+используются две крайние точки и его середина. Поэтому коэффициент в
+остаточном члене записан как $1/2880$.
+
+
+% ============================================================
+\section{Метод Рунге}
+% ============================================================
+
+Метод Рунге позволяет повысить порядок точности, используя результаты
+расчёта одной и той же величины на двух сетках с разными шагами.
+
+Пусть численный метод имеет порядок точности $p$. Тогда результат на
+сетке с шагом $h$ можно записать в виде
+%
+\begin{equation}
+    I
+    =
+    S(h)
+    +C h^p
+    +O(h^{p+1}),
+    \label{eq:ovf_runge_h}
+\end{equation}
+%
+где $C=\operatorname{const}$ относительно $h$.
+
+Теперь изменим шаг сетки в $r$ раз:
+%
+\begin{equation*}
+    h\longrightarrow rh.
+\end{equation*}
+%
+Для новой сетки имеем
+%
+\begin{equation}
+    I
+    =
+    S(rh)
+    +C(rh)^p
+    +O(h^{p+1})
+    =
+    S(rh)
+    +Cr^ph^p
+    +O(h^{p+1}).
+    \label{eq:ovf_runge_rh}
+\end{equation}
+
+Умножим \eqref{eq:ovf_runge_h} на $r^p$:
+%
+\begin{equation*}
+    r^pI
+    =
+    r^pS(h)
+    +Cr^ph^p
+    +O(h^{p+1}).
+\end{equation*}
+
+Теперь вычтем \eqref{eq:ovf_runge_rh}. Главный член погрешности
+$Cr^ph^p$ сокращается:
+%
+\begin{align*}
+    r^pI-I
+    &=
+    r^pS(h)-S(rh)
+    +O(h^{p+1}),\\
+    (r^p-1)I
+    &=
+    r^pS(h)-S(rh)
+    +O(h^{p+1}).
+\end{align*}
+
+Отсюда получаем формулу Рунге
+%
+\begin{equation*}
+    \boxed{
+    I
+    =
+    \frac{r^pS(h)-S(rh)}{r^p-1}
+    +O(h^{p+1})
+    }.
+\end{equation*}
+
+Таким образом, линейная комбинация результатов на двух сетках позволяет
+убрать главный член погрешности $Ch^p$.
+
+Если обозначить уточнённое значение через $S_R(h)$, то
+%
+\begin{equation*}
+    \boxed{
+    S_R(h)
+    =
+    \frac{r^pS(h)-S(rh)}{r^p-1}
+    }.
+\end{equation*}
+
+\begin{rbox}[left=18pt,right=18pt,top=13pt,bottom=13pt]{<u}
+    \textbf{Идея метода Рунге.}
+    Если известна структура главного члена погрешности
+    $R(h)=Ch^p+O(h^{p+1})$, то два расчёта с шагами $h$ и $rh$
+    позволяют исключить неизвестную константу $C$ и получить более
+    точное приближение к интегралу.
+\end{rbox}
+
+\end{document}
