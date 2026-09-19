@@ -125,6 +125,58 @@ body.embed .code-box code{font-size:10px}
   .output-row{grid-template-columns:42px minmax(0,1fr)}
 }
 @media(prefers-reduced-motion:reduce){.spinner{animation:none}}
+
+/* Universal notebook rendering pass */
+.notebook-shell{width:min(1040px,100%);padding:16px 18px 60px}
+.notebook-head{margin-bottom:10px;padding:13px 16px}
+.notebook-head h1{font-size:21px}
+.cells{gap:3px}
+.cell{grid-template-columns:58px minmax(0,1fr);border-radius:8px}
+.prompt{padding:8px 8px 0 0;font-size:8.5px}
+.markdown-cell .cell-body{padding:7px 10px;border:0;border-radius:0;background:transparent}
+.markdown-body{min-width:0;color:var(--text2);font-size:13.5px;line-height:1.56;overflow-wrap:break-word}
+.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5{color:var(--cream);line-height:1.2;margin:1.05em 0 .48em}
+.markdown-body h1:first-child,.markdown-body h2:first-child,.markdown-body h3:first-child{margin-top:.1em}
+.markdown-body h1{font-size:24px}.markdown-body h2{font-size:19px}.markdown-body h3{font-size:15.5px}.markdown-body h4{font-size:13.5px}.markdown-body h5{font-size:12.5px}
+.markdown-body p{margin:.55em 0}
+.markdown-body hr{border:0;border-top:1px solid var(--line);margin:12px 0}
+.markdown-body blockquote{margin:9px 0;padding:7px 11px;border-left:2px solid var(--accent);background:color-mix(in srgb,var(--panel) 88%,var(--accent) 12%);color:var(--text2)}
+.markdown-body blockquote>:first-child{margin-top:0}.markdown-body blockquote>:last-child{margin-bottom:0}
+.markdown-body table{display:block;width:max-content;min-width:min(100%,680px);max-width:100%;overflow-x:auto;border-collapse:collapse;margin:10px 0;font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:10.5px}
+.markdown-body th,.markdown-body td{min-width:72px;padding:6px 7px;border:1px solid var(--line);text-align:left;vertical-align:top;white-space:normal}
+.markdown-body th{position:sticky;top:0;background:var(--panel2);color:var(--cream)}
+.markdown-body img{display:block;max-width:100%;height:auto;margin:8px auto;border-radius:7px}
+.markdown-body pre{max-width:100%;overflow:auto;margin:8px 0;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--code)}
+.markdown-body pre code{white-space:pre}
+.math-inline{white-space:nowrap}
+.math-display{display:block;max-width:100%;overflow-x:auto;overflow-y:hidden;padding:.16em .08em;margin:.42em 0;scrollbar-width:thin}
+.markdown-body h1 .math-display,.markdown-body h2 .math-display,.markdown-body h3 .math-display{margin:.2em 0;font-size:.78em}
+mjx-container[jax="CHTML"]{max-width:100%}
+mjx-container[jax="CHTML"][display="true"]{max-width:100%;overflow-x:auto;overflow-y:hidden;margin:.55em 0!important;font-size:94%!important}
+.markdown-body table mjx-container[jax="CHTML"]{font-size:88%!important}
+.code-box{border-radius:8px}.code-box pre{padding:11px 13px}.code-box code{font-size:10.5px;line-height:1.5}
+.output-row{grid-template-columns:58px minmax(0,1fr);margin-top:4px}
+.output-body{padding:9px 11px}.output-body img{max-height:70vh;object-fit:contain}
+body.embed .notebook-shell{width:100%;padding:7px 8px 34px}
+body.embed .cells{gap:2px}
+body.embed .cell{grid-template-columns:44px minmax(0,1fr)}
+body.embed .markdown-cell .cell-body{padding:5px 7px}
+body.embed .markdown-body{font-size:11.5px;line-height:1.5}
+body.embed .markdown-body h1{font-size:19px}body.embed .markdown-body h2{font-size:16px}body.embed .markdown-body h3{font-size:13.5px}
+body.embed mjx-container[jax="CHTML"][display="true"]{font-size:88%!important}
+body.embed .code-box code{font-size:9.5px}
+@media(max-width:720px){
+  .notebook-shell{width:100%;padding:10px 6px 44px}
+  .cell{grid-template-columns:36px minmax(0,1fr)}
+  .prompt{padding-right:4px;font-size:7.5px}
+  .markdown-cell .cell-body{padding:6px 7px}
+  .markdown-body{font-size:12.5px}
+  .markdown-body h1{font-size:21px}.markdown-body h2{font-size:17px}.markdown-body h3{font-size:14.5px}
+  .markdown-body table{min-width:560px}
+  .output-row{grid-template-columns:36px minmax(0,1fr)}
+  mjx-container[jax="CHTML"][display="true"]{font-size:90%!important}
+}
+
 </style>
 </head>
 <body>
@@ -215,19 +267,194 @@ function sanitize(html,svg=false){
   if(!window.DOMPurify)return escapeHtml(html);
   return DOMPurify.sanitize(html,svg?{USE_PROFILES:{svg:true,svgFilters:true}}:{USE_PROFILES:{html:true}});
 }
+function repoPathFromRelative(value){
+  if(!value||/^(?:[a-z]+:|#|data:|blob:)/i.test(value))return null;
+  try{
+    const base=new URL('/'+raw.replace(/^\/+/,''),'https://repo.local/');
+    const u=new URL(value,base);
+    return decodeURIComponent(u.pathname.replace(/^\/+/,''));
+  }catch{return null}
+}
+function internalMaterialUrl(path){
+  if(!path)return null;
+  const low=path.toLowerCase();
+  if(low.endsWith('.ipynb')){
+    const u=new URL('viewer.html',location.href);
+    u.searchParams.set('file',path);
+    u.searchParams.set('title',path.split('/').pop().replace(/\.ipynb$/i,'').replace(/_/g,' '));
+    if(theme)u.searchParams.set('theme',theme);
+    if(embed)u.searchParams.set('embed','1');
+    return u.href;
+  }
+  if(low.endsWith('.pdf')){
+    const u=new URL('../pdfjs/viewer.html',location.href);
+    u.searchParams.set('file',path);
+    u.searchParams.set('title',path.split('/').pop().replace(/\.pdf$/i,'').replace(/_/g,' '));
+    if(theme)u.searchParams.set('theme',theme);
+    return u.href;
+  }
+  return null;
+}
 function patchLinks(root){
-  root.querySelectorAll('img[src]').forEach(img=>{const v=img.getAttribute('src');if(v&&!v.startsWith('data:'))img.src=resolveRelative(v)});
+  root.querySelectorAll('img[src]').forEach(img=>{
+    const v=img.getAttribute('src');
+    if(v&&!v.startsWith('data:'))img.src=resolveRelative(v);
+  });
   root.querySelectorAll('a[href]').forEach(a=>{
     const v=a.getAttribute('href');if(!v)return;
+    const repoPath=repoPathFromRelative(v);
+    const internal=repoPath&&internalMaterialUrl(repoPath);
+    if(internal){
+      a.href=internal;a.removeAttribute('target');a.removeAttribute('rel');return;
+    }
     a.href=resolveRelative(v);
     if(/^https?:/i.test(a.href)){a.target='_blank';a.rel='noopener noreferrer'}
   });
 }
+function mathEscapedAt(text,pos){
+  let count=0;
+  for(let i=pos-1;i>=0&&text[i]==='\\';i--)count++;
+  return count%2===1;
+}
+function findMathClose(text,needle,from,sameLine=false){
+  let pos=from;
+  while(pos<text.length){
+    pos=text.indexOf(needle,pos);
+    if(pos<0)return-1;
+    if(sameLine&&text.slice(from,pos).includes('\n'))return-1;
+    if(!mathEscapedAt(text,pos))return pos;
+    pos+=needle.length;
+  }
+  return-1;
+}
+function stripQuoteMath(tex,source,start){
+  const lineStart=source.lastIndexOf('\n',start-1)+1;
+  const prefix=source.slice(lineStart,start);
+  if(!/^\s*(?:>\s*)+$/.test(prefix))return tex;
+  return tex.replace(/(^|\n)\s*>\s?/g,'$1');
+}
+function standaloneDisplayMath(source,start,end){
+  const lineStart=source.lastIndexOf('\n',start-1)+1;
+  const lineEnd=source.indexOf('\n',end);
+  const prefix=source.slice(lineStart,start).replace(/^\s*(?:>\s*)+/,'').trim();
+  const suffix=source.slice(end,lineEnd<0?source.length:lineEnd).trim();
+  return prefix===''&&suffix==='';
+}
+function normalizeDisplayTex(tex){
+  return String(tex||'')
+    .replace(/\\begin\{align\*?\}/g,'\\begin{aligned}')
+    .replace(/\\end\{align\*?\}/g,'\\end{aligned}')
+    .replace(/\\begin\{gather\*?\}/g,'\\begin{gathered}')
+    .replace(/\\end\{gather\*?\}/g,'\\end{gathered}')
+    .replace(/\\begin\{equation\*?\}/g,'')
+    .replace(/\\end\{equation\*?\}/g,'');
+}
+function protectMathMarkdown(input){
+  const source=String(input||'');
+  const tokens=[];
+  let out='',i=0;
+  const addToken=(tex,display)=>{
+    const id='NSUMATHTOKEN'+tokens.length+'XYZ';
+    tokens.push({id,tex,display});
+    return id;
+  };
+
+  while(i<source.length){
+    const atLineStart=i===0||source[i-1]==='\n';
+
+    if(atLineStart){
+      const fm=source.slice(i).match(/^ {0,3}(\x60{3,}|~{3,})[^\n]*(?:\n|$)/);
+      if(fm){
+        const marker=fm[1],ch=marker[0],min=marker.length;
+        let j=i+fm[0].length,stop=source.length;
+        while(j<source.length){
+          const eol=source.indexOf('\n',j);
+          const end=eol<0?source.length:eol;
+          const line=source.slice(j,end).trim();
+          if(line.length>=min&&[...line].every(c=>c===ch)){
+            stop=eol<0?source.length:eol+1;break;
+          }
+          if(eol<0)break;
+          j=eol+1;
+        }
+        out+=source.slice(i,stop);i=stop;continue;
+      }
+    }
+
+    if(source.charCodeAt(i)===96){
+      let run=1;
+      while(source.charCodeAt(i+run)===96)run++;
+      const marker=String.fromCharCode(96).repeat(run);
+      const end=source.indexOf(marker,i+run);
+      if(end>=0){out+=source.slice(i,end+run);i=end+run;continue}
+    }
+
+    if(source.startsWith('$$',i)&&!mathEscapedAt(source,i)){
+      const end=findMathClose(source,'$$',i+2,false);
+      if(end>=0){
+        let tex=stripQuoteMath(source.slice(i+2,end),source,i);
+        const display=standaloneDisplayMath(source,i,end+2);
+        out+=addToken(tex,display);i=end+2;continue;
+      }
+    }
+
+    if(source.startsWith('\\[',i)&&!mathEscapedAt(source,i)){
+      const end=findMathClose(source,'\\]',i+2,false);
+      if(end>=0){
+        const tex=stripQuoteMath(source.slice(i+2,end),source,i);
+        out+=addToken(tex,true);i=end+2;continue;
+      }
+    }
+
+    if(source.startsWith('\\(',i)&&!mathEscapedAt(source,i)){
+      const end=findMathClose(source,'\\)',i+2,false);
+      if(end>=0){out+=addToken(source.slice(i+2,end),false);i=end+2;continue}
+    }
+
+    if(source[i]==='$'&&source[i+1]!=='$'&&!mathEscapedAt(source,i)){
+      const end=findMathClose(source,'$',i+1,true);
+      if(end>=0){
+        const tex=source.slice(i+1,end);
+        if(tex.trim()){out+=addToken(tex,false);i=end+1;continue}
+      }
+    }
+
+    if(source.startsWith('\\begin{',i)&&!mathEscapedAt(source,i)){
+      const m=source.slice(i).match(/^\\begin\{(align\*?|aligned|gather\*?|gathered|cases|array|matrix|pmatrix|bmatrix|vmatrix|Vmatrix|equation\*?)\}/);
+      if(m){
+        const close='\\end{'+m[1]+'}';
+        const end=findMathClose(source,close,i+m[0].length,false);
+        if(end>=0){
+          out+=addToken(source.slice(i,end+close.length),true);i=end+close.length;continue;
+        }
+      }
+    }
+
+    out+=source[i];i++;
+  }
+
+  return{source:out,tokens};
+}
+function restoreMathTokens(html,tokens){
+  let result=html;
+  for(const token of tokens){
+    const tex=token.display?normalizeDisplayTex(token.tex):String(token.tex||'');
+    const wrapped=token.display
+      ?'<span class="math-display">\\['+escapeHtml(tex)+'\\]</span>'
+      :'<span class="math-inline">\\('+escapeHtml(tex)+'\\)</span>';
+    result=result.split(token.id).join(wrapped);
+  }
+  return result;
+}
 function renderMarkdown(source,cell){
   const prepared=prepareMarkdownSource(source,cell);
-  const rendered=window.marked?marked.parse(prepared,{gfm:true,breaks:false}):'<pre>'+escapeHtml(prepared)+'</pre>';
-  return sanitize(rendered);
+  const protectedMath=protectMathMarkdown(prepared);
+  const rendered=window.marked
+    ?marked.parse(protectedMath.source,{gfm:true,breaks:false})
+    :'<pre>'+escapeHtml(protectedMath.source)+'</pre>';
+  return restoreMathTokens(sanitize(rendered),protectedMath.tokens);
 }
+
 function dataToText(data){
   if(data==null)return'';
   if(typeof data==='string')return data;
@@ -244,14 +471,22 @@ function renderDataOutput(data){
   if(!data)return'<pre></pre>';
   if(data['text/html']!=null)return'<div class="rich-html">'+sanitize(joinValue(data['text/html']))+'</div>';
   if(data['image/svg+xml']!=null)return'<div class="svg-output">'+sanitize(joinValue(data['image/svg+xml']),true)+'</div>';
-  if(data['image/png']!=null)return'<img alt="output" src="data:image/png;base64,'+joinValue(data['image/png']).replace(/\s+/g,'')+'">';
-  if(data['image/jpeg']!=null)return'<img alt="output" src="data:image/jpeg;base64,'+joinValue(data['image/jpeg']).replace(/\s+/g,'')+'">';
+  for(const mime of ['image/png','image/jpeg','image/gif','image/webp']){
+    if(data[mime]!=null)return'<img alt="output" src="data:'+mime+';base64,'+joinValue(data[mime]).replace(/\s+/g,'')+'">';
+  }
   if(data['text/markdown']!=null)return'<div class="markdown-body">'+renderMarkdown(joinValue(data['text/markdown']),{})+'</div>';
+  if(data['text/latex']!=null){
+    const tex=joinValue(data['text/latex']).replace(/^\s*\$\$|\$\$\s*$/g,'');
+    return'<div class="markdown-body"><span class="math-display">\\['+escapeHtml(normalizeDisplayTex(tex))+'\\]</span></div>';
+  }
   if(data['application/json']!=null)return'<pre>'+escapeHtml(dataToText(data['application/json']))+'</pre>';
   if(data['application/vnd.jupyter.widget-view+json']!=null)return'<pre>Интерактивный Jupyter-виджет сохранён в notebook, но в статическом просмотрщике не выполняется.</pre>';
+  if(data['application/vnd.plotly.v1+json']!=null)return'<pre>Интерактивный Plotly-график сохранён в notebook. Для статического просмотра нужен сохранённый image/png или image/svg+xml.</pre>';
   if(data['text/plain']!=null)return'<pre>'+escapeHtml(joinValue(data['text/plain']))+'</pre>';
-  return'<pre>Сохранённый вывод этого MIME-типа пока не поддерживается.</pre>';
+  const types=Object.keys(data);
+  return'<pre>Сохранённый вывод'+(types.length?' ('+escapeHtml(types.join(', '))+')':'')+' пока не поддерживается.</pre>';
 }
+
 function renderOutput(output,count){
   let body='',klass='';
   if(output.output_type==='stream')body='<pre>'+escapeHtml(joinValue(output.text))+'</pre>';
@@ -315,10 +550,13 @@ async function openNotebook(){
     const cells=Array.isArray(notebook.cells)?notebook.cells:[];
     const language=String(notebook.metadata?.language_info?.name||notebook.metadata?.kernelspec?.language||'python').toLowerCase().replace(/[^a-z0-9_+-]/g,'')||'python';
     const kernel=notebook.metadata?.kernelspec?.display_name||language;
-    subtitle.textContent=cells.length+' ячеек · '+kernel+' · только просмотр';
+    subtitle.textContent=cells.length+' ячеек · '+kernel+' · локальный просмотр';
     main.innerHTML='<section class="notebook-head"><h1>'+escapeHtml(title.textContent)+'</h1><div class="notebook-meta"><span class="meta-chip">'+cells.length+' ячеек</span><span class="meta-chip">'+escapeHtml(kernel)+'</span><span class="meta-chip">nbformat '+escapeHtml(notebook.nbformat||'—')+'</span></div></section><div class="cells">'+cells.map((c,i)=>renderCell(c,i,language)).join('')+'</div>';
 
-    main.querySelectorAll('.markdown-body,.output-body').forEach(patchLinks);
+    main.querySelectorAll('.markdown-body,.output-body').forEach(root=>{
+      patchLinks(root);
+      root.querySelectorAll('table').forEach(table=>table.setAttribute('role','table'));
+    });
     if(window.hljs)main.querySelectorAll('pre code').forEach(el=>{try{hljs.highlightElement(el)}catch{}});
     await typeset();
     notifyReady();
