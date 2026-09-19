@@ -630,10 +630,109 @@ function hi(text,q){
 function searchNorm(v){return String(v||'').toLocaleLowerCase('ru-RU').replace(/ё/g,'е').replace(/\s+/g,' ').trim()}
 function searchTerms(q){return [...new Set(searchNorm(q).split(' ').filter(x=>x.length>1))]}
 function searchHi(text,q){
-  let html=esc(text||'');
-  const terms=searchTerms(q).sort((a,b)=>b.length-a.length);
-  for(const term of terms){
-    const safe=term.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\async function runSearch(q){
+  const raw=String(text||''),terms=searchTerms(q);
+  if(!terms.length)return esc(raw);
+  const low=raw.toLocaleLowerCase('ru-RU').replace(/ё/g,'е');
+  let out='',pos=0;
+  while(pos<raw.length){
+    let best=-1,bestTerm='';
+    for(const term of terms){
+      const at=low.indexOf(term,pos);
+      if(at>=0&&(best<0||at<best||(at===best&&term.length>bestTerm.length))){best=at;bestTerm=term}
+    }
+    if(best<0){out+=esc(raw.slice(pos));break}
+    out+=esc(raw.slice(pos,best))+'<mark>'+esc(raw.slice(best,best+bestTerm.length))+'</mark>';
+    pos=best+bestTerm.length;
+  }
+  return out;
+}
+function searchSnippet(text,q){
+  const raw=String(text||'').replace(/\s+/g,' ').trim();if(!raw)return'';
+  const low=raw.toLocaleLowerCase('ru-RU').replace(/ё/g,'е'),terms=searchTerms(q);
+  let at=-1;for(const t of terms){const p=low.indexOf(t);if(p>=0&&(at<0||p<at))at=p}
+  if(at<0)at=0;
+  const start=Math.max(0,at-125),end=Math.min(raw.length,at+260);
+  return (start?'…':'')+raw.slice(start,end)+(end<raw.length?'…':'');
+}
+function searchScore(title,text,q){
+  const nq=searchNorm(q),terms=searchTerms(q),t=searchNorm(title),body=searchNorm(text),combined=t+' '+body;
+  if(!terms.every(x=>combined.includes(x)))return-1;
+  let score=0;if(nq&&t.includes(nq))score+=100;if(nq&&body.includes(nq))score+=80;
+  for(const x of terms){if(t.includes(x))score+=16;if(body.includes(x))score+=5}
+  return score;
+}
+function buildSearchGroups(q,records){
+  const map=new Map();
+  const add=(f,page,snippet,score)=>{
+    if(!f)return;if(!map.has(f.path))map.set(f.path,{f,hits:[],score});
+    const g=map.get(f.path);g.score=Math.max(g.score,score);
+    if(!g.hits.some(h=>h.page===page))g.hits.push({page,snippet,score});
+  };
+  for(const f of FILES){
+    const title=niceName(f)+' '+f.path+' '+subjectOf(f)+' '+sectionOf(f),sc=searchScore(title,'',q);
+    if(sc>=0)add(f,0,fileDesc(f),sc+10);
+  }
+  for(const r of (records||[])){
+    const f=FILES.find(x=>x.path===r.path);if(!f)continue;
+    const title=(r.title||niceName(f))+' '+r.path+' '+(r.subject||subjectOf(f))+' '+(r.section||sectionOf(f));
+    for(const loc of (r.pages||[])){
+      const text=String(loc.t||''),sc=searchScore(title,text,q);
+      if(sc>=0)add(f,Number(loc.n)||0,searchSnippet(text,q),sc+(f.ext==='.pdf'?2:0));
+    }
+  }
+  const groups=[...map.values()];
+  for(const g of groups){
+    if(g.hits.some(h=>h.page>0))g.hits=g.hits.filter(h=>h.page>0);
+    g.hits.sort((a,b)=>b.score-a.score||a.page-b.page);
+  }
+  groups.sort((a,b)=>b.score-a.score||niceName(a.f).localeCompare(niceName(b.f),'ru'));
+  return groups.slice(0,180);
+}
+function searchFiltersHtml(){
+  const subjects=ORDER.filter(x=>searchGroupsAll.some(g=>subjectOf(g.f)===x));
+  const pref=['Лекции','Семинары','Лабораторные работы','Задачи','Месячные задания','Литература','Практика','Теория'];
+  const sections=[...new Set(searchGroupsAll.map(g=>sectionOf(g.f)))].sort((a,b)=>(pref.indexOf(a)<0?99:pref.indexOf(a))-(pref.indexOf(b)<0?99:pref.indexOf(b))||a.localeCompare(b,'ru'));
+  const chips=(kind,vals,current)=>'<button class="search-filter-chip'+(current==='all'?' active':'')+'" data-search-filter="'+kind+'" data-value="all">Все</button>'+vals.map(v=>'<button class="search-filter-chip'+(current===v?' active':'')+'" data-search-filter="'+kind+'" data-value="'+esc(v)+'">'+esc(v)+'</button>').join('');
+  return '<div class="search-pro-filters"><div class="search-filter-row"><span class="search-filter-label">Раздел</span><div class="search-filter-scroll">'+chips('section',sections,searchFilterSection)+'</div></div><div class="search-filter-row"><span class="search-filter-label">Предмет</span><div class="search-filter-scroll">'+chips('subject',subjects,searchFilterSubject)+'</div></div></div>';
+}
+function searchGroupHtml(g,i,q){
+  const m=fileMeta(g.f),hits=g.hits||[],active=i===searchSelectedGroup;
+  const pages=hits.slice(0,10).map((h,j)=>'<button class="search-page-hit'+(active&&j===searchSelectedHit?' active':'')+'" data-search-group="'+i+'" data-search-hit="'+j+'">'+(h.page?'стр. '+h.page:(g.f.ext==='.pdf'?'PDF':'Notebook'))+'</button>').join('');
+  const more=hits.length>10?'<span class="search-more">+'+(hits.length-10)+'</span>':'';
+  const first=hits[0]||{snippet:''},meta=[subjectOf(g.f),sectionOf(g.f)];
+  if(m.page_count)meta.push(m.page_count+' стр.');else if(m.cell_count)meta.push(m.cell_count+' ячеек');if(m.size)meta.push(fmtSize(m.size));
+  const badge=isNewDate(m.created_at)?'<span class="new-badge search-result-new">NEW</span>':'';
+  return '<div class="search-group'+(active?' active':'')+'"><button class="search-group-main" data-search-group-main="'+i+'"><div class="search-group-top"><span class="search-badge">'+esc(subjectOf(g.f))+'</span><span class="search-group-title">'+searchHi(niceName(g.f),q)+'</span>'+badge+'<span class="search-hit-count">'+hits.length+' совп.</span></div><div class="search-group-meta">'+esc(meta.join(' · '))+'</div><div class="search-group-snippet">'+searchHi(first.snippet||'',q)+'</div></button><div class="search-pages">'+pages+more+'</div></div>';
+}
+function searchPreviewHtml(q){
+  const g=searchGroups[searchSelectedGroup];if(!g)return '<div class="search-preview-empty">Нет результатов для выбранных фильтров.</div>';
+  const hit=g.hits[searchSelectedHit]||g.hits[0]||{page:0,snippet:''},f=g.f;
+  let openUrl=f.ext==='.pdf'?viewerUrl(f,hit.page||0,niceName(f)):nbviewerUrl(f);
+  if(f.ext==='.pdf'&&q)openUrl+='&find='+encodeURIComponent(q);
+  const frame=f.ext==='.pdf'?'<div class="search-preview-frame-wrap"><iframe class="search-preview-frame" src="'+esc(openUrl)+'" loading="lazy" title="'+esc(niceName(f))+'"></iframe></div>':'<div class="search-preview-empty">Jupyter Notebook открывается через nbviewer.</div>';
+  return '<div class="search-preview-head"><div><div class="search-preview-kicker">'+esc(subjectOf(f)+' · '+sectionOf(f)+(hit.page?' · стр. '+hit.page:''))+'</div><h2 class="search-preview-title">'+esc(niceName(f))+'</h2></div><button class="search-preview-close" type="button">×</button></div><div class="search-preview-toolbar"><a class="search-open" href="'+esc(openUrl)+'">Открыть'+(hit.page?' стр. '+hit.page:'')+'</a><div class="search-hit-nav"><button class="search-prev-hit" type="button">‹</button><span class="search-hit-position">'+(searchSelectedHit+1)+' / '+g.hits.length+'</span><button class="search-next-hit" type="button">›</button></div></div>'+frame+'<div class="search-preview-text">'+searchHi(hit.snippet||'',q)+'</div>';
+}
+function bindSearchUi(q){
+  $$('.search-filter-chip').forEach(b=>b.onclick=()=>{if(b.dataset.searchFilter==='subject')searchFilterSubject=b.dataset.value;else searchFilterSection=b.dataset.value;searchSelectedGroup=0;searchSelectedHit=0;searchMobilePreview=false;renderSearchResults(q)});
+  $$('.search-group-main').forEach(b=>b.onclick=()=>{searchSelectedGroup=Number(b.dataset.searchGroupMain)||0;searchSelectedHit=0;searchMobilePreview=true;renderSearchResults(q)});
+  $$('.search-page-hit').forEach(b=>b.onclick=e=>{e.stopPropagation();searchSelectedGroup=Number(b.dataset.searchGroup)||0;searchSelectedHit=Number(b.dataset.searchHit)||0;searchMobilePreview=true;renderSearchResults(q)});
+  const prev=$('.search-prev-hit'),next=$('.search-next-hit'),close=$('.search-preview-close');
+  if(prev)prev.onclick=()=>{const g=searchGroups[searchSelectedGroup];if(!g)return;searchSelectedHit=(searchSelectedHit-1+g.hits.length)%g.hits.length;searchMobilePreview=true;renderSearchResults(q)};
+  if(next)next.onclick=()=>{const g=searchGroups[searchSelectedGroup];if(!g)return;searchSelectedHit=(searchSelectedHit+1)%g.hits.length;searchMobilePreview=true;renderSearchResults(q)};
+  if(close)close.onclick=()=>{searchMobilePreview=false;const p=$('#searchPreview');if(p)p.classList.remove('mobile-visible')};
+}
+function renderSearchResults(q){
+  searchGroups=searchGroupsAll.filter(g=>(searchFilterSubject==='all'||subjectOf(g.f)===searchFilterSubject)&&(searchFilterSection==='all'||sectionOf(g.f)===searchFilterSection));
+  if(searchSelectedGroup>=searchGroups.length)searchSelectedGroup=0;
+  const g=searchGroups[searchSelectedGroup];if(g&&searchSelectedHit>=g.hits.length)searchSelectedHit=0;
+  const filters=$('#searchFilters'),results=$('#searchResults'),preview=$('#searchPreview');
+  if(filters)filters.innerHTML=searchFiltersHtml();
+  const total=searchGroups.reduce((n,x)=>n+x.hits.length,0);
+  if(results)results.innerHTML='<div class="search-pro-summary">'+searchGroups.length+' документов · '+total+' совпадений</div>'+(searchGroups.length?searchGroups.map((x,i)=>searchGroupHtml(x,i,q)).join(''):'<div class="empty">По этим фильтрам ничего не найдено.</div>');
+  if(preview){preview.classList.toggle('mobile-visible',searchMobilePreview);preview.innerHTML=searchPreviewHtml(q)}
+  bindSearchUi(q);
+}
+async function runSearch(q){
   q=(q||'').trim();
   const previous=searchQuery,run=++searchRun;searchQuery=q;
   if(searchNorm(previous)!==searchNorm(q)){searchFilterSubject='all';searchFilterSection='all';searchSelectedGroup=0;searchSelectedHit=0;searchMobilePreview=false}
