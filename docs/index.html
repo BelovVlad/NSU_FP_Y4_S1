@@ -57,7 +57,7 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .repo-link:hover{color:var(--cream)}
 .app{min-height:100vh;margin-left:var(--sideW)}
 .topbar{
-  position:sticky;top:0;z-index:30;height:68px;display:grid;grid-template-columns:minmax(250px,680px) 1fr auto;
+  position:relative;top:auto;z-index:30;height:68px;display:grid;grid-template-columns:minmax(250px,680px) 1fr auto;
   align-items:center;gap:18px;padding:0 28px;border-bottom:1px solid rgba(37,48,58,.68);
   background:rgba(8,13,18,.9);backdrop-filter:blur(16px)
 }
@@ -129,7 +129,7 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .extra-card{display:flex;align-items:center;gap:11px;min-height:70px;padding:12px;border:1px solid var(--line2);border-radius:8px;background:#0e151b;color:#d2cec8;cursor:pointer}
 .extra-card:hover{border-color:#39434d;background:#111922}
 .extra-icon{width:30px;height:30px;display:grid;place-items:center;flex:none;color:#e05256}.extra-icon .ui-icon{width:23px;height:23px;stroke-width:1.7}.extra-title{font-size:12px}.extra-sub{margin-top:3px;color:#69737d;font-size:10px}
-.preview-panel{min-width:0;align-self:start;position:sticky;top:82px}
+.preview-panel{min-width:0;align-self:start;position:sticky;top:12px}
 .preview-head{padding:15px 16px 10px}
 .preview-kicker{color:#8d969e;font-family:Georgia,"Times New Roman",serif;font-size:13px}
 .preview-title{margin:3px 0 0;font-family:Georgia,"Times New Roman",serif;color:#f0dfcb;font-size:20px;line-height:1.2}
@@ -140,7 +140,7 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .preview-open-full{margin-left:auto;height:30px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;border:1px solid #33404b;border-radius:7px;background:#101820;color:#b9c2ca;text-decoration:none;font-size:10px;font-weight:700;white-space:nowrap}
 .preview-open-full:hover{border-color:rgba(214,76,80,.48);background:rgba(214,76,80,.11);color:#f0d8d1}
 .preview-open-full .ui-icon{width:14px;height:14px;stroke-width:1.8}
-.preview-frame-wrap{height:500px;padding:10px;background:#0a1016}
+.preview-frame-wrap{height:calc(100vh - 250px);min-height:560px;max-height:900px;padding:10px;background:#0a1016}
 .preview-frame{width:100%;height:100%;border:1px solid #202a33;border-radius:7px;background:#101820}
 .preview-placeholder{height:100%;display:grid;place-items:center;padding:36px;text-align:center;color:#737e88}
 .preview-placeholder .big{font-family:Georgia,"Times New Roman",serif;color:#cbb79f;font-size:22px}
@@ -181,12 +181,12 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 .mobile-overlay{display:none}
 @media(max-width:1180px){
   .workspace{grid-template-columns:minmax(400px,1fr) minmax(340px,.8fr)}
-  .hero-art{width:390px}.hero-copy{max-width:calc(100% - 410px)}.preview-frame-wrap{height:430px}
+  .hero-art{width:430px}.hero-copy{max-width:calc(100% - 450px)}.preview-frame-wrap{height:calc(100vh - 230px);min-height:460px}
 }
 @media(max-width:900px){
   :root{--sideW:232px}
   .workspace{display:block}.preview-panel{position:static;margin-top:12px}.hero-art{width:320px;opacity:.62}.hero-copy{max-width:calc(100% - 300px)}
-  .preview-frame-wrap{height:520px}.home-grid{grid-template-columns:1fr}
+  .preview-frame-wrap{height:calc(100vh - 170px);min-height:520px}.home-grid{grid-template-columns:1fr}
 }
 @media(max-width:720px){
   .sidebar{transform:translateX(-100%);transition:transform .18s ease;box-shadow:22px 0 50px rgba(0,0,0,.5)}
@@ -203,14 +203,14 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 .hero{min-height:184px}
 .hero-copy{max-width:min(650px,56%);position:relative;z-index:3}
 .hero-art{
-  inset:0 0 0 auto;width:min(60vw,760px);height:100%;border:0;border-radius:0;opacity:.82;
+  inset:0 0 0 auto;width:min(66vw,860px);height:100%;border:0;border-radius:0;opacity:.94;
   box-shadow:none
 }
-.hero-art img{object-fit:cover;object-position:58% 49%;filter:saturate(.76) brightness(.54) contrast(1.14)}
+.hero-art img{width:100%;height:100%;object-fit:cover;object-position:76% 50%;filter:saturate(.94) brightness(.74) contrast(1.06)}
 .hero-art:after{
   background:
-    linear-gradient(90deg,rgba(8,13,18,1) 0%,rgba(8,13,18,.95) 14%,rgba(8,13,18,.7) 34%,rgba(8,13,18,.22) 64%,rgba(8,13,18,.24) 100%),
-    linear-gradient(180deg,rgba(8,13,18,.10),rgba(8,13,18,.42));
+    linear-gradient(90deg,rgba(8,13,18,1) 0%,rgba(8,13,18,.96) 15%,rgba(8,13,18,.70) 34%,rgba(8,13,18,.18) 66%,rgba(8,13,18,.12) 100%),
+    linear-gradient(180deg,rgba(8,13,18,.06),rgba(8,13,18,.30));
   box-shadow:none
 }
 .hero-people{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
@@ -279,7 +279,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
   .search-pro-layout{grid-template-columns:minmax(320px,1fr) minmax(330px,.9fr)}
 }
 @media(max-width:720px){
-  .hero{min-height:154px}.hero-art{display:block;width:100%;opacity:.48}.hero-art img{object-position:66% 50%}
+  .hero{min-height:154px}.hero-art{display:block;width:100%;opacity:.54}.hero-art img{object-position:78% 50%}
   .hero-art:after{background:linear-gradient(90deg,rgba(8,13,18,.97),rgba(8,13,18,.72) 52%,rgba(8,13,18,.42)),linear-gradient(180deg,rgba(8,13,18,.18),rgba(8,13,18,.48))}
   .hero-copy{max-width:86%}.hero-people{gap:5px}.person-chip{font-size:9px;padding:4px 7px}
   .search-pro-head{display:block}.search-pro-filters{margin-top:12px}.search-filter-row{display:block}.search-filter-label{display:block;width:auto;margin-bottom:5px}
@@ -342,7 +342,7 @@ const META={
   'ФиХАиМ':{name:'Физика и химия атомов и молекул',lecturer:'Горбунов О. А.',seminarist:'Горбунов О. А.'},
   'База':{name:'База знаний'}
 };
-const HERO_IMAGE='assets/nsu-academic-hero.svg';
+const HERO_IMAGE='assets/nsu-eva-hero.webp';
 const UI_ICONS={
   home:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3l8.5 7.5"/><path d="M5.5 9.5V21h13V9.5"/><path d="M9.5 21v-6h5v6"/></svg>',
   subjects:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.5"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1.5"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1.5"/><rect x="14" y="14" width="6.5" height="6.5" rx="1.5"/></svg>',
