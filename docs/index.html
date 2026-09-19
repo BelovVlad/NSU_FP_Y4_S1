@@ -958,6 +958,19 @@ body.music-na19x .pdf-fullscreen-loader{
   .pdf-loader-ring,.pdf-loader-ring::after{animation:none}
 }
 
+
+/* Mobile sidebar: no edge glow */
+@media(max-width:720px){
+  .sidebar,.sidebar.open{
+    box-shadow:none!important;
+    filter:none!important;
+  }
+  .mobile-overlay,.mobile-overlay.show{
+    box-shadow:none!important;
+    backdrop-filter:none!important;
+  }
+}
+
 </style>
 </head>
 <body>
