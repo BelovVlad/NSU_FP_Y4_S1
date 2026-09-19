@@ -103,6 +103,7 @@ const versionParam=params.get('v')||'';
 const $=id=>document.getElementById(id);
 const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText'),mPrev=$('mPrev'),mNext=$('mNext'),mPageInfo=$('mPageInfo'),searchToggle=$('searchToggle'),searchPanel=$('searchPanel'),searchInput=$('searchInput'),searchPrev=$('searchPrev'),searchNext=$('searchNext'),searchStatus=$('searchStatus'),searchClose=$('searchClose'),highlightLayer=$('highlightLayer'),annotationLayer=$('annotationLayer'),outlineToggle=$('outlineToggle'),outlinePanel=$('outlinePanel'),outlineTree=$('outlineTree'),outlineClose=$('outlineClose'),outlineBackdrop=$('outlineBackdrop');
 
+const CSS_UNITS=96/72;
 let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=false,pdfUrl='',renderSerial=0,preloadSerial=0;
 let searchQuery='',searchPage=0,searchOccurrence=-1,searchBusy=false,searchToken=0;
 let outlineLoaded=false,outlineEntries=[];
@@ -245,8 +246,8 @@ async function searchStep(direction){
 async function renderPage(){
   if(!pdf)return;const target=pageNum,serial=++renderSerial;showLoading();clearAnnotations();if(renderTask){try{renderTask.cancel()}catch{}}
   try{
-    const page=await getCachedPage(target);if(serial!==renderSerial)return;const base=page.getViewport({scale:1});if(fitWidth){const mobile=window.matchMedia('(max-width:760px)').matches;const available=Math.max(120,viewer.clientWidth-(mobile?20:52));scale=Math.min(2.4,available/base.width)}
-    const viewport=page.getViewport({scale});
+    const page=await getCachedPage(target);if(serial!==renderSerial)return;const base=page.getViewport({scale:1});if(fitWidth){const mobile=window.matchMedia('(max-width:760px)').matches;const available=Math.max(120,viewer.clientWidth-(mobile?20:52));scale=Math.min(2.4,available/(base.width*CSS_UNITS))}
+    const viewport=page.getViewport({scale:scale*CSS_UNITS});
     const dpr=window.devicePixelRatio||1;
     const quality=scale<=1.15?2.25:scale<=1.75?1.75:1;
     const ratio=Math.max(dpr,quality);
