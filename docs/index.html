@@ -109,6 +109,8 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
   height:34px;padding:0 30px 0 10px;border:1px solid var(--line);border-radius:7px;background:#111920;color:#b5bdc4;font-size:11px;outline:0
 }
 .file-list{padding:0 13px 13px}
+.entry-part{display:flex;align-items:center;gap:10px;padding:14px 9px 7px;color:#9a7d68;font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.entry-part:after{content:"";height:1px;flex:1;background:var(--line2)}
 .file-row{
   display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:10px;min-height:61px;padding:9px 10px;
   border-bottom:1px solid var(--line2);border-radius:7px;cursor:pointer;transition:background .12s,border-color .12s
@@ -327,7 +329,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 
 <script>
 const OWNER='BelovVlad',REPO='NSU_FP_Y4_S1',BRANCH='main';
-const ORDER=['ОВФ','СВЧ','ТДиСФ','ФКСВ','ФЭЧ','ФиХАиМ','База'];
+const ORDER=['ОВФ','СВЧ','ТДиСФ','ФКСВ','ФЭЧ','ФиХАиМ','КМ','База'];
 const META={
   'ОВФ':{name:'Основы вычислительной физики',lecturer:'Усов Э. В.'},
   'СВЧ':{name:'СВЧ'},
@@ -335,6 +337,7 @@ const META={
   'ФКСВ':{name:'Физика конденсированного состояния вещества',lecturer:'Шварц Б. А.',seminarist:'Махмудиан М. М.'},
   'ФЭЧ':{name:'Физика атомного ядра и элементарных частиц',lecturer:'Шварц Б. А.',seminarist:'Винокурова А. Н.'},
   'ФиХАиМ':{name:'Физика и химия атомов и молекул',lecturer:'Горбунов О. А.',seminarist:'Горбунов О. А.'},
+  'КМ':{name:'Квантовая механика · архив курса',lecturer:'Грибанов С. С.',seminarist:'Грибанов С. С.'},
   'База':{name:'База знаний'}
 };
 const HERO_IMAGE='assets/nsu-eva-hero.webp?v=77a2ef896671';
@@ -367,9 +370,11 @@ function isNewDate(v){if(!v)return false;const d=new Date(v);return Number.isFin
 
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function encPath(p){return p.split('/').map(encodeURIComponent).join('/')}
-function subjectOf(f){return f.path.split('/')[0]}
+function subjectOf(f){const p=f.path.split('/');return p[0]==='База'&&p[1]==='КМ'?'КМ':p[0]}
 function rawSection(f){
-  const p=f.path.split('/')[1]||'Материалы';
+  const parts=f.path.split('/');
+  if(parts[0]==='База'&&parts[1]==='КМ')return 'Лекции';
+  const p=parts[1]||'Материалы';
   return p.replace(/^\d+[_ .-]*/,'').replace(/_/g,' ');
 }
 function sectionOf(f){
@@ -385,6 +390,7 @@ function sectionOf(f){
 }
 function niceName(f){
   const stem=(f.name||f.path.split('/').pop()).replace(/\.(pdf|ipynb)$/i,'').replace(/_/g,' ');
+  if(subjectOf(f)==='КМ'&&stem==='Квантовая механика полный курс')return 'Полный курс';
   if(stem.toLowerCase()==='final'){
     const s=sectionOf(f);
     if(s==='Лекции')return 'Конспект лекций';
@@ -498,15 +504,23 @@ function fileRows(files){
 function entryRows(group){
   const items=sortedEntries(group?.items||[]);
   if(!items.length)return '<div class="empty">Структура этого раздела пока не найдена.</div>';
-  return items.map(item=>{
+  let lastPart='',html='';
+  items.forEach(item=>{
+    if(item.part&&item.part!==lastPart){
+      lastPart=item.part;
+      const label=item.part==='QM1'?'Квантовая механика I':'Квантовая механика II';
+      html+='<div class="entry-part"><span>'+esc(label)+'</span></div>';
+    }
     const active=state.selectedEntry&&state.selectedEntry.id===item.id;
     const range=item.page?(item.end_page&&item.end_page!==item.page?'стр. '+item.page+'–'+item.end_page:'стр. '+item.page):'страница уточняется';
-    return '<div class="file-row'+(active?' active':'')+'" data-entry="'+esc(item.id)+'">'+
-      '<div class="file-ico"><span class="entry-no">'+String(item.number||'').padStart(2,'0')+'</span></div>'+
+    const number=item.number_label||String(item.number||'').padStart(2,'0');
+    html+='<div class="file-row'+(active?' active':'')+'" data-entry="'+esc(item.id)+'">'+
+      '<div class="file-ico"><span class="entry-no">'+esc(number)+'</span></div>'+
       '<div class="file-main"><div class="file-name">'+esc(item.title||'Без названия')+'</div><div class="file-desc">'+esc(item.subtitle||group.section)+'</div></div>'+
       '<div class="file-side"><div class="file-date">'+esc(fmtDate(item.date))+'</div><div class="file-size">'+esc(range)+'</div></div>'+
     '</div>';
-  }).join('');
+  });
+  return html;
 }
 
 function preview(f,entry=null){
