@@ -335,6 +335,103 @@ body.embed .markdown-body{font-size:12px}body.embed .code-box code{font-size:9.5
 .zoom-select:hover,.zoom-select:focus{border-color:var(--accent);color:var(--cream)}
 @media(max-width:720px){.zoom-select{height:36px;min-width:68px;padding-left:8px}}
 
+
+/* Notebook final readability + MathJax containment v8 */
+/* The notebook sources are now canonical enough; do not squeeze MathJax itself.
+   The outer placeholder owns scrolling, the MathJax display owns the full row. */
+.markdown-body{font-size:15px!important;line-height:1.58!important;overflow-wrap:normal!important;word-break:normal!important}
+.markdown-body h1{font-size:26px!important}
+.markdown-body h2{font-size:21px!important}
+.markdown-body h3{font-size:17px!important}
+.code-box code{font-size:11.5px!important}
+.output-body{font-size:12px!important}
+
+.math-placeholder{
+  min-width:0!important;
+  max-width:100%!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+.math-placeholder.math-display{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  text-align:initial!important;
+  white-space:normal!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+}
+.math-placeholder.math-display > mjx-container[jax="CHTML"],
+.math-placeholder.math-display > mjx-container{
+  display:block!important;
+  width:100%!important;
+  min-width:100%!important;
+  max-width:none!important;
+  overflow:visible!important;
+  margin:.55em 0!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  font-size:100%!important;
+}
+.math-placeholder.math-display mjx-math,
+.math-placeholder.math-display mjx-math *{
+  max-width:none!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+.math-placeholder.math-inline,
+.math-placeholder.math-inline > mjx-container{
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  font-size:100%!important;
+}
+
+/* Tables stay horizontally scrollable, but remain readable at 100%. */
+.table-scroll table,
+.markdown-body .table-scroll table,
+.output-body .table-scroll table{
+  font-size:13px!important;
+}
+.table-scroll th,.table-scroll td{
+  min-width:108px!important;
+  padding:8px 9px!important;
+  line-height:1.45!important;
+}
+.table-scroll .math-placeholder,
+.table-scroll .math-placeholder > mjx-container,
+.markdown-body table .math-placeholder mjx-container{
+  font-size:100%!important;
+}
+body.embed .markdown-body{font-size:13px!important}
+body.embed .code-box code{font-size:10px!important}
+body.embed .table-scroll table{font-size:11.5px!important}
+body.embed .table-scroll th,body.embed .table-scroll td{min-width:96px!important;padding:6px 7px!important}
+
+@media(max-width:720px){
+  .markdown-body{font-size:14px!important;line-height:1.56!important}
+  .markdown-body h1{font-size:23px!important}
+  .markdown-body h2{font-size:19px!important}
+  .markdown-body h3{font-size:16px!important}
+  .code-box code{font-size:10.5px!important}
+  .table-scroll table,
+  .markdown-body .table-scroll table,
+  .output-body .table-scroll table{
+    min-width:max(100%,650px)!important;
+    font-size:12.5px!important;
+  }
+  .table-scroll th,.table-scroll td{
+    min-width:116px!important;
+    padding:7px 8px!important;
+  }
+  .table-scroll .math-placeholder,
+  .table-scroll .math-placeholder > mjx-container{
+    font-size:100%!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -455,7 +552,7 @@ function internalMaterialUrl(path){
   const low=path.toLowerCase();
   if(low.endsWith('.ipynb')){
     const u=new URL('viewer.html',location.href);
-    u.searchParams.set('build','7');
+    u.searchParams.set('build','8');
     u.searchParams.set('file',path);
     u.searchParams.set('title',path.split('/').pop().replace(/\.ipynb$/i,'').replace(/_/g,' '));
     if(theme)u.searchParams.set('theme',theme);
