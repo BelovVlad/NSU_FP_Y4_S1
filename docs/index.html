@@ -201,16 +201,16 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 
 /* Restored stable-site UX */
 .hero{min-height:184px}
-.hero-copy{max-width:min(650px,56%);position:relative;z-index:3}
+.hero-copy{max-width:min(560px,42%);position:relative;z-index:3}
 .hero-art{
-  inset:0 0 0 auto;width:min(66vw,860px);height:100%;border:0;border-radius:0;opacity:.94;
+  inset:0 0 0 auto;width:clamp(760px,72vw,1100px);height:100%;border:0;border-radius:0;opacity:.96;
   box-shadow:none
 }
-.hero-art img{width:100%;height:100%;object-fit:cover;object-position:76% 50%;filter:saturate(.94) brightness(.74) contrast(1.06)}
+.hero-art img{width:100%;height:100%;object-fit:cover;object-position:84% 52%;filter:saturate(.90) brightness(.72) contrast(1.06)}
 .hero-art:after{
   background:
-    linear-gradient(90deg,rgba(8,13,18,1) 0%,rgba(8,13,18,.96) 15%,rgba(8,13,18,.70) 34%,rgba(8,13,18,.18) 66%,rgba(8,13,18,.12) 100%),
-    linear-gradient(180deg,rgba(8,13,18,.06),rgba(8,13,18,.30));
+    linear-gradient(90deg,rgba(8,13,18,1) 0%,rgba(8,13,18,.94) 18%,rgba(8,13,18,.58) 38%,rgba(8,13,18,.14) 68%,rgba(8,13,18,.10) 100%),
+    linear-gradient(180deg,rgba(8,13,18,.06),rgba(8,13,18,.22));
   box-shadow:none
 }
 .hero-people{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
@@ -275,12 +275,10 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 .search-result-new{margin-left:2px}
 
 @media(max-width:900px){
-  .hero-art{width:54%;opacity:.66}.hero-copy{max-width:58%}
   .search-pro-layout{grid-template-columns:minmax(320px,1fr) minmax(330px,.9fr)}
 }
 @media(max-width:720px){
-  .hero{min-height:154px}.hero-art{display:block;width:100%;opacity:.54}.hero-art img{object-position:78% 50%}
-  .hero-art:after{background:linear-gradient(90deg,rgba(8,13,18,.97),rgba(8,13,18,.72) 52%,rgba(8,13,18,.42)),linear-gradient(180deg,rgba(8,13,18,.18),rgba(8,13,18,.48))}
+  .hero{min-height:154px}.hero-art{display:block;width:100%;opacity:.72}.hero-art img{object-position:78% 50%}
   .hero-copy{max-width:86%}.hero-people{gap:5px}.person-chip{font-size:9px;padding:4px 7px}
   .search-pro-head{display:block}.search-pro-filters{margin-top:12px}.search-filter-row{display:block}.search-filter-label{display:block;width:auto;margin-bottom:5px}
   .search-pro-layout{display:block}.search-pro-preview{display:none;position:fixed;z-index:60;left:6px;right:6px;top:64px;bottom:6px;min-height:0;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.72)}
