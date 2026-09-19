@@ -817,6 +817,92 @@ body.music-na19x .search-filter-chip.active{
   box-shadow:0 0 0 1px rgba(255,255,255,.58),0 0 14px rgba(255,255,255,.08)!important;
 }
 
+
+/* NA 19x severe corruption pass */
+body.music-na19x.music-glitch-live .music-glitch{
+  opacity:calc(.38 + var(--glitch-level,0) * .62)!important;
+}
+body.music-na19x.music-glitch-live .music-glitch::before{
+  opacity:calc(.42 + var(--glitch-level,0) * .58)!important;
+  background:
+    repeating-linear-gradient(180deg,transparent 0 2px,rgba(255,255,255,.08) 2px 3px,transparent 3px 5px),
+    linear-gradient(90deg,rgba(255,20,86,.12),transparent 16%,rgba(145,255,255,.17) 36%,transparent 57%,rgba(255,255,255,.14) 74%,transparent 92%)!important;
+}
+body.music-na19x.music-glitch-live .music-glitch::after{
+  opacity:calc(.48 + var(--glitch-level,0) * .52)!important;
+  background:
+    linear-gradient(90deg,rgba(255,36,96,.32),transparent 16%,rgba(120,255,255,.34) 24%,transparent 47%,rgba(255,255,255,.28) 68%,transparent 88%)!important;
+  clip-path:polygon(0 var(--glitch-y,42%),100% var(--glitch-y,42%),100% calc(var(--glitch-y,42%) + 6%),0 calc(var(--glitch-y,42%) + 6%))!important;
+  transform:translateX(calc(var(--glitch-x,0px) * .34));
+}
+body.music-na19x.music-glitch-hit .music-glitch{opacity:.94!important}
+body.music-na19x.music-glitch-hit .music-glitch-band{
+  height:4.4%!important;
+  opacity:1!important;
+  background:linear-gradient(90deg,rgba(255,30,90,.23),rgba(235,255,255,.30) 45%,rgba(90,255,255,.25))!important;
+  box-shadow:
+    -12px 0 0 rgba(255,30,90,.18),
+    12px 0 0 rgba(80,255,255,.22),
+    0 0 26px rgba(255,255,255,.18)!important;
+}
+body.music-na19x.music-glitch-hit .band-a{transform:translateX(calc(var(--glitch-x,0px) * -1.25)) scaleX(1.03)}
+body.music-na19x.music-glitch-hit .band-b{transform:translateX(calc(var(--glitch-x,0px) * 1.15)) scaleX(.985)}
+body.music-na19x.music-glitch-hit .band-c{transform:translateX(calc(var(--glitch-x,0px) * -.82)) scaleX(1.02)}
+body.music-na19x.music-glitch-hard .music-glitch{opacity:1!important}
+body.music-na19x.music-glitch-hard .music-glitch-band{height:6.2%!important}
+body.music-na19x.music-glitch-hard .shell,
+body.music-na19x.music-glitch-hard .pdf-fullscreen-frame{
+  transform:
+    translate(var(--glitch-shift,0px),var(--glitch-shift-y,0px))
+    skewX(var(--glitch-skew,0deg))
+    scaleX(var(--glitch-scale-x,1.012))!important;
+  filter:
+    brightness(calc(1.02 + var(--glitch-level,0) * .50))
+    contrast(calc(1.08 + var(--glitch-level,0) * .42))
+    saturate(calc(.92 - var(--glitch-level,0) * .28))!important;
+}
+body.music-na19x.music-glitch-blackout .music-glitch{
+  opacity:1!important;
+  mix-blend-mode:normal!important;
+  background:rgba(0,3,6,.82)!important;
+}
+body.music-na19x.music-glitch-blackout .music-glitch::before{
+  opacity:.55!important;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.055) 0 1px,transparent 1px 4px)!important;
+}
+body.music-na19x.music-glitch-whiteout .music-glitch{
+  opacity:1!important;
+  mix-blend-mode:screen!important;
+  background:rgba(225,250,255,.24)!important;
+}
+body.music-na19x.music-glitch-whiteout .shell,
+body.music-na19x.music-glitch-whiteout .pdf-fullscreen-frame{
+  filter:brightness(1.55) contrast(1.35) saturate(.2)!important;
+}
+body.music-na19x.music-glitch-crush .shell,
+body.music-na19x.music-glitch-crush .pdf-fullscreen-frame{
+  transform:
+    translate(var(--glitch-shift,0px),var(--glitch-shift-y,0px))
+    skewX(var(--glitch-skew,0deg))
+    scaleX(.965)!important;
+  filter:brightness(.72) contrast(1.85) saturate(.18)!important;
+}
+@media(prefers-reduced-motion:reduce){
+  body.music-na19x.music-glitch-live .music-glitch{display:none!important}
+  body.music-na19x.music-glitch-hit .shell,
+  body.music-na19x.music-glitch-hard .shell,
+  body.music-na19x.music-glitch-blackout .shell,
+  body.music-na19x.music-glitch-whiteout .shell,
+  body.music-na19x.music-glitch-crush .shell,
+  body.music-na19x.music-glitch-hit .pdf-fullscreen-frame,
+  body.music-na19x.music-glitch-hard .pdf-fullscreen-frame,
+  body.music-na19x.music-glitch-blackout .pdf-fullscreen-frame,
+  body.music-na19x.music-glitch-whiteout .pdf-fullscreen-frame,
+  body.music-na19x.music-glitch-crush .pdf-fullscreen-frame{
+    transform:none!important;filter:none!important
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1082,63 +1168,91 @@ async function ensureMusicAnalyser(){
     return false;
   }
 }
-let musicGlitchHitTimer=0,musicGlitchFallbackAt=0;
+let musicGlitchHitTimer=0,musicGlitchEffectTimer=0,musicGlitchFallbackAt=0;
 function clearMusicGlitchClasses(){
   clearTimeout(musicGlitchHitTimer);
-  document.body.classList.remove('music-glitch-live','music-glitch-hit','music-glitch-hard');
+  clearTimeout(musicGlitchEffectTimer);
+  document.body.classList.remove(
+    'music-glitch-live','music-glitch-hit','music-glitch-hard',
+    'music-glitch-blackout','music-glitch-whiteout','music-glitch-crush'
+  );
   document.body.style.removeProperty('--glitch-level');
   document.body.style.removeProperty('--glitch-x');
   document.body.style.removeProperty('--glitch-shift');
   document.body.style.removeProperty('--glitch-shift-y');
   document.body.style.removeProperty('--glitch-skew');
+  document.body.style.removeProperty('--glitch-scale-x');
   document.body.style.removeProperty('--glitch-y');
 }
 function stopMusicGlitch(){
-  if(musicGlitchFrame)cancelAnimationFrame(musicGlitchFrame);
+  if(musicGlitchFrame){
+    cancelAnimationFrame(musicGlitchFrame);
+    clearTimeout(musicGlitchFrame);
+  }
   musicGlitchFrame=0;
   musicGlitchLastEnergy=0;
   musicGlitchLastHit=0;
   musicGlitchFallbackAt=0;
   clearMusicGlitchClasses();
 }
-function triggerMusicGlitch(force=.65){
+function triggerMusicGlitch(force=.72){
   if(activeMusicTrack?.id!=='na19x'||musicAudio.paused)return;
-  force=Math.max(.25,Math.min(1,force));
-  const x=(Math.random()>.5?1:-1)*(10+Math.round(force*34));
-  const shift=(Math.random()>.5?1:-1)*(3+Math.round(force*11));
-  const shiftY=(Math.random()>.5?1:-1)*(1+Math.round(force*6));
-  const skew=(Math.random()>.5?1:-1)*(.12+force*.65);
-  const y=7+Math.round(Math.random()*84);
+  force=Math.max(.45,Math.min(1,force));
+
+  const sign=()=>Math.random()>.5?1:-1;
+  const x=sign()*(18+Math.round(force*58));
+  const shift=sign()*(6+Math.round(force*19));
+  const shiftY=sign()*(2+Math.round(force*11));
+  const skew=sign()*(.22+force*1.08);
+  const scaleX=(1+sign()*(.006+force*.018)).toFixed(4);
+  const y=4+Math.round(Math.random()*88);
+
   document.body.style.setProperty('--glitch-level',force.toFixed(3));
   document.body.style.setProperty('--glitch-x',x+'px');
   document.body.style.setProperty('--glitch-shift',shift+'px');
   document.body.style.setProperty('--glitch-shift-y',shiftY+'px');
   document.body.style.setProperty('--glitch-skew',skew.toFixed(2)+'deg');
+  document.body.style.setProperty('--glitch-scale-x',scaleX);
   document.body.style.setProperty('--glitch-y',y+'%');
+
   document.body.classList.add('music-glitch-live','music-glitch-hit');
-  if(force>.62)document.body.classList.add('music-glitch-hard');
+  if(force>.58)document.body.classList.add('music-glitch-hard');
+
+  clearTimeout(musicGlitchEffectTimer);
+  document.body.classList.remove('music-glitch-blackout','music-glitch-whiteout','music-glitch-crush');
+  if(force>.78){
+    const roll=Math.random();
+    if(roll<.24)document.body.classList.add('music-glitch-blackout');
+    else if(roll<.43)document.body.classList.add('music-glitch-whiteout');
+    else if(roll<.64)document.body.classList.add('music-glitch-crush');
+    musicGlitchEffectTimer=setTimeout(()=>{
+      document.body.classList.remove('music-glitch-blackout','music-glitch-whiteout','music-glitch-crush');
+    },70+Math.round(Math.random()*105));
+  }
+
   clearTimeout(musicGlitchHitTimer);
   musicGlitchHitTimer=setTimeout(()=>{
     document.body.classList.remove('music-glitch-hit','music-glitch-hard');
-  },Math.round(95+force*105));
+  },Math.round(160+force*190));
 }
 async function startMusicGlitch(){
   stopMusicGlitch();
   if(activeMusicTrack?.id!=='na19x'||musicAudio.paused)return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
 
-  // A visible entrance pulse makes the rare mode unmistakable.
   document.body.classList.add('music-glitch-live');
-  setTimeout(()=>triggerMusicGlitch(.95),140);
-  setTimeout(()=>triggerMusicGlitch(.72),520);
+  setTimeout(()=>triggerMusicGlitch(1),90);
+  setTimeout(()=>triggerMusicGlitch(.84),410);
+  setTimeout(()=>triggerMusicGlitch(.66),760);
 
   const ok=await ensureMusicAnalyser();
   if(!ok){
     const fallback=()=>{
       if(musicAudio.paused||activeMusicTrack?.id!=='na19x')return;
-      triggerMusicGlitch(.52+Math.random()*.28);
-      musicGlitchFrame=setTimeout(fallback,900+Math.random()*1400);
+      triggerMusicGlitch(.62+Math.random()*.36);
+      musicGlitchFrame=setTimeout(fallback,450+Math.random()*1050);
     };
-    musicGlitchFrame=setTimeout(fallback,1100);
+    musicGlitchFrame=setTimeout(fallback,850);
     return;
   }
   if(musicAudioContext?.state==='suspended'){
@@ -1146,9 +1260,11 @@ async function startMusicGlitch(){
   }
 
   const timeData=new Uint8Array(musicAnalyser.fftSize);
-  musicGlitchFallbackAt=performance.now()+1200;
+  musicGlitchFallbackAt=performance.now()+720;
+
   const tick=(now)=>{
     if(musicAudio.paused||activeMusicTrack?.id!=='na19x'){stopMusicGlitch();return}
+
     musicAnalyser.getByteFrequencyData(musicAnalyserData);
     musicAnalyser.getByteTimeDomainData(timeData);
 
@@ -1167,24 +1283,22 @@ async function startMusicGlitch(){
       sq+=v*v;
     }
     const rms=Math.sqrt(sq/timeData.length);
-    const energy=Math.min(1,rms*3.5+avg*.9+hiss*.45);
+    const energy=Math.min(1,rms*4.15+avg*1.02+hiss*.58);
     const delta=Math.max(0,energy-musicGlitchLastEnergy);
-    musicGlitchLastEnergy=musicGlitchLastEnergy*.78+energy*.22;
-    const level=Math.min(1,energy*.82+delta*3.8);
-    document.body.style.setProperty('--glitch-level',Math.max(.08,level).toFixed(3));
+    musicGlitchLastEnergy=musicGlitchLastEnergy*.74+energy*.26;
+    const level=Math.min(1,energy*.9+delta*4.7);
+    document.body.style.setProperty('--glitch-level',Math.max(.14,level).toFixed(3));
 
-    // Peaks in the actual soundtrack trigger the tears.
-    if((delta>.012||rms>.055&&level>.23)&&now-musicGlitchLastHit>260){
+    if((delta>.0065||(rms>.038&&level>.16))&&now-musicGlitchLastHit>165){
       musicGlitchLastHit=now;
-      triggerMusicGlitch(Math.min(1,.42+level*.72+delta*2.8));
-      musicGlitchFallbackAt=now+900+Math.random()*1300;
+      triggerMusicGlitch(Math.min(1,.52+level*.72+delta*3.4));
+      musicGlitchFallbackAt=now+430+Math.random()*980;
     }
 
-    // Failsafe: the easter egg must remain visible even in very quiet passages.
     if(now>musicGlitchFallbackAt){
       musicGlitchLastHit=now;
-      triggerMusicGlitch(.38+Math.min(.4,level*.55)+Math.random()*.16);
-      musicGlitchFallbackAt=now+850+Math.random()*1700;
+      triggerMusicGlitch(.52+Math.min(.34,level*.52)+Math.random()*.18);
+      musicGlitchFallbackAt=now+450+Math.random()*1200;
     }
     musicGlitchFrame=requestAnimationFrame(tick);
   };
@@ -1439,55 +1553,77 @@ let giscusLoadSerial=0;
 function giscusThemeForSite(){
   return 'transparent_dark';
 }
-async function mountFeedback(){
+function mountFeedback(){
   const mount=document.getElementById('giscusMount');
   if(!mount)return;
   const serial=++giscusLoadSerial;
-  mount.innerHTML='<div class="feedback-loading">Загружаю обсуждение…</div>';
-  try{
-    const response=await fetch('giscus-config.json?v='+Date.now(),{cache:'no-store'});
-    if(!response.ok)throw new Error('giscus config '+response.status);
-    const cfg=await response.json();
-    if(!cfg.repoId||!cfg.categoryId||!cfg.category)throw new Error('Incomplete giscus config');
-    if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
+  const cfg={
+    repoId:'R_kgDOUL2ocQ',
+    category:'Ideas',
+    categoryId:'DIC_kwDOUL2occ4DF9x0'
+  };
 
-    mount.replaceChildren();
-    const script=document.createElement('script');
-    script.src='https://giscus.app/client.js';
-    script.async=true;
-    script.crossOrigin='anonymous';
-    script.dataset.repo=OWNER+'/'+REPO;
-    script.dataset.repoId=cfg.repoId;
-    script.dataset.category=cfg.category;
-    script.dataset.categoryId=cfg.categoryId;
-    script.dataset.mapping='specific';
-    script.dataset.term='NSU FP · Идеи и замечания';
-    script.dataset.strict='1';
-    script.dataset.reactionsEnabled='1';
-    script.dataset.emitMetadata='0';
-    script.dataset.inputPosition='top';
-    script.dataset.theme=giscusThemeForSite();
-    script.dataset.lang='ru';
-    script.onerror=()=>{
-      if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
-      mount.innerHTML='<div class="feedback-setup"><span>Не удалось загрузить комментарии.</span><button class="feedback-retry" type="button">Повторить</button></div>';
-      mount.querySelector('.feedback-retry')?.addEventListener('click',()=>mountFeedback());
-    };
-    mount.appendChild(script);
+  mount.replaceChildren();
 
-    setTimeout(()=>{
-      if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
-      if(!mount.querySelector('.giscus-frame')){
-        mount.innerHTML='<div class="feedback-setup"><span>giscus отвечает слишком долго.</span><button class="feedback-retry" type="button">Повторить</button></div>';
-        mount.querySelector('.feedback-retry')?.addEventListener('click',()=>mountFeedback());
-      }
-    },8000);
-  }catch(e){
+  const status=document.createElement('div');
+  status.className='feedback-loading';
+  status.textContent='Подключаю обсуждение…';
+  mount.appendChild(status);
+
+  const script=document.createElement('script');
+  script.src='https://giscus.app/client.js';
+  script.async=true;
+  script.crossOrigin='anonymous';
+  script.dataset.repo=OWNER+'/'+REPO;
+  script.dataset.repoId=cfg.repoId;
+  script.dataset.category=cfg.category;
+  script.dataset.categoryId=cfg.categoryId;
+  script.dataset.mapping='specific';
+  script.dataset.term='NSU FP · Идеи и замечания';
+  script.dataset.strict='1';
+  script.dataset.reactionsEnabled='1';
+  script.dataset.emitMetadata='1';
+  script.dataset.inputPosition='top';
+  script.dataset.theme=giscusThemeForSite();
+  script.dataset.lang='ru';
+
+  script.onload=()=>{
     if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
-    mount.innerHTML='<div class="feedback-setup"><span>Комментарии настраиваются. Обновите страницу через минуту.</span><button class="feedback-retry" type="button">Проверить снова</button></div>';
-    mount.querySelector('.feedback-retry')?.addEventListener('click',()=>mountFeedback());
-  }
+    requestAnimationFrame(()=>{
+      const frame=mount.querySelector('.giscus-frame');
+      if(frame)status.remove();
+    });
+  };
+  script.onerror=()=>{
+    if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
+    mount.innerHTML='<div class="feedback-setup"><span>Не удалось загрузить giscus.</span><button class="feedback-retry" type="button">Повторить</button></div>';
+    mount.querySelector('.feedback-retry')?.addEventListener('click',mountFeedback);
+  };
+  mount.appendChild(script);
+
+  setTimeout(()=>{
+    if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
+    const frame=mount.querySelector('.giscus-frame');
+    if(frame){
+      status.remove();
+      return;
+    }
+    mount.innerHTML='<div class="feedback-setup"><span>giscus не ответил.</span><button class="feedback-retry" type="button">Повторить</button></div>';
+    mount.querySelector('.feedback-retry')?.addEventListener('click',mountFeedback);
+  },6500);
 }
+
+window.addEventListener('message',event=>{
+  if(event.origin!=='https://giscus.app'||!event.data?.giscus)return;
+  const mount=document.getElementById('giscusMount');
+  if(!mount)return;
+  const payload=event.data.giscus;
+  mount.querySelector('.feedback-loading')?.remove();
+  if(payload.error){
+    mount.innerHTML='<div class="feedback-setup"><span>'+esc(String(payload.error))+'</span><button class="feedback-retry" type="button">Повторить</button></div>';
+    mount.querySelector('.feedback-retry')?.addEventListener('click',mountFeedback);
+  }
+});
 
 function renderHome(){
   const subjectCount=ORDER.filter(s=>FILES.some(f=>subjectOf(f)===s)).length;
@@ -1501,7 +1637,7 @@ function renderHome(){
     '<section class="panel feedback-panel"><div class="feedback-head"><div class="feedback-copy"><div class="feedback-kicker">Обратная связь</div><h2 class="feedback-title">Идеи и замечания</h2><p class="feedback-desc">Есть что улучшить, нашли ошибку или не хватает материала? Напишите здесь — сообщения хранятся в GitHub Discussions.</p></div></div><div id="giscusMount" class="giscus-wrap"><div class="feedback-loading">Загружаю обсуждение…</div></div></section>'+
   '</div>';
   $$('.course-card').forEach(c=>c.onclick=()=>{state.view='subjects';state.subject=c.dataset.subject;state.section='';state.selected=null;state.selectedEntry=null;setActiveNav('subjects');renderSubjectNav();render()});
-  $('.recent-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
+  $$('.recent-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
   void mountFeedback();
 }
 
