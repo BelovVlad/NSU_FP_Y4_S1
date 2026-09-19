@@ -903,6 +903,11 @@ body.music-na19x.music-glitch-crush .pdf-fullscreen-frame{
   }
 }
 
+
+/* giscus native empty-state fix */
+.giscus-wrap .giscus{min-height:150px}
+.giscus-wrap .giscus-frame{display:block;min-height:150px;border:0}
+
 </style>
 </head>
 <body>
@@ -1582,48 +1587,57 @@ function mountFeedback(){
   script.dataset.term='NSU FP · Идеи и замечания';
   script.dataset.strict='1';
   script.dataset.reactionsEnabled='1';
-  script.dataset.emitMetadata='1';
+  script.dataset.emitMetadata='0';
   script.dataset.inputPosition='top';
   script.dataset.theme=giscusThemeForSite();
   script.dataset.lang='ru';
 
+  const watchdog=setTimeout(()=>{
+    if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
+    if(mount.querySelector('.giscus-frame'))return;
+    mount.innerHTML='<div class="feedback-setup"><span>Не удалось подключиться к giscus.</span><button class="feedback-retry" type="button">Повторить</button></div>';
+    mount.querySelector('.feedback-retry')?.addEventListener('click',mountFeedback);
+  },15000);
+
   script.onload=()=>{
+    clearTimeout(watchdog);
     if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
     requestAnimationFrame(()=>{
       const frame=mount.querySelector('.giscus-frame');
-      if(frame)status.remove();
+      if(frame){
+        status.remove();
+        frame.addEventListener('load',()=>status.remove(),{once:true});
+      }else{
+        mount.innerHTML='<div class="feedback-setup"><span>giscus загрузился, но не создал окно комментариев.</span><button class="feedback-retry" type="button">Повторить</button></div>';
+        mount.querySelector('.feedback-retry')?.addEventListener('click',mountFeedback);
+      }
     });
   };
+
   script.onerror=()=>{
+    clearTimeout(watchdog);
     if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
     mount.innerHTML='<div class="feedback-setup"><span>Не удалось загрузить giscus.</span><button class="feedback-retry" type="button">Повторить</button></div>';
     mount.querySelector('.feedback-retry')?.addEventListener('click',mountFeedback);
   };
-  mount.appendChild(script);
 
-  setTimeout(()=>{
-    if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
-    const frame=mount.querySelector('.giscus-frame');
-    if(frame){
-      status.remove();
-      return;
-    }
-    mount.innerHTML='<div class="feedback-setup"><span>giscus не ответил.</span><button class="feedback-retry" type="button">Повторить</button></div>';
-    mount.querySelector('.feedback-retry')?.addEventListener('click',mountFeedback);
-  },6500);
+  mount.appendChild(script);
 }
 
 window.addEventListener('message',event=>{
   if(event.origin!=='https://giscus.app'||!event.data?.giscus)return;
   const mount=document.getElementById('giscusMount');
   if(!mount)return;
-  const payload=event.data.giscus;
   mount.querySelector('.feedback-loading')?.remove();
-  if(payload.error){
-    mount.innerHTML='<div class="feedback-setup"><span>'+esc(String(payload.error))+'</span><button class="feedback-retry" type="button">Повторить</button></div>';
-    mount.querySelector('.feedback-retry')?.addEventListener('click',mountFeedback);
+
+  // "Discussion not found" is giscus' normal empty state: it will create
+  // the Discussion automatically when an authenticated user posts first.
+  const error=String(event.data.giscus.error||'');
+  if(error && !error.includes('Discussion not found')){
+    console.warn('[giscus]',error);
   }
 });
+
 
 function renderHome(){
   const subjectCount=ORDER.filter(s=>FILES.some(f=>subjectOf(f)===s)).length;
