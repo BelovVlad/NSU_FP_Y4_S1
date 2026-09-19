@@ -10,7 +10,7 @@ import fitz  # PyMuPDF
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "docs" / "search-index"
-ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "База"]
+ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "КМ", "База"]
 
 
 def clean_text(text: str) -> str:
@@ -20,8 +20,18 @@ def clean_text(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+def is_qm_path(path: Path) -> bool:
+    return len(path.parts) >= 2 and path.parts[0] == "База" and path.parts[1] == "КМ"
+
+
+def subject_for(path: Path) -> str:
+    return "КМ" if is_qm_path(path) else path.parts[0]
+
+
 def title_for(path: Path) -> str:
     stem = path.stem
+    if is_qm_path(path) and stem == "Квантовая_механика_полный_курс":
+        return "Полный курс"
     section = path.parts[1] if len(path.parts) > 1 else ""
     if stem.lower() == "final":
         if "лекц" in section.lower():
@@ -37,6 +47,8 @@ def title_for(path: Path) -> str:
 
 
 def section_for(path: Path) -> str:
+    if is_qm_path(path):
+        return "Лекции"
     if len(path.parts) < 2:
         return "Материалы"
     raw = re.sub(r"^\d+[_ .-]*", "", path.parts[1]).replace("_", " ").strip()
@@ -118,7 +130,7 @@ def base_record(rel: Path, kind: str) -> dict:
         "path": rel.as_posix(),
         "type": kind,
         "title": title_for(rel),
-        "subject": rel.parts[0],
+        "subject": subject_for(rel),
         "section": section_for(rel),
         "size": actual_size(full, pointer),
         "updated_at": updated_at,
@@ -139,6 +151,16 @@ def pdf_record(rel: Path) -> dict:
     if pointer:
         record["indexed"] = False
         record["reason"] = "lfs"
+        return record
+
+    if is_qm_path(rel) and rel.name == "Квантовая_механика_полный_курс.pdf":
+        record["indexed"] = False
+        record["reason"] = "combined-course"
+        try:
+            with fitz.open(full) as doc:
+                record["page_count"] = doc.page_count
+        except Exception:
+            pass
         return record
 
     try:
@@ -177,19 +199,23 @@ def notebook_record(rel: Path) -> dict:
 
 
 def iter_materials(subject: str):
-    base = ROOT / subject
+    if subject == "КМ":
+        base = ROOT / "База" / "КМ"
+    else:
+        base = ROOT / subject
     if not base.exists():
         return
     for full in sorted(base.rglob("*")):
         if not full.is_file():
             continue
         rel = full.relative_to(ROOT)
+        if subject == "База" and is_qm_path(rel):
+            continue
         if "LaTeX" in rel.parts or ".ipynb_checkpoints" in rel.parts:
             continue
         suffix = full.suffix.lower()
         if suffix in {".pdf", ".ipynb"}:
             yield rel
-
 
 def compact_metadata(record: dict) -> dict:
     keys = (
@@ -439,9 +465,105 @@ def structured_group(subject: str, folder: str, label: str) -> dict | None:
     }
 
 
+QM_LECTURE_META = {
+    "qm1_lecture01.pdf": ("2025-09-01", "Введение и предпосылки квантовой механики", "Абсолютно чёрное тело · фотоэффект · эффект Комптона · модель Бора", "QM1"),
+    "qm1_lecture02.pdf": ("2025-09-08", "Соотношения неопределённостей", "Дифракция и интерференция электронов · координатное и импульсное представления", "QM1"),
+    "qm1_lecture03.pdf": ("2025-09-15", "Свободный волновой пакет", "Вероятностная интерпретация · уравнение непрерывности · средние значения", "QM1"),
+    "qm1_lecture04.pdf": ("2025-09-22", "Одномерное движение", "Финитное и инфинитное движение · условия сшивки · потенциальные ямы", "QM1"),
+    "qm1_lecture05.pdf": ("2025-09-29", "Одномерная задача рассеяния", "Ток вероятности · отражение и прохождение · туннелирование", "QM1"),
+    "qm1_lecture06.pdf": ("2025-10-06", "Состояния и операторы", "Дираковские обозначения · линейные операторы · матричные элементы", "QM1"),
+    "qm1_lecture07.pdf": ("2025-10-13", "Коммутаторы операторов", "Теорема о вириале · соотношения неопределённостей · совместимые наблюдаемые", "QM1"),
+    "qm1_lecture08.pdf": ("2025-10-20", "Линейный гармонический осциллятор", "Операторный метод · эволюция состояний · оператор эволюции", "QM1"),
+    "qm1_lecture09.pdf": ("2025-10-27", "Представления Шрёдингера и Гейзенберга", "Уравнение Гейзенберга · теорема Эренфеста · квазистационарные состояния", "QM1"),
+    "qm1_lecture10.pdf": ("2025-11-03", "Движение в периодическом поле", "Оператор сдвига · периодический потенциал · трёхмерное движение", "QM1"),
+    "qm1_lecture11.pdf": ("2025-11-10", "Момент импульса", "Оператор поворота · собственные значения l² и lz · центральное поле", "QM1"),
+    "qm1_lecture12.pdf": ("2025-11-17", "Движение в центральном поле", "Сферические координаты · разделение переменных · угловая и радиальная части", "QM1"),
+    "qm1_lecture13.pdf": ("2025-11-24", "Чётность и правила отбора", "Правила отбора по чётности и проекции момента импульса", "QM1"),
+    "qm1_lecture14.pdf": ("2025-12-01", "Вариационный принцип и теория возмущений", "Дифференцирование энергии по параметру · стационарная теория возмущений", "QM1"),
+    "qm1_lecture15.pdf": ("2025-12-08", "Стационарная теория возмущений: примеры", "Поляризуемость · эффект Штарка · силы Ван-дер-Ваальса", "QM1"),
+    "qm1_lectures16and17.pdf": ("2025-12-15", "Квазиклассическое приближение", "Лекции 16–17 · ВКБ · правила сшивки · квантование Бора–Зоммерфельда", "QM1"),
+    "qm2_lecture01.pdf": ("2026-02-02", "Спин", "Опыт Штерна–Герлаха · спиноры · матрицы Паули · оператор поворота", "QM2"),
+    "qm2_lecture02.pdf": ("2026-02-05", "Частица в электромагнитном поле", "Калибровочная инвариантность · уравнение Паули · прецессия спина", "QM2"),
+    "qm2_lecture03.pdf": ("2026-02-09", "Электромагнитное поле: продолжение", "Плотность тока · уровни Ландау · эффект Ааронова–Бома · квантование потока", "QM2"),
+    "qm2_lecture04.pdf": ("2026-02-16", "Сложение моментов", "Два спина 1/2 · коэффициенты Клебша–Гордана · симметрия состояний", "QM2"),
+    "qm2_lecture05.pdf": ("2026-02-19", "Сложение угловых моментов: продолжение", "Одинаковые моменты · орбитальный момент и спин 1/2 · повороты", "QM2"),
+    "qm2_lecture06.pdf": ("2026-02-21", "Тензорные операторы и правила отбора", "Скалярные и векторные операторы · теорема Вигнера–Эккарта", "QM2"),
+    "qm2_lecture07.pdf": ("2026-03-02", "Атом гелия", "Теория возмущений · вариационный метод · обменное взаимодействие · самосогласованное поле", "QM2"),
+}
+
+
+def qm_structured_group() -> dict | None:
+    meta_path = ROOT / ".github" / "generated" / "qm_lecture_texts.json"
+    pdf_path = ROOT / "База" / "КМ" / "Квантовая_механика_полный_курс.pdf"
+    if not meta_path.exists() or not pdf_path.exists():
+        return None
+    try:
+        data = json.loads(meta_path.read_text("utf-8"))
+    except Exception:
+        return None
+
+    items = []
+    for idx, rec in enumerate(data.get("records") or [], 1):
+        name = rec.get("file", "")
+        meta = QM_LECTURE_META.get(name)
+        if not meta:
+            continue
+        date, title, subtitle, part = meta
+        start_page = int(rec.get("start_page_in_merged") or 1)
+        pages = int(rec.get("pages") or 1)
+
+        if name == "qm1_lectures16and17.pdf":
+            number = 16
+            number_label = "16–17"
+        elif name.startswith("qm2_"):
+            m = re.search(r"lecture(\d+)", name)
+            local_no = int(m.group(1)) if m else idx
+            number = 17 + local_no
+            number_label = str(local_no)
+        else:
+            m = re.search(r"lecture(\d+)", name)
+            number = int(m.group(1)) if m else idx
+            number_label = str(number)
+
+        items.append({
+            "id": f"КМ:Лекции:{name}",
+            "number": number,
+            "number_label": number_label,
+            "part": part,
+            "title": title,
+            "subtitle": subtitle,
+            "date": date,
+            "source": f"База/КМ/Исходники/{name}",
+            "page": start_page,
+            "end_page": start_page + pages - 1,
+        })
+
+    if not items:
+        return None
+    try:
+        with fitz.open(pdf_path) as doc:
+            page_count = doc.page_count
+    except Exception:
+        page_count = None
+
+    return {
+        "subject": "КМ",
+        "section": "Лекции",
+        "pdf_path": pdf_path.relative_to(ROOT).as_posix(),
+        "page_count": page_count,
+        "items": items,
+    }
+
+
 def build_structure(generated_at: str) -> None:
     groups = []
+    qm_group = qm_structured_group()
+    if qm_group:
+        groups.append(qm_group)
+
     for subject in ORDER:
+        if subject == "КМ":
+            continue
         for folder, label in (("01_Лекции", "Лекции"), ("02_Семинары", "Семинары")):
             group = structured_group(subject, folder, label)
             if group:
