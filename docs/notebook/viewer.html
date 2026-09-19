@@ -296,6 +296,36 @@ html,body{max-width:100%;overflow-x:hidden}
   .table-scroll .math-placeholder mjx-container{font-size:82%!important}
 }
 
+/* Notebook math natural-width pass v4 */
+.math-placeholder.math-display{
+  width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;text-align:center;
+  -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+}
+.math-placeholder.math-display > mjx-container,
+.math-placeholder.math-display > mjx-container[jax="CHTML"]{
+  display:inline-block!important;width:max-content!important;min-width:max-content!important;max-width:none!important;
+  margin:.32em auto!important;text-align:left!important;vertical-align:middle;
+}
+.math-placeholder.math-inline > mjx-container{width:auto!important;min-width:0!important;max-width:none!important}
+
+/* Notebook readable type v4 */
+.markdown-body{font-size:14.25px;line-height:1.56}
+.markdown-body h1{font-size:24px}.markdown-body h2{font-size:19.5px}.markdown-body h3{font-size:16px}
+.code-box code{font-size:10.75px}.output-body{font-size:11px}
+body.embed .markdown-body{font-size:12px}body.embed .code-box code{font-size:9.5px}
+@media(max-width:720px){
+  .markdown-body{font-size:13px;line-height:1.54}
+  .markdown-body h1{font-size:21px}.markdown-body h2{font-size:17px}.markdown-body h3{font-size:14.5px}
+}
+
+/* Notebook zoom control */
+.zoom-select{
+  height:38px;min-width:72px;padding:0 25px 0 9px;border:1px solid var(--line);border-radius:9px;
+  background:var(--panel);color:var(--text2);font-size:10px;font-weight:700;outline:none;cursor:pointer
+}
+.zoom-select:hover,.zoom-select:focus{border-color:var(--accent);color:var(--cream)}
+@media(max-width:720px){.zoom-select{height:36px;min-width:68px;padding-left:8px}}
+
 </style>
 </head>
 <body>
@@ -312,6 +342,10 @@ html,body{max-width:100%;overflow-x:hidden}
       <button id="findPrev" class="find-btn" type="button" title="Предыдущее">↑</button>
       <button id="findNext" class="find-btn" type="button" title="Следующее">↓</button>
     </div>
+    <select id="zoomSelect" class="zoom-select" aria-label="Масштаб notebook" title="Масштаб">
+      <option value="80">80%</option><option value="90">90%</option><option value="100">100%</option>
+      <option value="110">110%</option><option value="125">125%</option><option value="150">150%</option>
+    </select>
     <a id="github" class="github-link" target="_blank" rel="noopener">GitHub ↗</a>
   </div>
 </header>
@@ -339,6 +373,7 @@ const findInput=document.getElementById('findInput');
 const findStatus=document.getElementById('findStatus');
 const findPrev=document.getElementById('findPrev');
 const findNext=document.getElementById('findNext');
+const zoomSelect=document.getElementById('zoomSelect');
 let notebook=null,notebookUrl='',findHits=[],findCursor=-1;
 
 if(embed)document.body.classList.add('embed');
@@ -411,7 +446,7 @@ function internalMaterialUrl(path){
   const low=path.toLowerCase();
   if(low.endsWith('.ipynb')){
     const u=new URL('viewer.html',location.href);
-    u.searchParams.set('build','5');
+    u.searchParams.set('build','6');
     u.searchParams.set('file',path);
     u.searchParams.set('title',path.split('/').pop().replace(/\.ipynb$/i,'').replace(/_/g,' '));
     if(theme)u.searchParams.set('theme',theme);
@@ -738,6 +773,22 @@ async function typeset(){await renderAllMath(main)}
 function notifyReady(){
   if(window.parent!==window)try{window.parent.postMessage({type:'nsu-pdf-ready'},location.origin)}catch{}
 }
+const ZOOM_KEY='nsu-notebook-zoom';
+function applyNotebookZoom(value,persist=true){
+  let pct=Number(value);
+  if(![80,90,100,110,125,150].includes(pct))pct=100;
+  const z=pct/100;
+  zoomSelect.value=String(pct);
+  main.style.zoom=String(z);
+  if(embed){main.style.width=(100/z)+'%';main.style.maxWidth='none'}
+  else{main.style.width='min('+(100/z)+'%, '+(980/z)+'px)';main.style.maxWidth='none'}
+  if(persist)try{localStorage.setItem(ZOOM_KEY,String(pct))}catch{}
+}
+let initialZoom=100;
+try{initialZoom=Number(localStorage.getItem(ZOOM_KEY)||100)}catch{}
+applyNotebookZoom(initialZoom,false);
+zoomSelect.addEventListener('change',()=>applyNotebookZoom(zoomSelect.value,true));
+
 async function openNotebook(){
   if(!raw){main.innerHTML='<div class="error">В ссылке не указан notebook.</div>';notifyReady();return}
   title.textContent=titleParam||decodeURIComponent(raw.split('/').pop()).replace(/\.ipynb$/i,'');
