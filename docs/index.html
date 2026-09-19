@@ -542,18 +542,6 @@ function bindPreviewTabs(){
     $$('[data-preview-pane]').forEach(p=>p.hidden=p.dataset.previewPane!==key);
   });
 }
-function extraBlocks(subject){
-  const groups=[
-    ['Конспекты','Лекции','LaTeX, PDF','notes'],
-    ['Практика','Семинары','Задачи и решения','tasks'],
-    ['Литература','Литература','Статьи, книги','literature']
-  ];
-  return '<section class="panel extra"><h2 class="panel-title">Дополнительные материалы</h2><div class="extra-grid">'+groups.map(g=>{
-    const n=filesFor(subject,g[1]).length;
-    return '<div class="extra-card" data-jump="'+esc(g[1])+'"><div class="extra-icon">'+iconSvg(g[3])+'</div><div><div class="extra-title">'+g[0]+'</div><div class="extra-sub">'+(n?n+' файл(ов)':'Пока пусто')+' · '+g[2]+'</div></div></div>';
-  }).join('')+'</div></section>';
-}
-
 function renderSubject(){
   const firstSection=sectionsFor(state.subject)[0]||'';
   if(!state.section)state.section=firstSection;
@@ -579,7 +567,7 @@ function renderSubject(){
 
   main.innerHTML=hero(state.subject)+
     '<div>'+tabs(state.subject)+'</div>'+
-    '<div class="workspace"><div><section class="panel list-panel"><div class="panel-head"><h2 class="panel-title">'+esc(listTitle)+' <span class="panel-count">'+count+'</span></h2><select id="sortSelect" class="sort-select"><option value="date">По порядку</option><option value="name">По названию</option></select></div><div class="file-list">'+listHtml+'</div></section>'+extraBlocks(state.subject)+'</div>'+preview(previewFile,state.selectedEntry)+'</div>';
+    '<div class="workspace"><div><section class="panel list-panel"><div class="panel-head"><h2 class="panel-title">'+esc(listTitle)+' <span class="panel-count">'+count+'</span></h2><select id="sortSelect" class="sort-select"><option value="date">По порядку</option><option value="name">По названию</option></select></div><div class="file-list">'+listHtml+'</div></section></div>'+preview(previewFile,state.selectedEntry)+'</div>';
 
   syncSubjectHash();
   bindPreviewTabs();
@@ -596,7 +584,6 @@ function renderSubject(){
     if(innerWidth<=720&&f.ext==='.pdf'){location.href=viewerUrl(f);return}
     state.selected=f;state.selectedEntry=null;renderSubject();
   });
-  $$('.extra-card').forEach(c=>c.onclick=()=>{const s=c.dataset.jump;if(sectionsFor(state.subject).includes(s)){state.section=s;state.selected=null;state.selectedEntry=null;renderSubject()}});
 }
 function countBySection(name){
   const groups=(state.structure?.groups||[]).filter(g=>g.section===name&&Array.isArray(g.items)&&g.items.length);
