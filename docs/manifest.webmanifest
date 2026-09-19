@@ -1,0 +1,22 @@
+{
+  "name": "NSU FP · 4 курс",
+  "short_name": "NSU FP",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "background_color": "#080d12",
+  "theme_color": "#080d12",
+  "description": "Материалы 4 курса физического факультета НГУ",
+  "icons": [
+    {
+      "src": "assets/nsu-fp-emblem.webp",
+      "sizes": "any",
+      "type": "image/webp",
+      "purpose": "any"
+    }
+  ]
+}

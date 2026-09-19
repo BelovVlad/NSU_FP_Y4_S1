@@ -6,6 +6,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#080d12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
 <title>NSU FP · 4 курс</title>
 <style>
 :root{
@@ -548,6 +553,25 @@ body.music-na19x .music-toggle.playing{
 .filtered-list .file-row{margin:2px 0;border-radius:8px}
 .filtered-list .file-row:first-child{margin-top:0}
 .filtered-list .file-row:last-child{margin-bottom:0}
+
+
+/* Mobile immersive pass */
+@media(max-width:720px){
+  html,body,.shell,.app{min-height:100dvh}
+  .sidebar{
+    height:100dvh;min-height:100dvh;
+    padding-top:max(20px,env(safe-area-inset-top));
+    padding-bottom:max(8px,env(safe-area-inset-bottom))
+  }
+  .music-pearl-shell,
+  body.music-na19 .music-pearl-shell,
+  body.music-na19x .music-pearl-shell{filter:none!important}
+  .music-toggle,
+  .music-toggle.playing,
+  body.music-na19 .music-toggle.playing,
+  body.music-na19x .music-toggle.playing{box-shadow:none!important}
+  body.music-na19x::before{display:none!important}
+}
 
 </style>
 </head>
@@ -1195,6 +1219,21 @@ document.addEventListener('keydown',e=>{
     if(document.activeElement===searchInput){searchInput.value='';searchInput.blur();if(state.view==='search'){state.view='subjects';setActiveNav('subjects');renderSubjectNav();render()}}
   }
 });
+
+function enableMobileImmersiveMode(){
+  if(!window.matchMedia('(max-width:720px)').matches)return;
+  if(document.fullscreenElement||!document.documentElement.requestFullscreen)return;
+  try{
+    const result=document.documentElement.requestFullscreen({navigationUI:'hide'});
+    if(result?.catch)result.catch(()=>{});
+  }catch{}
+}
+function firstMobileImmersiveGesture(){
+  document.removeEventListener('pointerup',firstMobileImmersiveGesture,true);
+  enableMobileImmersiveMode();
+}
+document.addEventListener('pointerup',firstMobileImmersiveGesture,true);
+
 window.addEventListener('hashchange',()=>{
   const hs=hashSubject();if(!ORDER.includes(hs)||hs===state.subject)return;
   state.view='subjects';state.subject=hs;state.section='';state.selected=null;state.selectedEntry=null;setActiveNav('subjects');renderSubjectNav();render();
