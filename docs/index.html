@@ -189,6 +189,95 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
   .workspace{margin-top:10px}.panel-head{padding:12px}.file-list{padding:0 7px 7px}.file-row{grid-template-columns:30px minmax(0,1fr);padding:9px 7px}.file-side{display:none}
   .preview-panel{display:none}.extra-grid{grid-template-columns:1fr}.home-grid{margin-top:10px}.stats{grid-template-columns:repeat(2,1fr)}.course-grid{grid-template-columns:repeat(2,1fr)}
 }
+
+/* Restored stable-site UX */
+.hero{min-height:176px}
+.hero-copy{max-width:min(640px,58%);position:relative;z-index:3}
+.hero-art{
+  inset:0 0 0 auto;width:min(52vw,620px);height:100%;border:0;border-radius:0;opacity:.88;
+  box-shadow:none
+}
+.hero-art img{object-fit:cover;object-position:center 50%;filter:saturate(.82) brightness(.58) contrast(1.12)}
+.hero-art:after{
+  background:
+    linear-gradient(90deg,rgba(8,13,18,1) 0%,rgba(8,13,18,.93) 16%,rgba(8,13,18,.55) 43%,rgba(8,13,18,.12) 74%,rgba(8,13,18,.32) 100%),
+    linear-gradient(180deg,rgba(8,13,18,.12),rgba(8,13,18,.4));
+  box-shadow:none
+}
+.hero-people{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
+.person-chip{display:inline-flex;gap:5px;align-items:center;padding:5px 8px;border:1px solid rgba(183,139,98,.2);border-radius:999px;background:rgba(10,16,22,.54);color:#8f999f;font-size:10px;backdrop-filter:blur(5px)}
+.person-chip strong{color:#d5cec5;font-weight:650}
+.subject-btn{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.subject-count{min-width:23px;padding:2px 6px;border-radius:999px;background:#1a222a;color:#7d8790;font-size:9px;font-weight:800;text-align:center}
+.subject-btn.active .subject-count{background:rgba(214,76,80,.2);color:#efb2aa}
+.file-name-line{display:flex;align-items:center;gap:7px;min-width:0}
+.file-name-line .file-name{min-width:0}
+.new-badge{flex:none;padding:1px 5px;border:1px solid rgba(214,76,80,.34);border-radius:5px;background:rgba(214,76,80,.12);color:#ef9e96;font-size:8px;font-weight:900;letter-spacing:.05em}
+.preview-pane[hidden]{display:none!important}
+.preview-info-only{min-height:410px;padding:16px;background:#0a1016}
+.preview-file-pane{min-height:410px;padding:18px;background:#0a1016}
+.preview-file-path{padding:11px 12px;border:1px solid var(--line2);border-radius:7px;background:#0e151b;color:#8d969f;font:10.5px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+.preview-file-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+
+.search-pro-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px}
+.search-pro-filters{display:flex;flex-direction:column;gap:8px;margin:15px 0 0}
+.search-filter-row{display:flex;align-items:center;gap:8px;min-width:0}
+.search-filter-label{width:64px;flex:none;color:#707b84;font-size:10px;font-weight:750}
+.search-filter-scroll{display:flex;gap:6px;min-width:0;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.search-filter-scroll::-webkit-scrollbar{display:none}
+.search-filter-chip{height:29px;flex:none;padding:0 10px;border:1px solid var(--line);border-radius:999px;background:#101820;color:#838d96;font-size:10px;cursor:pointer}
+.search-filter-chip:hover{border-color:#3a4650;color:#d9d5d0}
+.search-filter-chip.active{border-color:rgba(214,76,80,.46);background:rgba(214,76,80,.13);color:#efb1a9}
+.search-pro-layout{display:grid;grid-template-columns:minmax(350px,.88fr) minmax(430px,1.12fr);gap:14px;margin-top:14px;align-items:start}
+.search-pro-results{overflow:hidden}
+.search-pro-summary{padding:10px 13px;border-bottom:1px solid var(--line2);color:#737e87;font-size:10.5px}
+.search-group{border-bottom:1px solid var(--line2);background:transparent}
+.search-group:last-child{border-bottom:0}
+.search-group.active{background:linear-gradient(90deg,rgba(127,36,43,.35),rgba(93,30,34,.16));box-shadow:inset 2px 0 0 var(--accent)}
+.search-group-main{width:100%;padding:12px 13px 9px;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+.search-group-main:hover{background:rgba(255,255,255,.022)}
+.search-group-top{display:flex;align-items:center;gap:7px;min-width:0}
+.search-badge{flex:none;padding:2px 6px;border-radius:5px;background:rgba(214,76,80,.13);color:#ec9e97;font-size:9px;font-weight:900}
+.search-group-title{min-width:0;overflow:hidden;color:#e9e4de;font-size:12px;font-weight:760;text-overflow:ellipsis;white-space:nowrap}
+.search-hit-count{margin-left:auto;flex:none;color:#747f88;font-size:9px}
+.search-group-meta{margin-top:4px;color:#69747d;font-size:9.5px}
+.search-group-snippet{margin-top:7px;color:#9ca4aa;font-size:10.5px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.search-group-snippet mark,.search-preview-text mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d2}
+.search-pages{display:flex;gap:5px;overflow-x:auto;padding:0 13px 10px;scrollbar-width:none}
+.search-pages::-webkit-scrollbar{display:none}
+.search-page-hit{height:26px;flex:none;padding:0 8px;border:1px solid var(--line);border-radius:7px;background:#0d151c;color:#747f88;font-size:9px;cursor:pointer}
+.search-page-hit:hover{border-color:#3d4852;color:#d8d4cf}
+.search-page-hit.active{border-color:rgba(214,76,80,.5);background:rgba(214,76,80,.13);color:#efaaa3}
+.search-more{align-self:center;color:#69747d;font-size:9px}
+.search-pro-preview{position:sticky;top:82px;min-height:430px}
+.search-preview-head{display:flex;justify-content:space-between;gap:12px;padding:14px 15px 10px}
+.search-preview-kicker{color:#d37370;font-size:9px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}
+.search-preview-title{margin:4px 0 0;color:#ecdfcf;font-family:Georgia,"Times New Roman",serif;font-size:19px;line-height:1.2}
+.search-preview-close{display:none;width:34px;height:34px;border:1px solid var(--line);border-radius:8px;background:#111920;color:#cfc9c2;cursor:pointer}
+.search-preview-toolbar{display:flex;align-items:center;gap:8px;padding:0 15px 11px}
+.search-open{height:34px;padding:0 11px;border:1px solid rgba(214,76,80,.36);border-radius:7px;background:rgba(214,76,80,.14);color:#efd0ca;text-decoration:none;font-size:10px;display:inline-flex;align-items:center}
+.search-hit-nav{margin-left:auto;display:flex;align-items:center;gap:5px}
+.search-hit-nav button{width:32px;height:32px;border:1px solid var(--line);border-radius:7px;background:#111920;color:#d0cac3;cursor:pointer}
+.search-hit-position{min-width:54px;color:#747f88;font-size:9px;text-align:center}
+.search-preview-frame-wrap{height:min(62vh,640px);min-height:330px;padding:8px;border-top:1px solid var(--line2);background:#080e13}
+.search-preview-frame{width:100%;height:100%;border:1px solid #202a33;border-radius:7px;background:#0e151b}
+.search-preview-text{max-height:76px;overflow:auto;padding:9px 12px;border-top:1px solid var(--line2);background:#0d151c;color:#939ca4;font-size:9.5px;line-height:1.45}
+.search-preview-empty{display:grid;place-items:center;min-height:430px;padding:28px;color:#737e87;text-align:center}
+.search-result-new{margin-left:2px}
+
+@media(max-width:900px){
+  .hero-art{width:54%;opacity:.66}.hero-copy{max-width:58%}
+  .search-pro-layout{grid-template-columns:minmax(320px,1fr) minmax(330px,.9fr)}
+}
+@media(max-width:720px){
+  .hero{min-height:150px}.hero-art{display:block;width:100%;opacity:.52}.hero-art img{object-position:58% 50%}
+  .hero-art:after{background:linear-gradient(90deg,rgba(8,13,18,.97),rgba(8,13,18,.72) 52%,rgba(8,13,18,.42)),linear-gradient(180deg,rgba(8,13,18,.18),rgba(8,13,18,.48))}
+  .hero-copy{max-width:86%}.hero-people{gap:5px}.person-chip{font-size:9px;padding:4px 7px}
+  .search-pro-head{display:block}.search-pro-filters{margin-top:12px}.search-filter-row{display:block}.search-filter-label{display:block;width:auto;margin-bottom:5px}
+  .search-pro-layout{display:block}.search-pro-preview{display:none;position:fixed;z-index:60;left:6px;right:6px;top:64px;bottom:6px;min-height:0;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.72)}
+  .search-pro-preview.mobile-visible{display:block}.search-preview-close{display:block}.search-preview-frame-wrap{height:calc(100vh - 245px);min-height:280px}
+}
+
 </style>
 </head>
 <body>
@@ -257,8 +346,14 @@ const FILES=[
 ];
 
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
-const state={view:'subjects',subject:'ФиХАиМ',section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
+const state={view:'subjects',subject:(ORDER.includes(hashSubject())?hashSubject():'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
 const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay');
+let searchRun=0,searchTimer=0,searchPromise=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
+function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
+function syncSubjectHash(){if(state.view!=='subjects'||!ORDER.includes(state.subject))return;const h='#subject='+encodeURIComponent(state.subject);if(location.hash!==h)history.replaceState(null,'',h)}
+function clearSubjectHash(){if(location.hash.startsWith('#subject='))history.replaceState(null,'',location.pathname+location.search)}
+function isNewDate(v){if(!v)return false;const d=new Date(v);return Number.isFinite(d.getTime())&&Date.now()-d.getTime()<3*86400000&&Date.now()>=d.getTime()}
+
 
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function encPath(p){return p.split('/').map(encodeURIComponent).join('/')}
@@ -342,19 +437,26 @@ function closeMenu(){sidebar.classList.remove('open');overlay.classList.remove('
 function openMenu(){sidebar.classList.add('open');overlay.classList.add('show')}
 
 function renderSubjectNav(){
-  subjectNav.innerHTML=ORDER.filter(s=>FILES.some(f=>subjectOf(f)===s)).map(s=>'<button class="subject-btn'+(s===state.subject&&state.view==='subjects'?' active':'')+'" data-subject="'+esc(s)+'">'+esc(s)+'</button>').join('');
-  $$('.subject-btn').forEach(b=>b.onclick=()=>{state.view='subjects';state.subject=b.dataset.subject;state.section='';state.selected=null;state.selectedEntry=null;setActiveNav('subjects');renderSubjectNav();render();closeMenu()});
+  subjectNav.innerHTML=ORDER.filter(s=>FILES.some(f=>subjectOf(f)===s)).map(s=>{
+    const n=filesFor(s).length;
+    return '<button class="subject-btn'+(s===state.subject&&state.view==='subjects'?' active':'')+'" data-subject="'+esc(s)+'"><span>'+esc(s)+'</span><span class="subject-count">'+n+'</span></button>';
+  }).join('');
+  $$('.subject-btn').forEach(b=>b.onclick=()=>{
+    state.view='subjects';state.subject=b.dataset.subject;state.section='';state.selected=null;state.selectedEntry=null;
+    syncSubjectHash();setActiveNav('subjects');renderSubjectNav();render();closeMenu();
+  });
 }
-
 function hero(subject){
   const meta=META[subject]||{name:subject};
+  const people=[];
+  if(meta.lecturer)people.push('<span class="person-chip">Лектор <strong>'+esc(meta.lecturer)+'</strong></span>');
+  if(meta.seminarist)people.push('<span class="person-chip">Семинарист <strong>'+esc(meta.seminarist)+'</strong></span>');
   return '<section class="hero">'+
     '<div class="breadcrumbs"><span>Главная</span><span class="sep">›</span><span>'+esc(subject)+'</span></div>'+
-    '<div class="hero-row"><div class="hero-copy"><h1>'+esc(subject)+'</h1><div class="hero-sub">'+esc(meta.name||subject)+'</div></div></div>'+
+    '<div class="hero-row"><div class="hero-copy"><h1>'+esc(subject)+'</h1><div class="hero-sub">'+esc(meta.name||subject)+'</div>'+(people.length?'<div class="hero-people">'+people.join('')+'</div>':'')+'</div></div>'+
     '<div class="hero-art" aria-hidden="true"><img src="'+HERO_IMAGE+'" alt=""></div>'+
   '</section>';
 }
-
 function tabs(subject){
   const ss=sectionsFor(subject);
   if(!state.section||!ss.includes(state.section))state.section=ss[0]||'';
@@ -372,9 +474,13 @@ function fileRows(files){
   if(!files.length)return '<div class="empty">В этом разделе пока нет материалов.</div>';
   return sortedFiles(files).map((f,i)=>{
     const m=fileMeta(f),active=state.selected&&state.selected.path===f.path;
+    const detail=[fileDesc(f)];
+    if(m.page_count)detail.push(m.page_count+' стр.');
+    else if(m.cell_count)detail.push(m.cell_count+' ячеек');
+    const badge=isNewDate(m.created_at)?'<span class="new-badge">NEW</span>':'';
     return '<div class="file-row'+(active?' active':'')+'" data-path="'+esc(f.path)+'">'+
       '<div class="file-ico">'+(f.ext==='.pdf'?'▤':'⌘')+'</div>'+
-      '<div class="file-main"><div class="file-name">'+esc(niceName(f))+'</div><div class="file-desc">'+esc(fileDesc(f))+'</div></div>'+
+      '<div class="file-main"><div class="file-name-line"><div class="file-name">'+esc(niceName(f))+'</div>'+badge+'</div><div class="file-desc">'+esc(detail.filter(Boolean).join(' · '))+'</div></div>'+
       '<div class="file-side"><div class="file-date">'+esc(fmtDate(m.updated_at||m.created_at))+'</div><div class="file-size">'+esc(fmtSize(m.size))+'</div></div>'+
     '</div>';
   }).join('');
@@ -405,16 +511,25 @@ function preview(f,entry=null){
   const pageRange=entry?.page?(entry.end_page&&entry.end_page!==entry.page?entry.page+'–'+entry.end_page:String(entry.page)):'—';
   return '<aside class="panel preview-panel">'+
     '<div class="preview-head"><div class="preview-kicker">'+esc(entry?((entry.number?'№ '+entry.number+' · ':'')+sectionOf(f)):sectionOf(f))+'<span class="preview-date">'+esc(fmtDate(date))+'</span></div><h2 class="preview-title">'+esc(displayTitle)+'</h2>'+(entry?.subtitle?'<div class="file-desc" style="margin-top:6px">'+esc(entry.subtitle)+'</div>':'')+'</div>'+
-    '<div class="preview-tabs"><button class="preview-tab active">Просмотр</button><button class="preview-tab">Информация</button><button class="preview-tab">Файл</button></div>'+
-    '<div class="preview-frame-wrap">'+frame+'</div>'+
-    '<div class="preview-info"><div class="info-box"><div class="info-title">Информация</div>'+
+    '<div class="preview-tabs"><button class="preview-tab active" data-preview-tab="view">Просмотр</button><button class="preview-tab" data-preview-tab="info">Информация</button><button class="preview-tab" data-preview-tab="file">Файл</button></div>'+
+    '<div class="preview-pane" data-preview-pane="view"><div class="preview-frame-wrap">'+frame+'</div></div>'+
+    '<div class="preview-pane preview-info-only" data-preview-pane="info" hidden><div class="preview-info"><div class="info-box"><div class="info-title">Информация</div>'+
       '<div class="info-row"><span>Файл</span><span>'+esc(f.name||f.path.split('/').pop())+'</span></div>'+
       '<div class="info-row"><span>Размер</span><span>'+esc(fmtSize(m.size))+'</span></div>'+
       '<div class="info-row"><span>Страницы</span><span>'+esc(pageRange)+'</span></div>'+
       '<div class="info-row"><span>Обновлено</span><span>'+esc(fmtDate(date))+'</span></div></div>'+
-      '<div class="info-box"><div class="info-title">Ключевые темы</div><div class="tags">'+tags+'</div></div></div>'+
-    '<div class="preview-actions"><a class="action primary" href="'+esc(url)+'">Открыть'+(isPdf?' PDF':' notebook')+'</a><a class="action" target="_blank" rel="noopener" href="'+esc(githubUrl(f))+'">GitHub ↗</a></div>'+
+      '<div class="info-box"><div class="info-title">Ключевые темы</div><div class="tags">'+tags+'</div></div></div></div>'+
+    '<div class="preview-pane preview-file-pane" data-preview-pane="file" hidden><div class="info-title">Путь в репозитории</div><div class="preview-file-path">'+esc(f.path)+'</div><div class="preview-file-actions"><a class="action primary" href="'+esc(url)+'">Открыть'+(isPdf?' PDF':' notebook')+'</a><a class="action" target="_blank" rel="noopener" href="'+esc(githubUrl(f))+'">GitHub ↗</a></div></div>'+
   '</aside>';
+}
+
+function bindPreviewTabs(){
+  const tabs=$$('.preview-tab[data-preview-tab]');
+  tabs.forEach(btn=>btn.onclick=()=>{
+    const key=btn.dataset.previewTab;
+    tabs.forEach(x=>x.classList.toggle('active',x===btn));
+    $$('[data-preview-pane]').forEach(p=>p.hidden=p.dataset.previewPane!==key);
+  });
 }
 function extraBlocks(subject){
   const groups=[
@@ -455,6 +570,8 @@ function renderSubject(){
     '<div>'+tabs(state.subject)+'</div>'+
     '<div class="workspace"><div><section class="panel list-panel"><div class="panel-head"><h2 class="panel-title">'+esc(listTitle)+' <span class="panel-count">'+count+'</span></h2><select id="sortSelect" class="sort-select"><option value="date">По порядку</option><option value="name">По названию</option></select></div><div class="file-list">'+listHtml+'</div></section>'+extraBlocks(state.subject)+'</div>'+preview(previewFile,state.selectedEntry)+'</div>';
 
+  syncSubjectHash();
+  bindPreviewTabs();
   const sort=$('#sortSelect');if(sort){sort.value=state.sort;sort.onchange=()=>{state.sort=sort.value;renderSubject()}}
   $$('.tab').forEach(b=>b.onclick=()=>{state.section=b.dataset.section;state.selected=null;state.selectedEntry=null;renderSubject()});
   $$('.file-row[data-entry]').forEach(r=>r.onclick=()=>{
@@ -470,7 +587,11 @@ function renderSubject(){
   });
   $$('.extra-card').forEach(c=>c.onclick=()=>{const s=c.dataset.jump;if(sectionsFor(state.subject).includes(s)){state.section=s;state.selected=null;state.selectedEntry=null;renderSubject()}});
 }
-function countBySection(name){return FILES.filter(f=>sectionOf(f)===name).length}
+function countBySection(name){
+  const groups=(state.structure?.groups||[]).filter(g=>g.section===name&&Array.isArray(g.items)&&g.items.length);
+  if(groups.length)return groups.reduce((n,g)=>n+g.items.length,0);
+  return FILES.filter(f=>sectionOf(f)===name).length;
+}
 function renderHome(){
   const subjectCount=ORDER.filter(s=>FILES.some(f=>subjectOf(f)===s)).length;
   const recent=FILES.slice().sort((a,b)=>(new Date(updatedValue(b)||0))-(new Date(updatedValue(a)||0))).slice(0,7);
@@ -479,7 +600,7 @@ function renderHome(){
       '<div class="stats"><div class="stat"><div class="stat-num">'+subjectCount+'</div><div class="stat-label">предметов</div></div><div class="stat"><div class="stat-num">'+countBySection('Лекции')+'</div><div class="stat-label">лекционных файлов</div></div><div class="stat"><div class="stat-num">'+countBySection('Семинары')+'</div><div class="stat-label">семинаров</div></div><div class="stat"><div class="stat-num">'+FILES.length+'</div><div class="stat-label">всего материалов</div></div></div>'+
       '<div class="course-grid">'+ORDER.filter(s=>FILES.some(f=>subjectOf(f)===s)).map(s=>'<div class="course-card" data-subject="'+esc(s)+'"><div class="course-code">'+esc(s)+'</div><div class="course-name">'+esc((META[s]||{}).name||s)+'</div></div>').join('')+'</div>'+
     '</section>'+
-    '<section class="panel recent"><h2 class="panel-title">Недавно обновлено</h2>'+recent.map(f=>'<div class="recent-row" data-path="'+esc(f.path)+'"><div><div class="recent-name">'+esc(niceName(f))+'</div><div class="recent-meta">'+esc(subjectOf(f)+' · '+sectionOf(f))+'</div></div><div class="recent-date">'+esc(fmtDate(updatedValue(f)))+'</div></div>').join('')+'</section>'+
+    '<section class="panel recent"><h2 class="panel-title">Недавно обновлено</h2>'+recent.map(f=>{const m=fileMeta(f),b=isNewDate(m.created_at)?'<span class="new-badge">NEW</span>':'';return '<div class="recent-row" data-path="'+esc(f.path)+'"><div><div class="recent-name"><span class="file-name-line">'+esc(niceName(f))+b+'</span></div><div class="recent-meta">'+esc(subjectOf(f)+' · '+sectionOf(f))+'</div></div><div class="recent-date">'+esc(fmtDate(updatedValue(f)))+'</div></div>'}).join('')+'</section>'+
   '</div>';
   $$('.course-card').forEach(c=>c.onclick=()=>{state.view='subjects';state.subject=c.dataset.subject;state.section='';state.selected=null;state.selectedEntry=null;setActiveNav('subjects');renderSubjectNav();render()});
   $$('.recent-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
@@ -487,51 +608,45 @@ function renderHome(){
 
 async function ensureSearch(){
   if(state.searchData)return state.searchData;
-  if(state.searchBusy)return null;
+  if(searchPromise)return searchPromise;
   state.searchBusy=true;
-  try{
-    const man=await fetch('search-index/manifest.json',{cache:'no-store'}).then(r=>r.json());
-    const shards=await Promise.all((man.shards||[]).map(s=>fetch('search-index/'+s.file,{cache:'force-cache'}).then(r=>r.json()).catch(()=>({records:[]}))));
-    state.searchData=shards.flatMap(s=>s.records||[]);
-  }catch(e){state.searchData=[]}
-  state.searchBusy=false;return state.searchData;
+  searchPromise=(async()=>{
+    try{
+      const man=await fetch('search-index/manifest.json',{cache:'no-store'}).then(r=>r.json());
+      const shards=await Promise.all((man.shards||[]).map(x=>fetch('search-index/'+x.file,{cache:'force-cache'}).then(r=>r.json()).catch(()=>({records:[]}))));
+      state.searchData=shards.flatMap(x=>x.records||[]);
+    }catch(e){state.searchData=[]}
+    state.searchBusy=false;
+    return state.searchData;
+  })();
+  return searchPromise;
 }
 function hi(text,q){
   const s=esc(text||'');if(!q)return s;
   const safe=q.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&');
   try{return s.replace(new RegExp('('+safe+')','ig'),'<mark>$1</mark>')}catch{return s}
 }
-async function runSearch(q){
-  q=(q||'').trim();state.view='search';setActiveNav('search');renderSubjectNav();
-  main.innerHTML='<section class="search-view"><h1 class="search-title">Поиск</h1><div class="search-note">'+(q?'Ищем «'+esc(q)+'»':'Введите запрос в строке сверху.')+'</div><div class="panel" id="searchResults"><div class="empty">'+(q.length<2?'Минимум 2 символа.':'Поиск…')+'</div></div></section>';
-  if(q.length<2)return;
-  const needle=q.toLocaleLowerCase('ru-RU');
-  let hits=[];
-  FILES.forEach(f=>{
-    const hay=(niceName(f)+' '+f.path+' '+sectionOf(f)).toLocaleLowerCase('ru-RU');
-    if(hay.includes(needle))hits.push({f,page:0,snippet:fileDesc(f),score:3});
-  });
-  if(q.length>=3){
-    const idx=await ensureSearch();
-    if(idx){
-      idx.forEach(r=>{
-        let first=null;
-        for(const p of (r.pages||[])){
-          const text=String(p.t||''),at=text.toLocaleLowerCase('ru-RU').indexOf(needle);
-          if(at>=0){first={page:p.n||0,snippet:text.slice(Math.max(0,at-90),at+needle.length+150)};break}
-        }
-        if(first&&!hits.some(h=>h.f.path===r.path)){
-          const f=FILES.find(x=>x.path===r.path);if(f)hits.push({f,page:first.page,snippet:first.snippet,score:2});
-        }
-      });
-    }
-  }
-  hits=hits.sort((a,b)=>b.score-a.score||niceName(a.f).localeCompare(niceName(b.f),'ru')).slice(0,100);
-  const box=$('#searchResults');if(!box)return;
-  box.innerHTML=hits.length?hits.map(h=>'<div class="search-result" data-path="'+esc(h.f.path)+'" data-page="'+h.page+'"><div class="search-result-title">'+hi(niceName(h.f),q)+'</div><div class="search-result-meta">'+esc(subjectOf(h.f)+' · '+sectionOf(h.f))+(h.page?' · стр. '+h.page:'')+'</div><div class="search-snippet">'+hi(h.snippet,q)+'</div></div>').join(''):'<div class="empty">Совпадений не найдено.</div>';
-  $$('.search-result').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
-}
 
+function searchNorm(v){return String(v||'').toLocaleLowerCase('ru-RU').replace(/ё/g,'е').replace(/\s+/g,' ').trim()}
+function searchTerms(q){return [...new Set(searchNorm(q).split(' ').filter(x=>x.length>1))]}
+function searchHi(text,q){
+  let html=esc(text||'');
+  const terms=searchTerms(q).sort((a,b)=>b.length-a.length);
+  for(const term of terms){
+    const safe=term.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\async function runSearch(q){
+  q=(q||'').trim();
+  const previous=searchQuery,run=++searchRun;searchQuery=q;
+  if(searchNorm(previous)!==searchNorm(q)){searchFilterSubject='all';searchFilterSection='all';searchSelectedGroup=0;searchSelectedHit=0;searchMobilePreview=false}
+  state.view='search';setActiveNav('search');renderSubjectNav();
+  main.innerHTML='<section class="search-view"><div class="search-pro-head"><div><h1 class="search-title">Поиск</h1><div class="search-note">'+(q?'Ищем «'+esc(q)+'»':'Введите запрос в строке сверху.')+'</div></div></div><div id="searchFilters"></div><div class="search-pro-layout"><div class="panel search-pro-results" id="searchResults"><div class="empty">'+(q.length<2?'Минимум 2 символа.':'Поиск…')+'</div></div><aside id="searchPreview" class="panel search-pro-preview"><div class="search-preview-empty">Выберите документ — здесь появится найденная страница.</div></aside></div></section>';
+  if(q.length<2){searchGroupsAll=[];return}
+  let records=[];
+  if(searchNorm(q).length>=3)records=await ensureSearch();
+  if(run!==searchRun)return;
+  searchGroupsAll=buildSearchGroups(q,records||[]);
+  searchSelectedGroup=0;searchSelectedHit=0;searchMobilePreview=false;
+  renderSearchResults(q);
+}
 function renderFiltered(title,predicate){
   const list=FILES.filter(predicate);
   main.innerHTML='<section class="search-view"><h1 class="search-title">'+esc(title)+'</h1><div class="search-note">'+list.length+' файл(ов)</div><div class="panel">'+fileRows(list)+'</div></section>';
@@ -564,11 +679,27 @@ $$('.nav-btn').forEach(b=>b.onclick=()=>{
   if(state.view==='search'){searchInput.focus();runSearch(searchInput.value)}else render();
   closeMenu();
 });
-$('#homeBtn').onclick=()=>{state.view='home';setActiveNav('home');renderSubjectNav();render()};
+$('#homeBtn').onclick=()=>{state.view='home';clearSubjectHash();setActiveNav('home');renderSubjectNav();render()};
 $('#menuBtn').onclick=openMenu;overlay.onclick=closeMenu;
-searchInput.addEventListener('input',()=>{if(searchInput.value.trim()){state.view='search';setActiveNav('search');runSearch(searchInput.value)}else if(state.view==='search')runSearch('')});
-document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();searchInput.focus();searchInput.select()}});
-renderSubjectNav();render();loadMeta();
+searchInput.addEventListener('input',()=>{
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>{
+    if(searchInput.value.trim()){state.view='search';setActiveNav('search');runSearch(searchInput.value)}
+    else if(state.view==='search')runSearch('');
+  },220);
+});
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();searchInput.focus();searchInput.select();return}
+  if(e.key==='Escape'){
+    const p=$('#searchPreview');if(p?.classList.contains('mobile-visible')){searchMobilePreview=false;p.classList.remove('mobile-visible');return}
+    if(document.activeElement===searchInput){searchInput.value='';searchInput.blur();if(state.view==='search'){state.view='subjects';setActiveNav('subjects');renderSubjectNav();render()}}
+  }
+});
+window.addEventListener('hashchange',()=>{
+  const hs=hashSubject();if(!ORDER.includes(hs)||hs===state.subject)return;
+  state.view='subjects';state.subject=hs;state.section='';state.selected=null;state.selectedEntry=null;setActiveNav('subjects');renderSubjectNav();render();
+});
+if(ORDER.includes(hashSubject())){state.view='subjects';setActiveNav('subjects')}renderSubjectNav();render();loadMeta();
 </script>
 </body>
 </html>
