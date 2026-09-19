@@ -40,7 +40,9 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 }
 .nav-btn:hover{background:rgba(255,255,255,.025);color:var(--text)}
 .nav-btn.active{border-color:rgba(214,76,80,.2);background:linear-gradient(90deg,rgba(214,76,80,.24),rgba(214,76,80,.12));color:#f5d7d2}
-.nav-ico{width:18px;text-align:center;color:var(--cream);opacity:.9}
+.nav-ico{width:18px;height:18px;display:grid;place-items:center;color:var(--cream);opacity:.9;flex:none}
+.ui-icon{display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-ico .ui-icon{width:16px;height:16px}
 .subjects-label{padding:15px 12px 7px;border-top:1px solid var(--line2);color:#67717b;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 .subject-nav{min-height:0;flex:1;overflow:auto;padding:0 0 10px}
 .subject-btn{
@@ -51,6 +53,7 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .subject-btn.active{background:linear-gradient(90deg,rgba(214,76,80,.35),rgba(127,36,43,.32));color:#f7e1d4;box-shadow:inset 2px 0 0 var(--accent)}
 .sidebar-bottom{padding:14px 8px 2px;border-top:1px solid var(--line2)}
 .repo-link{display:flex;align-items:center;justify-content:space-between;color:#8d969f;text-decoration:none;font-size:12px}
+.repo-link .ui-icon{width:14px;height:14px}
 .repo-link:hover{color:var(--cream)}
 .app{min-height:100vh;margin-left:var(--sideW)}
 .topbar{
@@ -65,10 +68,13 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
   background:#0d141b;color:var(--text);font-size:13px
 }
 .searchbox input:focus{border-color:rgba(214,76,80,.58);box-shadow:0 0 0 3px rgba(214,76,80,.08)}
-.searchbox .glass{position:absolute;left:13px;top:9px;color:#a1a8af}
+.searchbox .glass{position:absolute;left:13px;top:50%;width:18px;height:18px;display:grid;place-items:center;transform:translateY(-50%);color:#a1a8af;pointer-events:none}
+.searchbox .glass .ui-icon{width:17px;height:17px}
 .kbd{position:absolute;right:9px;top:8px;padding:3px 7px;border:1px solid #303943;border-radius:5px;background:#151c23;color:#9da5ad;font-size:10px}
 .top-meta{justify-self:end;color:#6f7a84;font-size:12px}
-.ghost-btn{width:38px;height:38px;border:1px solid var(--line);border-radius:8px;background:#0d141b;cursor:pointer}
+.ghost-btn{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;background:#0d141b;color:#b7bec5;cursor:pointer}
+.ghost-btn:hover{border-color:#394550;color:var(--cream);background:#111922}
+.ghost-btn .ui-icon{width:17px;height:17px}
 .main{padding:0 18px 52px}
 .hero{
   position:relative;min-height:164px;margin:0 -18px 0;padding:22px 28px 20px;overflow:hidden;border-bottom:1px solid var(--line2);
@@ -122,7 +128,7 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .extra-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
 .extra-card{display:flex;align-items:center;gap:11px;min-height:70px;padding:12px;border:1px solid var(--line2);border-radius:8px;background:#0e151b;color:#d2cec8;cursor:pointer}
 .extra-card:hover{border-color:#39434d;background:#111922}
-.extra-icon{font-size:22px;color:#e05256}.extra-title{font-size:12px}.extra-sub{margin-top:3px;color:#69737d;font-size:10px}
+.extra-icon{width:30px;height:30px;display:grid;place-items:center;flex:none;color:#e05256}.extra-icon .ui-icon{width:23px;height:23px;stroke-width:1.7}.extra-title{font-size:12px}.extra-sub{margin-top:3px;color:#69737d;font-size:10px}
 .preview-panel{min-width:0;align-self:start;position:sticky;top:82px}
 .preview-head{padding:15px 16px 10px}
 .preview-kicker{color:#8d969e;font-family:Georgia,"Times New Roman",serif;font-size:13px}
@@ -182,7 +188,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 @media(max-width:720px){
   .sidebar{transform:translateX(-100%);transition:transform .18s ease;box-shadow:22px 0 50px rgba(0,0,0,.5)}
   .sidebar.open{transform:none}.mobile-overlay{position:fixed;z-index:40;inset:0;background:rgba(0,0,0,.5)}.mobile-overlay.show{display:block}
-  .app{margin-left:0}.topbar{height:58px;grid-template-columns:auto 1fr auto;padding:0 10px;gap:8px}.menu-btn{display:block;width:38px;height:38px;border:1px solid var(--line);border-radius:8px;background:#0d141b;color:#d9d1c8}
+  .app{margin-left:0}.topbar{height:58px;grid-template-columns:auto 1fr auto;padding:0 10px;gap:8px}.menu-btn{display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);border-radius:8px;background:#0d141b;color:#d9d1c8}
   .top-meta,.kbd{display:none}.searchbox input{height:38px;padding-right:12px}.main{padding:0 10px 28px}
   .hero{min-height:140px;margin:0 -10px;padding:17px 13px}.hero h1{font-size:30px}.hero-art{display:none}.hero-copy{max-width:none}
   .tabs{margin-top:16px}.tab{padding:0 12px}
@@ -191,17 +197,17 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 }
 
 /* Restored stable-site UX */
-.hero{min-height:176px}
-.hero-copy{max-width:min(640px,58%);position:relative;z-index:3}
+.hero{min-height:184px}
+.hero-copy{max-width:min(650px,56%);position:relative;z-index:3}
 .hero-art{
-  inset:0 0 0 auto;width:min(52vw,620px);height:100%;border:0;border-radius:0;opacity:.88;
+  inset:0 0 0 auto;width:min(60vw,760px);height:100%;border:0;border-radius:0;opacity:.82;
   box-shadow:none
 }
-.hero-art img{object-fit:cover;object-position:center 50%;filter:saturate(.82) brightness(.58) contrast(1.12)}
+.hero-art img{object-fit:cover;object-position:58% 49%;filter:saturate(.76) brightness(.54) contrast(1.14)}
 .hero-art:after{
   background:
-    linear-gradient(90deg,rgba(8,13,18,1) 0%,rgba(8,13,18,.93) 16%,rgba(8,13,18,.55) 43%,rgba(8,13,18,.12) 74%,rgba(8,13,18,.32) 100%),
-    linear-gradient(180deg,rgba(8,13,18,.12),rgba(8,13,18,.4));
+    linear-gradient(90deg,rgba(8,13,18,1) 0%,rgba(8,13,18,.95) 14%,rgba(8,13,18,.7) 34%,rgba(8,13,18,.22) 64%,rgba(8,13,18,.24) 100%),
+    linear-gradient(180deg,rgba(8,13,18,.10),rgba(8,13,18,.42));
   box-shadow:none
 }
 .hero-people{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
@@ -270,7 +276,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
   .search-pro-layout{grid-template-columns:minmax(320px,1fr) minmax(330px,.9fr)}
 }
 @media(max-width:720px){
-  .hero{min-height:150px}.hero-art{display:block;width:100%;opacity:.52}.hero-art img{object-position:58% 50%}
+  .hero{min-height:154px}.hero-art{display:block;width:100%;opacity:.48}.hero-art img{object-position:66% 50%}
   .hero-art:after{background:linear-gradient(90deg,rgba(8,13,18,.97),rgba(8,13,18,.72) 52%,rgba(8,13,18,.42)),linear-gradient(180deg,rgba(8,13,18,.18),rgba(8,13,18,.48))}
   .hero-copy{max-width:86%}.hero-people{gap:5px}.person-chip{font-size:9px;padding:4px 7px}
   .search-pro-head{display:block}.search-pro-filters{margin-top:12px}.search-filter-row{display:block}.search-filter-label{display:block;width:auto;margin-bottom:5px}
@@ -295,27 +301,27 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
     </div>
 
     <div class="main-nav">
-      <button class="nav-btn" data-view="home"><span class="nav-ico">⌂</span>Главная</button>
-      <button class="nav-btn active" data-view="subjects"><span class="nav-ico">▣</span>Предметы</button>
-      <button class="nav-btn" data-view="search"><span class="nav-ico">⌕</span>Поиск</button>
-      <button class="nav-btn" data-view="literature"><span class="nav-ico">⌘</span>Литература</button>
-      <button class="nav-btn" data-view="tasks"><span class="nav-ico">□</span>Задачи</button>
-      <button class="nav-btn" data-view="archive"><span class="nav-ico">▤</span>Архив</button>
+      <button class="nav-btn" data-view="home"><span class="nav-ico" data-icon="home" aria-hidden="true"></span>Главная</button>
+      <button class="nav-btn active" data-view="subjects"><span class="nav-ico" data-icon="subjects" aria-hidden="true"></span>Предметы</button>
+      <button class="nav-btn" data-view="search"><span class="nav-ico" data-icon="search" aria-hidden="true"></span>Поиск</button>
+      <button class="nav-btn" data-view="literature"><span class="nav-ico" data-icon="literature" aria-hidden="true"></span>Литература</button>
+      <button class="nav-btn" data-view="tasks"><span class="nav-ico" data-icon="tasks" aria-hidden="true"></span>Задачи</button>
+      <button class="nav-btn" data-view="archive"><span class="nav-ico" data-icon="archive" aria-hidden="true"></span>Архив</button>
     </div>
 
     <div class="subjects-label">Предметы</div>
     <nav id="subjectNav" class="subject-nav"></nav>
     <div class="sidebar-bottom">
-      <a class="repo-link" href="https://github.com/BelovVlad/NSU_FP_Y4_S1" target="_blank" rel="noopener"><span>GitHub</span><span>↗</span></a>
+      <a class="repo-link" href="https://github.com/BelovVlad/NSU_FP_Y4_S1" target="_blank" rel="noopener"><span>GitHub</span><span data-icon="external" aria-hidden="true"></span></a>
     </div>
   </aside>
 
   <div class="app">
     <header class="topbar">
-      <button id="menuBtn" class="menu-btn" type="button">☰</button>
-      <div class="searchbox"><span class="glass">⌕</span><input id="globalSearch" type="search" autocomplete="off" placeholder="Поиск по лекциям, задачам, формулам…"><span class="kbd">Ctrl + K</span></div>
+      <button id="menuBtn" class="menu-btn" type="button" title="Меню" aria-label="Открыть меню"><span data-icon="menu" aria-hidden="true"></span></button>
+      <div class="searchbox"><span class="glass" data-icon="search" aria-hidden="true"></span><input id="globalSearch" type="search" autocomplete="off" placeholder="Поиск по лекциям, задачам, формулам…"><span class="kbd">Ctrl + K</span></div>
       <div class="top-meta">NSU · Physics</div>
-      <button id="homeBtn" class="ghost-btn" title="Главная">⌂</button>
+      <button id="homeBtn" class="ghost-btn" title="Главная" aria-label="Главная"><span data-icon="home" aria-hidden="true"></span></button>
     </header>
     <main id="main" class="main"></main>
   </div>
@@ -334,9 +340,23 @@ const META={
   'База':{name:'База знаний'}
 };
 const HERO_IMAGE='assets/nsu-academic-hero.webp';
+const UI_ICONS={
+  home:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3l8.5 7.5"/><path d="M5.5 9.5V21h13V9.5"/><path d="M9.5 21v-6h5v6"/></svg>',
+  subjects:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.5"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1.5"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1.5"/><rect x="14" y="14" width="6.5" height="6.5" rx="1.5"/></svg>',
+  search:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.5 15.5 5 5"/></svg>',
+  literature:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5c3.1-.8 5.8-.25 8 1.5v12c-2.2-1.75-4.9-2.3-8-1.5z"/><path d="M20 5.5c-3.1-.8-5.8-.25-8 1.5v12c2.2-1.75 4.9-2.3 8-1.5z"/></svg>',
+  tasks:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4.5h6"/><path d="M9.5 3h5a1.5 1.5 0 0 1 1.5 1.5V6H8V4.5A1.5 1.5 0 0 1 9.5 3Z"/><rect x="5" y="5.5" width="14" height="15.5" rx="2"/><path d="m8.3 11.8 1.7 1.7 3.2-3.5"/><path d="M14.5 12h2.2"/><path d="m8.3 16.8 1.7 1.7 3.2-3.5"/><path d="M14.5 17h2.2"/></svg>',
+  archive:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5h16v12H4z"/><path d="M3 4h18v3.5H3z"/><path d="M9 11h6"/></svg>',
+  menu:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+  notes:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6z"/><path d="M14 3.5v4h4"/><path d="M9 12h6M9 16h6"/></svg>',
+  external:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5"/><path d="m11 13 8-8"/><path d="M18 13v5.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H11"/></svg>'
+};
+function iconSvg(name){return UI_ICONS[name]||''}
+function hydrateIcons(){document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=iconSvg(el.dataset.icon)})}
 let FILES=[];
 
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+hydrateIcons();
 const state={view:'subjects',subject:(ORDER.includes(hashSubject())?hashSubject():'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
 const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay');
 let searchRun=0,searchTimer=0,searchPromise=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
@@ -524,13 +544,13 @@ function bindPreviewTabs(){
 }
 function extraBlocks(subject){
   const groups=[
-    ['Конспекты','Лекции','LaTeX, PDF','▤'],
-    ['Практика','Семинары','Задачи и решения','□'],
-    ['Литература','Литература','Статьи, книги','⌘']
+    ['Конспекты','Лекции','LaTeX, PDF','notes'],
+    ['Практика','Семинары','Задачи и решения','tasks'],
+    ['Литература','Литература','Статьи, книги','literature']
   ];
   return '<section class="panel extra"><h2 class="panel-title">Дополнительные материалы</h2><div class="extra-grid">'+groups.map(g=>{
     const n=filesFor(subject,g[1]).length;
-    return '<div class="extra-card" data-jump="'+esc(g[1])+'"><div class="extra-icon">'+g[3]+'</div><div><div class="extra-title">'+g[0]+'</div><div class="extra-sub">'+(n?n+' файл(ов)':'Пока пусто')+' · '+g[2]+'</div></div></div>';
+    return '<div class="extra-card" data-jump="'+esc(g[1])+'"><div class="extra-icon">'+iconSvg(g[3])+'</div><div><div class="extra-title">'+g[0]+'</div><div class="extra-sub">'+(n?n+' файл(ов)':'Пока пусто')+' · '+g[2]+'</div></div></div>';
   }).join('')+'</div></section>';
 }
 
