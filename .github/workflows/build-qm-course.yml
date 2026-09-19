@@ -1,0 +1,47 @@
+name: Build QM course
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'База/КМ/Исходники/*.pdf'
+      - '.github/scripts/build_qm_course.py'
+      - '.github/workflows/build-qm-course.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: qm-course-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install pymupdf
+      - run: python .github/scripts/build_qm_course.py
+
+      - name: Commit QM course outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "База/КМ/Квантовая_механика_полный_курс.pdf" ".github/generated/qm_lecture_texts.json"
+          if git diff --cached --quiet; then
+            echo "QM course outputs unchanged"
+          else
+            git commit -m "Build QM combined course"
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          fi
