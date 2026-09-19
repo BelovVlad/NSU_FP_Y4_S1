@@ -350,6 +350,86 @@ body.music-na19x .music-toggle.playing{border-color:rgba(230,236,239,.28);backgr
 body.music-na19x .music-pearl-shell{filter:drop-shadow(0 0 8px rgba(238,244,247,.68))}
 @media(prefers-reduced-motion:reduce){.music-toggle.playing .music-pearl{animation:none}}
 
+/* Complete recoloring while Halcyon mode is active */
+body.music-active .panel{background:linear-gradient(180deg,color-mix(in srgb,var(--panel) 92%,var(--accent) 8%),color-mix(in srgb,var(--bg2) 94%,var(--accent) 6%))}
+body.music-active .file-row{background:color-mix(in srgb,var(--panel2) 92%,var(--accent) 8%)}
+body.music-active .file-row:hover{background:color-mix(in srgb,var(--panel2) 84%,var(--accent) 16%)}
+body.music-active .file-row.active{
+  background:linear-gradient(90deg,rgba(var(--music-accent-rgb),.34),rgba(var(--music-accent-rgb),.14));
+  box-shadow:inset 2px 0 0 var(--accent)
+}
+body.music-active .panel-count,
+body.music-active .subject-count{background:color-mix(in srgb,var(--panel2) 80%,var(--accent) 20%);color:var(--cream)}
+body.music-active .sort-select,
+body.music-active .searchbox input,
+body.music-active .ghost-btn,
+body.music-active .menu-btn,
+body.music-active .action,
+body.music-active .preview-open-full,
+body.music-active .search-filter-chip,
+body.music-active .search-page-hit,
+body.music-active .search-hit-nav button{
+  background:color-mix(in srgb,var(--panel2) 92%,var(--accent) 8%);
+  border-color:color-mix(in srgb,var(--line) 78%,var(--accent) 22%);
+  color:var(--text2)
+}
+body.music-active .preview-frame-wrap,
+body.music-active .search-preview-frame-wrap,
+body.music-active .preview-info-only,
+body.music-active .preview-file-pane{
+  background:color-mix(in srgb,var(--bg) 94%,var(--accent) 6%)
+}
+body.music-active .preview-frame,
+body.music-active .search-preview-frame,
+body.music-active .preview-file-path,
+body.music-active .search-preview-text{
+  background:color-mix(in srgb,var(--panel) 92%,var(--accent) 8%);
+  border-color:color-mix(in srgb,var(--line) 82%,var(--accent) 18%)
+}
+body.music-active .stat,
+body.music-active .course-card,
+body.music-active .extra-card{
+  background:color-mix(in srgb,var(--panel) 90%,var(--accent) 10%);
+  border-color:color-mix(in srgb,var(--line2) 80%,var(--accent) 20%)
+}
+body.music-active .course-card:hover,
+body.music-active .extra-card:hover{background:color-mix(in srgb,var(--panel2) 82%,var(--accent) 18%)}
+body.music-active .entry-no,
+body.music-active .file-ico{color:var(--accent)}
+body.music-active .panel-title,
+body.music-active .file-name,
+body.music-active .preview-title,
+body.music-active .search-group-title,
+body.music-active .course-code,
+body.music-active .stat-num{color:var(--cream)}
+body.music-active .file-desc,
+body.music-active .file-date,
+body.music-active .file-size,
+body.music-active .search-group-meta,
+body.music-active .recent-meta,
+body.music-active .recent-date{color:var(--muted)}
+
+
+
+/* In-page PDF fullscreen: keeps the site audio alive */
+.pdf-fullscreen{
+  position:fixed;z-index:200;inset:0;display:none;grid-template-rows:48px minmax(0,1fr);
+  background:var(--bg);color:var(--text)
+}
+.pdf-fullscreen.open{display:grid}
+.pdf-fullscreen-bar{
+  display:flex;align-items:center;gap:10px;padding:0 12px;border-bottom:1px solid var(--line);
+  background:color-mix(in srgb,var(--bg2) 94%,var(--accent) 6%);box-shadow:0 8px 28px rgba(0,0,0,.28)
+}
+.pdf-fullscreen-close{
+  width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;
+  background:var(--panel);color:var(--text);cursor:pointer;font-size:22px;line-height:1
+}
+.pdf-fullscreen-close:hover{border-color:var(--accent);color:var(--cream)}
+.pdf-fullscreen-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--cream);font-size:12px;font-weight:700}
+.pdf-fullscreen-frame{width:100%;height:100%;border:0;background:#0a1016}
+body.pdf-open{overflow:hidden}
+
 </style>
 </head>
 <body>
@@ -398,6 +478,15 @@ body.music-na19x .music-pearl-shell{filter:drop-shadow(0 0 8px rgba(238,244,247,
   </div>
 </div>
 
+
+<div id="pdfFullscreen" class="pdf-fullscreen" aria-hidden="true">
+  <div class="pdf-fullscreen-bar">
+    <button id="pdfFullscreenClose" class="pdf-fullscreen-close" type="button" aria-label="Закрыть PDF">×</button>
+    <div id="pdfFullscreenTitle" class="pdf-fullscreen-title">PDF</div>
+  </div>
+  <iframe id="pdfFullscreenFrame" class="pdf-fullscreen-frame" title="PDF"></iframe>
+</div>
+
 <script>
 const OWNER='BelovVlad',REPO='NSU_FP_Y4_S1',BRANCH='main';
 const ORDER=['ОВФ','СВЧ','ТДиСФ','ФКСВ','ФЭЧ','ФиХАиМ','КМ','База'];
@@ -436,7 +525,7 @@ let FILES=[];
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 hydrateIcons();
 const state={view:'subjects',subject:(ORDER.includes(hashSubject())?hashSubject():'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
-const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicStatus=$('#musicStatus'),musicGlyph=$('#musicGlyph');
+const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicStatus=$('#musicStatus'),musicGlyph=$('#musicGlyph'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame'),pdfFullscreenClose=$('#pdfFullscreenClose'),pdfFullscreenTitle=$('#pdfFullscreenTitle');
 let searchRun=0,searchTimer=0,searchPromise=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
 function syncSubjectHash(){if(state.view!=='subjects'||!ORDER.includes(state.subject))return;const h='#subject='+encodeURIComponent(state.subject);if(location.hash!==h)history.replaceState(null,'',h)}
@@ -555,6 +644,35 @@ musicToggle.addEventListener('click',toggleMusic);
 musicAudio.addEventListener('play',()=>syncMusicUi(true));
 musicAudio.addEventListener('pause',()=>syncMusicUi(false));
 musicAudio.addEventListener('error',()=>{musicStatus.textContent='Аудиофайл недоступен';syncMusicUi(false)});
+
+function openPdfFullscreen(url,title='PDF'){
+  if(!url)return;
+  pdfFullscreenFrame.src=url;
+  pdfFullscreenTitle.textContent=title||'PDF';
+  pdfFullscreen.classList.add('open');
+  pdfFullscreen.setAttribute('aria-hidden','false');
+  document.body.classList.add('pdf-open');
+}
+function closePdfFullscreen(){
+  pdfFullscreen.classList.remove('open');
+  pdfFullscreen.setAttribute('aria-hidden','true');
+  document.body.classList.remove('pdf-open');
+  pdfFullscreenFrame.src='about:blank';
+}
+pdfFullscreenClose.addEventListener('click',closePdfFullscreen);
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary');
+  if(!a)return;
+  const href=a.getAttribute('href')||'';
+  if(!href.includes('pdfjs/viewer.html'))return;
+  e.preventDefault();
+  const title=
+    document.querySelector('.preview-title')?.textContent?.trim()||
+    document.querySelector('.search-preview-title')?.textContent?.trim()||
+    'PDF';
+  openPdfFullscreen(href,title);
+});
+
 
 function setActiveNav(view){
   $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
@@ -699,12 +817,12 @@ function renderSubject(){
   $$('.file-row[data-entry]').forEach(r=>r.onclick=()=>{
     const item=(group?.items||[]).find(i=>i.id===r.dataset.entry);if(!item)return;
     state.selectedEntry=item;
-    if(innerWidth<=720&&previewFile?.ext==='.pdf'){location.href=viewerUrl(previewFile,item.page||0,item.title);return}
+    if(innerWidth<=720&&previewFile?.ext==='.pdf'){openPdfFullscreen(viewerUrl(previewFile,item.page||0,item.title),item.title);return}
     renderSubject();
   });
   $$('.file-row[data-path]').forEach(r=>r.onclick=()=>{
     const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;
-    if(innerWidth<=720&&f.ext==='.pdf'){location.href=viewerUrl(f);return}
+    if(innerWidth<=720&&f.ext==='.pdf'){openPdfFullscreen(viewerUrl(f),niceName(f));return}
     state.selected=f;state.selectedEntry=null;renderSubject();
   });
 }
@@ -929,6 +1047,7 @@ searchInput.addEventListener('input',()=>{
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();searchInput.focus();searchInput.select();return}
   if(e.key==='Escape'){
+    if(pdfFullscreen.classList.contains('open')){closePdfFullscreen();return}
     const p=$('#searchPreview');if(p?.classList.contains('mobile-visible')){searchMobilePreview=false;p.classList.remove('mobile-visible');return}
     if(document.activeElement===searchInput){searchInput.value='';searchInput.blur();if(state.view==='search'){state.view='subjects';setActiveNav('subjects');renderSubjectNav();render()}}
   }
