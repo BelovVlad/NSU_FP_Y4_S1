@@ -1166,7 +1166,7 @@ function sortedEntries(items){
 }
 function githubUrl(f){return 'https://github.com/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(f.path)}
 function notebookUrl(f,cell=0,titleOverride='',embed=false){
-  let url='notebook/viewer.html?file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
+  let url='notebook/viewer.html?build=4&file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
   if(cell)url+='&cell='+encodeURIComponent(cell);
   if(fileMeta(f).version)url+='&v='+encodeURIComponent(fileMeta(f).version);
   const theme=currentPdfTheme();if(theme)url+='&theme='+encodeURIComponent(theme);
