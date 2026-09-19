@@ -757,8 +757,8 @@ body.music-rare-arrival .hero-art img{animation:rareHeroArrival 1.35s ease-out b
     </div>
 
     <div class="main-nav">
-      <button class="nav-btn" data-view="home"><span class="nav-ico" data-icon="home" aria-hidden="true"></span>Главная</button>
-      <button class="nav-btn active" data-view="subjects"><span class="nav-ico" data-icon="subjects" aria-hidden="true"></span>Предметы</button>
+      <button class="nav-btn active" data-view="home"><span class="nav-ico" data-icon="home" aria-hidden="true"></span>Главная</button>
+      <button class="nav-btn" data-view="subjects"><span class="nav-ico" data-icon="subjects" aria-hidden="true"></span>Предметы</button>
       <button class="nav-btn" data-view="search"><span class="nav-ico" data-icon="search" aria-hidden="true"></span>Поиск</button>
       <button class="nav-btn" data-view="literature"><span class="nav-ico" data-icon="literature" aria-hidden="true"></span>Литература</button>
       <button class="nav-btn" data-view="tasks"><span class="nav-ico" data-icon="tasks" aria-hidden="true"></span>Задачи</button>
@@ -849,7 +849,8 @@ let FILES=[];
 
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 hydrateIcons();
-const state={view:'subjects',subject:(ORDER.includes(hashSubject())?hashSubject():'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
+const initialSubject=hashSubject();
+const state={view:(ORDER.includes(initialSubject)?'subjects':'home'),subject:(ORDER.includes(initialSubject)?initialSubject:'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
 const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicLabel=$('#musicLabel'),musicGlyph=$('#musicGlyph'),musicMore=$('#musicMore'),musicPanel=$('#musicPanel'),musicVolume=$('#musicVolume'),musicVolumeValue=$('#musicVolumeValue'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame');
 let searchRun=0,searchTimer=0,searchPromise=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
@@ -1549,10 +1550,19 @@ function firstMobileImmersiveGesture(){
 document.addEventListener('pointerup',firstMobileImmersiveGesture,true);
 
 window.addEventListener('hashchange',()=>{
-  const hs=hashSubject();if(!ORDER.includes(hs)||hs===state.subject)return;
-  state.view='subjects';state.subject=hs;state.section='';state.selected=null;state.selectedEntry=null;setActiveNav('subjects');renderSubjectNav();render();
+  const hs=hashSubject();
+  if(ORDER.includes(hs)){
+    if(state.view==='subjects'&&hs===state.subject)return;
+    state.view='subjects';state.subject=hs;state.section='';state.selected=null;state.selectedEntry=null;
+    setActiveNav('subjects');renderSubjectNav();render();
+    return;
+  }
+  state.view='home';state.section='';state.selected=null;state.selectedEntry=null;
+  setActiveNav('home');renderSubjectNav();render();
 });
-if(ORDER.includes(hashSubject())){state.view='subjects';setActiveNav('subjects')}loadMeta();
+if(ORDER.includes(hashSubject())){state.view='subjects';setActiveNav('subjects')}
+else{state.view='home';setActiveNav('home')}
+loadMeta();
 </script>
 </body>
 </html>
