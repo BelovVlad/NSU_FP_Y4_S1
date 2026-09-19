@@ -71,7 +71,16 @@ pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@
 
 const OWNER='BelovVlad',REPO='NSU_Faculty_of_Physics-4th-year--1st-semester-',BRANCH='main';
 const params=new URLSearchParams(location.search);
-const raw=params.get('file');
+function currentMaterialPath(path){
+  if(!path)return path;
+  const parts=path.split('/');
+  const kind=parts[1]?.match(/^\d+_(Лекции|Семинары|Месячные_задания)$/)?.[1];
+  if(parts.length===3&&parts[2]==='final.pdf'&&kind&&['ОВФ','ТДиСФ','ФКСВ','ФЭЧ','ФиХАиМ'].includes(parts[0])){
+    return `${parts[0]}/${parts[1]}/${parts[0]}_${kind}.pdf`;
+  }
+  return path;
+}
+const raw=currentMaterialPath(params.get('file'));
 const subject=params.get('subject')||'';
 const titleParam=params.get('title')||'';
 const pageParam=Number(params.get('page')||0);

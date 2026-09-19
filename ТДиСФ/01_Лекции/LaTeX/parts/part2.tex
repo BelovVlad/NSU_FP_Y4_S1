@@ -1,8 +1,12 @@
-% !TeX root = part02.tex
+% !TeX root = part2.tex
 
 \documentclass[../final.tex]{subfiles}
 
 \begin{document}
+
+% При отдельной сборке продолжаем нумерацию полного конспекта.
+\ifSubfilesClassLoaded{\setcounter{chapter}{1}\setcounter{section}{7}}{}
+
 
 % ============================================================
 \section{Ферми-газ при конечных температурах}
@@ -316,7 +320,7 @@
 Таким образом,
 %
 \[
-    \boxed{
+    \rboxed{
         \int_0^\infty
         \frac{
             f(\varepsilon)\,d\varepsilon
@@ -432,7 +436,7 @@
 Таким образом,
 %
 \[
-    \boxed{
+    \rboxed{
         \Omega
         =
         -\frac{2}{3}AV
@@ -499,7 +503,7 @@
 Итак,
 %
 \[
-    \boxed{
+    \rboxed{
         N
         =
         \frac{2}{3}AV
@@ -663,7 +667,7 @@ $\mu$ на $\varepsilon_F$:
 Таким образом,
 %
 \[
-    \boxed{
+    \rboxed{
         \mu
         =
         \varepsilon_F
@@ -744,7 +748,7 @@ $\mu$ на $\varepsilon_F$:
 Следовательно,
 %
 \[
-    \boxed{
+    \rboxed{
         S
         =
         N
@@ -775,7 +779,7 @@ $\mu$ на $\varepsilon_F$:
 получаем
 %
 \[
-    \boxed{
+    \rboxed{
         C_V
         =
         \frac{\pi^2}{2}
@@ -935,7 +939,7 @@ $\mu$ на $\varepsilon_F$:
 окончательно
 %
 \[
-    \boxed{
+    \rboxed{
         p
         =
         \frac{N}{V}
@@ -978,7 +982,7 @@ $\mu$ на $\varepsilon_F$:
 Следовательно,
 %
 \[
-    \boxed{
+    \rboxed{
         E
         =
         \frac{3}{5}
@@ -1058,7 +1062,7 @@ $\mu$ на $\varepsilon_F$:
 Таким образом, при фиксированном $N$
 %
 \[
-    \boxed{
+    \rboxed{
         p
         \sim
         V^{-5/3}
@@ -1085,7 +1089,7 @@ $\mu$ на $\varepsilon_F$:
 Введём магнетон Бора
 %
 \[
-    \boxed{
+    \rboxed{
         \beta
         =
         \frac{
@@ -1100,7 +1104,7 @@ $\mu$ на $\varepsilon_F$:
 его спина:
 %
 \[
-    \boxed{
+    \rboxed{
         \varepsilon
         =
         \frac{p^2}{2m}
@@ -1243,7 +1247,7 @@ $\mu$ на $\varepsilon_F$:
 Таким образом,
 %
 \[
-    \boxed{
+    \rboxed{
         \Omega
         =
         \Omega_0
@@ -1275,7 +1279,7 @@ $\mu$ на $\varepsilon_F$:
 Поэтому
 %
 \[
-    \boxed{
+    \rboxed{
         M
         =
         \left(
@@ -1296,7 +1300,7 @@ $\mu$ на $\varepsilon_F$:
 откуда
 %
 \[
-    \boxed{
+    \rboxed{
         \chi
         =
         \left(
@@ -1451,7 +1455,7 @@ $\mu$ на $\varepsilon_F$:
 Таким образом,
 %
 \[
-    \boxed{
+    \rboxed{
         \frac{\partial N}{\partial\mu}
         =
         \frac{3}{2}
@@ -1471,7 +1475,7 @@ $\mu$ на $\varepsilon_F$:
 $T\ll\varepsilon_F$ равен
 %
 \[
-    \boxed{
+    \rboxed{
         M
         =
         \frac{3}{2}
@@ -1491,7 +1495,7 @@ $T\ll\varepsilon_F$ равен
 Магнитная восприимчивость имеет вид
 %
 \[
-    \boxed{
+    \rboxed{
         \chi
         =
         \frac{3}{2}
@@ -1516,12 +1520,12 @@ $T\ll\varepsilon_F$ равен
     0,
 \end{equation*}
 %
-электронный газ обладает \rtxt{3}{парамагнетизмом Паули}.
+электронный газ обладает \rconcept{парамагнетизмом Паули}.
 
 При абсолютном нуле
 %
 \[
-    \boxed{
+    \rboxed{
         \chi(0)
         =
         \frac{

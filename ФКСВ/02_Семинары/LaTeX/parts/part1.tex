@@ -1,4 +1,4 @@
-% !TeX root = part01.tex
+% !TeX root = part1.tex
 
 \documentclass[../final.tex]{subfiles}
 
@@ -15,9 +15,9 @@
 % Задача 1
 % ============================================================
 
-\section{Задача 1. ОЦК как решётка Браве}
+\task[1]{ОЦК как решётка Браве}
 
-\textbf{Условие.}
+\condition
 Показать, что объёмно-центрированная кубическая решётка
 является решёткой Браве.
 
@@ -106,7 +106,7 @@
 Тогда положение любого узла решётки можно записать в виде
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf R
         =
         n_1\mathbf a_1
@@ -129,12 +129,12 @@
 Следовательно,
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \text{ОЦК является решёткой Браве.}
     }
 \end{equation*}
 
-\textbf{Комментарий.}
+\remark[Комментарий.]
 В обычной кубической ячейке ОЦК кажется, что имеются узлы
 двух типов: вершины куба и центр куба. Однако это связано
 только с выбором непримитивной кубической ячейки.
@@ -148,9 +148,9 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 % Задача 2
 % ============================================================
 
-\section{Задача 2. ГЦК как решётка Браве}
+\task[2]{ГЦК как решётка Браве}
 
-\textbf{Условие.}
+\condition
 Показать, что гранецентрированная кубическая решётка
 является решёткой Браве.
 
@@ -206,7 +206,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Любой узел ГЦК можно представить как
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf R
         =
         n_1\mathbf a_1
@@ -225,12 +225,12 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Поэтому
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \text{ГЦК является решёткой Браве.}
     }
 \end{equation*}
 
-\textbf{Комментарий.}
+\remark[Комментарий.]
 Как и в случае ОЦК, обычная кубическая ячейка ГЦК
 не является примитивной.
 
@@ -243,16 +243,16 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 % Обратная решётка
 % ============================================================
 
-\section*{Обратная решётка}
+\rtheory{Обратная решётка}
 
 
 % ============================================================
 % Задача 3
 % ============================================================
 
-\section{Задача 3. Обратная решётка к ОЦК}
+\task[3]{Обратная решётка к ОЦК}
 
-\textbf{Условие.}
+\condition
 Показать, что обратная решётка к ОЦК является ГЦК.
 
 Для прямой решётки с примитивными векторами
@@ -268,7 +268,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 введём примитивные векторы обратной решётки:
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf b_1
         =
         2\pi
@@ -282,7 +282,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 \end{equation*}
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf b_2
         =
         2\pi
@@ -296,7 +296,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 \end{equation*}
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf b_3
         =
         2\pi
@@ -312,7 +312,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Для этих векторов выполняется условие
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf a_i\cdot\mathbf b_j
         =
         2\pi\delta_{ij}
@@ -452,7 +452,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Следовательно,
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf a_2\times\mathbf a_3
         =
         \frac{a^2}{2}
@@ -500,7 +500,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Поэтому
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf a_1\cdot
         (\mathbf a_2\times\mathbf a_3)
         =
@@ -529,7 +529,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Таким образом,
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf b_1
         =
         \frac{2\pi}{a}
@@ -542,7 +542,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Аналогично получаем
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf b_2
         =
         \frac{2\pi}{a}
@@ -553,7 +553,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 \end{equation*}
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf b_3
         =
         \frac{2\pi}{a}
@@ -608,7 +608,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 получаем
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         a'
         =
         \frac{4\pi}{a}
@@ -618,12 +618,12 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Таким образом,
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \text{обратная решётка к ОЦК является ГЦК.}
     }
 \end{equation*}
 
-\textbf{Комментарий.}
+\remark[Комментарий.]
 Аналогично можно показать обратное утверждение:
 обратная решётка к ГЦК является ОЦК.
 
@@ -635,9 +635,9 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 % Задача 4
 % ============================================================
 
-\section{Задача 4. Вектор обратной решётки и плоскости прямой решётки}
+\task[4]{Вектор обратной решётки и плоскости прямой решётки}
 
-\textbf{Условие.}
+\condition
 Показать, что каждый вектор обратной решётки перпендикулярен
 некоторому семейству плоскостей прямой решётки.
 
@@ -672,7 +672,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Построим два независимых вектора, лежащих в этой плоскости:
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf c_2
         =
         n_2\mathbf a_2
@@ -682,7 +682,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 \end{equation*}
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf c_3
         =
         n_3\mathbf a_3
@@ -765,7 +765,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Тогда
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf c_2\times\mathbf c_3
         =
         n_2n_3
@@ -922,7 +922,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Введём
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf g
         =
         h\mathbf b_1
@@ -947,7 +947,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Следовательно,
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf g\perp(hkl)
     }.
 \end{equation*}
@@ -955,7 +955,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 Таким образом, вектор обратной решётки
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf g_{hkl}
         =
         h\mathbf b_1
@@ -969,7 +969,7 @@ $\mathbf a_1$, $\mathbf a_2$, $\mathbf a_3$, все узлы
 перпендикулярен семейству плоскостей прямой решётки
 с индексами Миллера $(hkl)$.
 
-\textbf{Комментарий.}
+\remark[Комментарий.]
 Здесь устанавливается геометрический смысл обратной решётки:
 направление $\mathbf g_{hkl}$ задаёт нормаль к плоскостям
 $(hkl)$.
@@ -982,9 +982,9 @@ $(hkl)$.
 % Задача 5
 % ============================================================
 
-\section{Задача 5. Расстояние между плоскостями}
+\task[5]{Расстояние между плоскостями}
 
-\textbf{Условие.}
+\condition
 Если компоненты вектора $\mathbf g$ не имеют общего множителя,
 показать, что $|\mathbf g|$ обратно пропорционален расстоянию
 между плоскостями прямой решётки, перпендикулярными
@@ -1115,7 +1115,7 @@ $\mathbf g$.
 Следовательно,
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf g\cdot\mathbf R
         =
         2\pi
@@ -1142,7 +1142,7 @@ $\mathbf g$.
 Получаем
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf g\cdot\mathbf R
         =
         2\pi N
@@ -1169,7 +1169,7 @@ $\mathbf g$.
 Следовательно,
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         \mathbf g\cdot\mathbf r
         =
         2\pi N
@@ -1216,7 +1216,7 @@ $\mathbf R$ на направление $\mathbf g$, поэтому
 Отсюда
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         d_N
         =
         \frac{2\pi N}{|\mathbf g|}
@@ -1262,7 +1262,7 @@ $\mathbf R$ на направление $\mathbf g$, поэтому
 Получаем
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         d
         =
         \frac{2\pi}{|\mathbf g|}
@@ -1272,7 +1272,7 @@ $\mathbf R$ на направление $\mathbf g$, поэтому
 Или
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         |\mathbf g|
         =
         \frac{2\pi}{d}
@@ -1282,14 +1282,14 @@ $\mathbf R$ на направление $\mathbf g$, поэтому
 Следовательно,
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         |\mathbf g|
         \propto
         \frac{1}{d}
     }.
 \end{equation*}
 
-\textbf{Комментарий.}
+\remark[Комментарий.]
 Условие о том, что компоненты $h,k,l$ не имеют общего
 множителя, здесь существенно.
 
@@ -1317,7 +1317,7 @@ $\mathbf R$ на направление $\mathbf g$, поэтому
 Поэтому для примитивного вектора данного семейства плоскостей
 %
 \begin{equation*}
-    \boxed{
+    \rboxed{
         d_{hkl}
         =
         \frac{2\pi}{

@@ -175,16 +175,14 @@
 %
 % Использование в документе:
 %
-%   раздел = задача
+%   задачи: \task[номер]{название}; теория: \rtheory{название}
 %
 % Автонумерация:
 %
-%   1 Задача
-%   2 Задача
-%   3 Задача
+%   Команда \task сама выводит «Задача N» без лишнего номера.
 
 \expandafter\titleformat\expandafter{\csname section\endcsname}[hang]
-    {\normalfont\Large\bfseries\color{rtext}}
+    {\normalfont\Large\bfseries\raggedright\color{rtext}}
     {
         \csname thesection\endcsname
     }
@@ -203,7 +201,7 @@
 % ------------------------------------------------------------
 
 \titleformat{name=\rSectionName,numberless}[hang]
-    {\normalfont\Large\bfseries\color{rtext}}
+    {\normalfont\Large\bfseries\raggedright\color{rtext}}
     {}
     {0pt}
     {}
@@ -219,8 +217,7 @@
 % 10. Оформление подразделов
 % ------------------------------------------------------------
 %
-% Формат runin означает, что заголовок идёт в одну строку
-% с последующим текстом.
+% Формат block: заголовок занимает отдельную строку.
 %
 % Пример визуального вида:
 %
@@ -257,7 +254,7 @@
 % 12. Оформление малых внутренних заголовков
 % ------------------------------------------------------------
 %
-% Они тоже идут в строку с последующим текстом, но набираются курсивом.
+% Отдельная строка, курсив; следующий уровень после подраздела.
 
 \expandafter\titleformat\expandafter{\csname subsubsection\endcsname}[block]
     {\normalfont\itshape\color{rtext}}

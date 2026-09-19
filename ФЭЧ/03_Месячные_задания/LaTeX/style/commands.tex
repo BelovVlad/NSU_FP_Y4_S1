@@ -379,3 +379,60 @@
 \NewDocumentCommand{\ruline}{m m}{%
     \rapplycolor{#1}{\rulinewith}{#2}%
 }
+
+% Занятие является главой в оглавлении; дата может быть пустой.
+\newcommand{\practice}[3]{%
+    \setcounter{chapter}{\numexpr#1-1\relax}%
+    \refstepcounter{chapter}%
+    \addcontentsline{toc}{chapter}{Практическое занятие №#1. #3}%
+    \begin{center}
+        {\Large\bfseries Практическое занятие №#1}\\[0.3em]
+        \ifstrempty{#2}{}{{\small #2}\\[0.6em]}%
+        {\large\bfseries #3}
+    \end{center}
+    \vspace{0.4em}
+    \hrule
+    \vspace{1.2em}
+}
+
+% ------------------------------------------------------------
+% Смысловое оформление текста и задач
+% ------------------------------------------------------------
+% Не назначайте цвета вручную: выбирайте команду по смыслу фрагмента.
+\NewDocumentCommand{\rconcept}{m}{\textcolor{rconceptcolor}{#1}}
+\NewDocumentCommand{\rresult}{m}{\textcolor{rresultcolor}{#1}}
+\NewDocumentCommand{\rassumption}{m}{\textcolor{rassumptioncolor}{#1}}
+\NewDocumentCommand{\rnote}{m}{\textcolor{rnotecolor}{#1}}
+% Только в математическом режиме; содержимое формулы не меняется.
+\NewDocumentCommand{\rboxed}{m}{\begingroup\color{rresultcolor}\boxed{#1}\endgroup}
+
+% Служебная подпись — не уровень оглавления и не этап решения.
+\NewDocumentCommand{\rlabel}{m m}{%
+    \par\addvspace{0.8\baselineskip}%
+    \noindent\textcolor{#1}{\textbf{#2}}\par\nobreak
+    \vspace{0.25\baselineskip}\noindent\ignorespaces
+}
+\NewDocumentCommand{\condition}{}{\rlabel{rconceptcolor}{Условие:}}
+\NewDocumentCommand{\solution}{}{\rlabel{rtext}{Решение}}
+\NewDocumentCommand{\answer}{}{\rlabel{rresultcolor}{Ответ}}
+\NewDocumentCommand{\remark}{O{Замечание.}}{\rlabel{rnotecolor}{#1}}
+
+% Необязательный номер задачи: \task[3]{Название}; без него — следующий номер.
+% Счётчик и \label/\ref сохраняют этот номер; лишнего номера перед
+% словами «Задача N» в заголовке и оглавлении нет.
+\NewDocumentCommand{\task}{O{} m}{%
+    \ifstrempty{#1}{}{\setcounter{section}{\numexpr#1-1\relax}}%
+    \refstepcounter{section}%
+    \section*{Задача \thesection. #2}%
+    \addcontentsline{toc}{section}{Задача \thesection. #2}%
+}
+% Теоретический раздел семинара: без номера, но в оглавлении.
+\NewDocumentCommand{\rtheory}{m}{\rtitle{#1}}
+
+% Цветовые команды безопасны в PDF-закладках.
+\pdfstringdefDisableCommands{%
+    \def\rconcept#1{#1}%
+    \def\rresult#1{#1}%
+    \def\rassumption#1{#1}%
+    \def\rnote#1{#1}%
+}

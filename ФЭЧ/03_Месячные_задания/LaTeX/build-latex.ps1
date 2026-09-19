@@ -1,8 +1,10 @@
 param(
-    [string]$DocDir,
-    [string]$DocFile
+    [Parameter(Mandatory = $true)][string]$DocDir,
+    [Parameter(Mandatory = $true)][string]$DocFile
 )
 
+$ErrorActionPreference = 'Stop'
+$DocDir = (Resolve-Path -LiteralPath $DocDir).Path
 $docDirLeaf = Split-Path -Path $DocDir -Leaf
 
 if ($docDirLeaf -eq 'parts') {
@@ -14,35 +16,43 @@ else {
     $latexDir = $DocDir
     $outDir = Join-Path -Path $latexDir -ChildPath 'build_final'
     $projectRoot = Split-Path -Path $latexDir -Parent
-    $pdfTarget = Join-Path -Path $projectRoot -ChildPath ($DocFile + '.pdf')
+    $outputName = $DocFile
+    if ($DocFile -eq 'final') {
+        $subjectDir = Split-Path -Path $projectRoot -Parent
+        $subjectName = Split-Path -Path $subjectDir -Leaf
+        $materialKind = (Split-Path -Path $projectRoot -Leaf) -replace '^\d+_', ''
+        $outputName = $subjectName + '_' + $materialKind
+    }
+    $pdfTarget = Join-Path -Path $projectRoot -ChildPath ($outputName + '.pdf')
 }
 
 New-Item -ItemType Directory -Force -Path $outDir | Out-Null
-
 $texPath = Join-Path -Path $DocDir -ChildPath ($DocFile + '.tex')
+if (-not (Test-Path -LiteralPath $texPath -PathType Leaf)) {
+    throw "Source file not found: $texPath"
+}
 
-Push-Location $DocDir
+Push-Location -LiteralPath $DocDir
+try {
+    # Windows PowerShell can turn native stderr warnings into terminating errors.
+    # The compiler's exit code, checked below, determines build success.
+    $ErrorActionPreference = 'Continue'
+    & latexmk -pdf -interaction=nonstopmode -halt-on-error -synctex=1 -file-line-error "-outdir=$outDir" "$texPath"
+    $latexmkExitCode = $LASTEXITCODE
+}
+finally {
+    $ErrorActionPreference = 'Stop'
+    Pop-Location
+}
 
-& latexmk `
-    -pdf `
-    -interaction=nonstopmode `
-    -synctex=1 `
-    -file-line-error `
-    -outdir="$outDir" `
-    "$texPath"
-
-$latexmkExitCode = $LASTEXITCODE
-
-Pop-Location
-
+# Never replace the published PDF with stale output after a failed build.
+if ($latexmkExitCode -ne 0) {
+    exit $latexmkExitCode
+}
 $builtPdf = Join-Path -Path $outDir -ChildPath ($DocFile + '.pdf')
-
-if (Test-Path -Path $builtPdf) {
-    Copy-Item -Path $builtPdf -Destination $pdfTarget -Force
-    Write-Host ('PDF copied to: ' + $pdfTarget)
+if (-not (Test-Path -LiteralPath $builtPdf -PathType Leaf)) {
+    throw "PDF was not created: $builtPdf"
 }
-else {
-    Write-Host ('PDF was not created: ' + $builtPdf)
-}
-
-exit $latexmkExitCode
+Copy-Item -LiteralPath $builtPdf -Destination $pdfTarget -Force
+Write-Host ('PDF copied to: ' + $pdfTarget)
+exit 0
