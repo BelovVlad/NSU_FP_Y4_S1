@@ -1152,7 +1152,14 @@ function sortedEntries(items){
   return out;
 }
 function githubUrl(f){return 'https://github.com/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(f.path)}
-function nbviewerUrl(f){return 'https://nbviewer.org/github/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(f.path)}
+function notebookUrl(f,cell=0,titleOverride='',embed=false){
+  let url='notebook/viewer.html?file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
+  if(cell)url+='&cell='+encodeURIComponent(cell);
+  if(fileMeta(f).version)url+='&v='+encodeURIComponent(fileMeta(f).version);
+  const theme=currentPdfTheme();if(theme)url+='&theme='+encodeURIComponent(theme);
+  if(embed)url+='&embed=1';
+  return url;
+}
 function viewerUrl(f,page=0,titleOverride=''){
   let url='pdfjs/viewer.html?file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
   if(page)url+='&page='+encodeURIComponent(page);
@@ -1413,16 +1420,16 @@ async function openPdfFullscreen(url,title='PDF'){
   const themed=new URL(url,location.href);
   const theme=currentPdfTheme();
   if(theme)themed.searchParams.set('theme',theme);else themed.searchParams.delete('theme');
+  const isNotebook=themed.pathname.includes('/notebook/viewer.html');
+  if(isNotebook){themed.searchParams.delete('embed');themed.searchParams.set('full','1')}
 
   pdfFullscreen.classList.remove('ready');
   pdfFullscreen.classList.add('open');
   pdfFullscreen.setAttribute('aria-hidden','false');
   document.body.classList.add('pdf-open');
   pdfFullscreen.dataset.requestedFullscreen='1';
-  if(pdfFullscreenLoaderText)pdfFullscreenLoaderText.textContent='Открываю PDF…';
+  if(pdfFullscreenLoaderText)pdfFullscreenLoaderText.textContent=isNotebook?'Открываю Notebook…':'Открываю PDF…';
 
-  // Keep the iframe fully hidden until the viewer has rendered its first page.
-  // This prevents the browser's white about:blank frame from flashing in fullscreen.
   pdfFullscreenFrame.src='about:blank';
 
   let fullscreenPromise=null;
@@ -1432,7 +1439,6 @@ async function openPdfFullscreen(url,title='PDF'){
     }
   }catch{}
 
-  // The fullscreen surface is already dark before the new document is attached.
   requestAnimationFrame(()=>{pdfFullscreenFrame.src=themed.href});
   try{if(fullscreenPromise)await fullscreenPromise}catch{}
 }
@@ -1452,10 +1458,10 @@ document.addEventListener('fullscreenchange',()=>{
   }
 });
 document.addEventListener('click',e=>{
-  const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary,a[href*="pdfjs/viewer.html"]');
+  const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary,a[href*="pdfjs/viewer.html"],a[href*="notebook/viewer.html"]');
   if(!a)return;
   const href=a.getAttribute('href')||'';
-  if(!href.includes('pdfjs/viewer.html'))return;
+  if(!href.includes('pdfjs/viewer.html')&&!href.includes('notebook/viewer.html'))return;
   e.preventDefault();
   e.stopImmediatePropagation();
   void openPdfFullscreen(href);
@@ -1549,26 +1555,31 @@ function entryRows(group){
 }
 
 function preview(f,entry=null){
-  if(!f)return '<aside class="panel preview-panel"><div class="preview-placeholder"><div><div class="big">Выберите материал</div><div class="small">Справа появится предпросмотр PDF и информация о файле.</div></div></div></aside>';
-  const m=fileMeta(f),isPdf=f.ext==='.pdf';
+  if(!f)return '<aside class="panel preview-panel"><div class="preview-placeholder"><div><div class="big">Выберите материал</div><div class="small">Справа появится предпросмотр и информация о файле.</div></div></div></aside>';
+  const m=fileMeta(f),isPdf=f.ext==='.pdf',isNotebook=f.ext==='.ipynb';
   const displayTitle=entry?.title||niceName(f);
-  const url=isPdf?viewerUrl(f,entry?.page||0,displayTitle):nbviewerUrl(f);
-  const frame=isPdf?'<iframe class="preview-frame" src="'+esc(url)+'" loading="lazy" title="'+esc(displayTitle)+'"></iframe>':
-    '<div class="preview-placeholder"><div><div class="big">Jupyter Notebook</div><div class="small">Интерактивный файл можно открыть через nbviewer или GitHub.</div></div></div>';
+  const url=isPdf?viewerUrl(f,entry?.page||0,displayTitle):isNotebook?notebookUrl(f,0,displayTitle,false):githubUrl(f);
+  const frameUrl=isPdf?url:isNotebook?notebookUrl(f,0,displayTitle,true):url;
+  const frame=(isPdf||isNotebook)
+    ?'<iframe class="preview-frame" src="'+esc(frameUrl)+'" loading="lazy" title="'+esc(displayTitle)+'"></iframe>'
+    :'<div class="preview-placeholder"><div><div class="big">Файл</div><div class="small">Предпросмотр для этого формата недоступен.</div></div></div>';
   const tags=keywords(f).map(k=>'<span class="tag">'+esc(k)+'</span>').join('')||'<span class="tag">'+esc(sectionOf(f))+'</span>';
   const date=entry?.date||m.updated_at||m.created_at;
   const pageRange=entry?.page?(entry.end_page&&entry.end_page!==entry.page?entry.page+'–'+entry.end_page:String(entry.page)):'—';
+  const infoLabel=isNotebook?'Ячейки':'Страницы';
+  const infoValue=isNotebook?(m.cell_count||'—'):pageRange;
+  const fullLabel=isNotebook?'Открыть Notebook':'Открыть PDF';
   return '<aside class="panel preview-panel">'+
     '<div class="preview-head"><div class="preview-kicker">'+esc(entry?((entry.number?'№ '+entry.number+' · ':'')+sectionOf(f)):sectionOf(f))+'<span class="preview-date">'+esc(fmtDate(date))+'</span></div><h2 class="preview-title">'+esc(displayTitle)+'</h2>'+(entry?.subtitle?'<div class="file-desc" style="margin-top:6px">'+esc(entry.subtitle)+'</div>':'')+'</div>'+
-    '<div class="preview-tabs"><button class="preview-tab active" data-preview-tab="view">Просмотр</button><button class="preview-tab" data-preview-tab="info">Информация</button><button class="preview-tab" data-preview-tab="file">Файл</button>'+(isPdf?'<a class="preview-open-full" href="'+esc(url)+'" title="Открыть PDF на всю страницу">'+iconSvg('expand')+'<span>Открыть PDF</span></a>':'')+'</div>'+
+    '<div class="preview-tabs"><button class="preview-tab active" data-preview-tab="view">Просмотр</button><button class="preview-tab" data-preview-tab="info">Информация</button><button class="preview-tab" data-preview-tab="file">Файл</button>'+((isPdf||isNotebook)?'<a class="preview-open-full" href="'+esc(url)+'" title="'+esc(fullLabel+' на всю страницу')+'">'+iconSvg('expand')+'<span>'+esc(fullLabel)+'</span></a>':'')+'</div>'+
     '<div class="preview-pane" data-preview-pane="view"><div class="preview-frame-wrap">'+frame+'</div></div>'+
     '<div class="preview-pane preview-info-only" data-preview-pane="info" hidden><div class="preview-info"><div class="info-box"><div class="info-title">Информация</div>'+
       '<div class="info-row"><span>Файл</span><span>'+esc(f.name||f.path.split('/').pop())+'</span></div>'+
       '<div class="info-row"><span>Размер</span><span>'+esc(fmtSize(m.size))+'</span></div>'+
-      '<div class="info-row"><span>Страницы</span><span>'+esc(pageRange)+'</span></div>'+
+      '<div class="info-row"><span>'+esc(infoLabel)+'</span><span>'+esc(String(infoValue))+'</span></div>'+
       '<div class="info-row"><span>Обновлено</span><span>'+esc(fmtDate(date))+'</span></div></div>'+
       '<div class="info-box"><div class="info-title">Ключевые темы</div><div class="tags">'+tags+'</div></div></div></div>'+
-    '<div class="preview-pane preview-file-pane" data-preview-pane="file" hidden><div class="info-title">Путь в репозитории</div><div class="preview-file-path">'+esc(f.path)+'</div><div class="preview-file-actions"><a class="action primary" href="'+esc(url)+'">Открыть'+(isPdf?' PDF':' notebook')+'</a><a class="action" target="_blank" rel="noopener" href="'+esc(githubUrl(f))+'">GitHub ↗</a></div></div>'+
+    '<div class="preview-pane preview-file-pane" data-preview-pane="file" hidden><div class="info-title">Путь в репозитории</div><div class="preview-file-path">'+esc(f.path)+'</div><div class="preview-file-actions"><a class="action primary" href="'+esc(url)+'">Открыть'+(isPdf?' PDF':isNotebook?' Notebook':' файл')+'</a><a class="action" target="_blank" rel="noopener" href="'+esc(githubUrl(f))+'">GitHub ↗</a></div></div>'+
   '</aside>';
 }
 
@@ -1620,6 +1631,7 @@ function renderSubject(){
   $$('.file-row[data-path]').forEach(r=>r.onclick=()=>{
     const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;
     if(innerWidth<=720&&f.ext==='.pdf'){openPdfFullscreen(viewerUrl(f),niceName(f));return}
+    if(innerWidth<=720&&f.ext==='.ipynb'){openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
     state.selected=f;state.selectedEntry=null;renderSubject();
   });
 }
@@ -1821,7 +1833,7 @@ function searchFiltersHtml(){
 }
 function searchGroupHtml(g,i,q){
   const m=fileMeta(g.f),hits=g.hits||[],active=i===searchSelectedGroup;
-  const pages=hits.slice(0,10).map((h,j)=>'<button class="search-page-hit'+(active&&j===searchSelectedHit?' active':'')+'" data-search-group="'+i+'" data-search-hit="'+j+'">'+(h.page?'стр. '+h.page:(g.f.ext==='.pdf'?'PDF':'Notebook'))+'</button>').join('');
+  const pages=hits.slice(0,10).map((h,j)=>'<button class="search-page-hit'+(active&&j===searchSelectedHit?' active':'')+'" data-search-group="'+i+'" data-search-hit="'+j+'">'+(h.page?(g.f.ext==='.ipynb'?'ячейка ':'стр. ')+h.page:(g.f.ext==='.pdf'?'PDF':'Notebook'))+'</button>').join('');
   const more=hits.length>10?'<span class="search-more">+'+(hits.length-10)+'</span>':'';
   const first=hits[0]||{snippet:''},meta=[subjectOf(g.f),sectionOf(g.f)];
   if(m.page_count)meta.push(m.page_count+' стр.');else if(m.cell_count)meta.push(m.cell_count+' ячеек');if(m.size)meta.push(fmtSize(m.size));
@@ -1831,11 +1843,17 @@ function searchGroupHtml(g,i,q){
 function searchPreviewHtml(q){
   const g=searchGroups[searchSelectedGroup];if(!g)return '<div class="search-preview-empty">Нет результатов для выбранных фильтров.</div>';
   const hit=g.hits[searchSelectedHit]||g.hits[0]||{page:0,snippet:''},f=g.f;
-  let openUrl=f.ext==='.pdf'?viewerUrl(f,hit.page||0,niceName(f)):nbviewerUrl(f);
-  if(f.ext==='.pdf'&&q)openUrl+='&find='+encodeURIComponent(q);
-  const frame=f.ext==='.pdf'?'<div class="search-preview-frame-wrap"><iframe class="search-preview-frame" src="'+esc(openUrl)+'" loading="lazy" title="'+esc(niceName(f))+'"></iframe></div>':'<div class="search-preview-empty">Jupyter Notebook открывается через nbviewer.</div>';
-  return '<div class="search-preview-head"><div><div class="search-preview-kicker">'+esc(subjectOf(f)+' · '+sectionOf(f)+(hit.page?' · стр. '+hit.page:''))+'</div><h2 class="search-preview-title">'+esc(niceName(f))+'</h2></div><button class="search-preview-close" type="button">×</button></div><div class="search-preview-toolbar"><a class="search-open" href="'+esc(openUrl)+'">Открыть'+(hit.page?' стр. '+hit.page:'')+'</a><div class="search-hit-nav"><button class="search-prev-hit" type="button">‹</button><span class="search-hit-position">'+(searchSelectedHit+1)+' / '+g.hits.length+'</span><button class="search-next-hit" type="button">›</button></div></div>'+frame+'<div class="search-preview-text">'+searchHi(hit.snippet||'',q)+'</div>';
+  const isPdf=f.ext==='.pdf',isNotebook=f.ext==='.ipynb';
+  let openUrl=isPdf?viewerUrl(f,hit.page||0,niceName(f)):isNotebook?notebookUrl(f,hit.page||0,niceName(f),false):githubUrl(f);
+  let frameUrl=isPdf?openUrl:isNotebook?notebookUrl(f,hit.page||0,niceName(f),true):openUrl;
+  if((isPdf||isNotebook)&&q){openUrl+='&find='+encodeURIComponent(q);frameUrl+='&find='+encodeURIComponent(q)}
+  const frame=(isPdf||isNotebook)
+    ?'<div class="search-preview-frame-wrap"><iframe class="search-preview-frame" src="'+esc(frameUrl)+'" loading="lazy" title="'+esc(niceName(f))+'"></iframe></div>'
+    :'<div class="search-preview-empty">Предпросмотр для этого формата недоступен.</div>';
+  const loc=hit.page?(isNotebook?' · ячейка ':' · стр. ')+hit.page:'';
+  return '<div class="search-preview-head"><div><div class="search-preview-kicker">'+esc(subjectOf(f)+' · '+sectionOf(f)+loc)+'</div><h2 class="search-preview-title">'+esc(niceName(f))+'</h2></div><button class="search-preview-close" type="button">×</button></div><div class="search-preview-toolbar"><a class="search-open" href="'+esc(openUrl)+'">Открыть'+(hit.page?(isNotebook?' ячейку ':' стр. ')+hit.page:'')+'</a><div class="search-hit-nav"><button class="search-prev-hit" type="button">‹</button><span class="search-hit-position">'+(searchSelectedHit+1)+' / '+g.hits.length+'</span><button class="search-next-hit" type="button">›</button></div></div>'+frame+'<div class="search-preview-text">'+searchHi(hit.snippet||'',q)+'</div>';
 }
+
 function bindSearchUi(q){
   $$('.search-filter-chip').forEach(b=>b.onclick=()=>{if(b.dataset.searchFilter==='subject')searchFilterSubject=b.dataset.value;else searchFilterSection=b.dataset.value;searchSelectedGroup=0;searchSelectedHit=0;searchMobilePreview=false;renderSearchResults(q)});
   $$('.search-group-main').forEach(b=>b.onclick=()=>{searchSelectedGroup=Number(b.dataset.searchGroupMain)||0;searchSelectedHit=0;searchMobilePreview=true;renderSearchResults(q)});

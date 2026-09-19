@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Notebook · NSU FP</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark-dimmed.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+<script>
+window.MathJax={
+  tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:true},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code']},
+  startup:{typeset:false}
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+<style>
+:root{
+  --bg:#080d12;--bar:#0b1117;--panel:#0e151c;--panel2:#111a22;--line:#28343e;--line2:#202a33;
+  --text:#e7e5e2;--text2:#c5c8ca;--muted:#768591;--cream:#f0dfca;--accent:#d64c50;--accent-rgb:214,76,80;
+  --code:#0a1016;--output:#0b1218;--prompt:#8c6666
+}
+body.theme-na19{
+  --bg:#061011;--bar:#081617;--panel:#0c1c1e;--panel2:#102325;--line:#31565a;--line2:#203f42;
+  --text:#edf8f7;--text2:#c8e2df;--muted:#7fa7a5;--cream:#edf9f7;--accent:#53c8c5;--accent-rgb:83,200,197;
+  --code:#071718;--output:#091a1b;--prompt:#6cb5b2
+}
+body.theme-na19x{
+  --bg:#171b1e;--bar:#20262a;--panel:#282f34;--panel2:#30383e;--line:#66747c;--line2:#4a555c;
+  --text:#f7f9fa;--text2:#e1e6e8;--muted:#aeb9bf;--cream:#ffffff;--accent:#f7fbfd;--accent-rgb:247,251,253;
+  --code:#1b2024;--output:#20262a;--prompt:#d7e0e4
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+body{overflow-y:auto}
+button,input,a{font:inherit}
+.toolbar{
+  position:sticky;z-index:30;top:0;min-height:58px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--bar) 93%,transparent);
+  backdrop-filter:blur(14px)
+}
+.back,.icon-btn,.github-link{
+  height:38px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:9px;
+  background:var(--panel);color:var(--text2);text-decoration:none;cursor:pointer
+}
+.back,.icon-btn{width:38px}
+.back:hover,.icon-btn:hover,.github-link:hover{border-color:var(--accent);color:var(--cream);background:color-mix(in srgb,var(--panel2) 84%,var(--accent) 16%)}
+.title-wrap{min-width:0}
+.title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--cream);font-size:13px;font-weight:780}
+.subtitle{margin-top:2px;color:var(--muted);font-size:9.5px}
+.actions{display:flex;align-items:center;gap:8px}
+.find-box{height:38px;display:flex;align-items:center;gap:5px;padding:0 5px 0 10px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+.find-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.08)}
+.find-input{width:180px;min-width:90px;border:0;outline:0;background:transparent;color:var(--text);font-size:11px}
+.find-input::placeholder{color:var(--muted)}
+.find-status{min-width:36px;color:var(--muted);font-size:9px;text-align:center}
+.find-btn{width:28px;height:28px;border:0;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer}
+.find-btn:hover{background:color-mix(in srgb,var(--panel2) 76%,var(--accent) 24%);color:var(--cream)}
+.github-link{padding:0 10px;font-size:10px;font-weight:700}
+.notebook-shell{width:min(1120px,100%);margin:0 auto;padding:18px 18px 64px}
+.notebook-head{margin:0 0 14px;padding:15px 18px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.notebook-head h1{margin:0;color:var(--cream);font-family:Georgia,"Times New Roman",serif;font-size:23px;line-height:1.18}
+.notebook-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;color:var(--muted);font-size:9.5px}
+.meta-chip{padding:3px 7px;border:1px solid var(--line2);border-radius:999px;background:var(--panel2)}
+.cells{display:flex;flex-direction:column;gap:10px}
+.cell{
+  display:grid;grid-template-columns:64px minmax(0,1fr);gap:0;border:1px solid transparent;border-radius:10px;
+  scroll-margin-top:74px;transition:border-color .13s ease,box-shadow .13s ease
+}
+.cell.find-hit{border-color:var(--accent);box-shadow:0 0 0 2px rgba(var(--accent-rgb),.08)}
+.prompt{padding:10px 9px 0 0;color:var(--prompt);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:9.5px;text-align:right;user-select:none}
+.cell-body{min-width:0}
+.markdown-cell .cell-body{padding:12px 15px;border:1px solid var(--line2);border-radius:10px;background:color-mix(in srgb,var(--panel) 96%,var(--accent) 4%)}
+.markdown-body{font-family:Georgia,"Times New Roman",serif;color:var(--text2);font-size:14px;line-height:1.62}
+.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4{color:var(--cream);line-height:1.22;margin:1.25em 0 .55em}
+.markdown-body h1:first-child,.markdown-body h2:first-child,.markdown-body h3:first-child{margin-top:.15em}
+.markdown-body h1{font-size:26px}.markdown-body h2{font-size:21px}.markdown-body h3{font-size:17px}
+.markdown-body p{margin:.65em 0}.markdown-body ul,.markdown-body ol{padding-left:1.6em}
+.markdown-body table{width:100%;border-collapse:collapse;margin:12px 0;font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:11px}
+.markdown-body th,.markdown-body td{padding:7px 8px;border:1px solid var(--line);text-align:left}
+.markdown-body th{background:var(--panel2);color:var(--cream)}
+.markdown-body blockquote{margin:10px 0;padding:3px 12px;border-left:2px solid var(--accent);color:var(--muted)}
+.markdown-body a{color:var(--accent)}.markdown-body img{max-width:100%;height:auto;border-radius:7px}
+.markdown-body code{padding:1px 4px;border:1px solid var(--line2);border-radius:4px;background:var(--code);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.88em}
+.markdown-body pre code{padding:0;border:0;background:transparent}
+.code-box{overflow:hidden;border:1px solid var(--line);border-radius:10px;background:var(--code)}
+.code-box pre{margin:0;padding:13px 15px;overflow:auto}
+.code-box code{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:11px;line-height:1.55}
+.output-row{display:grid;grid-template-columns:64px minmax(0,1fr);margin-top:6px}
+.output-row .prompt{padding-top:9px}
+.output-body{min-width:0;padding:10px 13px;border-left:2px solid color-mix(in srgb,var(--accent) 44%,var(--line));background:var(--output);border-radius:0 8px 8px 0;color:var(--text2)}
+.output-body pre{margin:0;overflow:auto;white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10.5px;line-height:1.48}
+.output-body img{display:block;max-width:100%;height:auto;margin:0 auto}
+.output-body table{border-collapse:collapse;max-width:100%;font-size:10.5px}.output-body td,.output-body th{border:1px solid var(--line);padding:5px 7px}
+.output-error{border-left-color:#d85d64;background:rgba(134,36,42,.13);color:#efb0b4}
+.raw-cell .cell-body{padding:11px 13px;border:1px dashed var(--line);border-radius:9px;background:var(--panel)}
+.raw-cell pre{margin:0;white-space:pre-wrap;color:var(--muted);font:10.5px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
+.loading,.error{
+  min-height:55vh;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:12px
+}
+.loading-inner{display:grid;justify-items:center;gap:13px}
+.spinner{width:38px;height:38px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+body.embed .toolbar{min-height:48px;padding:5px 8px}
+body.embed .back{display:none}
+body.embed .notebook-shell{padding:10px 10px 40px}
+body.embed .notebook-head{display:none}
+body.embed .cell{grid-template-columns:52px minmax(0,1fr)}
+body.embed .prompt{font-size:8.5px}
+body.embed .markdown-body{font-size:12px}
+body.embed .code-box code{font-size:10px}
+@media(max-width:720px){
+  .toolbar{grid-template-columns:auto minmax(0,1fr);align-items:start}
+  .actions{grid-column:1/-1;width:100%}
+  .find-box{flex:1}.find-input{width:100%}.github-link{display:none}
+  .notebook-shell{padding:12px 8px 50px}
+  .cell{grid-template-columns:42px minmax(0,1fr)}
+  .prompt{padding-right:5px;font-size:8px}
+  .markdown-cell .cell-body{padding:10px 11px}
+  .markdown-body{font-size:12.5px}
+  .markdown-body h1{font-size:22px}.markdown-body h2{font-size:18px}.markdown-body h3{font-size:15px}
+  .output-row{grid-template-columns:42px minmax(0,1fr)}
+}
+@media(prefers-reduced-motion:reduce){.spinner{animation:none}}
+</style>
+</head>
+<body>
+<header class="toolbar">
+  <button id="back" class="back" type="button" aria-label="Назад" title="Назад">←</button>
+  <div class="title-wrap">
+    <div id="title" class="title">Jupyter Notebook</div>
+    <div id="subtitle" class="subtitle">Просмотр без выполнения кода</div>
+  </div>
+  <div class="actions">
+    <div class="find-box">
+      <input id="findInput" class="find-input" type="search" autocomplete="off" placeholder="Поиск по notebook…">
+      <span id="findStatus" class="find-status"></span>
+      <button id="findPrev" class="find-btn" type="button" title="Предыдущее">↑</button>
+      <button id="findNext" class="find-btn" type="button" title="Следующее">↓</button>
+    </div>
+    <a id="github" class="github-link" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</header>
+<main id="main" class="notebook-shell">
+  <div class="loading"><div class="loading-inner"><div class="spinner"></div><div>Загружаю notebook…</div></div></div>
+</main>
+<script>
+const OWNER='BelovVlad',REPO='NSU_FP_Y4_S1',BRANCH='main';
+const params=new URLSearchParams(location.search);
+const raw=params.get('file')||'';
+const titleParam=params.get('title')||'';
+const subject=params.get('subject')||'';
+const version=params.get('v')||'';
+const theme=params.get('theme')||'';
+const embed=params.get('embed')==='1';
+const full=params.get('full')==='1';
+const initialCell=Math.max(0,Number(params.get('cell')||0));
+const initialFind=params.get('find')||'';
+const main=document.getElementById('main');
+const back=document.getElementById('back');
+const title=document.getElementById('title');
+const subtitle=document.getElementById('subtitle');
+const github=document.getElementById('github');
+const findInput=document.getElementById('findInput');
+const findStatus=document.getElementById('findStatus');
+const findPrev=document.getElementById('findPrev');
+const findNext=document.getElementById('findNext');
+let notebook=null,notebookUrl='',findHits=[],findCursor=-1;
+
+if(embed)document.body.classList.add('embed');
+function applyTheme(value){
+  document.body.classList.remove('theme-na19','theme-na19x');
+  if(value==='na19')document.body.classList.add('theme-na19');
+  else if(value==='na19x')document.body.classList.add('theme-na19x');
+}
+applyTheme(theme);
+window.addEventListener('message',e=>{
+  if(e.origin!==location.origin||e.data?.type!=='nsu-pdf-theme')return;
+  applyTheme(e.data.theme||'');
+});
+
+const encPath=p=>p.split('/').map(encodeURIComponent).join('/');
+const joinValue=v=>Array.isArray(v)?v.join(''):v==null?'':String(v);
+const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const stripAnsi=s=>String(s||'').replace(/\x1b\[[0-?]*[ -\/]*[@-~]/g,'');
+const normalize=s=>String(s||'').normalize('NFKC').toLocaleLowerCase('ru-RU').replace(/\u00ad/g,'').replace(/ё/g,'е').replace(/\s+/g,' ').trim();
+
+function localFileUrl(path){
+  const url=new URL('../../'+encPath(path.replace(/^\/+/,'')),location.href);
+  if(version)url.searchParams.set('v',version);
+  return url;
+}
+function githubFileUrl(path){return 'https://github.com/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(path)}
+function notebookDirUrl(){
+  const parts=raw.split('/');parts.pop();
+  return new URL('../../'+(parts.length?encPath(parts.join('/'))+'/':''),location.href);
+}
+function resolveRelative(url){
+  if(!url||/^(?:[a-z]+:|#|data:|blob:)/i.test(url))return url;
+  try{return new URL(url,notebookDirUrl()).href}catch{return url}
+}
+function attachmentUrl(cell,name){
+  const data=cell.attachments?.[name];if(!data)return null;
+  const mime=Object.keys(data).find(k=>/^image\//.test(k))||Object.keys(data)[0];
+  if(!mime)return null;
+  return 'data:'+mime+';base64,'+joinValue(data[mime]).replace(/\s+/g,'');
+}
+function prepareMarkdownSource(source,cell){
+  return String(source||'').replace(/attachment:([^\s)"']+)/g,(m,name)=>attachmentUrl(cell,name)||m);
+}
+function sanitize(html,svg=false){
+  if(!window.DOMPurify)return escapeHtml(html);
+  return DOMPurify.sanitize(html,svg?{USE_PROFILES:{svg:true,svgFilters:true}}:{USE_PROFILES:{html:true}});
+}
+function patchLinks(root){
+  root.querySelectorAll('img[src]').forEach(img=>{const v=img.getAttribute('src');if(v&&!v.startsWith('data:'))img.src=resolveRelative(v)});
+  root.querySelectorAll('a[href]').forEach(a=>{
+    const v=a.getAttribute('href');if(!v)return;
+    a.href=resolveRelative(v);
+    if(/^https?:/i.test(a.href)){a.target='_blank';a.rel='noopener noreferrer'}
+  });
+}
+function renderMarkdown(source,cell){
+  const prepared=prepareMarkdownSource(source,cell);
+  const rendered=window.marked?marked.parse(prepared,{gfm:true,breaks:false}):'<pre>'+escapeHtml(prepared)+'</pre>';
+  return sanitize(rendered);
+}
+function dataToText(data){
+  if(data==null)return'';
+  if(typeof data==='string')return data;
+  if(Array.isArray(data))return data.join('');
+  try{return JSON.stringify(data,null,2)}catch{return String(data)}
+}
+function outputSearchText(output){
+  if(output.output_type==='stream')return joinValue(output.text);
+  if(output.output_type==='error')return [output.ename,output.evalue,...(output.traceback||[])].join(' ');
+  const data=output.data||{};
+  return ['text/plain','text/markdown','text/html','application/json'].map(k=>dataToText(data[k])).join(' ');
+}
+function renderDataOutput(data){
+  if(!data)return'<pre></pre>';
+  if(data['text/html']!=null)return'<div class="rich-html">'+sanitize(joinValue(data['text/html']))+'</div>';
+  if(data['image/svg+xml']!=null)return'<div class="svg-output">'+sanitize(joinValue(data['image/svg+xml']),true)+'</div>';
+  if(data['image/png']!=null)return'<img alt="output" src="data:image/png;base64,'+joinValue(data['image/png']).replace(/\s+/g,'')+'">';
+  if(data['image/jpeg']!=null)return'<img alt="output" src="data:image/jpeg;base64,'+joinValue(data['image/jpeg']).replace(/\s+/g,'')+'">';
+  if(data['text/markdown']!=null)return'<div class="markdown-body">'+renderMarkdown(joinValue(data['text/markdown']),{})+'</div>';
+  if(data['application/json']!=null)return'<pre>'+escapeHtml(dataToText(data['application/json']))+'</pre>';
+  if(data['application/vnd.jupyter.widget-view+json']!=null)return'<pre>Интерактивный Jupyter-виджет сохранён в notebook, но в статическом просмотрщике не выполняется.</pre>';
+  if(data['text/plain']!=null)return'<pre>'+escapeHtml(joinValue(data['text/plain']))+'</pre>';
+  return'<pre>Сохранённый вывод этого MIME-типа пока не поддерживается.</pre>';
+}
+function renderOutput(output,count){
+  let body='',klass='';
+  if(output.output_type==='stream')body='<pre>'+escapeHtml(joinValue(output.text))+'</pre>';
+  else if(output.output_type==='error'){
+    klass=' output-error';
+    const text=[output.ename&&output.evalue?output.ename+': '+output.evalue:'',...(output.traceback||[])].filter(Boolean).map(stripAnsi).join('\n');
+    body='<pre>'+escapeHtml(text)+'</pre>';
+  }else if(output.output_type==='execute_result'||output.output_type==='display_data')body=renderDataOutput(output.data||{});
+  else body='<pre>'+escapeHtml(dataToText(output))+'</pre>';
+  const prompt=output.output_type==='execute_result'&&count!=null?'Out ['+count+']:':'';
+  return'<div class="output-row"><div class="prompt">'+escapeHtml(prompt)+'</div><div class="output-body'+klass+'">'+body+'</div></div>';
+}
+function renderCell(cell,index,language){
+  const n=index+1,source=joinValue(cell.source);
+  if(cell.cell_type==='markdown'){
+    return'<section class="cell markdown-cell" id="cell-'+n+'" data-cell="'+n+'"><div class="prompt"></div><div class="cell-body markdown-body">'+renderMarkdown(source,cell)+'</div></section>';
+  }
+  if(cell.cell_type==='code'){
+    const count=cell.execution_count==null?' ':cell.execution_count;
+    const outputs=(cell.outputs||[]).map(o=>renderOutput(o,cell.execution_count)).join('');
+    return'<section class="cell code-cell" id="cell-'+n+'" data-cell="'+n+'"><div class="prompt">In ['+escapeHtml(count)+']:</div><div class="cell-body"><div class="code-box"><pre><code class="language-'+escapeHtml(language)+'">'+escapeHtml(source)+'</code></pre></div>'+outputs+'</div></section>';
+  }
+  return'<section class="cell raw-cell" id="cell-'+n+'" data-cell="'+n+'"><div class="prompt">Raw:</div><div class="cell-body"><pre>'+escapeHtml(source)+'</pre></div></section>';
+}
+function cellText(cell){
+  return normalize(joinValue(cell.source)+' '+(cell.outputs||[]).map(outputSearchText).join(' '));
+}
+function clearFindHit(){document.querySelectorAll('.cell.find-hit').forEach(el=>el.classList.remove('find-hit'))}
+function scrollToCell(n,smooth=true){
+  const el=document.getElementById('cell-'+n);if(!el)return false;
+  clearFindHit();el.classList.add('find-hit');el.scrollIntoView({behavior:smooth?'smooth':'auto',block:'center'});return true;
+}
+function rebuildFindHits(){
+  const q=normalize(findInput.value);
+  findHits=[];findCursor=-1;clearFindHit();
+  if(!q||!notebook){findStatus.textContent='';return}
+  (notebook.cells||[]).forEach((cell,i)=>{if(cellText(cell).includes(q))findHits.push(i+1)});
+  findStatus.textContent=findHits.length?'0/'+findHits.length:'0/0';
+}
+function moveFind(direction){
+  if(!findHits.length){rebuildFindHits();if(!findHits.length)return}
+  findCursor=(findCursor+direction+findHits.length)%findHits.length;
+  const n=findHits[findCursor];findStatus.textContent=(findCursor+1)+'/'+findHits.length;scrollToCell(n,true);
+}
+async function typeset(){
+  try{if(window.MathJax?.typesetPromise)await MathJax.typesetPromise([main])}catch(err){console.warn('MathJax',err)}
+}
+function notifyReady(){
+  if(window.parent!==window)try{window.parent.postMessage({type:'nsu-pdf-ready'},location.origin)}catch{}
+}
+async function openNotebook(){
+  if(!raw){main.innerHTML='<div class="error">В ссылке не указан notebook.</div>';notifyReady();return}
+  title.textContent=titleParam||decodeURIComponent(raw.split('/').pop()).replace(/\.ipynb$/i,'');
+  document.title=title.textContent+' · NSU FP';
+  github.href=githubFileUrl(raw);
+  notebookUrl=localFileUrl(raw).href;
+  try{
+    const response=await fetch(notebookUrl,{cache:'no-store'});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    notebook=await response.json();
+    const cells=Array.isArray(notebook.cells)?notebook.cells:[];
+    const language=String(notebook.metadata?.language_info?.name||notebook.metadata?.kernelspec?.language||'python').toLowerCase().replace(/[^a-z0-9_+-]/g,'')||'python';
+    const kernel=notebook.metadata?.kernelspec?.display_name||language;
+    subtitle.textContent=cells.length+' ячеек · '+kernel+' · только просмотр';
+    main.innerHTML='<section class="notebook-head"><h1>'+escapeHtml(title.textContent)+'</h1><div class="notebook-meta"><span class="meta-chip">'+cells.length+' ячеек</span><span class="meta-chip">'+escapeHtml(kernel)+'</span><span class="meta-chip">nbformat '+escapeHtml(notebook.nbformat||'—')+'</span></div></section><div class="cells">'+cells.map((c,i)=>renderCell(c,i,language)).join('')+'</div>';
+
+    main.querySelectorAll('.markdown-body,.output-body').forEach(patchLinks);
+    if(window.hljs)main.querySelectorAll('pre code').forEach(el=>{try{hljs.highlightElement(el)}catch{}});
+    await typeset();
+    notifyReady();
+
+    if(initialFind){
+      findInput.value=initialFind;rebuildFindHits();
+      if(initialCell&&findHits.includes(initialCell)){findCursor=findHits.indexOf(initialCell);findStatus.textContent=(findCursor+1)+'/'+findHits.length;scrollToCell(initialCell,false)}
+      else if(findHits.length){findCursor=0;findStatus.textContent='1/'+findHits.length;scrollToCell(findHits[0],false)}
+      else if(initialCell)scrollToCell(initialCell,false);
+    }else if(initialCell){
+      scrollToCell(initialCell,false);
+    }
+  }catch(err){
+    main.innerHTML='<div class="error"><div><strong>Не удалось открыть notebook.</strong><br><br>'+escapeHtml(err?.message||String(err))+'</div></div>';
+    notifyReady();
+  }
+}
+back.onclick=()=>{
+  if(window.parent!==window&&full){
+    window.parent.postMessage({type:'nsu-close-pdf'},location.origin);return;
+  }
+  if(history.length>1)history.back();
+  else location.href='../'+(subject?'#subject='+encodeURIComponent(subject):'');
+};
+findInput.addEventListener('input',rebuildFindHits);
+findInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();moveFind(e.shiftKey?-1:1)}});
+findNext.onclick=()=>moveFind(1);
+findPrev.onclick=()=>moveFind(-1);
+window.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();findInput.focus();findInput.select()}
+  if(e.key==='Escape'&&full&&window.parent!==window)window.parent.postMessage({type:'nsu-close-pdf'},location.origin);
+});
+window.addEventListener('load',()=>{void typeset()});
+openNotebook();
+</script>
+</body>
+</html>
