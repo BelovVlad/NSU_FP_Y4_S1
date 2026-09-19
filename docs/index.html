@@ -287,6 +287,69 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
   .search-pro-preview.mobile-visible{display:block}.search-preview-close{display:block}.search-preview-frame-wrap{height:calc(100vh - 245px);min-height:280px}
 }
 
+
+/* Halcyon Memories music control */
+.music-control{padding:9px 0 11px;border-top:1px solid var(--line2)}
+.music-toggle{
+  width:100%;min-height:54px;display:grid;grid-template-columns:38px minmax(0,1fr) 22px;align-items:center;gap:9px;
+  padding:7px 9px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--text2);
+  cursor:pointer;text-align:left;transition:background .22s ease,border-color .22s ease,color .22s ease,box-shadow .22s ease
+}
+.music-toggle:hover{border-color:var(--line);background:rgba(255,255,255,.025);color:var(--text)}
+.music-pearl-shell{width:36px;height:36px;display:grid;place-items:center;filter:drop-shadow(0 0 5px rgba(179,72,217,.28));transition:filter .35s ease}
+.music-pearl{width:34px;height:34px;display:block;object-fit:contain;image-rendering:pixelated;transform-origin:50% 50%}
+.music-toggle.playing .music-pearl{animation:pearlSpin 7.5s linear infinite}
+.music-copy{min-width:0}.music-title{display:block;overflow:hidden;color:#d7cfda;font-size:11px;font-weight:750;text-overflow:ellipsis;white-space:nowrap}
+.music-status{display:block;margin-top:2px;overflow:hidden;color:#6f7a84;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+.music-glyph{justify-self:end;color:#8b9299;font-size:12px;line-height:1}.music-toggle.playing .music-glyph{color:var(--accent)}
+@keyframes pearlSpin{to{transform:rotate(360deg)}}
+body,body .sidebar,body .topbar,body .panel,body .nav-btn,body .subject-btn,body .tab,body .hero,body .searchbox input{
+  transition:background-color .5s ease,border-color .5s ease,color .5s ease,box-shadow .5s ease
+}
+body.music-na19{
+  --bg:#071112;--bg2:#091718;--side:#081415;--panel:#0c191a;--panel2:#102123;
+  --line:#244247;--line2:#173034;--text:#eff8f6;--text2:#bed5d3;--muted:#719395;
+  --cream:#d9f4ef;--warm:#79c8c6;--accent:#53c8c5;--accent2:#1d7476;--soft:rgba(83,200,197,.14);
+  --music-accent-rgb:83,200,197
+}
+body.music-na19x{
+  --bg:#0c0f12;--bg2:#11161a;--side:#0e1316;--panel:#151a1e;--panel2:#1a2025;
+  --line:#39444b;--line2:#283137;--text:#f7f8f7;--text2:#d7dcde;--muted:#98a3aa;
+  --cream:#f2f3ef;--warm:#c8d0d4;--accent:#e6ecef;--accent2:#87949c;--soft:rgba(230,236,239,.12);
+  --music-accent-rgb:230,236,239
+}
+body.music-na19 .sidebar{
+  background:radial-gradient(430px 310px at 18% 88%,rgba(34,154,157,.22),transparent 66%),linear-gradient(180deg,#071012 0%,#081719 72%,#0a1516 100%)
+}
+body.music-na19x .sidebar{
+  background:radial-gradient(430px 310px at 18% 88%,rgba(232,238,242,.13),transparent 66%),linear-gradient(180deg,#0d1114 0%,#12171b 72%,#0f1316 100%)
+}
+body.music-active .topbar{background:color-mix(in srgb,var(--bg) 89%,transparent)}
+body.music-active .hero{
+  background:radial-gradient(560px 230px at 88% 24%,rgba(var(--music-accent-rgb),.13),transparent 64%),linear-gradient(180deg,color-mix(in srgb,var(--bg2) 94%,transparent),color-mix(in srgb,var(--bg) 48%,transparent))
+}
+body.music-active .nav-btn.active{border-color:rgba(var(--music-accent-rgb),.24);background:linear-gradient(90deg,rgba(var(--music-accent-rgb),.24),rgba(var(--music-accent-rgb),.09));color:var(--cream)}
+body.music-active .subject-btn.active{background:linear-gradient(90deg,rgba(var(--music-accent-rgb),.31),rgba(var(--music-accent-rgb),.14));color:var(--cream);box-shadow:inset 2px 0 0 var(--accent)}
+body.music-active .subject-btn.active .subject-count{background:rgba(var(--music-accent-rgb),.16);color:var(--cream)}
+body.music-active .tab.active:after{background:var(--accent)}
+body.music-active .new-badge,
+body.music-active .search-badge{border-color:rgba(var(--music-accent-rgb),.32);background:rgba(var(--music-accent-rgb),.12);color:var(--cream)}
+body.music-active .preview-tab.active,
+body.music-active .search-filter-chip.active,
+body.music-active .search-page-hit.active{border-color:rgba(var(--music-accent-rgb),.48);background:rgba(var(--music-accent-rgb),.11);color:var(--cream)}
+body.music-active .action.primary,
+body.music-active .search-open{border-color:rgba(var(--music-accent-rgb),.36);background:rgba(var(--music-accent-rgb),.13);color:var(--cream)}
+body.music-active mark,
+body.music-active .search-group-snippet mark,
+body.music-active .search-preview-text mark{background:rgba(var(--music-accent-rgb),.22);color:var(--cream)}
+body.music-active .search-group.active{background:linear-gradient(90deg,rgba(var(--music-accent-rgb),.26),rgba(var(--music-accent-rgb),.08));box-shadow:inset 2px 0 0 var(--accent)}
+body.music-active .search-preview-kicker{color:var(--accent)}
+body.music-na19 .music-toggle.playing{border-color:rgba(83,200,197,.28);background:rgba(83,200,197,.07);box-shadow:inset 0 0 18px rgba(83,200,197,.035)}
+body.music-na19 .music-pearl-shell{filter:drop-shadow(0 0 7px rgba(83,200,197,.62))}
+body.music-na19x .music-toggle.playing{border-color:rgba(230,236,239,.28);background:rgba(230,236,239,.055);box-shadow:inset 0 0 18px rgba(230,236,239,.035)}
+body.music-na19x .music-pearl-shell{filter:drop-shadow(0 0 8px rgba(238,244,247,.68))}
+@media(prefers-reduced-motion:reduce){.music-toggle.playing .music-pearl{animation:none}}
+
 </style>
 </head>
 <body>
@@ -311,6 +374,14 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 
     <div class="subjects-label">Предметы</div>
     <nav id="subjectNav" class="subject-nav"></nav>
+    <div class="music-control">
+      <button id="musicToggle" class="music-toggle" type="button" aria-pressed="false" title="Halcyon Memories · 90% NA 19 / 10% NA 19x">
+        <span class="music-pearl-shell" aria-hidden="true"><img class="music-pearl" src="assets/ui/music_pearl.png" alt=""></span>
+        <span class="music-copy"><span class="music-title">Halcyon Memories</span><span id="musicStatus" class="music-status">Включить музыку</span></span>
+        <span id="musicGlyph" class="music-glyph" aria-hidden="true">▶</span>
+      </button>
+      <audio id="siteMusic" preload="none" loop></audio>
+    </div>
     <div class="sidebar-bottom">
       <a class="repo-link" href="https://github.com/BelovVlad/NSU_FP_Y4_S1" target="_blank" rel="noopener"><span>GitHub</span><span data-icon="external" aria-hidden="true"></span></a>
     </div>
@@ -341,6 +412,11 @@ const META={
   'База':{name:'База знаний'}
 };
 const HERO_IMAGE='assets/nsu-eva-hero.webp?v=77a2ef896671';
+const MUSIC_TRACKS=[
+  {id:'na19',label:'NA 19',src:'assets/music/NA%2019%20-%20Halcyon%20Memories.mp3',theme:'music-na19'},
+  {id:'na19x',label:'NA 19x',src:'assets/music/NA%2019x%20-%20Halcyon%20Memories.mp3',theme:'music-na19x'}
+];
+
 const UI_ICONS={
   home:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 3l8.5 7.5"/><path d="M5.5 9.5V21h13V9.5"/><path d="M9.5 21v-6h5v6"/></svg>',
   subjects:'<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1.5"/><rect x="14" y="3.5" width="6.5" height="6.5" rx="1.5"/><rect x="3.5" y="14" width="6.5" height="6.5" rx="1.5"/><rect x="14" y="14" width="6.5" height="6.5" rx="1.5"/></svg>',
@@ -360,7 +436,7 @@ let FILES=[];
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 hydrateIcons();
 const state={view:'subjects',subject:(ORDER.includes(hashSubject())?hashSubject():'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
-const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay');
+const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicStatus=$('#musicStatus'),musicGlyph=$('#musicGlyph');
 let searchRun=0,searchTimer=0,searchPromise=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
 function syncSubjectHash(){if(state.view!=='subjects'||!ORDER.includes(state.subject))return;const h='#subject='+encodeURIComponent(state.subject);if(location.hash!==h)history.replaceState(null,'',h)}
@@ -445,6 +521,40 @@ function keywords(f){
   const source=(niceName(f)+' '+fileDesc(f)).replace(/[^\p{L}\p{N}]+/gu,' ').split(/\s+/).filter(x=>x.length>4);
   return [...new Set(source)].slice(0,4);
 }
+
+
+let activeMusicTrack=null;
+function chooseMusicTrack(){
+  activeMusicTrack=Math.random()<0.10?MUSIC_TRACKS[1]:MUSIC_TRACKS[0];
+  musicAudio.src=activeMusicTrack.src;
+  musicAudio.volume=.28;
+  return activeMusicTrack;
+}
+function setMusicTheme(on){
+  document.body.classList.remove('music-active','music-na19','music-na19x');
+  if(on&&activeMusicTrack)document.body.classList.add('music-active',activeMusicTrack.theme);
+}
+function syncMusicUi(playing){
+  musicToggle.classList.toggle('playing',playing);
+  musicToggle.setAttribute('aria-pressed',playing?'true':'false');
+  musicGlyph.textContent=playing?'Ⅱ':'▶';
+  if(activeMusicTrack)musicStatus.textContent=activeMusicTrack.label+(playing?' · играет':' · пауза');
+  else musicStatus.textContent='Включить музыку';
+  setMusicTheme(playing);
+}
+async function toggleMusic(){
+  if(!activeMusicTrack)chooseMusicTrack();
+  if(!musicAudio.paused){musicAudio.pause();return}
+  try{await musicAudio.play()}catch(e){
+    console.error('Music playback failed',e);
+    musicStatus.textContent='Не удалось запустить';
+    setMusicTheme(false);
+  }
+}
+musicToggle.addEventListener('click',toggleMusic);
+musicAudio.addEventListener('play',()=>syncMusicUi(true));
+musicAudio.addEventListener('pause',()=>syncMusicUi(false));
+musicAudio.addEventListener('error',()=>{musicStatus.textContent='Аудиофайл недоступен';syncMusicUi(false)});
 
 function setActiveNav(view){
   $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
