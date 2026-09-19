@@ -74,6 +74,20 @@ const params=new URLSearchParams(location.search);
 function currentMaterialPath(path){
   if(!path)return path;
   const parts=path.split('/');
+  const labNames={
+    'lab_1_2026.pdf':'Лаба 1 — Ферритовый циркулятор.pdf',
+    'lab_2.pdf':'Лаба 2 — Волноводный направленный ответвитель.pdf',
+    'lab_3_2010.pdf':'Лаба 3 — Измерение мощности в диапазоне СВЧ.pdf',
+    'lab_4.pdf':'Лаба 4 — Измерение сопротивлений волноводной измерительной линией.pdf',
+    'lab_5.pdf':'Лаба 5 — Взаимные четырёхполюсники без потерь.pdf',
+    'lab_6_2026.pdf':'Лаба 6 — Волноводные диафрагмы. Измерения импедометром.pdf',
+    'lab_7_20206.pdf':'Лаба 7 — Добротность объёмного резонатора.pdf',
+    'lab_8.pdf':'Лаба 8 — Поля в объёмном резонаторе. Метод малого возмущающего тела.pdf',
+    'lab_9_2010.pdf':'Лаба 9 — Рупорные и линзовые антенны.pdf'
+  };
+  if(parts.length===3&&parts[0]==='СВЧ'&&parts[1]==='02_Литература'&&Object.hasOwn(labNames,parts[2])){
+    return `${parts[0]}/${parts[1]}/${labNames[parts[2]]}`;
+  }
   const kind=parts[1]?.match(/^\d+_(Лекции|Семинары|Месячные_задания)$/)?.[1];
   if(parts.length===3&&parts[2]==='final.pdf'&&kind&&['ОВФ','ТДиСФ','ФКСВ','ФЭЧ','ФиХАиМ'].includes(parts[0])){
     return `${parts[0]}/${parts[1]}/${parts[0]}_${kind}.pdf`;
