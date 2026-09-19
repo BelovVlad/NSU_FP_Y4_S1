@@ -773,8 +773,10 @@ async function loadMeta(){
   render();
 }
 
-$$('.nav-btn').forEach(b=>b.onclick=()=>{
-  state.view=b.dataset.view;setActiveNav(state.view);renderSubjectNav();
+$('.nav-btn').forEach(b=>b.onclick=()=>{
+  state.view=b.dataset.view;
+  if(state.view!=='subjects')clearSubjectHash();
+  setActiveNav(state.view);renderSubjectNav();
   if(state.view==='search'){searchInput.focus();runSearch(searchInput.value)}else render();
   closeMenu();
 });
