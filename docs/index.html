@@ -750,11 +750,11 @@ body.music-rare-arrival .hero-art img{animation:rareHeroArrival 1.35s ease-out b
 .giscus-wrap .giscus,.giscus-wrap .giscus-frame{width:100%}
 .feedback-loading,.feedback-setup{min-height:86px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:11px;line-height:1.55}
 .feedback-setup{flex-direction:column;gap:10px}
-.feedback-setup a{
+.feedback-setup a,.feedback-retry{
   display:inline-flex;align-items:center;justify-content:center;min-height:32px;padding:0 11px;border:1px solid var(--line);
-  border-radius:8px;background:var(--panel2);color:var(--text2);font-size:10px;font-weight:700;text-decoration:none
+  border-radius:8px;background:var(--panel2);color:var(--text2);font-size:10px;font-weight:700;text-decoration:none;cursor:pointer
 }
-.feedback-setup a:hover{border-color:var(--accent);color:var(--cream)}
+.feedback-setup a:hover,.feedback-retry:hover{border-color:var(--accent);color:var(--cream)}
 body.music-active .feedback-panel{border-color:color-mix(in srgb,var(--line) 78%,var(--accent) 22%)}
 body.music-active .feedback-kicker{color:var(--accent)}
 @media(max-width:720px){
@@ -789,6 +789,32 @@ body.music-na19x.music-glitch-hard .pdf-fullscreen-frame{
     transform:translate(var(--glitch-shift,0px),var(--glitch-shift-y,0px))!important;
     filter:brightness(calc(1.04 + var(--glitch-level,0) * .24)) contrast(calc(1.03 + var(--glitch-level,0) * .2))!important
   }
+}
+
+
+/* Search filter active-state visibility */
+.search-filter-chip.active{
+  border-color:var(--accent)!important;
+  background:color-mix(in srgb,var(--accent) 34%,var(--panel2) 66%)!important;
+  color:#fff!important;
+  font-weight:800;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb,var(--accent) 42%,transparent),
+    inset 0 0 14px color-mix(in srgb,var(--accent) 18%,transparent)!important;
+}
+body.music-active .search-filter-chip.active{
+  border-color:var(--accent)!important;
+  background:color-mix(in srgb,var(--accent) 38%,var(--panel2) 62%)!important;
+  color:var(--cream)!important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb,var(--accent) 58%,transparent),
+    inset 0 0 16px color-mix(in srgb,var(--accent) 22%,transparent)!important;
+}
+body.music-na19x .search-filter-chip.active{
+  border-color:#f8fbfc!important;
+  background:#edf2f4!important;
+  color:#171c20!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.58),0 0 14px rgba(255,255,255,.08)!important;
 }
 
 </style>
@@ -1419,14 +1445,10 @@ async function mountFeedback(){
   const serial=++giscusLoadSerial;
   mount.innerHTML='<div class="feedback-loading">Загружаю обсуждение…</div>';
   try{
-    const endpoint='https://giscus.app/api/discussions/categories?repo='+encodeURIComponent(OWNER+'/'+REPO);
-    const response=await fetch(endpoint,{headers:{Accept:'application/json'}});
-    if(!response.ok)throw new Error('giscus categories '+response.status);
-    const data=await response.json();
-    const cats=Array.isArray(data.categories)?data.categories:[];
-    const preferred=['Ideas','General','Announcements'];
-    const category=preferred.map(name=>cats.find(c=>c.name===name)).find(Boolean)||cats[0];
-    if(!data.repositoryId||!category?.id)throw new Error('No discussion category');
+    const response=await fetch('giscus-config.json?v='+Date.now(),{cache:'no-store'});
+    if(!response.ok)throw new Error('giscus config '+response.status);
+    const cfg=await response.json();
+    if(!cfg.repoId||!cfg.categoryId||!cfg.category)throw new Error('Incomplete giscus config');
     if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
 
     mount.replaceChildren();
@@ -1435,9 +1457,9 @@ async function mountFeedback(){
     script.async=true;
     script.crossOrigin='anonymous';
     script.dataset.repo=OWNER+'/'+REPO;
-    script.dataset.repoId=data.repositoryId;
-    script.dataset.category=category.name;
-    script.dataset.categoryId=category.id;
+    script.dataset.repoId=cfg.repoId;
+    script.dataset.category=cfg.category;
+    script.dataset.categoryId=cfg.categoryId;
     script.dataset.mapping='specific';
     script.dataset.term='NSU FP · Идеи и замечания';
     script.dataset.strict='1';
@@ -1446,11 +1468,24 @@ async function mountFeedback(){
     script.dataset.inputPosition='top';
     script.dataset.theme=giscusThemeForSite();
     script.dataset.lang='ru';
-    script.dataset.loading='lazy';
+    script.onerror=()=>{
+      if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
+      mount.innerHTML='<div class="feedback-setup"><span>Не удалось загрузить комментарии.</span><button class="feedback-retry" type="button">Повторить</button></div>';
+      mount.querySelector('.feedback-retry')?.addEventListener('click',()=>mountFeedback());
+    };
     mount.appendChild(script);
+
+    setTimeout(()=>{
+      if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
+      if(!mount.querySelector('.giscus-frame')){
+        mount.innerHTML='<div class="feedback-setup"><span>giscus отвечает слишком долго.</span><button class="feedback-retry" type="button">Повторить</button></div>';
+        mount.querySelector('.feedback-retry')?.addEventListener('click',()=>mountFeedback());
+      }
+    },8000);
   }catch(e){
     if(serial!==giscusLoadSerial||!document.body.contains(mount))return;
-    mount.innerHTML='<div class="feedback-setup"><span>Обсуждения включены, но giscus ещё не подключён к репозиторию.</span><a href="https://github.com/apps/giscus" target="_blank" rel="noopener">Подключить giscus ↗</a></div>';
+    mount.innerHTML='<div class="feedback-setup"><span>Комментарии настраиваются. Обновите страницу через минуту.</span><button class="feedback-retry" type="button">Проверить снова</button></div>';
+    mount.querySelector('.feedback-retry')?.addEventListener('click',()=>mountFeedback());
   }
 }
 

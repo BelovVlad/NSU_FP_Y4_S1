@@ -1,0 +1,73 @@
+name: Build giscus config
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/giscus-config.yml"
+
+permissions:
+  contents: write
+  discussions: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read discussion category IDs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY_OWNER}"
+          NAME="${GITHUB_REPOSITORY#*/}"
+
+          DATA="$(gh api graphql \
+            -f owner="$OWNER" \
+            -f name="$NAME" \
+            -f query='
+              query($owner: String!, $name: String!) {
+                repository(owner: $owner, name: $name) {
+                  id
+                  discussionCategories(first: 25) {
+                    nodes { id name }
+                  }
+                }
+              }')"
+
+          printf '%s\n' "$DATA" | jq '
+            .data.repository as $repo |
+            ($repo.discussionCategories.nodes // []) as $cats |
+            (
+              ($cats | map(select(.name == "Ideas")) | first) //
+              ($cats | map(select(.name == "General")) | first) //
+              ($cats | first)
+            ) as $cat |
+            if ($repo.id == null or $cat == null) then
+              error("No GitHub Discussions category found")
+            else
+              {
+                repoId: $repo.id,
+                category: $cat.name,
+                categoryId: $cat.id
+              }
+            end
+          ' > docs/giscus-config.json
+
+      - name: Commit generated config
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/giscus-config.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Generate giscus discussion config"
+          git push
