@@ -192,7 +192,7 @@ function jumpToPage(){if(!pdf)return;const n=Math.max(1,Math.min(pdf.numPages,Nu
 
 function closeOutline(){outlinePanel.classList.remove('open');document.body.classList.remove('outline-open')}
 async function openOutline(){if(!pdf)return;closeSearch();outlinePanel.classList.add('open');document.body.classList.add('outline-open');if(!outlineLoaded)await loadOutline()}
-function openSearch(){closeOutline();searchPanel.classList.add('open');document.body.classList.add('search-open');setTimeout(()=>searchInput.focus(),0)}
+function openSearch(){closeOutline();searchPanel.classList.add('open');document.body.classList.add('search-open');void loadIndexedSearchPages();setTimeout(()=>searchInput.focus(),0)}
 function closeSearch(){searchToken++;searchBusy=false;searchPanel.classList.remove('open');document.body.classList.remove('search-open');searchStatus.textContent='Enter — найти';clearHighlights()}
 function resetSearch(){searchToken++;searchBusy=false;searchQuery='';searchPage=pageNum;searchOccurrence=-1;searchSource='auto';searchStatus.textContent=searchInput.value.trim()?'Enter — найти':'Введите текст';clearHighlights()}
 function clearHighlights(){highlightLayer.replaceChildren()}
@@ -468,7 +468,7 @@ async function open(){
   title.textContent=titleParam||decodeURIComponent(raw.split('/').pop());document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Проверяю файл…');
   try{
     pdfUrl=await resolvePdfUrl(raw);direct.href=pdfUrl;showLoading('Открываю документ…');const task=pdfjsLib.getDocument({url:pdfUrl,disableRange:false,disableStream:true,disableAutoFetch:true,rangeChunkSize:262144});task.onProgress=p=>{if(p.total&&p.loaded)loadingText.textContent=`Загрузка: ${Math.min(100,Math.round(p.loaded/p.total*100))}%`};
-    pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,pageParam||rememberedPage()));searchPage=pageNum;scale=1;fitWidth=window.matchMedia('(max-width:760px)').matches;updateControls();void loadIndexedSearchPages();await renderPage();notifyParentPdfReady();if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
+    pdf=await task.promise;pageNum=Math.min(pdf.numPages,Math.max(1,pageParam||rememberedPage()));searchPage=pageNum;scale=1;fitWidth=window.matchMedia('(max-width:760px)').matches;updateControls();await renderPage();notifyParentPdfReady();if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
   }catch(err){fail(err?.message||String(err))}
 }
 
