@@ -2,6 +2,17 @@
 (() => {
   'use strict';
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  // Temporary review mode: deliberately frequent appearances so the cameo is easy to inspect.
+  // After visual approval, these probabilities/intervals can be reduced without touching the animation.
+  const CONFIG = Object.freeze({
+    idleChance: .72,
+    musicChance: .93,
+    trialInterval: 9000,
+    initialDelay: 1800,
+    cooldown: 18000,
+    minDuration: 7200,
+    durationJitter: 2800
+  });
   const canvas = document.createElement('canvas');
   canvas.width = 144;
   canvas.height = 154;
@@ -76,6 +87,10 @@
     const hasPointer = pointer.x > 0;
     gaze.x += ((hasPointer ? target.x / 160 : -.55 + Math.sin(t * .8) * .3) - gaze.x) * .07;
     gaze.y += ((hasPointer ? target.y / 110 : .15 + Math.cos(t * .9) * .2) - gaze.y) * .07;
+    // The head follows the eye by only a few pixels, which makes the creature feel attentive
+    // without moving the page or creating a hard-to-click target.
+    head.x += gaze.x * 2.4;
+    head.y += gaze.y * 1.4;
     const cyan = 'rgba(111,231,255,.90)', pale = 'rgba(206,251,255,.94)';
     ctx.globalAlpha = extension * (.95 + Math.sin(t * 17) * .035);
 
@@ -102,15 +117,19 @@
       const phase = t * 2.5 + i * 1.8;
       const root = [head.x + 4, head.y - 19 + Math.floor(i / 2) * 6];
       const elbow = [head.x + side * (15 + Math.sin(phase) * 4), head.y - 13 + Math.cos(phase) * 5];
-      const tip = [head.x + side * (19 + Math.sin(phase + .8) * 5), head.y + 2 + Math.cos(phase * .8) * 7];
+      const tip = [
+        head.x + side * (19 + Math.sin(phase + .8) * 5 + Math.sin(t * 5.1 + i) * 1.4),
+        head.y + 2 + Math.cos(phase * .8) * 7 + Math.sin(t * 3.7 + i * .9) * 1.2
+      ];
       line([root, elbow, tip], 'rgba(112,223,249,.65)');
       ctx.fillStyle = '#6178ff';
       ctx.fillRect(Math.round(tip[0]), Math.round(tip[1]), 2, 2);
     }
 
     // A dim halo is drawn locally, never as a screen-wide flash.
+    const haloPulse = .15 + (Math.sin(t * 2.4) + 1) * .035;
     const glow = ctx.createRadialGradient(head.x, head.y, 2, head.x, head.y, 27);
-    glow.addColorStop(0, 'rgba(116,225,255,.19)');
+    glow.addColorStop(0, `rgba(116,225,255,${haloPulse.toFixed(3)})`);
     glow.addColorStop(1, 'rgba(116,225,255,0)');
     ctx.fillStyle = glow;
     ctx.fillRect(head.x - 27, head.y - 27, 54, 54);
@@ -118,8 +137,9 @@
     // An orbit of broken triangular marks, flattened as the eye turns.
     for (let i = 0; i < 7; i++) {
       const angle = i * Math.PI * 2 / 7 + t * .42;
-      const x = head.x + Math.cos(angle) * 18;
-      const y = head.y + Math.sin(angle) * 15;
+      const orbitPulse = 1 + Math.sin(t * 1.3 + i * .7) * .045;
+      const x = head.x + Math.cos(angle) * 18 * orbitPulse;
+      const y = head.y + Math.sin(angle) * 15 * orbitPulse;
       const radial = [Math.cos(angle), Math.sin(angle)];
       line([[x - radial[1] * 2, y + radial[0] * 2],
         [x + radial[0] * 5, y + radial[1] * 5],
@@ -134,16 +154,40 @@
     const b = [head.x + dx * 13 + dy * 8, head.y + dy * 13 - dx * 8];
     line([a, tip, b], 'rgba(137,239,255,.60)', 1, true);
     line([[head.x + dx * 10, head.y + dy * 10], tip], 'rgba(137,239,255,.25)');
+    const scan = (t * 1.7) % 1;
+    const scanX = head.x + dx * (10 + scan * 22);
+    const scanY = head.y + dy * (10 + scan * 22);
+    ctx.fillStyle = `rgba(205,251,255,${(.18 + (1 - scan) * .48).toFixed(3)})`;
+    ctx.fillRect(Math.round(scanX), Math.round(scanY), 2, 2);
+
+    // A faint local ping occasionally expands around the eye.
+    const ping = (t * .52) % 1;
+    if (ping < .64) {
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, 10 + ping * 24, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(113,227,255,${((.64 - ping) * .20).toFixed(3)})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
 
     // Small bright eye, with a dark rim and a white diamond-shaped lens.
     ctx.fillStyle = '#163c54';
     ctx.beginPath();ctx.ellipse(head.x, head.y, 8, 7, -.35, 0, Math.PI * 2);ctx.fill();
     ctx.strokeStyle = cyan;ctx.lineWidth = 1.4;ctx.stroke();
     const eyeX = head.x + gaze.x * 2, eyeY = head.y + gaze.y * 1.5;
+    // Two quick blinks in a roughly five-second cycle.
+    const blinkPhase = (t % 5.2);
+    const blinkA = blinkPhase > 4.54 && blinkPhase < 4.70;
+    const blinkB = blinkPhase > 4.84 && blinkPhase < 4.95;
+    const eyeOpen = (blinkA || blinkB) ? .18 : 1;
+    const eyeH = 5 * eyeOpen;
     ctx.fillStyle = pale;
-    ctx.beginPath();ctx.moveTo(eyeX, eyeY - 5);ctx.lineTo(eyeX + 4, eyeY);
-    ctx.lineTo(eyeX, eyeY + 5);ctx.lineTo(eyeX - 4, eyeY);ctx.closePath();ctx.fill();
-    ctx.fillStyle = '#fff';ctx.fillRect(Math.round(eyeX - 1), Math.round(eyeY - 2), 2, 3);
+    ctx.beginPath();ctx.moveTo(eyeX, eyeY - eyeH);ctx.lineTo(eyeX + 4, eyeY);
+    ctx.lineTo(eyeX, eyeY + eyeH);ctx.lineTo(eyeX - 4, eyeY);ctx.closePath();ctx.fill();
+    if (eyeOpen > .5) {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(Math.round(eyeX - 1), Math.round(eyeY - 2), 2, 3);
+    }
 
     // Occasional small signal specks, kept inside the cameo's bounds.
     for (let i = 0; i < 3; i++) {
@@ -172,31 +216,37 @@
     const anchor = host();
     if (!anchor || reducedMotion.matches || visit || (!preview && Date.now() < nextAllowed)) return false;
     gaze = {x: -.6, y: .1};
-    visit = {host: anchor, start: performance.now(), duration: 6500 + Math.random() * 2500, retreatAt: null};
-    nextAllowed = Date.now() + 120000;
+    visit = {
+      host: anchor,
+      start: performance.now(),
+      duration: CONFIG.minDuration + Math.random() * CONFIG.durationJitter,
+      retreatAt: null
+    };
+    nextAllowed = Date.now() + CONFIG.cooldown;
     canvas.style.display = 'block';
     place(anchor);
     frame = requestAnimationFrame(tick);
     return true;
   }
 
-  function scheduleTrial() {
+  function scheduleTrial(delay = CONFIG.trialInterval) {
     clearTimeout(trialTimer);
     if (document.hidden || reducedMotion.matches) return;
     trialTimer = setTimeout(() => {
       const playing = document.body.classList.contains('music-active');
-      if (Math.random() < (playing ? .18 : .01)) appear();
+      if (Math.random() < (playing ? CONFIG.musicChance : CONFIG.idleChance)) appear();
       scheduleTrial();
-    }, 30000);
+    }, delay);
   }
 
   window.addEventListener('pointermove', e => {
     if (e.pointerType === 'mouse') {pointer.x = e.clientX;pointer.y = e.clientY}
   }, {passive: true});
   document.addEventListener('pointerleave', () => {pointer.x = pointer.y = -1000});
-  document.addEventListener('visibilitychange', () => {hide();scheduleTrial()});
-  reducedMotion.addEventListener('change', () => {hide();scheduleTrial()});
-  scheduleTrial();
+  document.addEventListener('visibilitychange', () => {hide();scheduleTrial(CONFIG.initialDelay)});
+  reducedMotion.addEventListener('change', () => {hide();scheduleTrial(CONFIG.initialDelay)});
+  window.addEventListener('blur', () => {pointer.x = pointer.y = -1000});
+  scheduleTrial(CONFIG.initialDelay);
 
   // Explicit local/demo URL: normal visitors never receive forced appearances.
   if (new URLSearchParams(location.search).get('overseer') === 'preview') {
