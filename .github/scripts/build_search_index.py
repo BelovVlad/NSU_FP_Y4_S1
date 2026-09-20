@@ -10,7 +10,7 @@ import fitz  # PyMuPDF
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "docs" / "search-index"
-ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "КМ", "База"]
+ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "КМ", "База"]\nHIDDEN_SITE_PATHS = {"ФЭЧ/04_Литератру/PhysRevD.pdf"}
 
 
 def clean_text(text: str) -> str:
@@ -217,6 +217,8 @@ def iter_materials(subject: str):
         if not full.is_file():
             continue
         rel = full.relative_to(ROOT)
+        if rel.as_posix() in HIDDEN_SITE_PATHS:
+            continue
         if subject == "База" and is_qm_path(rel):
             continue
         if "LaTeX" in rel.parts or ".ipynb_checkpoints" in rel.parts:
