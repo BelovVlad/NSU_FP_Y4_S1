@@ -87,11 +87,11 @@
     const hasPointer = pointer.x > 0;
     gaze.x += ((hasPointer ? target.x / 160 : -.55 + Math.sin(t * .8) * .3) - gaze.x) * .07;
     gaze.y += ((hasPointer ? target.y / 110 : .15 + Math.cos(t * .9) * .2) - gaze.y) * .07;
-    // The whole body follows the gaze: the eye leads and the torso bends after it.
-    head.x += gaze.x * 4.2;
-    head.y += gaze.y * 2.4;
-    const bodyBendX = gaze.x * 11.5;
-    const bodyBendY = gaze.y * 6.5;
+    // The eye leads; the head and body follow only slightly so the silhouette stays stable.
+    head.x += gaze.x * 2.2;
+    head.y += gaze.y * 1.2;
+    const bodyBendX = gaze.x * 4.6;
+    const bodyBendY = gaze.y * 2.2;
     const bodyFill = '#7ab2a1';
     const bodyDark = '#5f9486';
     const bodyLight = '#a8d5c7';
@@ -102,52 +102,67 @@
     const eyeWhite = '#ffffff';
     ctx.globalAlpha = extension * (.95 + Math.sin(t * 17) * .035);
 
-    // Filled, curved body. Both edges react to the gaze so the silhouette visibly arcs.
+    // Stable curved body: paired contours share the same bend, so turns cannot self-distort.
     const rootX = 96;
     const rootY = -4;
-    const upper1 = [93 + sway + bodyBendX * .08, head.y * .21 + bodyBendY * .04];
-    const upper2 = [head.x + 29 + bodyBendX * .58, head.y - 23 + bodyBendY * .42];
-    const lower2 = [head.x - 18 + bodyBendX * .32, head.y + 11 + bodyBendY * .30];
-    const lower1 = [96 + bodyBendX * .08, head.y * .29 + bodyBendY * .08];
+    const bendX = bodyBendX;
+    const bendY = bodyBendY;
 
     ctx.beginPath();
-    ctx.moveTo(rootX, rootY);
-    ctx.bezierCurveTo(upper1[0], upper1[1], upper2[0], upper2[1], head.x + 7, head.y + 3);
-    ctx.quadraticCurveTo(head.x - 12, head.y + 6, head.x - 11, head.y - 10);
-    ctx.bezierCurveTo(head.x + 7, head.y - 29, lower2[0], lower2[1], lower1[0], lower1[1]);
-    ctx.bezierCurveTo(97 + bodyBendX * .03, head.y * .11, 97, -2, rootX, rootY);
+    ctx.moveTo(rootX - 4, rootY);
+    // Right/outer contour.
+    ctx.bezierCurveTo(
+      91 + sway * .20 + bendX * .08, head.y * .27,
+      head.x + 17 + bendX * .42, head.y - 24 + bendY * .16,
+      head.x + 7, head.y - 4
+    );
+    ctx.quadraticCurveTo(
+      head.x + 10, head.y + 4,
+      head.x + 1, head.y + 8
+    );
+    // Left/inner contour mirrors the same curve instead of using unrelated control points.
+    ctx.quadraticCurveTo(
+      head.x - 8, head.y + 4,
+      head.x - 7, head.y - 4
+    );
+    ctx.bezierCurveTo(
+      head.x - 11 + bendX * .42, head.y - 24 + bendY * .16,
+      99 + sway * .14 + bendX * .08, head.y * .27,
+      rootX + 4, rootY
+    );
     ctx.closePath();
 
-    const bodyGrad = ctx.createLinearGradient(head.x - 24, head.y - 26, head.x + 30, head.y + 18);
+    const bodyGrad = ctx.createLinearGradient(head.x - 18, head.y - 24, head.x + 22, head.y + 14);
     bodyGrad.addColorStop(0, bodyLight);
-    bodyGrad.addColorStop(.30, bodyFill);
+    bodyGrad.addColorStop(.36, bodyFill);
     bodyGrad.addColorStop(1, bodyDark);
     ctx.fillStyle = bodyGrad;
     ctx.fill();
     ctx.strokeStyle = bodyStroke;
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.15;
     ctx.stroke();
 
-    // Soft body highlight and a curved internal spine reinforce the bend.
+    // Subtle highlight follows the same centerline as the body.
     ctx.beginPath();
-    ctx.moveTo(95, -2);
+    ctx.moveTo(rootX - 1, -2);
     ctx.bezierCurveTo(
-      94 + bodyBendX * .05, head.y * .30,
-      head.x + 13 + bodyBendX * .42, head.y - 24 + bodyBendY * .28,
-      head.x + gaze.x * 1.6, head.y + gaze.y * 1.1
+      95 + bendX * .04, head.y * .30,
+      head.x + 6 + bendX * .30, head.y - 20 + bendY * .12,
+      head.x + 1, head.y - 2
     );
-    ctx.strokeStyle = 'rgba(236,255,249,.28)';
+    ctx.strokeStyle = 'rgba(236,255,249,.25)';
     ctx.lineWidth = 1;
     ctx.stroke();
 
+    // Internal spine uses the same curve, preventing the "crumpled" look during turns.
     ctx.beginPath();
-    ctx.moveTo(96, 0);
+    ctx.moveTo(rootX, 0);
     ctx.bezierCurveTo(
-      94 + bodyBendX * .04, head.y * .44,
-      head.x + 8 + bodyBendX * .34, head.y - 25 + bodyBendY * .24,
+      96 + bendX * .03, head.y * .36,
+      head.x + 4 + bendX * .26, head.y - 18 + bendY * .10,
       head.x, head.y
     );
-    ctx.strokeStyle = 'rgba(84,143,131,.55)';
+    ctx.strokeStyle = 'rgba(84,143,131,.50)';
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -221,50 +236,39 @@
       ctx.stroke();
     }
 
-    // White eyeball, blue moving iris and a hooked vertical pupil like the reference.
-    const eyeX = head.x + gaze.x * 3.2;
-    const eyeY = head.y + gaze.y * 2.2;
+    // White eyeball with one simple blue vertical pupil.
+    const eyeX = head.x + gaze.x * 2.2;
+    const eyeY = head.y + gaze.y * 1.5;
     const blinkPhase = t % 5.2;
     const blinkA = blinkPhase > 4.54 && blinkPhase < 4.70;
     const blinkB = blinkPhase > 4.84 && blinkPhase < 4.95;
     const eyeOpen = (blinkA || blinkB) ? .18 : 1;
 
-    // Dark socket around the eyeball.
+    // Dark socket around the white eyeball.
     ctx.fillStyle = '#315e58';
     ctx.beginPath();
-    ctx.ellipse(head.x, head.y, 9.5, 8, -.22, 0, Math.PI * 2);
+    ctx.ellipse(head.x, head.y, 9.5, 8, -.16, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = bodyStroke;
     ctx.lineWidth = 1.1;
     ctx.stroke();
 
-    // White eyeball itself.
+    // White eyeball.
     ctx.save();
     ctx.beginPath();
-    ctx.ellipse(head.x, head.y, 7.7, Math.max(1.35, 6.3 * eyeOpen), -.18, 0, Math.PI * 2);
+    ctx.ellipse(head.x, head.y, 7.7, Math.max(1.35, 6.1 * eyeOpen), -.12, 0, Math.PI * 2);
     ctx.clip();
     ctx.fillStyle = eyeWhite;
     ctx.fillRect(head.x - 10, head.y - 9, 20, 18);
 
-    // Blue iris follows the cursor and matches the tentacle tips.
-    ctx.fillStyle = eyeBlue;
-    ctx.beginPath();
-    ctx.ellipse(eyeX, eyeY, 3.4, Math.max(.9, 4.2 * eyeOpen), -.12, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Vertical pupil with two small hooks pointing back toward the body/root.
+    // The pupil is only a blue vertical line; it follows the gaze without changing shape.
     if (eyeOpen > .5) {
-      const back = rootX < eyeX ? -1 : 1;
-      ctx.strokeStyle = '#18375f';
-      ctx.lineWidth = 1.15;
+      ctx.strokeStyle = eyeBlue;
+      ctx.lineWidth = 1.7;
       ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(eyeX, eyeY - 3.0);
-      ctx.lineTo(eyeX, eyeY + 3.0);
-      ctx.moveTo(eyeX, eyeY - 2.9);
-      ctx.lineTo(eyeX + back * 2.1, eyeY - 1.25);
-      ctx.moveTo(eyeX, eyeY + 2.9);
-      ctx.lineTo(eyeX + back * 2.1, eyeY + 1.25);
+      ctx.moveTo(eyeX, eyeY - 3.2);
+      ctx.lineTo(eyeX, eyeY + 3.2);
       ctx.stroke();
     }
     ctx.restore();
