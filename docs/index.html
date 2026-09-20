@@ -1762,7 +1762,11 @@ async function ensureSearch(){
   searchPromise=(async()=>{
     try{
       const man=await fetch('search-index/manifest.json',{cache:'no-store'}).then(r=>r.json());
-      const shards=await Promise.all((man.shards||[]).map(x=>fetch('search-index/'+x.file,{cache:'force-cache'}).then(r=>r.json()).catch(()=>({records:[]}))));
+      const indexVersion=encodeURIComponent(man.generated_at||man.version||'');
+      const shards=await Promise.all((man.shards||[]).map(x=>{
+        const url='search-index/'+x.file+(indexVersion?'?v='+indexVersion:'');
+        return fetch(url,{cache:'force-cache'}).then(r=>r.json()).catch(()=>({records:[]}));
+      }));
       state.searchData=shards.flatMap(x=>x.records||[]);
     }catch(e){state.searchData=[]}
     state.searchBusy=false;
@@ -1923,7 +1927,7 @@ async function loadMeta(){
       fetch('search-index/files.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('files.json '+r.status);return r.json()}),
       fetch('search-index/structure.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():({groups:[]})).catch(()=>({groups:[]}))
     ]);
-    const rows=(data.files||[]).filter(x=>x?.path&&/\.(pdf|ipynb)$/i.test(x.path)&&!x.path.includes('/LaTeX/'));
+    const rows=(data.files||[]).filter(x=>x?.path&&/\.(pdf|ipynb)$/i.test(x.path)&&!x.path.includes('/LaTeX/')&&x.path!=='ФЭЧ/04_Литератру/PhysRevD.pdf');
     FILES=rows.map(x=>({
       path:x.path,
       name:x.path.split('/').pop(),
