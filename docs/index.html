@@ -94,7 +94,9 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .hero h1{margin:0;font-family:Georgia,"Times New Roman",serif;color:var(--cream);font-size:36px;line-height:1;letter-spacing:.01em}
 .hero-sub{margin-top:8px;color:#a9a39d;font-family:Georgia,"Times New Roman",serif;font-size:15px}
 .hero-art{position:absolute;right:24px;top:10px;width:455px;height:144px;overflow:hidden;border:1px solid rgba(183,139,98,.18);border-radius:10px;opacity:.92;pointer-events:none;box-shadow:0 12px 34px rgba(0,0,0,.28)}
-.hero-art img{width:100%;height:100%;display:block;object-fit:cover;object-position:center 56%;filter:grayscale(.15) sepia(.38) saturate(.92) brightness(.68) contrast(1.18)}
+.hero-art img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;object-position:center 56%;opacity:0;filter:grayscale(.15) sepia(.38) saturate(.92) brightness(.68) contrast(1.18);transition:opacity .9s ease,filter .9s ease;will-change:opacity,transform,filter}
+.hero-art .hero-art-base{opacity:1}
+.hero-art .hero-art-na19,.hero-art .hero-art-na19x{opacity:0}
 .hero-art:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,13,18,.96) 0%,rgba(8,13,18,.52) 18%,rgba(8,13,18,.06) 45%,rgba(112,35,42,.18) 100%),linear-gradient(180deg,rgba(234,212,183,.04),rgba(0,0,0,.18));box-shadow:inset 0 0 32px rgba(0,0,0,.32)}
 .tabs{display:flex;gap:2px;margin-top:20px;border-bottom:1px solid var(--line2);overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
@@ -493,8 +495,24 @@ body.music-active .course-code,
 body.music-active .stat-num{color:var(--cream)!important}
 body.music-active .hero{background:var(--bg2)}
 body.music-active .hero-art{background:var(--bg2)}
-body.music-na19 .hero-art img{opacity:.50;filter:saturate(.62) hue-rotate(118deg) brightness(.78) contrast(1.03)}
-body.music-na19x .hero-art img{opacity:.25;filter:grayscale(1) brightness(1.18) contrast(.86)}
+body.music-na19 .hero-art .hero-art-base{opacity:0}
+body.music-na19 .hero-art .hero-art-na19{opacity:.58;filter:saturate(.84) brightness(.78) contrast(1.04)}
+body.music-na19x .hero-art .hero-art-base,
+body.music-na19x .hero-art .hero-art-na19{opacity:0;transition-duration:.09s}
+body.music-na19x .hero-art .hero-art-na19x{
+  opacity:.46;
+  filter:saturate(.78) brightness(.88) contrast(1.08);
+  transition:none;
+  animation:heroNa19xGlitchIn .28s steps(2,end) both
+}
+@keyframes heroNa19xGlitchIn{
+  0%{opacity:0;transform:translateX(0) scaleX(1);clip-path:inset(0 0 0 0)}
+  18%{opacity:.55;transform:translateX(-3px) scaleX(1.008);clip-path:inset(8% 0 56% 0)}
+  36%{opacity:.18;transform:translateX(2px) scaleX(.996);clip-path:inset(43% 0 20% 0)}
+  58%{opacity:.54;transform:translateX(-1px);clip-path:inset(19% 0 32% 0)}
+  78%{opacity:.32;transform:translateX(1px);clip-path:inset(0 0 0 0)}
+  100%{opacity:.46;transform:translateX(0) scaleX(1);clip-path:inset(0 0 0 0)}
+}
 body.music-active .hero-art:after{
   background:
     linear-gradient(90deg,var(--bg2) 0%,color-mix(in srgb,var(--bg2) 94%,transparent) 20%,color-mix(in srgb,var(--bg2) 62%,transparent) 48%,color-mix(in srgb,var(--bg2) 18%,transparent) 76%,transparent 100%),
@@ -718,8 +736,7 @@ body.music-na19x::after{
 }
 body.music-rare-arrival .shell{animation:rareArrival 1.35s ease-out both}
 @keyframes rareArrival{0%{filter:brightness(1) saturate(1)}34%{filter:brightness(1.15) saturate(.35)}100%{filter:brightness(1) saturate(1)}}
-body.music-rare-arrival .hero-art img{animation:rareHeroArrival 1.35s ease-out both}
-@keyframes rareHeroArrival{0%{filter:grayscale(1) brightness(1.18) contrast(.86)}35%{filter:grayscale(1) brightness(1.34) contrast(.78)}100%{filter:grayscale(1) brightness(1.18) contrast(.86)}}
+body.music-rare-arrival .hero-art .hero-art-na19x{animation:heroNa19xGlitchIn .28s steps(2,end) both}
 @media(max-width:720px){
   body.music-na19x::after{display:none}
   .music-toggle.playing .music-pearl-shell{filter:none!important}
@@ -820,36 +837,36 @@ body.music-na19x .search-filter-chip.active{
 
 /* NA 19x severe corruption pass */
 body.music-na19x.music-glitch-live .music-glitch{
-  opacity:calc(.38 + var(--glitch-level,0) * .62)!important;
+  opacity:calc(.07 + var(--glitch-level,0) * .16)!important;
 }
 body.music-na19x.music-glitch-live .music-glitch::before{
-  opacity:calc(.42 + var(--glitch-level,0) * .58)!important;
+  opacity:calc(.08 + var(--glitch-level,0) * .17)!important;
   background:
-    repeating-linear-gradient(180deg,transparent 0 2px,rgba(255,255,255,.08) 2px 3px,transparent 3px 5px),
-    linear-gradient(90deg,rgba(255,20,86,.12),transparent 16%,rgba(145,255,255,.17) 36%,transparent 57%,rgba(255,255,255,.14) 74%,transparent 92%)!important;
+    repeating-linear-gradient(180deg,transparent 0 3px,rgba(255,255,255,.035) 3px 4px,transparent 4px 7px),
+    linear-gradient(90deg,rgba(255,20,86,.07),transparent 18%,rgba(145,255,255,.09) 38%,transparent 61%,rgba(255,255,255,.08) 76%,transparent 92%)!important;
 }
 body.music-na19x.music-glitch-live .music-glitch::after{
-  opacity:calc(.48 + var(--glitch-level,0) * .52)!important;
+  opacity:calc(.08 + var(--glitch-level,0) * .20)!important;
   background:
-    linear-gradient(90deg,rgba(255,36,96,.32),transparent 16%,rgba(120,255,255,.34) 24%,transparent 47%,rgba(255,255,255,.28) 68%,transparent 88%)!important;
-  clip-path:polygon(0 var(--glitch-y,42%),100% var(--glitch-y,42%),100% calc(var(--glitch-y,42%) + 6%),0 calc(var(--glitch-y,42%) + 6%))!important;
-  transform:translateX(calc(var(--glitch-x,0px) * .34));
+    linear-gradient(90deg,rgba(255,36,96,.18),transparent 18%,rgba(120,255,255,.20) 28%,transparent 52%,rgba(255,255,255,.15) 70%,transparent 90%)!important;
+  clip-path:polygon(0 var(--glitch-y,42%),100% var(--glitch-y,42%),100% calc(var(--glitch-y,42%) + 2.2%),0 calc(var(--glitch-y,42%) + 2.2%))!important;
+  transform:translateX(calc(var(--glitch-x,0px) * .22));
 }
-body.music-na19x.music-glitch-hit .music-glitch{opacity:.94!important}
+body.music-na19x.music-glitch-hit .music-glitch{opacity:.40!important}
 body.music-na19x.music-glitch-hit .music-glitch-band{
-  height:4.4%!important;
-  opacity:1!important;
-  background:linear-gradient(90deg,rgba(255,30,90,.23),rgba(235,255,255,.30) 45%,rgba(90,255,255,.25))!important;
+  height:1.5%!important;
+  opacity:.76!important;
+  background:linear-gradient(90deg,rgba(255,30,90,.15),rgba(235,255,255,.22) 45%,rgba(90,255,255,.16))!important;
   box-shadow:
-    -12px 0 0 rgba(255,30,90,.18),
-    12px 0 0 rgba(80,255,255,.22),
-    0 0 26px rgba(255,255,255,.18)!important;
+    -4px 0 0 rgba(255,30,90,.10),
+    4px 0 0 rgba(80,255,255,.12),
+    0 0 14px rgba(255,255,255,.10)!important;
 }
-body.music-na19x.music-glitch-hit .band-a{transform:translateX(calc(var(--glitch-x,0px) * -1.25)) scaleX(1.03)}
-body.music-na19x.music-glitch-hit .band-b{transform:translateX(calc(var(--glitch-x,0px) * 1.15)) scaleX(.985)}
-body.music-na19x.music-glitch-hit .band-c{transform:translateX(calc(var(--glitch-x,0px) * -.82)) scaleX(1.02)}
-body.music-na19x.music-glitch-hard .music-glitch{opacity:1!important}
-body.music-na19x.music-glitch-hard .music-glitch-band{height:6.2%!important}
+body.music-na19x.music-glitch-hit .band-a{transform:translateX(calc(var(--glitch-x,0px) * -.75))}
+body.music-na19x.music-glitch-hit .band-b{transform:translateX(calc(var(--glitch-x,0px) * .70))}
+body.music-na19x.music-glitch-hit .band-c{transform:translateX(calc(var(--glitch-x,0px) * -.48))}
+body.music-na19x.music-glitch-hard .music-glitch{opacity:.54!important}
+body.music-na19x.music-glitch-hard .music-glitch-band{height:2.2%!important}
 body.music-na19x.music-glitch-hard .shell,
 body.music-na19x.music-glitch-hard .pdf-fullscreen-frame{
   transform:
@@ -1066,6 +1083,10 @@ const META={
   'База':{name:'База знаний'}
 };
 const HERO_IMAGE='assets/nsu-eva-hero.webp?v=77a2ef896671';
+const MUSIC_BACKGROUNDS={
+  na19:'assets/NA%2019.webp',
+  na19x:'assets/NA%2019x.webp'
+};
 const MUSIC_TRACKS=[
   {id:'na19',label:'NA 19',src:'assets/music/NA%2019%20-%20Halcyon%20Memories.mp3',theme:'music-na19'},
   {id:'na19x',label:'NA 19x',src:'assets/music/NA%2019x%20-%20Halcyon%20Memories.mp3',theme:'music-na19x'}
@@ -1282,12 +1303,12 @@ function triggerMusicGlitch(force=.72){
   force=Math.max(.45,Math.min(1,force));
 
   const sign=()=>Math.random()>.5?1:-1;
-  const x=sign()*(18+Math.round(force*58));
-  const shift=sign()*(6+Math.round(force*19));
-  const shiftY=sign()*(2+Math.round(force*11));
-  const skew=sign()*(.22+force*1.08);
-  const scaleX=(1+sign()*(.006+force*.018)).toFixed(4);
-  const y=4+Math.round(Math.random()*88);
+  const x=sign()*(2+Math.round(force*5));
+  const shift=sign()*(1+Math.round(force*2));
+  const shiftY=sign()*Math.round(force*1.5);
+  const skew=sign()*(.04+force*.12);
+  const scaleX=(1+sign()*(.001+force*.003)).toFixed(4);
+  const y=8+Math.round(Math.random()*82);
 
   document.body.style.setProperty('--glitch-level',force.toFixed(3));
   document.body.style.setProperty('--glitch-x',x+'px');
@@ -1302,20 +1323,17 @@ function triggerMusicGlitch(force=.72){
 
   clearTimeout(musicGlitchEffectTimer);
   document.body.classList.remove('music-glitch-blackout','music-glitch-whiteout','music-glitch-crush');
-  if(force>.78){
-    const roll=Math.random();
-    if(roll<.24)document.body.classList.add('music-glitch-blackout');
-    else if(roll<.43)document.body.classList.add('music-glitch-whiteout');
-    else if(roll<.64)document.body.classList.add('music-glitch-crush');
+  if(force>.94&&Math.random()<.10){
+    document.body.classList.add('music-glitch-crush');
     musicGlitchEffectTimer=setTimeout(()=>{
-      document.body.classList.remove('music-glitch-blackout','music-glitch-whiteout','music-glitch-crush');
-    },70+Math.round(Math.random()*105));
+      document.body.classList.remove('music-glitch-crush');
+    },55+Math.round(Math.random()*25));
   }
 
   clearTimeout(musicGlitchHitTimer);
   musicGlitchHitTimer=setTimeout(()=>{
     document.body.classList.remove('music-glitch-hit','music-glitch-hard');
-  },Math.round(160+force*190));
+  },Math.round(58+force*42));
 }
 async function startMusicGlitch(){
   stopMusicGlitch();
@@ -1323,18 +1341,17 @@ async function startMusicGlitch(){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
 
   document.body.classList.add('music-glitch-live');
-  setTimeout(()=>triggerMusicGlitch(1),90);
-  setTimeout(()=>triggerMusicGlitch(.84),410);
-  setTimeout(()=>triggerMusicGlitch(.66),760);
+  setTimeout(()=>triggerMusicGlitch(.82),110);
+  setTimeout(()=>triggerMusicGlitch(.62),390);
 
   const ok=await ensureMusicAnalyser();
   if(!ok){
     const fallback=()=>{
       if(musicAudio.paused||activeMusicTrack?.id!=='na19x')return;
-      triggerMusicGlitch(.62+Math.random()*.36);
-      musicGlitchFrame=setTimeout(fallback,450+Math.random()*1050);
+      triggerMusicGlitch(.52+Math.random()*.26);
+      musicGlitchFrame=setTimeout(fallback,1200+Math.random()*1800);
     };
-    musicGlitchFrame=setTimeout(fallback,850);
+    musicGlitchFrame=setTimeout(fallback,1400);
     return;
   }
   if(musicAudioContext?.state==='suspended'){
@@ -1371,16 +1388,16 @@ async function startMusicGlitch(){
     const level=Math.min(1,energy*.9+delta*4.7);
     document.body.style.setProperty('--glitch-level',Math.max(.14,level).toFixed(3));
 
-    if((delta>.0065||(rms>.038&&level>.16))&&now-musicGlitchLastHit>165){
+    if((delta>.008||(rms>.05&&level>.24))&&now-musicGlitchLastHit>420){
       musicGlitchLastHit=now;
-      triggerMusicGlitch(Math.min(1,.52+level*.72+delta*3.4));
-      musicGlitchFallbackAt=now+430+Math.random()*980;
+      triggerMusicGlitch(Math.min(.86,.46+level*.42+delta*2.1));
+      musicGlitchFallbackAt=now+1100+Math.random()*1500;
     }
 
     if(now>musicGlitchFallbackAt){
       musicGlitchLastHit=now;
-      triggerMusicGlitch(.52+Math.min(.34,level*.52)+Math.random()*.18);
-      musicGlitchFallbackAt=now+450+Math.random()*1200;
+      triggerMusicGlitch(.48+Math.min(.22,level*.28)+Math.random()*.10);
+      musicGlitchFallbackAt=now+1200+Math.random()*1800;
     }
     musicGlitchFrame=requestAnimationFrame(tick);
   };
@@ -1514,7 +1531,7 @@ function hero(subject){
   return '<section class="hero">'+
     '<div class="breadcrumbs"><span>Главная</span><span class="sep">›</span><span>'+esc(subject)+'</span></div>'+
     '<div class="hero-row"><div class="hero-copy"><h1>'+esc(subject)+'</h1><div class="hero-sub">'+esc(meta.name||subject)+'</div>'+(people.length?'<div class="hero-people">'+people.join('')+'</div>':'')+'</div></div>'+
-    '<div class="hero-art" aria-hidden="true"><img src="'+HERO_IMAGE+'" alt=""></div>'+
+    '<div class="hero-art" aria-hidden="true"><img class="hero-art-base" src="'+HERO_IMAGE+'" alt=""><img class="hero-art-na19" src="'+MUSIC_BACKGROUNDS.na19+'" alt=""><img class="hero-art-na19x" src="'+MUSIC_BACKGROUNDS.na19x+'" alt=""></div>'+
   '</section>';
 }
 function tabs(subject){
