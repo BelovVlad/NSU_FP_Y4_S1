@@ -498,18 +498,19 @@ body.music-active .hero-art{background:var(--bg2)}
 /* Both sources are 2048x768. At 1100x183, cover scales to 1100x412.5.
    Head centres: NA 19 (1560,625), NA 19x (1652,641).
    y = sourceY * 1100/2048 - (412.5 - 183) * positionY:
-   129.14px at 90%, 128.56px at 94%. Keep positions independent of playback. */
-.hero-art .hero-art-na19{object-position:84% 90%}
-.hero-art .hero-art-na19x{object-position:84% 94%}
+   122.26px at 93%, 122.25px at 96.75%: heads near the lower third.
+   Keep positions independent of playback; mobile cover retains the full height. */
+.hero-art .hero-art-na19{object-position:84% 93%}
+.hero-art .hero-art-na19x{object-position:84% 96.75%}
 body.music-na19 .hero-art .hero-art-base{
   opacity:0;visibility:hidden;transition:opacity .65s ease,visibility 0s .65s
 }
-body.music-na19 .hero-art .hero-art-na19{opacity:1;visibility:visible;filter:saturate(.84) brightness(.78) contrast(1.04)}
+body.music-na19 .hero-art .hero-art-na19{opacity:1;visibility:visible;filter:saturate(.84) brightness(.86) contrast(1.04)}
 body.music-na19x .hero-art .hero-art-base,
 body.music-na19x .hero-art .hero-art-na19{opacity:0;visibility:hidden;transition:none}
 body.music-na19x .hero-art .hero-art-na19x{
   opacity:1;visibility:visible;
-  filter:saturate(.78) brightness(.88) contrast(1.08);
+  filter:saturate(.78) brightness(.92) contrast(1.08);
   transition:none;
   animation:heroNa19xGlitchIn .18s steps(1,end)
 }
@@ -520,8 +521,8 @@ body.music-na19x .hero-art .hero-art-na19x{
 }
 body.music-active .hero-art:after{
   background:
-    linear-gradient(90deg,var(--bg2) 0%,color-mix(in srgb,var(--bg2) 94%,transparent) 20%,color-mix(in srgb,var(--bg2) 62%,transparent) 48%,color-mix(in srgb,var(--bg2) 18%,transparent) 76%,transparent 100%),
-    linear-gradient(180deg,color-mix(in srgb,var(--bg2) 6%,transparent),color-mix(in srgb,var(--bg2) 32%,transparent));
+    linear-gradient(90deg,var(--bg2) 0%,color-mix(in srgb,var(--bg2) 94%,transparent) 20%,color-mix(in srgb,var(--bg2) 52%,transparent) 48%,color-mix(in srgb,var(--bg2) 8%,transparent) 76%,transparent 100%),
+    linear-gradient(180deg,color-mix(in srgb,var(--bg2) 6%,transparent),color-mix(in srgb,var(--bg2) 24%,transparent));
   box-shadow:none
 }
 body.music-active .hero h1,
