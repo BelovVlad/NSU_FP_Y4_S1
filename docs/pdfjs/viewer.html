@@ -37,13 +37,14 @@ button,input,a{font:inherit}.toolbar{height:58px;display:grid;grid-template-colu
 .viewer{position:absolute;inset:58px 0 0;overflow:auto;background:var(--pdf-bg);transition:left .18s ease}.viewer{left:0}body.outline-open .viewer{left:var(--outlineW)}body.search-open .viewer{top:110px}.stage{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:24px}.canvas-wrap{position:relative;line-height:0;box-shadow:0 8px 28px rgba(0,0,0,.5)}canvas{display:block;max-width:none;background:white}.highlight-layer,.annotation-layer{position:absolute;left:0;top:0;overflow:hidden}.highlight-layer{pointer-events:none}.annotation-layer{pointer-events:none;z-index:4}.pdf-link{position:absolute;display:block;pointer-events:auto;cursor:pointer;background:transparent;border:0;border-radius:2px;text-decoration:none;touch-action:manipulation;-webkit-tap-highlight-color:rgba(212,93,104,.18)}.pdf-link:hover{background:rgba(212,93,104,.10);box-shadow:inset 0 0 0 1px rgba(212,93,104,.26)}.pdf-link:focus-visible{outline:2px solid var(--accent);outline-offset:1px}.pdf-link:active{background:rgba(212,93,104,.18)}.search-mark{position:absolute;background:rgba(255,210,64,.38);border:1px solid rgba(255,210,64,.62);border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
 .loading{position:fixed;left:50%;top:82px;z-index:50;transform:translateX(-50%);display:none;align-items:center;gap:9px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(18,22,28,.95);color:var(--muted);font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.28)}body.search-open .loading{top:134px}.loading.show{display:flex}.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse .8s infinite alternate}@keyframes pulse{to{opacity:.3}}.error{max-width:680px;margin:80px auto;padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);line-height:1.6}.error strong{color:var(--text)}
 .mobile-nav{display:none}
+.page-jump{display:none}
 @media(max-width:760px){
   :root{--outlineW:min(90vw,360px)}
   .toolbar{grid-template-columns:minmax(0,1fr) auto;height:58px;gap:8px;padding:0 10px}.controls{display:none}.right{display:flex}.direct-link{display:none}.back-text{display:none}.left{gap:7px}.left .btn{width:42px;padding:0}.title{font-size:14px}.search-toggle{width:42px!important;height:42px!important}
-  .viewer,body.outline-open .viewer{inset:58px 0 64px;left:0}.stage{padding:10px}body.search-open .viewer{top:142px}
+  .viewer,body.outline-open .viewer{inset:58px 0 64px;left:0;touch-action:pan-x pan-y;overscroll-behavior:contain}.stage{padding:10px}body.search-open .viewer{top:142px}
   .outline-panel{top:58px;bottom:64px;width:var(--outlineW);z-index:47}.outline-head{height:48px}.outline-tree{padding:7px 6px 12px}.outline-link.depth-0{min-height:46px;margin-top:7px}.outline-link.depth-0 .outline-label{font-size:14px}.outline-link.depth-1{margin-left:8px;width:calc(100% - 8px);padding-left:12px}.outline-link.depth-1 .outline-label{font-size:13px}.outline-link.depth-2{margin-left:20px;width:calc(100% - 20px)}.outline-link.depth-2 .outline-label{font-size:12.5px}.outline-link.depth-3{margin-left:31px;width:calc(100% - 31px)}.outline-backdrop{position:fixed;z-index:46;inset:58px 0 64px;background:rgba(0,0,0,.46)}body.outline-open .outline-backdrop{display:block}
   .search-panel{height:84px;padding:8px 10px;display:none;grid-template-columns:minmax(0,1fr) 36px 36px 36px;grid-template-rows:38px 22px;gap:5px 6px}.search-panel.open{display:grid}.search-input{width:100%;height:38px;min-width:0}.search-panel .btn{width:36px;height:36px;padding:0}.search-status{grid-column:1/-1;grid-row:2;min-width:0;text-align:center;font-size:11px}.search-close{grid-column:4;grid-row:1}.search-prev{grid-column:2;grid-row:1}.search-next{grid-column:3;grid-row:1}body.search-open .loading{top:154px}.loading{top:72px}
-  .mobile-nav{position:fixed;left:0;right:0;bottom:0;z-index:45;height:64px;display:grid;grid-template-columns:72px 1fr 72px;align-items:center;border-top:1px solid var(--line);background:rgba(18,22,28,.98);box-shadow:0 -6px 18px rgba(0,0,0,.18)}.m-btn{width:46px;height:46px;margin:auto;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--text);font-size:25px;line-height:1;cursor:pointer}.m-btn:active{background:var(--accent-soft);border-color:rgba(212,93,104,.55)}.m-btn:disabled{opacity:.4}.m-page-info{text-align:center;color:var(--text);font-size:15px;font-weight:700;letter-spacing:.01em}
+  .mobile-nav{position:fixed;left:0;right:0;bottom:0;z-index:45;height:64px;display:grid;grid-template-columns:72px 1fr 72px;align-items:center;border-top:1px solid var(--line);background:rgba(18,22,28,.98);box-shadow:0 -6px 18px rgba(0,0,0,.18)}.m-btn{width:46px;height:46px;margin:auto;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--text);font-size:25px;line-height:1;cursor:pointer}.m-btn:active{background:var(--accent-soft);border-color:rgba(212,93,104,.55)}.m-btn:disabled{opacity:.4}.m-page-info{height:44px;min-width:92px;justify-self:center;padding:0 13px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--text);font-size:15px;font-weight:700;letter-spacing:.01em;cursor:pointer}.m-page-info:active,.m-page-info[aria-expanded="true"]{border-color:var(--line);background:var(--accent-soft)}.page-jump{position:fixed;z-index:49;left:50%;bottom:72px;transform:translateX(-50%);width:min(94vw,390px);padding:8px;border:1px solid var(--line);border-radius:13px;background:rgba(18,22,28,.985);box-shadow:0 12px 34px rgba(0,0,0,.42);backdrop-filter:blur(14px)}.page-jump.open{display:block}.page-jump-form{display:grid;grid-template-columns:auto minmax(72px,1fr) auto auto auto;align-items:center;gap:7px}.page-jump-label{padding-left:3px;color:var(--muted);font-size:12px;font-weight:700}.page-jump-input{width:100%;height:40px;min-width:0;border:1px solid var(--line);border-radius:9px;background:#0f1318;color:var(--text);text-align:center;font-size:16px;font-weight:750;outline:none}.page-jump-input:focus{border-color:var(--accent)}.page-jump-total{color:var(--muted);font-size:13px;white-space:nowrap}.page-jump-go,.page-jump-close{height:40px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--text);cursor:pointer}.page-jump-go{padding:0 10px;font-size:12px;font-weight:750}.page-jump-close{width:40px;padding:0;font-size:20px;line-height:1}.page-jump-go:active,.page-jump-close:active{background:var(--accent-soft);border-color:var(--accent)}.canvas-wrap.pinch-preview{will-change:transform}
   .pdf-link:hover{background:transparent;box-shadow:none}.pdf-link:active{background:rgba(212,93,104,.16)}
 }
 </style>
@@ -83,9 +84,18 @@ button,input,a{font:inherit}.toolbar{height:58px;display:grid;grid-template-colu
 
 <nav class="mobile-nav" aria-label="Навигация по PDF">
   <button id="mPrev" class="m-btn" type="button" title="Предыдущая страница">‹</button>
-  <div id="mPageInfo" class="m-page-info">1 / —</div>
+  <button id="mPageInfo" class="m-page-info" type="button" title="Перейти к странице" aria-label="Перейти к странице" aria-expanded="false">1 / —</button>
   <button id="mNext" class="m-btn" type="button" title="Следующая страница">›</button>
 </nav>
+<div id="pageJump" class="page-jump" aria-hidden="true">
+  <form id="pageJumpForm" class="page-jump-form">
+    <span class="page-jump-label">Стр.</span>
+    <input id="pageJumpInput" class="page-jump-input" type="number" min="1" value="1" inputmode="numeric" aria-label="Номер страницы">
+    <span id="pageJumpTotal" class="page-jump-total">/ —</span>
+    <button class="page-jump-go" type="submit">Перейти</button>
+    <button id="pageJumpClose" class="page-jump-close" type="button" aria-label="Закрыть выбор страницы">×</button>
+  </form>
+</div>
 
 <script type="module">
 import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
@@ -134,7 +144,8 @@ window.addEventListener('message',e=>{
   applyViewerTheme(e.data.theme||'');
 });
 const $=id=>document.getElementById(id);
-const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText'),mPrev=$('mPrev'),mNext=$('mNext'),mPageInfo=$('mPageInfo'),searchToggle=$('searchToggle'),searchPanel=$('searchPanel'),searchInput=$('searchInput'),searchPrev=$('searchPrev'),searchNext=$('searchNext'),searchStatus=$('searchStatus'),searchClose=$('searchClose'),highlightLayer=$('highlightLayer'),annotationLayer=$('annotationLayer'),outlineToggle=$('outlineToggle'),outlinePanel=$('outlinePanel'),outlineTree=$('outlineTree'),outlineClose=$('outlineClose'),outlineBackdrop=$('outlineBackdrop');
+const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText'),mPrev=$('mPrev'),mNext=$('mNext'),mPageInfo=$('mPageInfo'),pageJump=$('pageJump'),pageJumpForm=$('pageJumpForm'),pageJumpInput=$('pageJumpInput'),pageJumpTotal=$('pageJumpTotal'),pageJumpClose=$('pageJumpClose'),searchToggle=$('searchToggle'),searchPanel=$('searchPanel'),searchInput=$('searchInput'),searchPrev=$('searchPrev'),searchNext=$('searchNext'),searchStatus=$('searchStatus'),searchClose=$('searchClose'),highlightLayer=$('highlightLayer'),annotationLayer=$('annotationLayer'),outlineToggle=$('outlineToggle'),outlinePanel=$('outlinePanel'),outlineTree=$('outlineTree'),outlineClose=$('outlineClose'),outlineBackdrop=$('outlineBackdrop');
+const canvasWrap=canvas.parentElement;
 
 const CSS_UNITS=96/72;
 let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=false,pdfUrl='',renderSerial=0,preloadSerial=0;
@@ -166,8 +177,11 @@ function updateOutlineActive(){if(!outlineEntries.length)return;let best=null;fo
 function updateControls(){
   pageInput.value=pageNum;total.textContent=`/ ${pdf?pdf.numPages:'—'}`;zoomLabel.textContent=`${Math.round(scale*100)}%`;
   const atStart=pageNum<=1,atEnd=!pdf||pageNum>=pdf.numPages;
-  prev.disabled=atStart;next.disabled=atEnd;mPrev.disabled=atStart;mNext.disabled=atEnd;mPageInfo.textContent=`${pageNum} / ${pdf?pdf.numPages:'—'}`;updateOutlineActive();
+  prev.disabled=atStart;next.disabled=atEnd;mPrev.disabled=atStart;mNext.disabled=atEnd;mPageInfo.textContent=`${pageNum} / ${pdf?pdf.numPages:'—'}`;pageJumpInput.value=pageNum;pageJumpInput.max=pdf?String(pdf.numPages):'1';pageJumpTotal.textContent=`/ ${pdf?pdf.numPages:'—'}`;updateOutlineActive();
 }
+function openPageJump(){if(!pdf)return;pageJumpInput.value=String(pageNum);pageJumpInput.max=String(pdf.numPages);pageJumpTotal.textContent=`/ ${pdf.numPages}`;pageJump.classList.add('open');pageJump.setAttribute('aria-hidden','false');mPageInfo.setAttribute('aria-expanded','true');requestAnimationFrame(()=>{pageJumpInput.focus();pageJumpInput.select()})}
+function closePageJump(){pageJump.classList.remove('open');pageJump.setAttribute('aria-hidden','true');mPageInfo.setAttribute('aria-expanded','false')}
+function jumpToPage(){if(!pdf)return;const n=Math.max(1,Math.min(pdf.numPages,Number(pageJumpInput.value)||pageNum));pageNum=n;closePageJump();void renderPage()}
 
 function closeOutline(){outlinePanel.classList.remove('open');document.body.classList.remove('outline-open')}
 async function openOutline(){if(!pdf)return;closeSearch();outlinePanel.classList.add('open');document.body.classList.add('outline-open');if(!outlineLoaded)await loadOutline()}
@@ -426,16 +440,19 @@ async function searchStep(direction){
   }
 }
 
-async function renderPage(){
+async function renderPage(options={}){
   if(!pdf)return;const target=pageNum,serial=++renderSerial;showLoading();clearAnnotations();if(renderTask){try{renderTask.cancel()}catch{}}
   try{
-    const page=await getCachedPage(target);if(serial!==renderSerial)return;const base=page.getViewport({scale:1});if(fitWidth){const mobile=window.matchMedia('(max-width:760px)').matches;const available=Math.max(120,viewer.clientWidth-(mobile?20:52));scale=Math.min(2.4,available/(base.width*CSS_UNITS))}
+    const page=await getCachedPage(target);if(serial!==renderSerial)return;const base=page.getViewport({scale:1});const mobile=window.matchMedia('(max-width:760px)').matches;if(fitWidth){const available=Math.max(120,viewer.clientWidth-(mobile?20:52));scale=Math.min(2.4,available/(base.width*CSS_UNITS))}
     const viewport=page.getViewport({scale:scale*CSS_UNITS});
     const dpr=window.devicePixelRatio||1;
     const quality=scale<=1.15?4:scale<=1.75?3:2;
-    const ratio=Math.max(dpr,quality);
+    let ratio=Math.max(dpr,quality);
+    const maxPixels=mobile?24000000:48000000,cssPixels=Math.max(1,viewport.width*viewport.height);if(cssPixels*ratio*ratio>maxPixels)ratio=Math.max(1,Math.sqrt(maxPixels/cssPixels));
     canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;highlightLayer.style.width=annotationLayer.style.width=`${Math.floor(viewport.width)}px`;highlightLayer.style.height=annotationLayer.style.height=`${Math.floor(viewport.height)}px`;
-    renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});await renderTask.promise;if(serial!==renderSerial)return;renderTask=null;warmedPages.add(target);updateControls();savePage();hideLoading();viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});trimPageCache(target);await Promise.allSettled([drawSearchHighlights(page,viewport),renderAnnotations(page,viewport)]);void preloadAround(target);
+    renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});await renderTask.promise;if(serial!==renderSerial)return;renderTask=null;warmedPages.add(target);updateControls();savePage();hideLoading();
+    if(options.anchor){const r=canvasWrap.getBoundingClientRect(),a=options.anchor;viewer.scrollBy({left:r.left+a.x*r.width-a.clientX,top:r.top+a.y*r.height-a.clientY,behavior:'auto'})}else viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});
+    trimPageCache(target);await Promise.allSettled([drawSearchHighlights(page,viewport),renderAnnotations(page,viewport)]);void preloadAround(target);
   }catch(err){if(err?.name!=='RenderingCancelledException'&&serial===renderSerial)fail(err?.message||String(err))}
 }
 
@@ -458,11 +475,38 @@ back.onclick=()=>{
   else location.href='../'+(subject?`#subject=${encodeURIComponent(subject)}`:'');
 };
 outlineToggle.onclick=()=>outlinePanel.classList.contains('open')?closeOutline():void openOutline();outlineClose.onclick=closeOutline;outlineBackdrop.onclick=closeOutline;
-prev.onclick=()=>go(-1);next.onclick=()=>go(1);mPrev.onclick=()=>go(-1);mNext.onclick=()=>go(1);
+prev.onclick=()=>go(-1);next.onclick=()=>go(1);mPrev.onclick=()=>go(-1);mNext.onclick=()=>go(1);mPageInfo.onclick=()=>pageJump.classList.contains('open')?closePageJump():openPageJump();pageJumpClose.onclick=closePageJump;pageJumpForm.addEventListener('submit',e=>{e.preventDefault();jumpToPage()});document.addEventListener('pointerdown',e=>{if(!pageJump.classList.contains('open'))return;if(pageJump.contains(e.target)||mPageInfo.contains(e.target))return;closePageJump()});
 pageInput.onchange=()=>{if(!pdf)return;pageNum=Math.max(1,Math.min(pdf.numPages,Number(pageInput.value)||1));renderPage()};
 zoomOut.onclick=()=>{fitWidth=false;scale=Math.max(.35,scale-.15);renderPage()};zoomIn.onclick=()=>{fitWidth=false;scale=Math.min(4,scale+.15);renderPage()};fit.onclick=()=>{fitWidth=true;renderPage()};
 searchToggle.onclick=openSearch;searchClose.onclick=closeSearch;searchNext.onclick=()=>searchStep(1);searchPrev.onclick=()=>searchStep(-1);searchInput.oninput=resetSearch;searchInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchStep(e.shiftKey?-1:1)}});
-window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();openSearch();return}if(e.key==='Escape'){if(outlinePanel.classList.contains('open'))closeOutline();else if(searchPanel.classList.contains('open'))closeSearch();else back.click();return}if(document.activeElement===searchInput)return;if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)});
+window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();openSearch();return}if(e.key==='Escape'){if(pageJump.classList.contains('open'))closePageJump();else if(outlinePanel.classList.contains('open'))closeOutline();else if(searchPanel.classList.contains('open'))closeSearch();else back.click();return}if(document.activeElement===searchInput||document.activeElement===pageJumpInput)return;if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)});
+function touchDistance(touches){const dx=touches[0].clientX-touches[1].clientX,dy=touches[0].clientY-touches[1].clientY;return Math.hypot(dx,dy)}
+function touchMidpoint(touches){return{x:(touches[0].clientX+touches[1].clientX)/2,y:(touches[0].clientY+touches[1].clientY)/2}}
+let pinchState=null;
+viewer.addEventListener('touchstart',e=>{
+  if(!pdf||e.touches.length!==2)return;
+  e.preventDefault();closePageJump();fitWidth=false;
+  const mid=touchMidpoint(e.touches),rect=canvasWrap.getBoundingClientRect(),distance=touchDistance(e.touches);
+  if(distance<8||rect.width<1||rect.height<1)return;
+  pinchState={startDistance:distance,startScale:scale,targetScale:scale,anchor:{x:Math.max(0,Math.min(1,(mid.x-rect.left)/rect.width)),y:Math.max(0,Math.min(1,(mid.y-rect.top)/rect.height)),clientX:mid.x,clientY:mid.y}};
+  canvasWrap.classList.add('pinch-preview');canvasWrap.style.transformOrigin=(mid.x-rect.left)+'px '+(mid.y-rect.top)+'px';
+},{passive:false});
+viewer.addEventListener('touchmove',e=>{
+  if(!pinchState||e.touches.length<2)return;
+  e.preventDefault();
+  const distance=touchDistance(e.touches);if(distance<8)return;
+  pinchState.targetScale=Math.max(.35,Math.min(4,pinchState.startScale*distance/pinchState.startDistance));
+  canvasWrap.style.transform='scale('+(pinchState.targetScale/pinchState.startScale)+')';
+},{passive:false});
+function finishPinch(e){
+  if(!pinchState||(e.touches&&e.touches.length>=2))return;
+  const nextScale=pinchState.targetScale,anchor=pinchState.anchor;pinchState=null;
+  canvasWrap.classList.remove('pinch-preview');canvasWrap.style.transform='';canvasWrap.style.transformOrigin='';
+  if(Math.abs(nextScale-scale)<.005){updateControls();return}
+  scale=nextScale;void renderPage({anchor});
+}
+viewer.addEventListener('touchend',finishPinch,{passive:true});
+viewer.addEventListener('touchcancel',finishPinch,{passive:true});
 let resizeTimer;window.addEventListener('resize',()=>{if(!fitWidth)return;clearTimeout(resizeTimer);resizeTimer=setTimeout(renderPage,180)});
 open();
 </script>
