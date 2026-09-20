@@ -1,4 +1,5 @@
 name: Build search index
+# Site search metadata is regenerated from current materials.
 
 on:
   push:
