@@ -227,7 +227,7 @@ async function loadIndexedSearchPages(){
   indexedSearchPromise=(async()=>{
     try{
       const manifestUrl=new URL('../search-index/manifest.json',location.href);
-      const manifest=await fetch(manifestUrl,{cache:'force-cache'}).then(r=>{
+      const manifest=await fetch(manifestUrl,{cache:'no-store'}).then(r=>{
         if(!r.ok)throw new Error('search manifest '+r.status);
         return r.json();
       });
@@ -242,6 +242,8 @@ async function loadIndexedSearchPages(){
 
       for(const shard of shards){
         const shardUrl=new URL('../search-index/'+shard.file,location.href);
+        const indexVersion=manifest.generated_at||manifest.version||'';
+        if(indexVersion)shardUrl.searchParams.set('v',indexVersion);
         const data=await fetch(shardUrl,{cache:'force-cache'}).then(r=>{
           if(!r.ok)throw new Error('search shard '+r.status);
           return r.json();
