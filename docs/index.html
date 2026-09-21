@@ -860,7 +860,7 @@ body.music-na19x .pdf-fullscreen-loader{
 <div class="shell">
   <aside id="sidebar" class="sidebar">
     <div class="brand">
-      <div class="brand-mark" aria-hidden="true">
+      <div class="brand-mark" id="secretAcademicTrigger" role="button" tabindex="0" aria-label="Эмблема NSU FP">
         <img src="assets/nsu-fp-emblem.webp" alt="">
       </div>
       <div><div class="brand-title">NSU FP</div><div class="brand-sub">4 курс · 1 семестр</div></div>
@@ -1824,8 +1824,86 @@ window.addEventListener('hashchange',()=>{
 });
 if(ORDER.includes(hashSubject())){state.view='subjects';setActiveNav('subjects')}
 else{state.view='home';setActiveNav('home')}
+
+/* Secret academic dashboard: nothing is loaded until the emblem is activated. */
+(() => {
+  const trigger=$('#secretAcademicTrigger');
+  if(!trigger)return;
+  trigger.style.cursor='pointer';
+
+  let loading=null;
+  function loadSecretDashboard(){
+    if(window.openSecretAcademicDashboard){
+      window.openSecretAcademicDashboard();
+      return;
+    }
+    if(loading)return loading;
+
+    loading=new Promise((resolve,reject)=>{
+      if(!document.querySelector('link[data-secret-dashboard]')){
+        const css=document.createElement('link');
+        css.rel='stylesheet';
+        css.href='secret-dashboard.css';
+        css.dataset.secretDashboard='1';
+        document.head.appendChild(css);
+      }
+
+      const script=document.createElement('script');
+      script.src='secret-dashboard.js?v=2';
+      script.async=true;
+      script.dataset.secretDashboard='1';
+      script.onload=()=>{
+        loading=null;
+        if(window.openSecretAcademicDashboard){
+          window.openSecretAcademicDashboard();
+          resolve();
+        }else{
+          reject(new Error('Secret dashboard did not initialize'));
+        }
+      };
+      script.onerror=()=>{
+        loading=null;
+        reject(new Error('Secret dashboard failed to load'));
+      };
+      document.body.appendChild(script);
+    }).catch(error=>{
+      console.error('[secret-dashboard-loader]',error);
+      const message=document.createElement('div');
+      message.textContent='Не удалось открыть скрытую статистику.';
+      message.style.cssText='position:fixed;right:18px;bottom:18px;z-index:2500;padding:10px 13px;border:1px solid #54343a;border-radius:8px;background:#151015;color:#efc6c4;font-size:12px;box-shadow:0 12px 40px rgba(0,0,0,.35)';
+      document.body.appendChild(message);
+      setTimeout(()=>message.remove(),2600);
+    });
+    return loading;
+  }
+
+  trigger.addEventListener('dblclick',e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    loadSecretDashboard();
+  });
+
+  let lastTap=0;
+  trigger.addEventListener('touchend',e=>{
+    const now=Date.now();
+    if(now-lastTap<360){
+      e.preventDefault();
+      loadSecretDashboard();
+      lastTap=0;
+      return;
+    }
+    lastTap=now;
+  },{passive:false});
+
+  trigger.addEventListener('keydown',e=>{
+    if((e.key==='Enter'||e.key===' ')&&e.shiftKey){
+      e.preventDefault();
+      loadSecretDashboard();
+    }
+  });
+})();
+
 loadMeta();
 </script>
-<script src="assets/overseer.js" defer></script>
 </body>
 </html>
