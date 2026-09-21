@@ -3,13 +3,14 @@
 
   const DASH_ID = 'secretAcademicDashboard';
   const TZ = 'Asia/Novosibirsk';
-  const TRACKED_SUBJECTS = ['ОВФ', 'ТДиСФ', 'ФЭЧ', 'ФиХАиМ'];
+  const TRACKED_SUBJECTS = ['ОВФ', 'ТДиСФ', 'ФКСВ', 'ФЭЧ', 'ФиХАиМ'];
 
   const TRACKED_SERIES = [
     {subject:'ОВФ', section:'Лекции', label:'Лекции', weekday:2, start:'12:40', end:'14:15', firstDate:'2026-09-01'},
     {subject:'ОВФ', section:'Семинары', label:'Семинары', weekday:6, start:'09:00', end:'10:35', firstDate:'2026-09-05', fallback:'ovf-files'},
     {subject:'ТДиСФ', section:'Лекции', label:'Лекции', weekday:5, start:'10:50', end:'12:25', firstDate:'2026-09-04'},
     {subject:'ТДиСФ', section:'Семинары', label:'Семинары', weekday:5, start:'12:40', end:'14:15', firstDate:'2026-09-04'},
+    {subject:'ФКСВ', section:'Семинары', label:'Семинары', weekday:6, start:'12:40', end:'14:15', firstDate:'2026-09-05'},
     {subject:'ФЭЧ', section:'Семинары', label:'Семинары', weekday:4, start:'09:20', end:'10:55', firstDate:'2026-09-03'},
     {subject:'ФЭЧ', section:'Лекции', label:'Лекции', weekday:4, start:'11:00', end:'12:35', firstDate:'2026-09-03'},
     {subject:'ФиХАиМ', section:'Лекции', label:'Лекции', weekday:2, start:'14:30', end:'16:05', firstDate:'2026-09-01'},
@@ -17,8 +18,8 @@
   ];
 
   const SCHEDULE = [
-    {day:1, time:'10:50', end:'12:25', name:'БЖД', kind:'лек', room:'6А'},
-    {day:1, time:'12:40', end:'14:15', name:'Физ. конд. сост. в.', kind:'лек', room:'315 ГК', teacher:'Брагинский Л.С.', note:'ФКСВ не учитывается в статистике'},
+    {day:1, time:'10:50', end:'12:25', name:'БЖД', kind:'лек', room:'БА'},
+    {day:1, time:'12:40', end:'14:15', name:'Физ. конд. сост. в.', kind:'лек', room:'315 ГК', teacher:'Брагинский Л.С.', subject:'ФКСВ'},
     {day:1, time:'14:30', end:'16:05', name:'Ин. яз.', kind:'пр', room:'326 ГК', teacher:'Сапченко Н.А.'},
     {day:1, time:'16:20', end:'17:55', name:'Осн. пр. деят.', kind:'лек', room:'6А', teacher:'Голышев В.М.'},
 
@@ -39,7 +40,7 @@
     {day:5, time:'16:20', end:'17:55', name:'Контрольные раб.', kind:'пр'},
 
     {day:6, time:'09:00', end:'10:35', name:'ОВФ', kind:'пр', room:'т307 ГК', teacher:'Усов Э.В.', trackedSection:'Семинары'},
-    {day:6, time:'12:40', end:'14:15', name:'Физ. конд. сост. в.', kind:'пр', room:'206 ГК', teacher:'Махмудиан М.М.', note:'ФКСВ не учитывается в статистике'}
+    {day:6, time:'12:40', end:'14:15', name:'Физ. конд. сост. в.', kind:'пр', room:'206 ГК', teacher:'Махмудиан М.М.', subject:'ФКСВ', trackedSection:'Семинары'}
   ];
 
   const DAY_NAMES = ['', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
@@ -91,7 +92,7 @@
           <div class="secret-academic-alert" id="secretAcademicAlert"></div>
           <div class="secret-academic-grid">
             <section class="secret-academic-card">
-              <div class="secret-academic-card-head"><h3 class="secret-academic-card-title">Статистика</h3><div class="secret-academic-card-note">лекции и семинары · без ФКСВ</div></div>
+              <div class="secret-academic-card-head"><h3 class="secret-academic-card-title">Статистика</h3><div class="secret-academic-card-note">лекции и семинары</div></div>
               <div class="secret-academic-card-body" id="secretAcademicSummary"><div class="secret-academic-loading"><i class="secret-academic-spinner"></i>Ожидаю открытия…</div></div>
             </section>
             <section class="secret-academic-card">
@@ -246,7 +247,7 @@
 
   function isTrackedLesson(lesson){
     if(!lesson.trackedSection)return false;
-    const subject=lesson.name.startsWith('ТДиСФ')?'ТДиСФ':lesson.name;
+    const subject=lesson.subject||(lesson.name.startsWith('ТДиСФ')?'ТДиСФ':lesson.name);
     return TRACKED_SERIES.some(s=>s.subject===subject&&s.section===lesson.trackedSection);
   }
   function renderSchedule(){
