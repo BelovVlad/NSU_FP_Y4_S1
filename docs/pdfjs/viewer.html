@@ -37,6 +37,8 @@ button,input,a{font:inherit}.toolbar{height:58px;display:grid;grid-template-colu
 .viewer{position:absolute;inset:58px 0 0;overflow:auto;background:var(--pdf-bg);transition:left .18s ease}.viewer{left:0}body.outline-open .viewer{left:var(--outlineW)}body.search-open .viewer{top:110px}.stage{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:24px}.canvas-wrap{position:relative;line-height:0;box-shadow:0 8px 28px rgba(0,0,0,.5)}canvas{display:block;max-width:none;background:white;transition:filter .16s ease,background-color .16s ease;will-change:filter}
 body.pdf-tone-black canvas{filter:invert(.92) hue-rotate(180deg) brightness(.94) contrast(.92) saturate(.88);background:#15191c}
 body.pdf-tone-mine canvas{filter:url(#nsuPaletteFilter) contrast(.98) saturate(.94);background:#293133}
+body.pdf-tone-mine .canvas-wrap{background:#293133}
+body.pdf-tone-mine .canvas-wrap.rendering::after{content:'';position:absolute;inset:0;z-index:12;background:#293133;pointer-events:none}
 .tone-switch{height:36px;display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;background:#0f151b;overflow:hidden;flex:none}
 .tone-switch[hidden]{display:none!important}
 .tone-btn{width:31px;height:28px;display:grid;place-items:center;padding:0;border:0;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer}
@@ -526,7 +528,7 @@ async function searchStep(direction){
 }
 
 async function renderPage(options={}){
-  if(!pdf)return;const target=pageNum,serial=++renderSerial;showLoading();clearAnnotations();if(renderTask){try{renderTask.cancel()}catch{}}
+  if(!pdf)return;const target=pageNum,serial=++renderSerial;showLoading();clearAnnotations();canvasWrap.classList.add('rendering');if(renderTask){try{renderTask.cancel()}catch{}}
   try{
     const page=await getCachedPage(target);if(serial!==renderSerial)return;const base=page.getViewport({scale:1});const mobile=window.matchMedia('(max-width:760px)').matches;if(fitWidth){const available=Math.max(120,viewer.clientWidth-(mobile?20:52));scale=Math.min(2.4,available/(base.width*CSS_UNITS))}
     const viewport=page.getViewport({scale:scale*CSS_UNITS});
@@ -535,10 +537,10 @@ async function renderPage(options={}){
     let ratio=Math.max(dpr,quality);
     const maxPixels=mobile?24000000:48000000,cssPixels=Math.max(1,viewport.width*viewport.height);if(cssPixels*ratio*ratio>maxPixels)ratio=Math.max(1,Math.sqrt(maxPixels/cssPixels));
     canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;highlightLayer.style.width=annotationLayer.style.width=`${Math.floor(viewport.width)}px`;highlightLayer.style.height=annotationLayer.style.height=`${Math.floor(viewport.height)}px`;
-    renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});await renderTask.promise;if(serial!==renderSerial)return;renderTask=null;warmedPages.add(target);updateControls();savePage();hideLoading();
+    renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});await renderTask.promise;if(serial!==renderSerial)return;renderTask=null;canvasWrap.classList.remove('rendering');warmedPages.add(target);updateControls();savePage();hideLoading();
     if(options.anchor){const r=canvasWrap.getBoundingClientRect(),a=options.anchor;viewer.scrollBy({left:r.left+a.x*r.width-a.clientX,top:r.top+a.y*r.height-a.clientY,behavior:'auto'})}else viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});
     trimPageCache(target);await Promise.allSettled([drawSearchHighlights(page,viewport),renderAnnotations(page,viewport)]);void preloadAround(target);
-  }catch(err){if(err?.name!=='RenderingCancelledException'&&serial===renderSerial)fail(err?.message||String(err))}
+  }catch(err){if(serial===renderSerial)canvasWrap.classList.remove('rendering');if(err?.name!=='RenderingCancelledException'&&serial===renderSerial)fail(err?.message||String(err))}
 }
 
 async function open(){
