@@ -139,3 +139,29 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   will-change:transform;
   transition:none;
 }
+
+
+/* In phone landscape the strip uses the full height. Keep only a tiny translucent page badge. */
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .compact-view.continuous-mode{--reader-bottom:0px}
+  .compact-view.continuous-mode .viewer{bottom:0}
+  .compact-view.continuous-mode .mobile-nav{
+    left:auto;right:max(8px,env(safe-area-inset-right,0px));bottom:max(6px,env(safe-area-inset-bottom,0px));
+    width:auto;height:auto;min-height:0;padding:0;border:0;background:transparent;
+    display:block;pointer-events:none
+  }
+  .compact-view.continuous-mode .m-page-info{
+    pointer-events:auto;min-width:0;width:auto;height:22px;padding:0 7px;
+    border:0;border-radius:999px;
+    background:color-mix(in srgb,var(--bar) 28%,transparent);
+    color:color-mix(in srgb,var(--text) 42%,transparent);
+    font-size:10px;font-weight:650;line-height:22px;
+    box-shadow:none;backdrop-filter:blur(3px);
+    opacity:.72
+  }
+  .compact-view.continuous-mode .m-page-info:active,
+  .compact-view.continuous-mode .m-page-info:focus-visible,
+  .compact-view.continuous-mode .m-page-info[aria-expanded=true]{
+    opacity:1;color:var(--text);background:color-mix(in srgb,var(--bar) 74%,transparent)
+  }
+}
