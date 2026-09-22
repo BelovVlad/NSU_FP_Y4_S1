@@ -1733,7 +1733,21 @@ async function runSearch(q){
 function renderFiltered(title,predicate){
   const list=FILES.filter(predicate);
   main.innerHTML='<section class="search-view"><h1 class="search-title">'+esc(title)+'</h1><div class="search-note">'+list.length+' файл(ов)</div><div class="panel filtered-list"><div class="file-list">'+fileRows(list)+'</div></div></section>';
-  $('.file-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;if(subjectOf(f)==='ДЛ'){if(f.ext==='.pdf'){void openPdfFullscreen(viewerUrl(f),niceName(f));return}if(f.ext==='.ipynb'){void openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}}state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
+  document.querySelectorAll('.file-row').forEach(r=>r.onclick=()=>{
+    const f=FILES.find(x=>x.path===r.dataset.path);
+    if(!f)return;
+    if(subjectOf(f)==='ДЛ'){
+      if(f.ext==='.pdf'){void openPdfFullscreen(viewerUrl(f),niceName(f));return}
+      if(f.ext==='.ipynb'){void openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
+    }
+    state.view='subjects';
+    state.subject=subjectOf(f);
+    state.section=sectionOf(f);
+    state.selected=f;
+    setActiveNav('subjects');
+    renderSubjectNav();
+    render();
+  });
 }
 
 function render(){
