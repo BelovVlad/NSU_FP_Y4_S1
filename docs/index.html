@@ -1733,7 +1733,7 @@ async function runSearch(q){
 function renderFiltered(title,predicate){
   const list=FILES.filter(predicate);
   main.innerHTML='<section class="search-view"><h1 class="search-title">'+esc(title)+'</h1><div class="search-note">'+list.length+' файл(ов)</div><div class="panel filtered-list"><div class="file-list">'+fileRows(list)+'</div></div></section>';
-  $('.file-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;if(subjectOf(f)==='ДЛ'){if(innerWidth<=720&&f.ext==='.pdf'){openPdfFullscreen(viewerUrl(f),niceName(f));return}state.selected=f;main.innerHTML='<section class="search-view"><h1 class="search-title">Доп. литература</h1><div class="workspace"><div><section class="panel list-panel"><div class="panel-head"><h2 class="panel-title">Материалы</h2></div><div class="file-list">'+fileRows(FILES.filter(x=>subjectOf(x)==='ДЛ'))+'</div></section></div>'+preview(f,null)+'</div></section>';bindPreviewTabs();return}state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
+  $('.file-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;if(subjectOf(f)==='ДЛ'){if(f.ext==='.pdf'){void openPdfFullscreen(viewerUrl(f),niceName(f));return}if(f.ext==='.ipynb'){void openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}}state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
 }
 
 function render(){
