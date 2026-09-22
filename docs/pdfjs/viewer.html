@@ -70,7 +70,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
 .view-mode-btn.active{border-color:var(--accent);background:var(--accent-soft)}
 
 </style>
-<link rel="stylesheet" href="controls.css?v=3">
+<link rel="stylesheet" href="controls.css?v=4">
 <link rel="stylesheet" href="../app.css?v=6">
 <script defer src="../app.js?v=4"></script>
 </head>
@@ -208,6 +208,7 @@ const embedParam=params.get('embed')==='1';
 if(embedParam)document.body.classList.add('embed-view');
 const landscapePhoneQuery=window.matchMedia('(orientation:landscape) and (max-height:600px) and (pointer:coarse)');
 const portraitPhoneQuery=window.matchMedia('(orientation:portrait) and (max-width:760px) and (pointer:coarse)');
+const phoneStripQuery=window.matchMedia('(orientation:portrait) and (max-width:760px) and (pointer:coarse), (orientation:landscape) and (max-height:600px) and (pointer:coarse)');
 const compactQuery=window.matchMedia(embedParam
   ?'(max-width:520px), (orientation:landscape) and (max-height:600px) and (pointer:coarse)'
   :'(max-width:760px), (orientation:landscape) and (max-height:600px) and (pointer:coarse)');
@@ -807,7 +808,7 @@ async function open(){
   title.textContent=titleParam||raw.split('/').pop();document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Открываю документ…');
   try{
     pdfUrl=resolvePdfUrl(raw);direct.href=pdfUrl;
-    pdf=await loadPdfDocument(pdfUrl);document.getElementById('saveOffline').disabled=false;pageNum=validPage(pageParam||rememberedPage());searchPage=pageNum;scale=1;fitWidth=embedParam||compactQuery.matches;updateControls();if(portraitPhoneQuery.matches)await setContinuousMode(true);else await renderPage();window.NSUApp?.warm();notifyParentPdfReady();if(pendingNavigation)await applyNavigation();else if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
+    pdf=await loadPdfDocument(pdfUrl);document.getElementById('saveOffline').disabled=false;pageNum=validPage(pageParam||rememberedPage());searchPage=pageNum;scale=1;fitWidth=embedParam||compactQuery.matches;updateControls();if(phoneStripQuery.matches)await setContinuousMode(true);else await renderPage();window.NSUApp?.warm();notifyParentPdfReady();if(pendingNavigation)await applyNavigation();else if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
   }catch(err){fail(err?.message||String(err))}
 }
 
