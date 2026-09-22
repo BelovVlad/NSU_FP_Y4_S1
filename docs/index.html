@@ -950,6 +950,10 @@ body.music-na19x .pdf-fullscreen-loader{
   .workspace{--subject-list-width:315px}
   .preview-frame-wrap{height:calc(100dvh - 365px);min-height:440px}
 }
+@media(min-width:901px){
+  .workspace .preview-panel{overflow-anchor:none}
+  .workspace .preview-frame-wrap{height:var(--preview-available-height,calc(100dvh - 365px));min-height:0;max-height:none}
+}
 @media(max-width:900px){
   .workspace{display:block}
   .workspace-resizer{display:none}
@@ -1563,6 +1567,34 @@ function bindPreviewTabs(){
   panel.onclick=e=>{if(menu&&!e.target.closest('.preview-toolbar-actions'))menu.hidden=true};
 }
 
+let previewLayoutFrame=0,previewLayoutObserver=null;
+function updatePreviewHeight(){
+  previewLayoutFrame=0;
+  const panel=main.querySelector('.workspace .preview-panel');
+  if(!panel)return;
+  if(innerWidth<=900){panel.style.removeProperty('--preview-available-height');return}
+  const toolbar=panel.querySelector('.preview-toolbar');
+  if(!toolbar)return;
+  const viewport=window.visualViewport;
+  const bottom=viewport?viewport.offsetTop+viewport.height:innerHeight;
+  const style=getComputedStyle(panel);
+  const top=Math.max(parseFloat(style.top)||0,panel.getBoundingClientRect().top);
+  const borders=(parseFloat(style.borderTopWidth)||0)+(parseFloat(style.borderBottomWidth)||0);
+  const height=Math.max(120,Math.floor(bottom-top-toolbar.getBoundingClientRect().height-borders-8));
+  const value=height+'px';
+  if(panel.style.getPropertyValue('--preview-available-height')!==value)panel.style.setProperty('--preview-available-height',value);
+}
+function schedulePreviewHeight(){if(!previewLayoutFrame)previewLayoutFrame=requestAnimationFrame(updatePreviewHeight)}
+function bindPreviewHeight(){
+  previewLayoutObserver?.disconnect();
+  previewLayoutObserver=new ResizeObserver(schedulePreviewHeight);
+  for(const element of main.querySelectorAll('.hero,.preview-toolbar'))previewLayoutObserver.observe(element);
+  updatePreviewHeight();
+}
+window.addEventListener('scroll',schedulePreviewHeight,{passive:true});
+window.addEventListener('resize',schedulePreviewHeight);
+window.visualViewport?.addEventListener('resize',schedulePreviewHeight);
+
 // Update the surrounding UI without removing a live iframe from the DOM.
 // Detaching and reinserting an iframe would reload its document as well.
 function patchPreview(current,next){
@@ -1711,6 +1743,7 @@ function renderSubject(){
   syncSubjectHash();
   bindPreviewTabs();
   bindWorkspaceResizer();
+  bindPreviewHeight();
   const sort=$('#sortSelect');if(sort){sort.value=state.sort;sort.onchange=()=>{state.sort=sort.value;renderSubject()}}
   $$('.tab').forEach(b=>b.onclick=()=>{state.section=b.dataset.section;state.selected=null;state.selectedEntry=null;renderSubject()});
   $$('.file-row[data-entry]').forEach(r=>r.onclick=()=>{

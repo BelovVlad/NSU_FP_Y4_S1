@@ -208,6 +208,30 @@ class SiteTests(unittest.TestCase):
         self.page.locator('.search-group-main').click()
         self.assertTrue(self.page.evaluate("savedDocument===document.querySelector('.search-preview-frame').contentDocument"))
 
+    def test_preview_fills_available_height_without_resetting_pdf(self):
+        self.page.set_viewport_size({'width':1440,'height':900})
+        self.home()
+        self.page.evaluate("""state.view='subjects';state.subject='ОВФ';state.section='';
+            state.structure.groups[0].items=Array.from({length:35},(_,i)=>({id:'row-'+i,title:'Lecture '+i,number:i+1,page:2}));render()""")
+        self.page.wait_for_function("document.querySelector('.preview-frame')?.contentDocument.querySelector('#page')?.value==='2'")
+        self.page.wait_for_function("!document.querySelector('.preview-frame').contentDocument.querySelector('#loading').classList.contains('show')")
+        self.page.evaluate("""window.savedFrame=document.querySelector('.preview-frame');window.savedDocument=savedFrame.contentDocument;
+            savedDocument.querySelector('#viewer').scrollTop=160;window.savedPdfScroll=savedDocument.querySelector('#viewer').scrollTop""")
+        before=self.page.locator('.preview-frame-wrap').bounding_box()['height']
+        self.page.evaluate('window.scrollTo(0,600)')
+        self.page.wait_for_function("Math.abs(document.querySelector('.preview-panel').getBoundingClientRect().bottom-(innerHeight-8))<2")
+        self.assertGreater(self.page.locator('.preview-frame-wrap').bounding_box()['height'],before+200)
+        # Allow a debounced PDF resize handler to fire, if it regresses.
+        self.page.wait_for_timeout(350)
+        self.assertTrue(self.page.evaluate("savedFrame===document.querySelector('.preview-frame') && savedDocument===savedFrame.contentDocument"))
+        self.assertEqual(self.page.evaluate("savedDocument.querySelector('#page').value"),'2')
+        self.assertAlmostEqual(self.page.evaluate("savedDocument.querySelector('#viewer').scrollTop"),self.page.evaluate('savedPdfScroll'),delta=1)
+        self.page.set_viewport_size({'width':1440,'height':1200})
+        self.page.wait_for_function("Math.abs(document.querySelector('.preview-panel').getBoundingClientRect().bottom-(innerHeight-8))<2")
+        self.assertGreater(self.page.locator('.preview-frame-wrap').bounding_box()['height'],1000)
+        self.page.evaluate('window.scrollTo(0,0)')
+        self.page.wait_for_function("Math.abs(document.querySelector('.preview-panel').getBoundingClientRect().bottom-(innerHeight-8))<2")
+
     def test_new_query_supersedes_pending_search(self):
         self.home()
         self.page.evaluate("runSearch('alpha');runSearch('needle')")

@@ -902,7 +902,9 @@ if(window.visualViewport){
   window.visualViewport.addEventListener('scroll',()=>{if(pageJump.classList.contains('open'))syncKeyboardOffset()});
 }
 window.addEventListener('orientationchange',()=>setTimeout(()=>{if(pageJump.classList.contains('open'))syncKeyboardOffset()},120));
-let resizeTimer;window.addEventListener('resize',()=>{if(!fitWidth)return;clearTimeout(resizeTimer);resizeTimer=setTimeout(renderPage,180)});
+// A taller embedded preview needs no new canvas: keep its page and scroll position.
+// Width changes still require fitting the document again.
+let resizeTimer;
 let viewerWidth=viewer.clientWidth;
 new ResizeObserver(()=>{
   if(viewer.clientWidth===viewerWidth)return;viewerWidth=viewer.clientWidth;
