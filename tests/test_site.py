@@ -395,7 +395,7 @@ class SiteTests(unittest.TestCase):
             <tbody><tr><td>Reduced Planck constant</td><td>$\hbar$</td><td>First value</td></tr>
             <tr><td>Another Planck constant</td><td>h</td><td>Second value</td></tr>
             <tr><td>Magnetic permeability</td><td>$\mu_0$</td><td>Third value</td></tr></tbody></table><p>Independent explanatory note</p>'''}]}
-        self.page.route('**/*.ipynb',lambda route:route.fulfill(json=fixture))
+        self.page.route(lambda url:urlsplit(url).path.endswith('.ipynb'),lambda route:route.fulfill(json=fixture))
         self.page.goto(self.base+'notebook/viewer.html?'+urlencode({'file':self.nb}))
         self.page.wait_for_selector('tbody tr')
         self.page.locator('#findInput').fill('Planck')
@@ -417,6 +417,32 @@ class SiteTests(unittest.TestCase):
         self.page.locator('#findInput').fill('')
         self.assertEqual(self.page.locator('.find-hit').count(),0)
         self.assertEqual(self.page.locator('#findStatus').inner_text(),'')
+
+    def test_reference_shortcuts_and_single_symbol_search(self):
+        from urllib.parse import urlencode
+        self.stub_notebook_dependencies()
+        fixture={'nbformat':4,'metadata':{'nsu_reference':{'version':1}},'cells':[{
+            'cell_type':'markdown','source':r'''<h1>Units</h1><h2 id="dimensions">Dimensions</h2>
+            <h3>Electricity</h3><table><thead><tr><th>Quantity</th><th>Symbol</th><th>Dimension</th></tr></thead>
+            <tbody><tr><td>Charge</td><td>$q$</td><td>$q$</td></tr>
+            <tr><td>Capacitance</td><td>$C$</td><td>$q^2$</td></tr></tbody></table>
+            <h2 id="magnetism">Magnetism</h2><p>Magnetic quantities</p>'''}]}
+        self.page.route(lambda url:urlsplit(url).path.endswith('.ipynb'),lambda route:route.fulfill(json=fixture))
+        self.page.goto(self.base+'notebook/viewer.html?'+urlencode({'file':self.nb})+'#dimensions')
+        self.page.wait_for_selector('.reference-nav a')
+        self.assertEqual(self.page.locator('.reference-nav a').count(),2)
+        self.page.locator('.reference-nav a[href="#magnetism"]').click()
+        self.assertTrue(self.page.url.endswith('#magnetism'))
+        self.page.locator('#findInput').fill('q')
+        self.page.wait_for_function("document.querySelector('#findStatus').textContent==='1/1'")
+        self.assertIn('Charge',self.page.locator('tr.find-hit').inner_text())
+        self.assertEqual(self.page.locator('#findResults button').count(),1)
+        self.assertIn('Electricity',self.page.locator('#findResults').inner_text())
+        self.page.set_viewport_size({'width':320,'height':640})
+        self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
+        self.page.locator('#findResults button').click()
+        self.assertFalse(self.page.locator('#findResults').is_visible())
+        self.assertEqual(self.page.locator('#findInput').evaluate('(el)=>el===document.activeElement'),True)
 
 
 if __name__ == '__main__':

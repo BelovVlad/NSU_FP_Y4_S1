@@ -40,6 +40,16 @@ button,input,select,a{font:inherit}
 .find-status{min-width:28px;color:var(--muted);font-size:10px;text-align:center}
 .find-btn{flex-shrink:0;width:28px;height:28px;border:0;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer}
 .find-btn:hover{background:var(--panel2);color:var(--cream)}
+.find-box{position:relative}
+.find-results{position:absolute;top:calc(100% + 8px);right:0;width:360px;max-width:calc(100vw - 24px);max-height:min(440px,65dvh);overflow-y:auto;padding:5px;border:1px solid var(--line);border-radius:10px;background:var(--bar);box-shadow:0 12px 40px #0008}
+.find-results[hidden]{display:none}
+.find-results button{display:block;width:100%;padding:10px;text-align:left;color:var(--text);background:transparent;border:0;border-radius:6px;cursor:pointer;font-size:13px;line-height:1.45}
+.find-results button:hover,.find-results button:focus-visible{background:var(--panel2);outline:1px solid var(--accent)}
+.find-results small{display:block;margin-top:3px;color:var(--muted);font-size:11px}
+.find-results p{margin:6px 10px;color:var(--muted);font-size:11px;line-height:1.5}
+.reference-nav{display:flex;flex-wrap:wrap;gap:8px;padding:0 9px 20px;margin-bottom:10px;border-bottom:1px solid var(--line)}
+.reference-nav a{padding:8px 11px;border:1px solid var(--line);border-radius:7px;color:var(--text2);background:var(--panel);text-decoration:none;font-size:12px;line-height:1.5}
+.reference-nav a:hover,.reference-nav a:focus-visible{border-color:var(--accent);color:var(--cream)}
 .github-link{padding:0 10px;font-size:12px;font-weight:700}
 .zoom-select{min-width:72px;padding:0 5px;font-size:12px}
 
@@ -86,11 +96,13 @@ button,input,select,a{font:inherit}
 .reference-reader .markdown-body :is(h1,h2,h3){font-family:Georgia,"Times New Roman",serif}
 .reference-reader .markdown-body h2{padding-bottom:10px;border-bottom:1px solid var(--line);margin-top:24px}
 .reference-reader .table-scroll table{font-size:13px;font-variant-numeric:tabular-nums}
+.reference-reader .table-scroll :is(table,thead,tbody,tr,th,td){box-sizing:border-box}
 .reference-reader .table-scroll :is(th,td){padding:10px 12px;min-width:80px}
 .reference-reader .table-scroll tbody tr:nth-child(even){background:color-mix(in srgb,var(--panel) 55%,transparent)}
 .reference-reader .table-scroll tr.find-hit{background:rgba(var(--accent-rgb),.18);box-shadow:inset 3px 0 var(--accent)}
 .reference-reader .table-scroll tr.find-hit td{border-top-color:var(--accent);border-bottom-color:var(--accent)}
 .reference-reader .table-scroll td:first-child{font-weight:550;color:var(--text);min-width:180px;max-width:260px}
+.reference-reader .table-scroll td:nth-child(2){color:var(--cream)}
 .reference-reader .markdown-body blockquote{border-radius:0 8px 8px 0;font-size:13px}
 .reference-reader .markdown-cell+.markdown-cell{margin-top:12px}
 
@@ -115,6 +127,8 @@ body.embed .back,body.embed .notebook-head{display:none}
 body.embed .title-wrap{grid-column:1/3}
 body.embed .notebook-shell{padding:7px 6px 34px}
 @media(max-width:720px){
+  .find-results{position:fixed;top:calc(var(--notebook-toolbar-height) + 4px);left:12px;right:12px;width:auto}
+  .reference-nav{padding:0 6px 16px;gap:6px}.reference-nav a{font-size:11px}
   .toolbar{grid-template-columns:auto minmax(0,1fr);align-items:start;gap:8px;padding:7px 8px}
   .actions{grid-column:1/-1;width:100%}
   .find-box{flex:1}.find-input{width:100%}.github-link{display:none}

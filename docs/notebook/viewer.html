@@ -23,8 +23,8 @@ window.MathJax={
 };
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
-<link rel="stylesheet" href="viewer.css?build=11">
-<script defer src="outline.js?build=1"></script>
+<link rel="stylesheet" href="viewer.css?build=12">
+<script defer src="outline.js?build=2"></script>
 </head>
 <body>
 <header class="toolbar">
@@ -40,6 +40,7 @@ window.MathJax={
       <span id="findStatus" class="find-status"></span>
       <button id="findPrev" class="find-btn" type="button" title="Предыдущее">↑</button>
       <button id="findNext" class="find-btn" type="button" title="Следующее">↓</button>
+      <div id="findResults" class="find-results" aria-label="Найденные величины" hidden></div>
     </div>
     <select id="zoomSelect" class="zoom-select" aria-label="Масштаб notebook" title="Масштаб">
       <option value="80">80%</option><option value="90">90%</option><option value="100">100%</option>
@@ -79,6 +80,7 @@ const findInput=document.getElementById('findInput');
 const findStatus=document.getElementById('findStatus');
 const findPrev=document.getElementById('findPrev');
 const findNext=document.getElementById('findNext');
+const findResults=document.getElementById('findResults');
 const zoomSelect=document.getElementById('zoomSelect');
 let notebook=null,notebookUrl='',findHits=[],findCursor=-1,findTargets=[],referenceRows=[],findJumpTimer=0;
 
@@ -154,7 +156,7 @@ function internalMaterialUrl(path){
   const low=path.toLowerCase();
   if(low.endsWith('.ipynb')){
     const u=new URL('viewer.html',location.href);
-    u.searchParams.set('build','11');
+    u.searchParams.set('build','12');
     u.searchParams.set('file',path);
     u.searchParams.set('title',path.split('/').pop().replace(/\.ipynb$/i,'').replace(/_/g,' '));
     if(theme)u.searchParams.set('theme',theme);
@@ -200,6 +202,7 @@ function patchLinks(root){
     if(internal){
       a.href=internal;a.removeAttribute('target');a.removeAttribute('rel');return;
     }
+    if(v.startsWith('#'))return;
     a.href=resolveRelative(v);
     if(/^https?:/i.test(a.href)){a.target='_blank';a.rel='noopener noreferrer'}
   });
@@ -492,13 +495,26 @@ function scrollToCell(n,smooth=true){
 function rebuildFindHits(){
   clearTimeout(findJumpTimer);
   const q=normalize(findInput.value);
-  findHits=[];findTargets=[];findCursor=-1;clearFindHit();
+  findHits=[];findTargets=[];findCursor=-1;clearFindHit();findResults.hidden=true;findResults.replaceChildren();
   if(!q||!notebook){findStatus.textContent='';return}
   if(referenceRows.length){
     const terms=referenceSearchText(q).split(' ').filter(Boolean);
-    const matches=terms.length?referenceRows.filter(row=>terms.every(term=>row.text.includes(term))):[];
+    const symbol=referenceSearchText(q);
+    const matches=terms.length?referenceRows.filter(row=>symbol.length===1
+      ?row.symbols.includes(symbol)
+      :terms.every(term=>row.text.includes(term))):[];
+    matches.sort((a,b)=>Number(b.symbols.includes(symbol))-Number(a.symbols.includes(symbol)));
     findTargets=matches.map(row=>row.element);
     findHits=matches.map(row=>Number(row.element.closest('[data-cell]').dataset.cell));
+    matches.slice(0,8).forEach((row,index)=>{
+      const button=document.createElement('button');button.type='button';
+      const name=document.createElement('span');name.textContent=row.label;
+      const section=document.createElement('small');section.textContent=row.section;
+      button.append(name,section);button.onclick=()=>{clearTimeout(findJumpTimer);findCursor=index;showFindHit();findInput.focus({preventScroll:true});findResults.hidden=true};
+      findResults.append(button);
+    });
+    if(matches.length>8){const more=document.createElement('p');more.textContent='Всего: '+matches.length+'. Уточните запрос или используйте стрелки.';findResults.append(more)}
+    findResults.hidden=!matches.length;
   }
   // Notes and formulas outside tables remain searchable as a fallback.
   if(!findHits.length)
@@ -507,16 +523,21 @@ function rebuildFindHits(){
 }
 function referenceSearchText(text){
   const symbols={'ℏ':'hbar','ħ':'hbar','ε':'epsilon','ϵ':'epsilon','μ':'mu','µ':'mu','α':'alpha','ν':'nu','λ':'lambda','ρ':'rho','σ':'sigma','π':'pi','φ':'phi','Φ':'phi','ω':'omega','∞':'infty','₀':'0','₁':'1','₂':'2'};
-  return normalize(text).replace(/[ℏħεϵμµανλρσπφΦω∞₀₁₂]/g,ch=>symbols[ch]).replace(/\\(?:mathrm|mathbf|text|mathfrak|bar)\b/g,'').replace(/[\\_{}]/g,'').replace(/\s+/g,' ').trim();
+  return normalize(text).replace(/[ℏħεϵμµανλρσπφΦω∞₀₁₂]/g,ch=>symbols[ch]).replace(/\\(?:mathrm|mathbf|boldsymbol|text|mathfrak|mathcal|bar)\b/g,'').replace(/[\\_{}]/g,'').replace(/\s+/g,' ').trim();
 }
 function indexReferenceRows(){
   referenceRows=[];
   if(!notebook?.metadata?.nsu_reference)return;
-  main.querySelectorAll('.markdown-body tbody tr').forEach(element=>{
+  let section='';
+  main.querySelectorAll('.markdown-body h2,.markdown-body h3,.markdown-body tbody tr').forEach(element=>{
+    if(element.tagName!=='TR'){section=element.textContent.trim();return}
     const copy=element.cloneNode(true);
     copy.querySelectorAll('.math-placeholder').forEach(el=>{el.textContent=mathRegistry.get(el.dataset.mathId)?.tex||el.textContent});
     const text=[...copy.children].map(cell=>cell.textContent).join(' ');
-    referenceRows.push({element,text:referenceSearchText(text)});
+    const headers=[...element.closest('table').querySelectorAll('thead th')];
+    const symbolIndex=headers.findIndex(th=>/обозн|symbol/i.test(th.textContent));
+    const symbolText=symbolIndex>=0?referenceSearchText(copy.children[symbolIndex]?.textContent||''):'';
+    referenceRows.push({element,text:referenceSearchText(text),symbols:symbolText.split(/[^\p{L}\p{N}]+/u).filter(Boolean),label:copy.children[0]?.textContent.trim()||'',section});
   });
 }
 function adaptReferenceTables(){
@@ -543,6 +564,7 @@ function showFindHit(smooth=true){
 }
 function moveFind(direction){
   clearTimeout(findJumpTimer);
+  findResults.hidden=true;
   if(!findHits.length){rebuildFindHits();if(!findHits.length)return}
   findCursor=(findCursor+direction+findHits.length)%findHits.length;
   showFindHit();
@@ -622,9 +644,12 @@ back.onclick=()=>{
 };
 findInput.addEventListener('input',()=>{
   rebuildFindHits();
-  if(referenceRows.length&&normalize(findInput.value).length>=2&&findHits.length)
+  if(referenceRows.length&&normalize(findInput.value).length>=1&&findHits.length)
     findJumpTimer=setTimeout(()=>{findCursor=0;showFindHit()},220);
 });
+document.addEventListener('click',e=>{if(!e.target.closest('.find-box'))findResults.hidden=true});
+findInput.addEventListener('focus',()=>{if(findResults.children.length)findResults.hidden=false});
+findInput.addEventListener('keydown',e=>{if(e.key==='Escape'){findResults.hidden=true;e.stopPropagation()}});
 findInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();moveFind(e.shiftKey?-1:1)}});
 findNext.onclick=()=>moveFind(1);
 findPrev.onclick=()=>moveFind(-1);

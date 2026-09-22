@@ -105,6 +105,7 @@
           const children=makeList(node.children,depth+1);
           if(depth>=1){
             const details=document.createElement('details'),summary=document.createElement('summary');
+            if(document.body.classList.contains('reference-reader'))details.open=true;
             summary.textContent='Подразделы · '+node.children.length;details.append(summary,children);item.append(details);
           }else item.append(children);
         }
@@ -113,6 +114,15 @@
       return list;
     }
     nav.append(makeList(tree));
+    root.querySelector('.reference-nav')?.remove();
+    if(document.body.classList.contains('reference-reader')){
+      const quick=document.createElement('nav');quick.className='reference-nav';quick.setAttribute('aria-label','Быстрые переходы по справочнику');
+      for(const entry of entries.filter(item=>item.level===2)){
+        const link=document.createElement('a');link.href=entry.link.getAttribute('href');link.textContent=entry.label;
+        link.onclick=entry.link.onclick;quick.append(link);
+      }
+      if(quick.children.length)root.querySelector('.cells')?.before(quick);
+    }
     panel.hidden=toggle.hidden=!entries.length;
     document.body.classList.toggle('has-toc',!!entries.length);
     new ResizeObserver(schedule).observe(root);
