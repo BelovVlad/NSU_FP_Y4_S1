@@ -20,21 +20,28 @@
 
 
 /* Compact application controls live behind one settings row in the sidebar. */
-.app-settings{
-  width:100%;min-height:42px;display:flex;align-items:center;gap:10px;margin:0 0 8px;padding:8px 10px;
-  border:1px solid var(--line,#2b323d);border-radius:9px;background:var(--panel,#121c24);
-  color:var(--cream,#ead4b7);font:650 12px/1.35 system-ui;text-align:left;cursor:pointer
-}
-.app-settings:hover{border-color:var(--accent,#d45d68)}
+.app-settings{display:none}
 .app-settings-icon{width:20px;height:20px;display:grid;place-items:center;flex:none;color:var(--text2,#c5c8ca)}
 .app-settings-icon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:720px){
+  .app-settings{
+    width:100%;min-width:0;min-height:40px;display:flex;align-items:center;gap:9px;margin:0 0 8px;padding:8px 10px;
+    border:1px solid var(--line,#2b323d);border-radius:8px;background:var(--panel,#121c24);
+    color:var(--cream,#ead4b7);font:650 12px/1.25 system-ui;text-align:left;cursor:pointer;overflow:hidden
+  }
+  .app-settings>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .app-settings:active{background:color-mix(in srgb,var(--panel,#121c24) 86%,var(--accent,#d45d68) 14%)}
+}
+@media(hover:hover) and (pointer:fine){
+  .app-settings:hover{border-color:var(--accent,#d45d68)}
+}
 
 .app-manager{width:min(520px,calc(100% - 24px));padding:0;overflow:hidden}
 .app-manager .app-dialog-head{padding:18px 18px 14px;border-bottom:1px solid #2c3943}
 .app-manager-body{padding:14px 18px 18px}
-.app-manager-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 14px;align-items:center;padding:11px 12px;margin-bottom:14px;border:1px solid #2c3943;border-radius:10px;background:#0d171e}
-.app-manager-summary strong{font-size:13px}
-.app-manager-summary span{color:#9cabb5;font-size:11px}
+.app-manager-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 0 11px;margin-bottom:12px;border-bottom:1px solid #27333d}
+.app-manager-summary strong{color:#9cabb5;font-size:11px;font-weight:600}
+.app-manager-summary span{color:#c5d0d7;font-size:11px;text-align:right}
 .app-manager-section+.app-manager-section{margin-top:14px;padding-top:14px;border-top:1px solid #27333d}
 .app-manager-section h3{margin:0 0 8px;color:#d9e0e4;font:700 12px/1.35 system-ui}
 .app-manager-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
