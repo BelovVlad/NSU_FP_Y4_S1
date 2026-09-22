@@ -48,10 +48,15 @@ class SiteTests(unittest.TestCase):
         cls.temp = tempfile.TemporaryDirectory()
         cls.root = Path(cls.temp.name)
         for relative in ['docs/index.html', 'docs/knowledge.css', 'docs/search-worker.js', 'docs/pdfjs/viewer.html', 'docs/pdfjs/controls.css',
-                         'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/notebook/outline.js', 'docs/giscus-config.json']:
+                         'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/notebook/outline.js', 'docs/giscus-config.json',
+                         'docs/app.js', 'docs/app.css', 'docs/sw.js', 'docs/manifest.webmanifest',
+                         'docs/assets/nsu-fp-emblem.webp', 'docs/assets/app-192.png', 'docs/assets/app-512.png']:
             target = cls.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / relative, target)
+        # GitHub Pages removes Jekyll front matter before serving the HTML.
+        index_html = cls.root / 'docs/index.html'
+        index_html.write_text(index_html.read_text(encoding='utf-8').removeprefix('---\n---\n'),encoding='utf-8')
         cls.a = 'ОВФ/01_Лекции/a.pdf'
         cls.b = 'ФЭЧ/01_Лекции/b.pdf'
         cls.nb = 'База/Практика/Физика/Физические константы.ipynb'
@@ -124,7 +129,7 @@ class SiteTests(unittest.TestCase):
     def setUp(self):
         self.failed_paths.clear()
         self.requests.clear()
-        self.context=self.browser.new_context()
+        self.context=self.browser.new_context(service_workers='allow' if self._testMethodName.startswith('test_pwa_') else 'block')
         self.context.route('https://giscus.app/**', lambda route: route.fulfill(body='',content_type='text/javascript'))
         if not REAL_PDFJS:
             self.context.route('https://cdn.jsdelivr.net/npm/pdfjs-dist@*/build/pdf.min.mjs',
@@ -443,6 +448,109 @@ class SiteTests(unittest.TestCase):
         self.page.locator('#findResults button').click()
         self.assertFalse(self.page.locator('#findResults').is_visible())
         self.assertEqual(self.page.locator('#findInput').evaluate('(el)=>el===document.activeElement'),True)
+
+    def test_notebook_preserves_inline_and_display_math_modes(self):
+        from urllib.parse import urlencode
+        self.stub_notebook_dependencies()
+        # MathJax defaults to display=true when the conversion option is absent.
+        self.context.route('**/tex-mml-chtml.js',lambda route:route.fulfill(content_type='text/javascript',body='''
+          window.MathJax={getMetricsFor:()=>({em:16,ex:8}),
+            tex2chtmlPromise:async(tex,options)=>{
+              const el=document.createElement('mjx-container');el.textContent=tex;
+              if(options.display!==false)el.setAttribute('display','true');return el;
+            },startup:{promise:Promise.resolve(),document:{clear(){},updateDocument(){}}}};
+        '''))
+        fixture={'nbformat':4,'metadata':{},'cells':[{'cell_type':'markdown',
+            'source':'<p>Charge $q$</p>\n\n$$F=ma$$'}]}
+        self.page.route(lambda url:urlsplit(url).path.endswith('.ipynb'),lambda route:route.fulfill(json=fixture))
+        self.page.goto(self.base+'notebook/viewer.html?'+urlencode({'file':self.nb}))
+        self.page.wait_for_function("document.querySelectorAll('.math-rendered').length===2")
+        self.assertEqual(self.page.locator('.math-inline mjx-container[display="true"]').count(),0)
+        self.assertEqual(self.page.locator('.math-display mjx-container[display="true"]').count(),1)
+
+    def pwa_ready(self):
+        self.home()
+        self.page.evaluate('NSUApp.ready.then(()=>true)')
+        self.page.wait_for_function('!!navigator.serviceWorker.controller')
+
+    def test_pwa_offline_shell_material_versions_and_metadata(self):
+        from urllib.parse import quote
+        self.pwa_ready()
+        url='../'+quote(self.nb)+'?v=one'
+        read='async url=>{const r=await fetch(url);return {ok:r.ok,text:await r.text()}}'
+        self.assertTrue(self.page.evaluate(read,url)['ok'])
+        count=len(self.requests)
+        self.assertTrue(self.page.evaluate(read,url)['ok'])
+        self.assertEqual(len(self.requests),count,'A versioned notebook should not be downloaded twice')
+        self.assertTrue(self.page.evaluate(read,url.replace('one','two'))['ok'])
+        self.assertGreater(len(self.requests),count,'A new content version must reach the server')
+        self.context.set_offline(True)
+        self.page.reload()
+        self.page.wait_for_function('FILES.length===2')
+        self.assertTrue(self.page.evaluate(read,url)['ok'])
+        self.assertIn('Reference',self.page.evaluate(read,url)['text'])
+        self.page.locator('#offlineFiles').click()
+        self.page.wait_for_function("document.querySelector('#appDialog').textContent.includes('Пока нет')")
+
+    def test_pwa_pdf_explicit_save_offline_ranges_and_removal(self):
+        from urllib.parse import quote, urlencode
+        self.pwa_ready()
+        url=self.base+'../'+quote(self.a)+'?v=fixture-a'
+        viewer=self.base+'pdfjs/viewer.html?'+urlencode({'file':self.a,'v':'fixture-a','embed':'1'})
+        # Merely fetching/opening a PDF must not fill offline storage.
+        self.page.evaluate('async url=>(await fetch(url)).arrayBuffer().then(b=>b.byteLength)',url)
+        self.assertEqual(self.page.evaluate("NSUApp.request('LIST_PDFS')"),[])
+        result=self.page.evaluate("args=>NSUApp.request('SAVE_PDF',args)",{'url':url,'viewer':viewer,'title':'Тестовый PDF'})
+        self.assertGreater(result['bytes'],100)
+        self.context.set_offline(True)
+        def range_read(value):
+            return self.page.evaluate('''async ({url,value})=>{const r=await fetch(url,{headers:{Range:value}});
+                return {status:r.status,range:r.headers.get('content-range'),size:(await r.arrayBuffer()).byteLength}}''',{'url':url,'value':value})
+        self.assertEqual(range_read('bytes=0-99'),{'status':206,'range':f"bytes 0-99/{result['bytes']}",'size':100})
+        self.assertEqual(range_read('bytes=-10')['size'],10)
+        self.assertEqual(range_read('bytes=999999-')['status'],416)
+        self.page.locator('#offlineFiles').click()
+        self.page.wait_for_function("document.querySelector('.app-downloads a')?.textContent==='Тестовый PDF'")
+        self.assertNotIn('embed=',self.page.locator('.app-downloads a').get_attribute('href'))
+        self.page.get_by_role('button',name='Удалить сохранённый файл Тестовый PDF').click()
+        self.page.wait_for_function("document.querySelectorAll('.app-downloads li').length===0")
+        self.assertEqual(self.page.evaluate("NSUApp.request('LIST_PDFS')"),[])
+
+    def test_pwa_install_fallback_and_invalid_pdf(self):
+        from urllib.parse import quote
+        self.pwa_ready()
+        self.page.locator('#installApp').click()
+        self.assertTrue(self.page.locator('#appDialog').is_visible())
+        self.assertIn('Chrome',self.page.locator('#appDialog').inner_text())
+        self.page.keyboard.press('Escape')
+        self.page.locator('#appDialog').wait_for(state='detached')
+        result=self.page.evaluate('''async args=>{try {await NSUApp.request('SAVE_PDF',args);return 'unexpected success';}
+            catch(error){return error.message;}}''',{'url':self.base+'../'+quote(self.nb),
+                'viewer':self.base+'pdfjs/viewer.html','title':'Not a PDF'})
+        self.assertIn('Некорректная',result)
+
+    def test_pwa_update_preserves_saved_documents(self):
+        import time
+        from urllib.parse import quote
+        self.pwa_ready()
+        self.assertEqual(self.page.locator('#appUpdate').count(),0,'A first installation is not an update')
+        self.page.evaluate("args=>NSUApp.request('SAVE_PDF',args)",{
+            'url':self.base+'../'+quote(self.a),'viewer':self.base+'pdfjs/viewer.html','title':'Saved before update'})
+        worker=self.root/'docs/sw.js'
+        original=worker.read_text(encoding='utf-8')
+        try:
+            worker.write_text(original.replace("SHELL_VERSION = 'v1'","SHELL_VERSION = 'test-update'"),encoding='utf-8')
+            # SimpleHTTPRequestHandler's Last-Modified validator has one-second precision.
+            os.utime(worker,(time.time()+2,time.time()+2))
+            self.page.evaluate('async()=>{const r=await NSUApp.ready;await r.update()}')
+            self.page.locator('#appUpdate').wait_for(state='visible')
+            self.page.locator('#appUpdate').click()
+            self.page.wait_for_function("async()=>(await caches.keys()).some(name=>name.endsWith('shell-test-update'))")
+            self.page.wait_for_function('typeof NSUApp!=="undefined" && !!navigator.serviceWorker.controller')
+            files=self.page.evaluate("NSUApp.request('LIST_PDFS')")
+            self.assertEqual([file['title'] for file in files],['Saved before update'])
+        finally:
+            worker.write_text(original,encoding='utf-8')
 
 
 if __name__ == '__main__':

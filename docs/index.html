@@ -971,6 +971,8 @@ body.music-na19x .pdf-fullscreen-loader{
 
 </style>
 <link rel="stylesheet" href="knowledge.css?v=3">
+<link rel="stylesheet" href="app.css">
+<script defer src="app.js"></script>
 </head>
 <body>
 <div id="overlay" class="mobile-overlay"></div>
@@ -1020,6 +1022,8 @@ body.music-na19x .pdf-fullscreen-loader{
       <audio id="siteMusic" preload="none" loop></audio>
     </div>
     <div class="sidebar-bottom">
+      <button id="installApp" class="app-install" type="button">Установить приложение</button>
+      <button id="offlineFiles" class="app-offline" type="button">Сохранённые PDF</button>
       <a class="repo-link" href="https://github.com/BelovVlad/NSU_FP_Y4_S1" target="_blank" rel="noopener"><span>GitHub</span><span data-icon="external" aria-hidden="true"></span></a>
     </div>
   </aside>
@@ -1171,7 +1175,7 @@ function sortedEntries(items){
 }
 function githubUrl(f){return 'https://github.com/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(f.path)}
 function notebookUrl(f,cell=0,titleOverride='',embed=false){
-  let url='notebook/viewer.html?build=12&file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
+  let url='notebook/viewer.html?build=13&file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
   if(cell)url+='&cell='+encodeURIComponent(cell);
   if(fileMeta(f).version)url+='&v='+encodeURIComponent(fileMeta(f).version);
   const theme=currentPdfTheme();if(theme)url+='&theme='+encodeURIComponent(theme);
@@ -1421,7 +1425,7 @@ document.addEventListener('fullscreenchange',()=>{
 document.addEventListener('click',e=>{
   const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary,a[href*="pdfjs/viewer.html"],a[href*="notebook/viewer.html"]');
   if(!a)return;
-  if(a.classList.contains('knowledge-card'))return;
+  if(a.classList.contains('knowledge-card')||a.closest('.app-downloads'))return;
   const href=a.getAttribute('href')||'';
   if(!href.includes('pdfjs/viewer.html')&&!href.includes('notebook/viewer.html'))return;
   e.preventDefault();
@@ -2091,8 +2095,9 @@ function enableMobileImmersiveMode(){
     if(result?.catch)result.catch(()=>{});
   }catch{}
 }
-function firstMobileImmersiveGesture(){
+function firstMobileImmersiveGesture(event){
   document.removeEventListener('pointerup',firstMobileImmersiveGesture,true);
+  if(event.target.closest('#installApp,#offlineFiles,.app-dialog') || window.matchMedia('(display-mode: standalone)').matches)return;
   enableMobileImmersiveMode();
 }
 document.addEventListener('pointerup',firstMobileImmersiveGesture,true);

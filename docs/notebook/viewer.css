@@ -95,9 +95,9 @@ button,input,select,a{font:inherit}
 .reference-reader .markdown-body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:14px;line-height:1.75}
 .reference-reader .markdown-body :is(h1,h2,h3){font-family:Georgia,"Times New Roman",serif}
 .reference-reader .markdown-body h2{padding-bottom:10px;border-bottom:1px solid var(--line);margin-top:24px}
-.reference-reader .table-scroll table{font-size:13px;font-variant-numeric:tabular-nums}
+.reference-reader .table-scroll table{font-size:14px;font-variant-numeric:tabular-nums}
 .reference-reader .table-scroll :is(table,thead,tbody,tr,th,td){box-sizing:border-box}
-.reference-reader .table-scroll :is(th,td){padding:10px 12px;min-width:80px}
+.reference-reader .table-scroll :is(th,td){padding:10px 12px;min-width:80px;vertical-align:middle}
 .reference-reader .table-scroll tbody tr:nth-child(even){background:color-mix(in srgb,var(--panel) 55%,transparent)}
 .reference-reader .table-scroll tr.find-hit{background:rgba(var(--accent-rgb),.18);box-shadow:inset 3px 0 var(--accent)}
 .reference-reader .table-scroll tr.find-hit td{border-top-color:var(--accent);border-bottom-color:var(--accent)}
@@ -197,7 +197,7 @@ body.embed .notebook-shell{padding:7px 6px 34px}
   .reference-reader .table-scroll thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
   .reference-reader .table-scroll tbody tr{display:block;margin:0 0 12px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
   .reference-reader .table-scroll tbody td{display:flex;align-items:baseline;gap:10px;width:100%;min-width:0;max-width:none;padding:8px 12px;border:0;border-top:1px solid var(--line2);font-size:13px}
-  .reference-reader .table-scroll tbody td:first-child{display:block;padding:12px;border:0;font-weight:650;background:var(--panel2);border-radius:9px 9px 0 0}
+  .reference-reader .table-scroll tbody td:first-child{display:block;width:100%;min-width:0;max-width:none;padding:12px;border:0;font-weight:650;background:var(--panel2);border-radius:9px 9px 0 0}
   .reference-reader .table-scroll td:not(:first-child)::before{content:attr(data-label);width:90px;flex:none;color:var(--muted);font-size:11px;line-height:1.5;overflow-wrap:anywhere}
   .reference-value{min-width:0;flex:1;overflow-x:auto}
   .reference-reader .table-scroll tr.find-hit{border-color:var(--accent);background:rgba(var(--accent-rgb),.12)}

@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - 'docs/index.html'
+      - 'docs/app.*'
+      - 'docs/sw.js'
+      - 'docs/manifest.webmanifest'
+      - 'docs/assets/app-*.png'
       - 'docs/search-worker.js'
       - 'docs/giscus-config.json'
       - 'docs/search-index/**'
@@ -17,6 +21,10 @@ on:
   pull_request:
     paths:
       - 'docs/index.html'
+      - 'docs/app.*'
+      - 'docs/sw.js'
+      - 'docs/manifest.webmanifest'
+      - 'docs/assets/app-*.png'
       - 'docs/search-worker.js'
       - 'docs/giscus-config.json'
       - 'docs/search-index/**'

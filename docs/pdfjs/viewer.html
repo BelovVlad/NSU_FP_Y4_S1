@@ -71,6 +71,8 @@ body.continuous-mode .canvas-wrap{display:none!important}
 
 </style>
 <link rel="stylesheet" href="controls.css?v=1">
+<link rel="stylesheet" href="../app.css">
+<script defer src="../app.js"></script>
 </head>
 <body>
 <svg class="pdf-tone-filters" aria-hidden="true" focusable="false">
@@ -128,6 +130,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
         </svg>
       </button>
     </div>
+    <button id="saveOffline" class="btn rail-button" type="button" title="Сохранить весь PDF на устройстве (до 150 МБ)" disabled>Без интернета</button>
     <a id="direct" class="btn rail-button direct-link" href="#" target="_blank" rel="noopener" title="Открыть исходный файл" aria-label="Открыть исходный файл"><span data-viewer-icon="file"></span><span class="tool-caption">Файл</span></a>
   </div>
 </header>
@@ -739,7 +742,7 @@ async function open(){
   title.textContent=titleParam||raw.split('/').pop();document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Открываю документ…');
   try{
     pdfUrl=resolvePdfUrl(raw);direct.href=pdfUrl;
-    pdf=await loadPdfDocument(pdfUrl);pageNum=validPage(pageParam||rememberedPage());searchPage=pageNum;scale=1;fitWidth=embedParam||compactQuery.matches;updateControls();await renderPage();notifyParentPdfReady();if(pendingNavigation)await applyNavigation();else if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
+    pdf=await loadPdfDocument(pdfUrl);document.getElementById('saveOffline').disabled=false;pageNum=validPage(pageParam||rememberedPage());searchPage=pageNum;scale=1;fitWidth=embedParam||compactQuery.matches;updateControls();await renderPage();window.NSUApp?.warm();notifyParentPdfReady();if(pendingNavigation)await applyNavigation();else if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
   }catch(err){fail(err?.message||String(err))}
 }
 

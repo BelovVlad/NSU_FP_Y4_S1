@@ -1,0 +1,694 @@
+{
+  "baseline_commit": "d260848^",
+  "relative_tolerance": 5e-06,
+  "entries": [
+    {
+      "system": "СИ",
+      "original_row": 1,
+      "original_name": "Постоянная Больцмана",
+      "original_value": 1.3806499999999997e-23,
+      "current_name": "Постоянная Больцмана",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 2,
+      "original_name": "Элементарный заряд",
+      "original_value": 1.60218e-19,
+      "current_name": "Элементарный заряд",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 3,
+      "original_name": "Масса электрона",
+      "original_value": 9.10938e-31,
+      "current_name": "Масса электрона",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 4,
+      "original_name": "Масса протона",
+      "original_value": 1.6726200000000002e-27,
+      "current_name": "Масса протона",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 5,
+      "original_name": "Гравитационная постоянная",
+      "original_value": 6.6743e-11,
+      "current_name": "Гравитационная постоянная",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 6,
+      "original_name": "Постоянная Планка",
+      "original_value": 6.62607e-34,
+      "current_name": "Постоянная Планка",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 7,
+      "original_name": "$\\hbar = h/2\\pi$",
+      "original_value": 1.05457e-34,
+      "current_name": "Приведённая постоянная Планка",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 8,
+      "original_name": "Скорость света в вакууме",
+      "original_value": 299792000.0,
+      "current_name": "Скорость света в вакууме",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 9,
+      "original_name": "Диэлектрическая проницаемость вакуума",
+      "original_value": 8.854189999999999e-12,
+      "current_name": "Электрическая постоянная, проницаемость вакуума",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 10,
+      "original_name": "Магнитная проницаемость вакуума",
+      "original_value": 1.25664e-06,
+      "current_name": "Магнитная постоянная, проницаемость вакуума",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 11,
+      "original_name": "Отношение масс протона и электрона",
+      "original_value": 1836.1499999999999,
+      "current_name": "Отношение масс протона и электрона",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 12,
+      "original_name": "Отношение заряда электрона к массе",
+      "original_value": 175882000000.0,
+      "current_name": "Модуль удельного заряда электрона",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 13,
+      "original_name": "Постоянная Ридберга",
+      "original_value": 10973700.0,
+      "current_name": "Постоянная Ридберга",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 14,
+      "original_name": "Боровский радиус",
+      "original_value": 5.2917699999999994e-11,
+      "current_name": "Боровский радиус",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 15,
+      "original_name": "Атомное сечение",
+      "original_value": 8.797359999999999e-21,
+      "current_name": "Атомное сечение (масштаб площади)",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 16,
+      "original_name": "Классический радиус электрона",
+      "original_value": 2.81794e-15,
+      "current_name": "Классический радиус электрона",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 17,
+      "original_name": "Сечение Томсона",
+      "original_value": 6.652459999999999e-29,
+      "current_name": "Сечение Томсона",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 18,
+      "original_name": "Комптоновская длина волны электрона",
+      "original_value": 2.42631e-12,
+      "current_name": "Комптоновская длина волны электрона",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 19,
+      "original_name": "$\\dfrac{\\hbar}{m_e c}$",
+      "original_value": 3.86159e-13,
+      "current_name": "Приведённая комптоновская длина",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 20,
+      "original_name": "Постоянная тонкой структуры",
+      "original_value": 0.00729735,
+      "current_name": "Постоянная тонкой структуры",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 21,
+      "original_name": "$\\alpha^{-1}$",
+      "original_value": 137.036,
+      "current_name": "Обратная постоянная тонкой структуры",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 22,
+      "original_name": "Первая радиационная постоянная",
+      "original_value": 3.74177e-16,
+      "current_name": "Первая радиационная постоянная",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 23,
+      "original_name": "Вторая радиационная постоянная",
+      "original_value": 0.0143878,
+      "current_name": "Вторая радиационная постоянная",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 24,
+      "original_name": "Постоянная Стефана–Больцмана",
+      "original_value": 5.67037e-08,
+      "current_name": "Постоянная Стефана–Больцмана",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 25,
+      "original_name": "Длина волны, соответствующая 1 эВ",
+      "original_value": 1.23984e-06,
+      "current_name": "Длина волны, соответствующая $1\\,\\text{эВ}$",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 26,
+      "original_name": "Частота, соответствующая 1 эВ",
+      "original_value": 241799000000000.0,
+      "current_name": "Частота, соответствующая $1\\,\\text{эВ}$",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 27,
+      "original_name": "Волновое число, соответствующее 1 эВ",
+      "original_value": 806554.0,
+      "current_name": "Волновое число, соответствующее $1\\,\\text{эВ}$",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 28,
+      "original_name": "Энергия, соответствующая 1 эВ",
+      "original_value": 1.60218e-19,
+      "current_name": "Энергия, соответствующая $1\\,\\text{эВ}$",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 29,
+      "original_name": "Энергия, соответствующая 1 м$^{-1}$",
+      "original_value": 1.9864500000000002e-25,
+      "current_name": "Энергия, соответствующая $1\\,\\text{м}^{-1}$",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 30,
+      "original_name": "Энергия, соответствующая 1 ридбергу",
+      "original_value": 13.6057,
+      "current_name": "Энергия Ридберга",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 31,
+      "original_name": "Энергия, соответствующая 1 кельвину",
+      "original_value": 8.617330000000001e-05,
+      "current_name": "Энергия, соответствующая $1\\,\\text{К}$",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 32,
+      "original_name": "Температура, соответствующая 1 эВ",
+      "original_value": 11604.5,
+      "current_name": "Температура, соответствующая $1\\,\\text{эВ}$",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 33,
+      "original_name": "Число Авогадро",
+      "original_value": 6.02214e+23,
+      "current_name": "Постоянная Авогадро",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 34,
+      "original_name": "Постоянная Фарадея",
+      "original_value": 96485.29999999999,
+      "current_name": "Постоянная Фарадея",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 35,
+      "original_name": "Газовая постоянная",
+      "original_value": 8.31446,
+      "current_name": "Молярная газовая постоянная",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 36,
+      "original_name": "Число Лошмидта (концентрация при Н.У.)",
+      "original_value": 2.6867800000000003e+25,
+      "current_name": "Концентрация идеального газа, число Лошмидта",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 37,
+      "original_name": "Атомная единица массы",
+      "original_value": 1.66054e-27,
+      "current_name": "Атомная единица массы",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 38,
+      "original_name": "Стандартная температура",
+      "original_value": 273.15,
+      "current_name": "Температура $0\\,{}^\\circ\\mathrm C$",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 39,
+      "original_name": "Атмосферное давление",
+      "original_value": 101325.0,
+      "current_name": "Стандартная атмосфера",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 40,
+      "original_name": "Давление 1 мм рт. ст. (1 торр)",
+      "original_value": 133.322,
+      "current_name": "Миллиметр ртутного столба",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 41,
+      "original_name": "Молярный объём при Н.У.",
+      "original_value": 0.022414,
+      "current_name": "Молярный объём идеального газа",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 42,
+      "original_name": "Молярная масса воздуха",
+      "original_value": 0.0289647,
+      "current_name": "Молярная масса сухого воздуха (исходное учебное значение)",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 43,
+      "original_name": "Калория (cal)",
+      "original_value": 4.184,
+      "current_name": "Термохимическая калория",
+      "column": 2
+    },
+    {
+      "system": "СИ",
+      "original_row": 44,
+      "original_name": "Ускорение свободного падения",
+      "original_value": 9.80665,
+      "current_name": "Нормальное ускорение свободного падения",
+      "column": 2
+    },
+    {
+      "system": "СГС",
+      "original_row": 1,
+      "original_name": "Постоянная Больцмана",
+      "original_value": 1.3806499999999998e-16,
+      "current_name": "Постоянная Больцмана",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 2,
+      "original_name": "Элементарный заряд",
+      "original_value": 4.803200000000001e-10,
+      "current_name": "Элементарный заряд",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 3,
+      "original_name": "Масса электрона",
+      "original_value": 9.10938e-28,
+      "current_name": "Масса электрона",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 4,
+      "original_name": "Масса протона",
+      "original_value": 1.6726199999999997e-24,
+      "current_name": "Масса протона",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 5,
+      "original_name": "Гравитационная постоянная",
+      "original_value": 6.6743e-08,
+      "current_name": "Гравитационная постоянная",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 6,
+      "original_name": "Постоянная Планка",
+      "original_value": 6.62607e-27,
+      "current_name": "Постоянная Планка",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 7,
+      "original_name": "$\\hbar = h/2\\pi$",
+      "original_value": 1.05457e-27,
+      "current_name": "Приведённая постоянная Планка",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 8,
+      "original_name": "Скорость света в вакууме",
+      "original_value": 29979200000.0,
+      "current_name": "Скорость света в вакууме",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 9,
+      "original_name": "Отношение масс протона и электрона",
+      "original_value": 1836.1499999999999,
+      "current_name": "Отношение масс протона и электрона",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 10,
+      "original_name": "Отношение заряда электрона к массе",
+      "original_value": 5.27281e+17,
+      "current_name": "Модуль удельного заряда электрона",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 11,
+      "original_name": "Постоянная Ридберга",
+      "original_value": 109737.0,
+      "current_name": "Постоянная Ридберга",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 12,
+      "original_name": "Боровский радиус",
+      "original_value": 5.29177e-09,
+      "current_name": "Боровский радиус",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 13,
+      "original_name": "Атомное сечение",
+      "original_value": 8.79736e-17,
+      "current_name": "Атомное сечение (масштаб площади)",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 14,
+      "original_name": "Классический радиус электрона",
+      "original_value": 2.8179400000000004e-13,
+      "current_name": "Классический радиус электрона",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 15,
+      "original_name": "Сечение Томсона",
+      "original_value": 6.65246e-25,
+      "current_name": "Сечение Томсона",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 16,
+      "original_name": "Комптоновская длина волны электрона",
+      "original_value": 2.4263100000000003e-10,
+      "current_name": "Комптоновская длина волны электрона",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 17,
+      "original_name": "$\\dfrac{\\hbar}{m_e c}$",
+      "original_value": 3.8615899999999997e-11,
+      "current_name": "Приведённая комптоновская длина",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 18,
+      "original_name": "Постоянная тонкой структуры",
+      "original_value": 0.00729735,
+      "current_name": "Постоянная тонкой структуры",
+      "column": 2
+    },
+    {
+      "system": "СГС",
+      "original_row": 19,
+      "original_name": "$\\alpha^{-1}$",
+      "original_value": 137.036,
+      "current_name": "Обратная постоянная тонкой структуры",
+      "column": 2
+    },
+    {
+      "system": "СГС",
+      "original_row": 20,
+      "original_name": "Первая радиационная постоянная",
+      "original_value": 3.74177e-05,
+      "current_name": "Первая радиационная постоянная",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 21,
+      "original_name": "Вторая радиационная постоянная",
+      "original_value": 1.43878,
+      "current_name": "Вторая радиационная постоянная",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 22,
+      "original_name": "Постоянная Стефана–Больцмана",
+      "original_value": 5.6703700000000004e-05,
+      "current_name": "Постоянная Стефана–Больцмана",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 23,
+      "original_name": "Длина волны, соответствующая 1 эВ",
+      "original_value": 0.00012398400000000002,
+      "current_name": "Длина волны, соответствующая $1\\,\\text{эВ}$",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 24,
+      "original_name": "Частота, соответствующая 1 эВ",
+      "original_value": 241799000000000.0,
+      "current_name": "Частота, соответствующая $1\\,\\text{эВ}$",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 25,
+      "original_name": "Волновое число, соответствующее 1 эВ",
+      "original_value": 8065.54,
+      "current_name": "Волновое число, соответствующее $1\\,\\text{эВ}$",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 26,
+      "original_name": "Энергия, соответствующая 1 эВ",
+      "original_value": 1.60218e-12,
+      "current_name": "Энергия, соответствующая $1\\,\\text{эВ}$",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 27,
+      "original_name": "Энергия, соответствующая 1 см$^{-1}$",
+      "original_value": 1.98645e-16,
+      "current_name": "Энергия, соответствующая $1\\,\\text{см}^{-1}$",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 28,
+      "original_name": "Энергия, соответствующая 1 ридбергу",
+      "original_value": 13.6057,
+      "current_name": "Энергия Ридберга",
+      "column": 2
+    },
+    {
+      "system": "СГС",
+      "original_row": 29,
+      "original_name": "Энергия, соответствующая 1 К",
+      "original_value": 8.617330000000001e-05,
+      "current_name": "Энергия, соответствующая $1\\,\\text{К}$",
+      "column": 2
+    },
+    {
+      "system": "СГС",
+      "original_row": 30,
+      "original_name": "Температура, соответствующая 1 эВ",
+      "original_value": 11604.5,
+      "current_name": "Температура, соответствующая $1\\,\\text{эВ}$",
+      "column": 2
+    },
+    {
+      "system": "СГС",
+      "original_row": 31,
+      "original_name": "Число Авогадро",
+      "original_value": 6.02214e+23,
+      "current_name": "Постоянная Авогадро",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 32,
+      "original_name": "Постоянная Фарадея",
+      "original_value": 289256000000000.0,
+      "current_name": "Постоянная Фарадея",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 33,
+      "original_name": "Газовая постоянная",
+      "original_value": 83144600.0,
+      "current_name": "Молярная газовая постоянная",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 34,
+      "original_name": "Число Лошмидта (концентрация при Н.У.)",
+      "original_value": 2.68678e+19,
+      "current_name": "Концентрация идеального газа, число Лошмидта",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 35,
+      "original_name": "Атомная единица массы",
+      "original_value": 1.66054e-24,
+      "current_name": "Атомная единица массы",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 36,
+      "original_name": "Стандартная температура",
+      "original_value": 273.15,
+      "current_name": "Температура $0\\,{}^\\circ\\mathrm C$",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 37,
+      "original_name": "Атмосферное давление",
+      "original_value": 1013250.0,
+      "current_name": "Стандартная атмосфера",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 38,
+      "original_name": "Давление 1 мм рт. ст. (1 торр)",
+      "original_value": 1333.22,
+      "current_name": "Миллиметр ртутного столба",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 39,
+      "original_name": "Молярный объём при Н.У.",
+      "original_value": 22414.0,
+      "current_name": "Молярный объём идеального газа",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 40,
+      "original_name": "Молярная масса воздуха",
+      "original_value": 28.9647,
+      "current_name": "Молярная масса сухого воздуха (исходное учебное значение)",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 41,
+      "original_name": "Калория (cal)",
+      "original_value": 41840000.0,
+      "current_name": "Термохимическая калория",
+      "column": 3
+    },
+    {
+      "system": "СГС",
+      "original_row": 42,
+      "original_name": "Ускорение свободного падения",
+      "original_value": 980.665,
+      "current_name": "Нормальное ускорение свободного падения",
+      "column": 3
+    }
+  ]
+}
