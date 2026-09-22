@@ -70,9 +70,9 @@ body.continuous-mode .canvas-wrap{display:none!important}
 .view-mode-btn.active{border-color:var(--accent);background:var(--accent-soft)}
 
 </style>
-<link rel="stylesheet" href="controls.css?v=1">
-<link rel="stylesheet" href="../app.css">
-<script defer src="../app.js"></script>
+<link rel="stylesheet" href="controls.css?v=2">
+<link rel="stylesheet" href="../app.css?v=5">
+<script defer src="../app.js?v=3"></script>
 </head>
 <body>
 <svg class="pdf-tone-filters" aria-hidden="true" focusable="false">
@@ -206,9 +206,16 @@ const versionParam=params.get('v')||'';
 const themeParam=params.get('theme')||'';
 const embedParam=params.get('embed')==='1';
 if(embedParam)document.body.classList.add('embed-view');
-const compactQuery=window.matchMedia(embedParam?'(max-width:520px)':'(max-width:760px)');
+const landscapePhoneQuery=window.matchMedia('(orientation:landscape) and (max-height:600px) and (pointer:coarse)');
+const compactQuery=window.matchMedia(embedParam
+  ?'(max-width:520px), (orientation:landscape) and (max-height:600px) and (pointer:coarse)'
+  :'(max-width:760px), (orientation:landscape) and (max-height:600px) and (pointer:coarse)');
 document.body.classList.toggle('compact-view',compactQuery.matches);
-compactQuery.addEventListener('change',()=>{document.body.classList.toggle('compact-view',compactQuery.matches);closeTools()});
+compactQuery.addEventListener('change',()=>{
+  document.body.classList.toggle('compact-view',compactQuery.matches);
+  document.body.classList.remove('reader-chrome-hidden');
+  closeTools();
+});
 const VIEWER_ICONS={
   back:'M19 12H5m6-6-6 6 6 6',previous:'m14 6-6 6 6 6',next:'m10 6 6 6-6 6',
   outline:'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',
@@ -242,6 +249,7 @@ function closeTools(restoreFocus=false){
   if(restoreFocus&&compactQuery.matches)toolsToggle.focus();
 }
 toolsToggle.onclick=()=>{
+  setReaderChromeHidden(false);
   if(document.body.classList.contains('tools-open')){closeTools();return}
   closeOutline();closeSearch();closePageJump();
   document.body.classList.add('tools-open');toolsToggle.setAttribute('aria-expanded','true');toolsClose.focus();
@@ -333,8 +341,8 @@ function closePageJump(){pageJump.classList.remove('open');pageJump.setAttribute
 function jumpToPage(){if(!pdf)return;pageNum=validPage(pageJumpInput.value,pageNum);closePageJump();void renderPage()}
 
 function closeOutline(){outlinePanel.classList.remove('open');document.body.classList.remove('outline-open');outlineToggle.setAttribute('aria-expanded','false')}
-async function openOutline(){if(!pdf)return;closeTools();closeSearch();outlinePanel.classList.add('open');document.body.classList.add('outline-open');outlineToggle.setAttribute('aria-expanded','true');if(!outlineLoaded)await loadOutline()}
-function openSearch(){closeTools();closeOutline();searchPanel.classList.add('open');document.body.classList.add('search-open');searchToggle.setAttribute('aria-expanded','true');void loadIndexedSearchPages();setTimeout(()=>searchInput.focus(),0)}
+async function openOutline(){if(!pdf)return;setReaderChromeHidden(false);closeTools();closeSearch();outlinePanel.classList.add('open');document.body.classList.add('outline-open');outlineToggle.setAttribute('aria-expanded','true');if(!outlineLoaded)await loadOutline()}
+function openSearch(){setReaderChromeHidden(false);closeTools();closeOutline();searchPanel.classList.add('open');document.body.classList.add('search-open');searchToggle.setAttribute('aria-expanded','true');void loadIndexedSearchPages();setTimeout(()=>searchInput.focus(),0)}
 function closeSearch(){searchToken++;searchBusy=false;searchPanel.classList.remove('open');document.body.classList.remove('search-open');searchToggle.setAttribute('aria-expanded','false');searchStatus.textContent='Enter — найти';clearHighlights()}
 function resetSearch(){searchToken++;searchBusy=false;searchQuery='';searchPage=pageNum;searchOccurrence=-1;searchSource='auto';searchStatus.textContent=searchInput.value.trim()?'Enter — найти':'Введите текст';clearHighlights()}
 function clearHighlights(){highlightLayer.replaceChildren()}
@@ -735,7 +743,32 @@ async function setContinuousMode(on){
   if(continuousMode)await renderContinuous(pageNum);
   else{destroyContinuous();canvasWrap.hidden=false;await renderPage()}
 }
-viewer.addEventListener('scroll',()=>{if(continuousMode)requestAnimationFrame(updateContinuousCurrentPage)},{passive:true});
+let readerChromeLastScroll=viewer.scrollTop,readerChromeDirection=0;
+function setReaderChromeHidden(hidden){
+  document.body.classList.toggle('reader-chrome-hidden',!!hidden&&landscapePhoneQuery.matches&&compactQuery.matches);
+}
+function updateReaderChrome(){
+  const y=viewer.scrollTop,delta=y-readerChromeLastScroll;
+  readerChromeLastScroll=y;
+  if(!landscapePhoneQuery.matches||!compactQuery.matches||
+     document.body.classList.contains('tools-open')||
+     document.body.classList.contains('search-open')||
+     document.body.classList.contains('outline-open')){
+    readerChromeDirection=0;setReaderChromeHidden(false);return;
+  }
+  if(y<18){readerChromeDirection=0;setReaderChromeHidden(false);return;}
+  if(Math.abs(delta)<2)return;
+  if(Math.sign(delta)!==Math.sign(readerChromeDirection))readerChromeDirection=0;
+  readerChromeDirection+=delta;
+  if(readerChromeDirection>10){setReaderChromeHidden(true);readerChromeDirection=0;}
+  else if(readerChromeDirection<-5){setReaderChromeHidden(false);readerChromeDirection=0;}
+}
+viewer.addEventListener('scroll',()=>{
+  if(continuousMode)requestAnimationFrame(updateContinuousCurrentPage);
+  requestAnimationFrame(updateReaderChrome);
+},{passive:true});
+landscapePhoneQuery.addEventListener('change',()=>{readerChromeLastScroll=viewer.scrollTop;readerChromeDirection=0;setReaderChromeHidden(false)});
+
 
 async function open(){
   if(!raw){fail('В ссылке не указан файл.');return}
