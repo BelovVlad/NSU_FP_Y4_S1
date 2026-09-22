@@ -47,7 +47,7 @@ class SiteTests(unittest.TestCase):
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
         cls.root = Path(cls.temp.name)
-        for relative in ['docs/index.html', 'docs/search-worker.js', 'docs/pdfjs/viewer.html',
+        for relative in ['docs/index.html', 'docs/search-worker.js', 'docs/pdfjs/viewer.html', 'docs/pdfjs/controls.css',
                          'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/giscus-config.json']:
             target = cls.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -221,6 +221,63 @@ class SiteTests(unittest.TestCase):
             self.page.wait_for_function('(expected)=>document.querySelector("#page").value===expected && !document.querySelector("#loading").classList.contains("show")',arg=expected)
             self.assertEqual(self.page.locator('#stage canvas').count(),1)
             self.assertEqual(self.page.locator('#stage .error').count(),0)
+
+    def test_reader_side_controls_and_responsive_embed(self):
+        self.pdf()
+        self.assertLessEqual(self.page.locator('.toolbar').bounding_box()['width'],80)
+        self.assertTrue(self.page.locator('#fit').is_visible())
+        self.assertTrue(self.page.locator('#searchToggle').is_visible())
+        self.page.set_viewport_size({'width':640,'height':720})
+        self.pdf('&embed=1')
+        self.assertTrue(self.page.locator('#fit').is_visible())
+        self.assertTrue(self.page.locator('#searchToggle').is_visible())
+        self.page.wait_for_function('canvas.getBoundingClientRect().right<=viewer.getBoundingClientRect().right+1')
+        self.page.set_viewport_size({'width':390,'height':844})
+        self.page.wait_for_function("document.body.classList.contains('compact-view')")
+        self.assertTrue(self.page.locator('#toolsToggle').is_visible())
+        self.page.locator('#toolsToggle').click()
+        self.assertTrue(self.page.locator('#fit').is_visible())
+        self.assertTrue(self.page.locator('#viewMode').is_visible())
+        self.page.keyboard.press('Escape')
+        self.assertEqual(self.page.locator('#toolsToggle').get_attribute('aria-expanded'),'false')
+
+    def test_mobile_zoom_continuous_mode_and_page_navigation(self):
+        self.page.set_viewport_size({'width':390,'height':844})
+        self.pdf()
+        self.page.locator('#toolsToggle').click()
+        before=float(self.page.locator('#zoom').input_value())
+        self.page.locator('#zoomIn').click()
+        self.page.wait_for_function('(before)=>Number(document.querySelector("#zoom").value)>before',arg=before)
+        self.page.locator('#fit').click()
+        self.page.wait_for_function("!document.body.classList.contains('tools-open') && canvas.getBoundingClientRect().right<=innerWidth+1")
+        self.page.locator('#toolsToggle').click()
+        self.page.locator('#viewMode').click()
+        self.page.wait_for_function("document.querySelectorAll('.continuous-page canvas').length===2")
+        self.assertEqual(self.page.locator('#viewMode').get_attribute('aria-pressed'),'true')
+        self.page.locator('#mNext').click()
+        self.page.wait_for_function("document.querySelector('#mPageInfo').textContent==='2 / 2'")
+        self.page.locator('#toolsToggle').click()
+        self.page.locator('#viewMode').click()
+        self.page.wait_for_function("!document.body.classList.contains('continuous-mode') && document.querySelector('#page').value==='2'")
+        self.assertTrue(self.page.locator('#canvas').is_visible())
+
+    def test_small_phone_settings_fit_and_search_stays_accessible(self):
+        self.page.set_viewport_size({'width':320,'height':640})
+        self.pdf()
+        self.page.locator('#toolsToggle').click()
+        controls=self.page.locator('#readerControls').bounding_box()
+        self.assertGreaterEqual(controls['x'],0)
+        self.assertLessEqual(controls['x']+controls['width'],320)
+        self.assertLessEqual(controls['y']+controls['height'],self.page.locator('.mobile-nav').bounding_box()['y'])
+        self.assertEqual(self.page.locator('#readerControls').evaluate('(el)=>el.scrollWidth<=el.clientWidth'),True)
+        self.page.locator('#toolsClose').click()
+        self.page.locator('#searchToggle').click()
+        self.assertEqual(self.page.locator('#searchToggle').get_attribute('aria-expanded'),'true')
+        self.assertTrue(self.page.locator('#searchInput').is_visible())
+        self.page.locator('#searchClose').click()
+        self.page.locator('#outlineToggle').click()
+        self.assertTrue(self.page.locator('#outlinePanel').is_visible())
+        self.assertLessEqual(self.page.locator('#outlinePanel').bounding_box()['width'],320)
 
     @unittest.skipIf(REAL_PDFJS,'Failure injection is provided by the deterministic PDF.js stub')
     def test_pdf_can_recover_from_render_failure(self):

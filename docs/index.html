@@ -873,10 +873,12 @@ body.music-na19x .pdf-fullscreen-loader{
 }
 .preview-panel{min-width:0;position:sticky;top:8px;align-self:start}
 .preview-toolbar{
-  min-height:42px;display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:6px 8px 6px 12px;border-bottom:1px solid var(--line2);
-  background:color-mix(in srgb,var(--panel) 94%,var(--accent) 6%)
+  min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 12px;border-bottom:1px solid var(--line2);background:var(--panel)
 }
+.preview-heading{min-width:0}
+.preview-doc-title{margin:0 0 4px;font-size:13px;font-weight:650;line-height:1.35;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.preview-toolbar .preview-date{float:none}
 .preview-toolbar-actions{position:relative;display:flex;align-items:center;gap:6px}
 .preview-more{
   width:32px;height:30px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);
@@ -897,7 +899,7 @@ body.music-na19x .pdf-fullscreen-loader{
 .preview-open-full{width:32px;height:30px;margin-left:0;padding:0;justify-content:center}
 .preview-open-full .ui-icon{width:15px;height:15px}
 .preview-frame-wrap{
-  height:calc(100vh - 278px);min-height:610px;max-height:none;padding:0;background:#0a1016
+  height:calc(100dvh - 365px);min-height:440px;max-height:960px;padding:0;background:#0a1016
 }
 .preview-frame{border:0;border-radius:0}
 .preview-info-only,.preview-file-pane{min-height:610px}
@@ -906,15 +908,7 @@ body.music-na19x .pdf-fullscreen-loader{
 .info-title{font-size:12px}.info-row{font-size:12px}.tag{font-size:11px}
 .preview-file-path{font-size:12px}.action{font-size:12px}
 
-/* Less vertical chrome above the document */
-.hero{min-height:116px;padding:12px 22px 10px}
-.hero-row{margin-top:7px}
-.hero h1{font-size:30px}
-.hero-sub{margin-top:5px;font-size:14px}
-.hero-people{margin-top:7px}
-.person-chip{padding:3px 7px;font-size:10px}
-.breadcrumbs{font-size:11px}
-.hero-art{width:clamp(560px,62vw,900px)}
+/* Keep the original banner dimensions and image crop in every theme. */
 .tabs{height:38px;margin-top:0}
 .tab{height:38px;font-size:12.5px}
 
@@ -937,9 +931,24 @@ body.music-na19x .pdf-fullscreen-loader{
 .new-badge{font-size:9px}
 .search-result-meta,.recent-meta,.recent-date,.course-name,.stat-label{font-size:11.5px}
 
+/* A narrow list needs metadata below the title, not a competing column. */
+.subject-list-col .panel-head{padding:14px;gap:10px;flex-wrap:wrap}
+.subject-list-col .panel-title{font-size:16px;white-space:nowrap}
+.subject-list-col .panel-count{min-width:24px;height:24px;margin-left:4px;padding:0 6px}
+.subject-list-col .sort-select{width:110px;max-width:110px;padding-left:8px;padding-right:20px;font-size:11px}
+.subject-list-col .file-list{padding:0 8px 8px}
+.subject-list-col .file-row{grid-template-columns:24px minmax(0,1fr);column-gap:10px;row-gap:6px;padding:12px 10px;align-items:start}
+.subject-list-col .file-ico{width:24px;height:24px}
+.subject-list-col .file-side{grid-column:2;display:flex;align-items:center;gap:10px;text-align:left}
+.subject-list-col .file-date,.subject-list-col .file-size{font-size:11px;line-height:1.3;color:var(--muted);margin:0}
+.subject-list-col .file-desc{font-size:11.5px;-webkit-line-clamp:1}
+.subject-list-col .file-name{font-size:13px;line-height:1.45}
+.preview-open-full,.preview-more{flex:none}
+.preview-toolbar-actions{flex:none}
+
 @media(max-width:1180px){
   .workspace{--subject-list-width:315px}
-  .preview-frame-wrap{height:calc(100vh - 260px);min-height:540px}
+  .preview-frame-wrap{height:calc(100dvh - 365px);min-height:440px}
 }
 @media(max-width:900px){
   .workspace{display:block}
@@ -948,12 +957,12 @@ body.music-na19x .pdf-fullscreen-loader{
   .preview-panel{position:static;margin-top:10px}
 }
 @media(max-width:720px){
-  .hero{min-height:112px;padding:11px 13px 9px}
-  .hero h1{font-size:27px}
-  .hero-people{display:none}
   .tabs{height:36px}.tab{height:36px}
   .file-name{font-size:13px}
   .file-desc,.file-date,.file-size{font-size:12px}
+  .subject-list-col .panel-head{padding:13px 12px}
+  .subject-list-col .file-row{min-height:80px}
+  .subject-list-col .file-name{-webkit-line-clamp:3}
 }
 
 </style>
@@ -1525,7 +1534,7 @@ function preview(f,entry=null){
   const infoValue=isNotebook?(m.cell_count||'—'):pageRange;
   const fullLabel=isNotebook?'Открыть Notebook':'Открыть PDF';
   return '<aside class="panel preview-panel">'+
-    '<div class="preview-toolbar"><div class="preview-kicker">'+esc(entry?((entry.number?'№ '+entry.number+' · ':'')+sectionOf(f)):sectionOf(f))+'<span class="preview-date"> · '+esc(fmtDate(date))+'</span></div>'+
+    '<div class="preview-toolbar"><div class="preview-heading"><h2 class="preview-doc-title" title="'+esc(displayTitle)+'">'+esc(displayTitle)+'</h2><div class="preview-kicker">'+esc(entry?((entry.number?'№ '+entry.number+' · ':'')+sectionOf(f)):sectionOf(f))+'<span class="preview-date"> · '+esc(fmtDate(date))+'</span></div></div>'+
       '<div class="preview-toolbar-actions"><button class="preview-more" type="button" aria-label="Дополнительные действия" title="Информация и файл">•••</button>'+
       '<div class="preview-menu" hidden><button type="button" data-preview-tab="view">Документ</button><button type="button" data-preview-tab="info">Информация</button><button type="button" data-preview-tab="file">Файл</button></div>'+
       ((isPdf||isNotebook)?'<a class="preview-open-full" href="'+esc(url)+'" aria-label="'+esc(fullLabel+' на весь экран')+'" title="'+esc(fullLabel+' на весь экран')+'">'+iconSvg('expand')+'</a>':'')+
