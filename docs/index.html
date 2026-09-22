@@ -969,9 +969,38 @@ body.music-na19x .pdf-fullscreen-loader{
   .subject-list-col .file-name{-webkit-line-clamp:3}
 }
 
+
+/* Phone landscape: use the same drawer navigation as portrait instead of the half-desktop sidebar. */
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  html,body,.shell,.app{min-height:100dvh}
+  .sidebar{
+    height:100dvh;min-height:100dvh;
+    transform:translateX(-100%);
+    transition:transform .18s ease;
+    box-shadow:none!important;
+    filter:none!important;
+    padding-top:max(12px,env(safe-area-inset-top));
+    padding-bottom:max(6px,env(safe-area-inset-bottom))
+  }
+  .sidebar.open{transform:none}
+  .mobile-overlay{position:fixed;z-index:40;inset:0;background:rgba(0,0,0,.5);box-shadow:none!important;backdrop-filter:none!important}
+  .mobile-overlay.show{display:block}
+  .app{margin-left:0}
+  .topbar{
+    position:sticky;top:0;z-index:35;height:52px;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    padding:0 max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left));
+    gap:7px;box-shadow:0 5px 16px rgba(0,0,0,.18)
+  }
+  .menu-btn{display:grid;place-items:center;width:36px;height:36px;border:1px solid var(--line);border-radius:8px;background:#0d141b;color:#d9d1c8}
+  .top-meta,.kbd{display:none}
+  .searchbox input{height:36px;padding-right:10px}
+  .main{padding-left:10px;padding-right:10px}
+}
+
 </style>
 <link rel="stylesheet" href="knowledge.css?v=3">
-<link rel="stylesheet" href="app.css?v=4">
+<link rel="stylesheet" href="app.css?v=5">
 <script defer src="app.js?v=3"></script>
 </head>
 <body>
@@ -2097,7 +2126,7 @@ document.addEventListener('keydown',e=>{
 });
 
 function enableMobileImmersiveMode(){
-  if(!window.matchMedia('(max-width:720px)').matches)return;
+  if(!window.matchMedia('(max-width:720px), (orientation:landscape) and (max-height:600px) and (pointer:coarse)').matches)return;
   if(document.fullscreenElement||!document.documentElement.requestFullscreen)return;
   try{
     const result=document.documentElement.requestFullscreen({navigationUI:'hide'});
