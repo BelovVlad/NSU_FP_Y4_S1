@@ -198,7 +198,7 @@ function isLiteraturePdf(path){
   if(!path)return false;
   return path.split('/').some(part=>/литерат/i.test(part));
 }
-const toneEligible=subject==='КМ'||isLiteraturePdf(raw);
+const toneEligible=subject==='КМ'||subject==='ДЛ'||isLiteraturePdf(raw)||(raw||'').split('/')[0]==='ДЛ';
 toneSwitch.hidden=!toneEligible;
 
 function toneStorageKey(){return 'nsu-pdf-tone-v2:'+(raw||'default')}
