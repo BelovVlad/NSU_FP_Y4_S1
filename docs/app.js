@@ -156,17 +156,20 @@
     const body=document.createElement('div');body.className='app-manager-body';panel.append(body);
 
     const summary=document.createElement('div');summary.className='app-manager-summary';
-    const state=document.createElement('strong');state.textContent=installed()?'Приложение установлено':'Сайт можно установить как приложение';
-    const storage=document.createElement('span');storage.className='app-manager-storage';storage.textContent='Считаю данные…';
-    summary.append(state,storage);body.append(summary);
+    const storageLabel=document.createElement('strong');storageLabel.textContent='Данные на устройстве';
+    const storage=document.createElement('span');storage.className='app-manager-storage';storage.textContent='Считаю…';
+    summary.append(storageLabel,storage);body.append(summary);
     storage.textContent=await storageText();
 
     const appSection=document.createElement('section');appSection.className='app-manager-section';
-    appSection.innerHTML='<h3>Приложение</h3><div class="app-manager-actions"></div>';
+    appSection.innerHTML='<h3>'+(installed()?'Обновления':'Приложение')+'</h3><div class="app-manager-actions"></div>';
     const appActions=appSection.querySelector('.app-manager-actions');
-    const install=document.createElement('button');install.type='button';install.className='app-manager-btn primary';
-    install.textContent=installed()?'Как установлено':'Установить приложение';
-    install.onclick=()=>installButton?.click();
+    if(!installed()){
+      const install=document.createElement('button');install.type='button';install.className='app-manager-btn primary';
+      install.textContent='Установить приложение';
+      install.onclick=()=>installButton?.click();
+      appActions.append(install);
+    }
     const update=document.createElement('button');update.type='button';update.className='app-manager-btn';
     update.textContent=registration?.waiting?'Обновить сейчас':'Проверить обновления';
     const updateStatus=document.createElement('div');updateStatus.className='app-manager-status';
@@ -175,7 +178,7 @@
       if(update.dataset.ready==='1'||registration?.waiting){await activateWaitingWorker();return;}
       await checkForUpdate(updateStatus,update);
     };
-    appActions.append(install,update);appSection.append(updateStatus);body.append(appSection);
+    appActions.append(update);appSection.append(updateStatus);body.append(appSection);
 
     const dataSection=document.createElement('section');dataSection.className='app-manager-section';
     dataSection.innerHTML='<h3>Офлайн-данные</h3><div class="app-manager-actions"></div>';
