@@ -144,10 +144,9 @@
   }
 
   async function fetchDashboardData(){
-    const v=Date.now();
     const [structureRes,filesRes]=await Promise.all([
-      fetch(`search-index/structure.json?v=${v}`,{cache:'no-store'}),
-      fetch(`search-index/files.json?v=${v}`,{cache:'no-store'})
+      fetch('search-index/structure.json',{cache:'no-cache'}),
+      fetch('search-index/files.json',{cache:'no-cache'})
     ]);
     if(!structureRes.ok)throw new Error(`structure.json: ${structureRes.status}`);
     if(!filesRes.ok)throw new Error(`files.json: ${filesRes.status}`);

@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - 'docs/index.html'
+      - 'docs/search-worker.js'
+      - 'docs/giscus-config.json'
+      - 'docs/search-index/**'
+      - '.github/scripts/build_search_index.py'
       - 'docs/pdfjs/**'
       - 'docs/notebook/**'
       - '**/*.ipynb'
@@ -13,6 +17,10 @@ on:
   pull_request:
     paths:
       - 'docs/index.html'
+      - 'docs/search-worker.js'
+      - 'docs/giscus-config.json'
+      - 'docs/search-index/**'
+      - '.github/scripts/build_search_index.py'
       - 'docs/pdfjs/**'
       - 'docs/notebook/**'
       - '**/*.ipynb'

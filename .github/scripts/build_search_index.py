@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
-import fitz  # PyMuPDF
+import pymupdf as fitz
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "docs" / "search-index"
-ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "КМ", "База", "ДЛ"]\nHIDDEN_SITE_PATHS = {"ФЭЧ/04_Литератру/PhysRevD.pdf"}
+ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "КМ", "База", "ДЛ"]
+HIDDEN_SITE_PATHS = {"ФЭЧ/04_Литератру/PhysRevD.pdf"}
 
 
 def clean_text(text: str) -> str:
@@ -243,6 +245,7 @@ def compact_metadata(record: dict) -> dict:
         "page_count",
         "cell_count",
         "indexed",
+        "reason",
     )
     return {key: record[key] for key in keys if key in record}
 
@@ -685,6 +688,7 @@ def main() -> None:
                 "records": len(records),
                 "locations": sum(len(r["pages"]) for r in records),
                 "bytes": len(encoded.encode("utf-8")),
+                "version": hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:16],
             }
         )
 

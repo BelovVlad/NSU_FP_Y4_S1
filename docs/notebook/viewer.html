@@ -507,12 +507,12 @@ zoomSelect.addEventListener('change',()=>applyNotebookZoom(zoomSelect.value,true
 
 async function openNotebook(){
   if(!raw){main.innerHTML='<div class="error">В ссылке не указан notebook.</div>';notifyReady();return}
-  title.textContent=titleParam||decodeURIComponent(raw.split('/').pop()).replace(/\.ipynb$/i,'');
+  title.textContent=titleParam||raw.split('/').pop().replace(/\.ipynb$/i,'');
   document.title=title.textContent+' · NSU FP';
   github.href=githubFileUrl(raw);
   notebookUrl=localFileUrl(raw).href;
   try{
-    const response=await fetch(notebookUrl,{cache:'no-store'});
+    const response=await fetch(notebookUrl,{cache:version?'force-cache':'no-cache'});
     if(!response.ok)throw new Error('HTTP '+response.status);
     notebook=await response.json();
     mathRegistry.clear();mathSerial=0;

@@ -973,9 +973,9 @@ let FILES=[];
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 hydrateIcons();
 const initialSubject=hashSubject();
-const state={view:(ORDER.includes(initialSubject)?'subjects':'home'),subject:(ORDER.includes(initialSubject)?initialSubject:'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchData:null,searchBusy:false,sort:'date'};
+const state={view:(ORDER.includes(initialSubject)?'subjects':'home'),subject:(ORDER.includes(initialSubject)?initialSubject:'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchBusy:false,sort:'date'};
 const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicPanel=$('#musicPanel'),musicVolume=$('#musicVolume'),musicVolumeValue=$('#musicVolumeValue'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame'),pdfFullscreenLoader=$('#pdfFullscreenLoader'),pdfFullscreenLoaderText=$('#pdfFullscreenLoaderText');
-let searchRun=0,searchTimer=0,searchPromise=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
+let searchRun=0,searchTimer=0,searchWorker=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
 function syncSubjectHash(){if(state.view!=='subjects'||!ORDER.includes(state.subject))return;const h='#subject='+encodeURIComponent(state.subject);if(location.hash!==h)history.replaceState(null,'',h)}
 function clearSubjectHash(){if(location.hash.startsWith('#subject='))history.replaceState(null,'',location.pathname+location.search)}
@@ -1060,6 +1060,7 @@ function viewerUrl(f,page=0,titleOverride=''){
   let url='pdfjs/viewer.html?file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
   if(page)url+='&page='+encodeURIComponent(page);
   if(fileMeta(f).version)url+='&v='+encodeURIComponent(fileMeta(f).version);
+  if(fileMeta(f).reason==='lfs')url+='&lfs=1';
   const theme=currentPdfTheme();if(theme)url+='&theme='+encodeURIComponent(theme);
   return url;
 }
@@ -1316,6 +1317,10 @@ window.addEventListener('message',e=>{
 });
 
 function setActiveNav(view){
+  if(view!=='search'){
+    clearTimeout(searchTimer);state.searchBusy=false;
+    searchWorker?.postMessage({type:'cancel',id:++searchRun});
+  }
   $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
 }
 function closeMenu(){sidebar.classList.remove('open');overlay.classList.remove('show')}
@@ -1429,6 +1434,36 @@ function bindPreviewTabs(){
     $$('[data-preview-pane]').forEach(p=>p.hidden=p.dataset.previewPane!==key);
   });
 }
+// Update the surrounding UI without removing a live iframe from the DOM.
+// Detaching and reinserting an iframe would reload its document as well.
+function patchPreview(current,next){
+  if(current.nodeType!==next.nodeType||current.nodeName!==next.nodeName){current.replaceWith(next);return}
+  if(current.nodeType!==Node.ELEMENT_NODE){if(current.textContent!==next.textContent)current.textContent=next.textContent;return}
+  if(current.tagName==='IFRAME'){
+    const oldUrl=new URL(current.dataset.viewerUrl||current.src,location.href),newUrl=new URL(next.src,location.href);
+    const samePdf=oldUrl.pathname.endsWith('/pdfjs/viewer.html')&&oldUrl.pathname===newUrl.pathname&&['file','v','lfs'].every(key=>oldUrl.searchParams.get(key)===newUrl.searchParams.get(key));
+    if(oldUrl.href!==newUrl.href){
+      if(samePdf){
+        current.dataset.viewerUrl=newUrl.href;
+        const navigate=()=>current.contentWindow?.postMessage({type:'nsu-viewer-navigate',url:current.dataset.viewerUrl},location.origin);
+        current.onload=navigate;navigate();
+      }else{current.onload=null;delete current.dataset.viewerUrl;current.src=newUrl.href}
+    }
+    current.title=next.title;return;
+  }
+  for(const attr of [...current.attributes])if(!next.hasAttribute(attr.name))current.removeAttribute(attr.name);
+  for(const attr of next.attributes)if(current.getAttribute(attr.name)!==attr.value)current.setAttribute(attr.name,attr.value);
+  const oldChildren=[...current.childNodes],newChildren=[...next.childNodes];
+  for(let i=0;i<Math.max(oldChildren.length,newChildren.length);i++){
+    if(!newChildren[i])oldChildren[i].remove();
+    else if(!oldChildren[i])current.appendChild(newChildren[i]);
+    else patchPreview(oldChildren[i],newChildren[i]);
+  }
+}
+function patchPreviewHtml(current,html){
+  const template=document.createElement('template');template.innerHTML=html;
+  patchPreview(current,template.content.firstElementChild);
+}
 function renderSubject(){
   const firstSection=sectionsFor(state.subject)[0]||'';
   if(!state.section)state.section=firstSection;
@@ -1452,8 +1487,15 @@ function renderSubject(){
     listHtml=fileRows(files);
   }
 
-  main.innerHTML=hero(state.subject)+
-    '<div>'+tabs(state.subject)+'</div>'+
+  const listTitleHtml=esc(listTitle)+' <span class="panel-count">'+count+'</span>';
+  if(main.querySelector('.workspace')){
+    main.querySelector('.hero').outerHTML=hero(state.subject);
+    main.querySelector('#subjectTabs').innerHTML=tabs(state.subject);
+    main.querySelector('.list-panel .panel-title').innerHTML=listTitleHtml;
+    main.querySelector('.list-panel .file-list').innerHTML=listHtml;
+    patchPreviewHtml(main.querySelector('.preview-panel'),preview(previewFile,state.selectedEntry));
+  }else main.innerHTML=hero(state.subject)+
+    '<div id="subjectTabs">'+tabs(state.subject)+'</div>'+
     '<div class="workspace"><div><section class="panel list-panel"><div class="panel-head"><h2 class="panel-title">'+esc(listTitle)+' <span class="panel-count">'+count+'</span></h2><select id="sortSelect" class="sort-select"><option value="date">По порядку</option><option value="name">По названию</option></select></div><div class="file-list">'+listHtml+'</div></section></div>'+preview(previewFile,state.selectedEntry)+'</div>';
 
   syncSubjectHash();
@@ -1483,15 +1525,10 @@ let giscusLoadSerial=0;
 function giscusThemeForSite(){
   return 'transparent_dark';
 }
-function mountFeedback(){
+async function mountFeedback(){
   const mount=document.getElementById('giscusMount');
   if(!mount)return;
   const serial=++giscusLoadSerial;
-  const cfg={
-    repoId:'R_kgDOUL2ocQ',
-    category:'Ideas',
-    categoryId:'DIC_kwDOUL2occ4DF9x0'
-  };
 
   mount.replaceChildren();
 
@@ -1499,6 +1536,19 @@ function mountFeedback(){
   status.className='feedback-loading';
   status.textContent='Подключаю обсуждение…';
   mount.appendChild(status);
+
+  let cfg;
+  try{
+    const response=await fetch('giscus-config.json',{cache:'no-cache'});
+    if(!response.ok)throw new Error('giscus config '+response.status);
+    cfg=await response.json();
+    if(!cfg.repoId||!cfg.category||!cfg.categoryId)throw new Error('Incomplete giscus config');
+  }catch{
+    if(serial!==giscusLoadSerial||!mount.isConnected)return;
+    mount.innerHTML='<div class="feedback-setup"><span>Не удалось загрузить настройки комментариев.</span><button class="feedback-retry" type="button">Повторить</button></div>';
+    mount.querySelector('.feedback-retry').onclick=mountFeedback;return;
+  }
+  if(serial!==giscusLoadSerial||!mount.isConnected)return;
 
   const script=document.createElement('script');
   script.src='https://giscus.app/client.js';
@@ -1580,33 +1630,38 @@ function renderHome(){
   void mountFeedback();
 }
 
-async function ensureSearch(){
-  if(state.searchData)return state.searchData;
-  if(searchPromise)return searchPromise;
-  state.searchBusy=true;
-  searchPromise=(async()=>{
-    try{
-      const man=await fetch('search-index/manifest.json',{cache:'no-store'}).then(r=>r.json());
-      const indexVersion=encodeURIComponent(man.generated_at||man.version||'');
-      const shards=await Promise.all((man.shards||[]).map(x=>{
-        const url='search-index/'+x.file+(indexVersion?'?v='+indexVersion:'');
-        return fetch(url,{cache:'force-cache'}).then(r=>r.json()).catch(()=>({records:[]}));
-      }));
-      state.searchData=shards.flatMap(x=>x.records||[]);
-    }catch(e){state.searchData=[]}
-    state.searchBusy=false;
-    return state.searchData;
-  })();
-  return searchPromise;
+function searchStatus(message,retry=false){
+  const note=main.querySelector('.search-note');if(!note)return;
+  note.textContent=message;
+  if(retry){const button=document.createElement('button');button.type='button';button.className='feedback-retry';button.textContent='Повторить';button.onclick=()=>runSearch(searchQuery);note.append(' ',button)}
 }
-function hi(text,q){
-  const s=esc(text||'');if(!q)return s;
-  const safe=q.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&');
-  try{return s.replace(new RegExp('('+safe+')','ig'),'<mark>$1</mark>')}catch{return s}
+function ensureSearchWorker(){
+  if(searchWorker)return searchWorker;
+  const worker=new Worker('search-worker.js');
+  worker.postMessage({type:'init',files:FILES.map(f=>({...f,title:niceName(f),subject:subjectOf(f),section:sectionOf(f),description:fileDesc(f)}))});
+  worker.onmessage=event=>{
+    const data=event.data;
+    if(data.id!==searchRun||state.view!=='search')return;
+    if(data.type==='progress'){searchStatus('Загружаю поиск по содержимому: '+data.loaded+' / '+data.total);return}
+    if(data.type!=='results')return;
+    const selected=searchGroups[searchSelectedGroup]?.f.path;
+    searchGroupsAll=data.groups.map(group=>({...group,f:fileByPath(group.path)})).filter(group=>group.f);
+    const filtered=searchGroupsAll.filter(g=>(searchFilterSubject==='all'||subjectOf(g.f)===searchFilterSubject)&&(searchFilterSection==='all'||sectionOf(g.f)===searchFilterSection));
+    searchSelectedGroup=Math.max(0,filtered.findIndex(g=>g.f.path===selected));
+    state.searchBusy=!!data.partial;
+    renderSearchResults(searchQuery);
+    searchStatus(data.partial?'Результаты по названию. Загружаю поиск по содержимому…':data.failed?'Не весь индекс удалось загрузить. Результаты могут быть неполными.':'Результаты для «'+searchQuery+'»',!!data.failed);
+  };
+  worker.onerror=event=>{
+    event.preventDefault();worker.terminate();if(searchWorker===worker)searchWorker=null;
+    state.searchBusy=false;
+    if(state.view==='search')searchStatus('Не удалось запустить поиск.',true);
+  };
+  searchWorker=worker;return worker;
 }
 
 function searchNorm(v){return String(v||'').toLocaleLowerCase('ru-RU').replace(/ё/g,'е').replace(/\s+/g,' ').trim()}
-function searchTerms(q){return [...new Set(searchNorm(q).split(' ').filter(x=>x.length>1))]}
+function searchTerms(q){return [...new Set(searchNorm(q).split(' ').filter(Boolean))]}
 function searchHi(text,q){
   const raw=String(text||''),terms=searchTerms(q);
   if(!terms.length)return esc(raw);
@@ -1623,48 +1678,6 @@ function searchHi(text,q){
     pos=best+bestTerm.length;
   }
   return out;
-}
-function searchSnippet(text,q){
-  const raw=String(text||'').replace(/\s+/g,' ').trim();if(!raw)return'';
-  const low=raw.toLocaleLowerCase('ru-RU').replace(/ё/g,'е'),terms=searchTerms(q);
-  let at=-1;for(const t of terms){const p=low.indexOf(t);if(p>=0&&(at<0||p<at))at=p}
-  if(at<0)at=0;
-  const start=Math.max(0,at-125),end=Math.min(raw.length,at+260);
-  return (start?'…':'')+raw.slice(start,end)+(end<raw.length?'…':'');
-}
-function searchScore(title,text,q){
-  const nq=searchNorm(q),terms=searchTerms(q),t=searchNorm(title),body=searchNorm(text),combined=t+' '+body;
-  if(!terms.every(x=>combined.includes(x)))return-1;
-  let score=0;if(nq&&t.includes(nq))score+=100;if(nq&&body.includes(nq))score+=80;
-  for(const x of terms){if(t.includes(x))score+=16;if(body.includes(x))score+=5}
-  return score;
-}
-function buildSearchGroups(q,records){
-  const map=new Map();
-  const add=(f,page,snippet,score)=>{
-    if(!f)return;if(!map.has(f.path))map.set(f.path,{f,hits:[],score});
-    const g=map.get(f.path);g.score=Math.max(g.score,score);
-    if(!g.hits.some(h=>h.page===page))g.hits.push({page,snippet,score});
-  };
-  for(const f of FILES){
-    const title=niceName(f)+' '+f.path+' '+subjectOf(f)+' '+sectionOf(f),sc=searchScore(title,'',q);
-    if(sc>=0)add(f,0,fileDesc(f),sc+10);
-  }
-  for(const r of (records||[])){
-    const f=FILES.find(x=>x.path===r.path);if(!f)continue;
-    const title=(r.title||niceName(f))+' '+r.path+' '+(r.subject||subjectOf(f))+' '+(r.section||sectionOf(f));
-    for(const loc of (r.pages||[])){
-      const text=String(loc.t||''),sc=searchScore(title,text,q);
-      if(sc>=0)add(f,Number(loc.n)||0,searchSnippet(text,q),sc+(f.ext==='.pdf'?2:0));
-    }
-  }
-  const groups=[...map.values()];
-  for(const g of groups){
-    if(g.hits.some(h=>h.page>0))g.hits=g.hits.filter(h=>h.page>0);
-    g.hits.sort((a,b)=>b.score-a.score||a.page-b.page);
-  }
-  groups.sort((a,b)=>b.score-a.score||niceName(a.f).localeCompare(niceName(b.f),'ru'));
-  return groups.slice(0,180);
 }
 function searchFiltersHtml(){
   const subjects=ORDER.filter(x=>searchGroupsAll.some(g=>subjectOf(g.f)===x));
@@ -1683,6 +1696,7 @@ function searchGroupHtml(g,i,q){
   return '<div class="search-group'+(active?' active':'')+'"><button class="search-group-main" data-search-group-main="'+i+'"><div class="search-group-top"><span class="search-badge">'+esc(subjectOf(g.f))+'</span><span class="search-group-title">'+searchHi(niceName(g.f),q)+'</span>'+badge+'<span class="search-hit-count">'+hits.length+' совп.</span></div><div class="search-group-meta">'+esc(meta.join(' · '))+'</div><div class="search-group-snippet">'+searchHi(first.snippet||'',q)+'</div></button><div class="search-pages">'+pages+more+'</div></div>';
 }
 function searchPreviewHtml(q){
+  if(state.searchBusy&&!searchMobilePreview)return '<div class="search-preview-empty">Выберите документ или дождитесь результатов поиска по содержимому.</div>';
   const g=searchGroups[searchSelectedGroup];if(!g)return '<div class="search-preview-empty">Нет результатов для выбранных фильтров.</div>';
   const hit=g.hits[searchSelectedHit]||g.hits[0]||{page:0,snippet:''},f=g.f;
   const isPdf=f.ext==='.pdf',isNotebook=f.ext==='.ipynb';
@@ -1713,7 +1727,7 @@ function renderSearchResults(q){
   if(filters)filters.innerHTML=searchFiltersHtml();
   const total=searchGroups.reduce((n,x)=>n+x.hits.length,0);
   if(results)results.innerHTML='<div class="search-pro-summary">'+searchGroups.length+' документов · '+total+' совпадений</div>'+(searchGroups.length?searchGroups.map((x,i)=>searchGroupHtml(x,i,q)).join(''):'<div class="empty">По этим фильтрам ничего не найдено.</div>');
-  if(preview){preview.classList.toggle('mobile-visible',searchMobilePreview);preview.innerHTML=searchPreviewHtml(q)}
+  if(preview){preview.classList.toggle('mobile-visible',searchMobilePreview);patchPreviewHtml(preview,'<aside id="searchPreview" class="'+esc(preview.className)+'">'+searchPreviewHtml(q)+'</aside>')}
   bindSearchUi(q);
 }
 async function runSearch(q){
@@ -1722,13 +1736,11 @@ async function runSearch(q){
   if(searchNorm(previous)!==searchNorm(q)){searchFilterSubject='all';searchFilterSection='all';searchSelectedGroup=0;searchSelectedHit=0;searchMobilePreview=false}
   state.view='search';setActiveNav('search');renderSubjectNav();
   main.innerHTML='<section class="search-view"><div class="search-pro-head"><div><h1 class="search-title">Поиск</h1><div class="search-note">'+(q?'Ищем «'+esc(q)+'»':'Введите запрос в строке сверху.')+'</div></div></div><div id="searchFilters"></div><div class="search-pro-layout"><div class="panel search-pro-results" id="searchResults"><div class="empty">'+(q.length<2?'Минимум 2 символа.':'Поиск…')+'</div></div><aside id="searchPreview" class="panel search-pro-preview"><div class="search-preview-empty">Выберите документ — здесь появится найденная страница.</div></aside></div></section>';
-  if(q.length<2){searchGroupsAll=[];return}
-  let records=[];
-  if(searchNorm(q).length>=3)records=await ensureSearch();
-  if(run!==searchRun)return;
-  searchGroupsAll=buildSearchGroups(q,records||[]);
-  searchSelectedGroup=0;searchSelectedHit=0;searchMobilePreview=false;
-  renderSearchResults(q);
+  searchGroupsAll=[];searchGroups=[];
+  if(q.length<2){state.searchBusy=false;searchWorker?.postMessage({type:'cancel',id:run});return}
+  state.searchBusy=true;
+  try{ensureSearchWorker().postMessage({type:'search',id:run,query:q})}
+  catch{state.searchBusy=false;searchStatus('Не удалось запустить поиск.',true)}
 }
 function renderFiltered(title,predicate){
   const list=FILES.filter(predicate);
@@ -1763,8 +1775,8 @@ async function loadMeta(){
   main.innerHTML='<div class="empty">Загружаю материалы…</div>';
   try{
     const [data,structure]=await Promise.all([
-      fetch('search-index/files.json?v='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('files.json '+r.status);return r.json()}),
-      fetch('search-index/structure.json?v='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():({groups:[]})).catch(()=>({groups:[]}))
+      fetch('search-index/files.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('files.json '+r.status);return r.json()}),
+      fetch('search-index/structure.json',{cache:'no-cache'}).then(r=>r.ok?r.json():({groups:[]})).catch(()=>({groups:[]}))
     ]);
     const rows=(data.files||[]).filter(x=>x?.path&&/\.(pdf|ipynb)$/i.test(x.path)&&!x.path.includes('/LaTeX/')&&x.path!=='ФЭЧ/04_Литератру/PhysRevD.pdf');
     FILES=rows.map(x=>({
@@ -1774,6 +1786,7 @@ async function loadMeta(){
     }));
     state.meta.clear();
     rows.forEach(x=>state.meta.set(x.path,x));
+    searchWorker?.terminate();searchWorker=null;++searchRun;
     state.structure=structure||{groups:[]};
     const hs=hashSubject();
     if(ORDER.includes(hs))state.subject=hs;
