@@ -871,6 +871,7 @@ body.music-na19x .pdf-fullscreen-loader{
       <button class="nav-btn" data-view="subjects"><span class="nav-ico" data-icon="subjects" aria-hidden="true"></span>Предметы</button>
       <button class="nav-btn" data-view="search"><span class="nav-ico" data-icon="search" aria-hidden="true"></span>Поиск</button>
       <button class="nav-btn" data-view="literature"><span class="nav-ico" data-icon="literature" aria-hidden="true"></span>Литература</button>
+      <button class="nav-btn" data-view="additional-literature"><span class="nav-ico" data-icon="literature" aria-hidden="true"></span>Доп. литература</button>
       <button class="nav-btn" data-view="tasks"><span class="nav-ico" data-icon="tasks" aria-hidden="true"></span>Задачи</button>
       <button class="nav-btn" data-view="archive"><span class="nav-ico" data-icon="archive" aria-hidden="true"></span>Архив</button>
     </div>
@@ -1732,7 +1733,7 @@ async function runSearch(q){
 function renderFiltered(title,predicate){
   const list=FILES.filter(predicate);
   main.innerHTML='<section class="search-view"><h1 class="search-title">'+esc(title)+'</h1><div class="search-note">'+list.length+' файл(ов)</div><div class="panel filtered-list"><div class="file-list">'+fileRows(list)+'</div></div></section>';
-  $$('.file-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
+  $('.file-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;if(subjectOf(f)==='ДЛ'){if(innerWidth<=720&&f.ext==='.pdf'){openPdfFullscreen(viewerUrl(f),niceName(f));return}state.selected=f;main.innerHTML='<section class="search-view"><h1 class="search-title">Доп. литература</h1><div class="workspace"><div><section class="panel list-panel"><div class="panel-head"><h2 class="panel-title">Материалы</h2></div><div class="file-list">'+fileRows(FILES.filter(x=>subjectOf(x)==='ДЛ'))+'</div></section></div>'+preview(f,null)+'</div></section>';bindPreviewTabs();return}state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
 }
 
 function render(){
@@ -1740,6 +1741,7 @@ function render(){
   else if(state.view==='subjects')renderSubject();
   else if(state.view==='search')runSearch(searchInput.value);
   else if(state.view==='literature')renderFiltered('Литература',f=>sectionOf(f)==='Литература');
+  else if(state.view==='additional-literature')renderFiltered('Доп. литература',f=>subjectOf(f)==='ДЛ');
   else if(state.view==='tasks')renderFiltered('Задачи',f=>sectionOf(f)==='Задачи'||sectionOf(f)==='Семинары');
   else if(state.view==='archive')renderFiltered('Все материалы',()=>true);
 }
