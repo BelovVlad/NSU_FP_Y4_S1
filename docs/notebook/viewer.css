@@ -203,3 +203,82 @@ body.embed .notebook-shell{padding:7px 6px 34px}
   .reference-reader .table-scroll tr.find-hit{border-color:var(--accent);background:rgba(var(--accent-rgb),.12)}
   .reference-reader .table-scroll tr.find-hit td:first-child{background:rgba(var(--accent-rgb),.14)}
 }
+
+
+/* Mobile polish: horizontal formulas remain swipeable without looking like inputs. */
+.math-inline,.math-display,.reference-value{
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.math-inline::-webkit-scrollbar,.math-display::-webkit-scrollbar,.reference-value::-webkit-scrollbar{
+  width:0;height:0;display:none;
+}
+
+/* Make the document hierarchy obvious in the outline. */
+#tocLinks>ul>li>a{
+  margin:4px 0 5px;
+  padding:9px 10px;
+  border-left-color:color-mix(in srgb,var(--accent) 58%,var(--line));
+  border-radius:0 7px 7px 0;
+  background:color-mix(in srgb,var(--panel) 84%,var(--accent) 16%);
+  color:var(--cream);
+  font-weight:720;
+}
+#tocLinks ul ul{
+  position:relative;
+  margin-left:10px;
+  padding-left:13px;
+  border-left:1px solid color-mix(in srgb,var(--line) 70%,var(--accent) 30%);
+}
+#tocLinks ul ul ul{
+  margin-left:8px;
+  padding-left:12px;
+  border-left-style:dashed;
+  border-left-color:color-mix(in srgb,var(--line) 82%,var(--accent) 18%);
+}
+#tocLinks ul ul>li>a{
+  position:relative;
+  padding-left:10px;
+  color:var(--text2);
+  font-weight:520;
+}
+#tocLinks ul ul>li>a::before{
+  content:"";
+  position:absolute;
+  left:-14px;
+  top:50%;
+  width:10px;
+  height:1px;
+  background:color-mix(in srgb,var(--line) 68%,var(--accent) 32%);
+}
+#tocLinks ul ul ul>li>a{
+  color:var(--muted);
+  font-size:11.5px;
+  font-weight:450;
+}
+#tocLinks details{
+  margin:3px 0 7px 7px;
+  padding-left:8px;
+  border-left:1px dashed color-mix(in srgb,var(--line) 82%,var(--accent) 18%);
+}
+#tocLinks details>summary{
+  margin:2px 0 3px;
+  padding:6px 8px;
+  border-radius:6px;
+  background:color-mix(in srgb,var(--panel2) 88%,transparent);
+  color:color-mix(in srgb,var(--muted) 82%,var(--cream) 18%);
+  font-size:10.5px;
+  font-weight:650;
+  letter-spacing:.015em;
+}
+#tocLinks details[open]>summary{color:var(--text2)}
+#tocLinks a[aria-current]{
+  border-left-color:var(--accent);
+  background:rgba(var(--accent-rgb),.13);
+  color:var(--cream);
+}
+@media(max-width:1100px){
+  #tocLinks{padding-left:12px;padding-right:12px}
+  #tocLinks ul ul{margin-left:12px;padding-left:14px}
+  #tocLinks>ul>li>a{min-height:42px}
+}
