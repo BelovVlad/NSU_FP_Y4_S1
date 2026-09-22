@@ -10,7 +10,7 @@ import fitz  # PyMuPDF
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "docs" / "search-index"
-ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "КМ", "База"]\nHIDDEN_SITE_PATHS = {"ФЭЧ/04_Литератру/PhysRevD.pdf"}
+ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "КМ", "База", "ДЛ"]\nHIDDEN_SITE_PATHS = {"ФЭЧ/04_Литератру/PhysRevD.pdf"}
 
 
 def clean_text(text: str) -> str:
@@ -49,6 +49,8 @@ def title_for(path: Path) -> str:
 def section_for(path: Path) -> str:
     if is_qm_path(path):
         return "Лекции"
+    if path.parts and path.parts[0] == "ДЛ":
+        return "Доп. литература"
     if len(path.parts) < 2:
         return "Материалы"
     raw = re.sub(r"^\d+[_ .-]*", "", path.parts[1]).replace("_", " ").strip()
