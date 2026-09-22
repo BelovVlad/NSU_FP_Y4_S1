@@ -1,5 +1,5 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v1';
+const SHELL_VERSION = 'v2';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
@@ -7,7 +7,7 @@ const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
 const CORE = ['index.html', 'app.js', 'app.css', 'knowledge.css?v=3', 'manifest.webmanifest',
-  'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=13', 'notebook/outline.js?build=2',
+  'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=14', 'notebook/outline.js?build=2',
   'pdfjs/viewer.html', 'pdfjs/controls.css?v=1', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png', 'assets/app-512.png'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json'];
@@ -146,6 +146,7 @@ self.addEventListener('message', event => {
     if(message.type === 'SAVE_PDF') return savePdf(message);
     if(message.type === 'LIST_PDFS') return listPdfs();
     if(message.type === 'REMOVE_PDF') return (await caches.open(PDFS)).delete(message.url);
+    if(message.type === 'CLEAR_PDFS') return caches.delete(PDFS);
     if(message.type === 'WARM') {
       // Recover resources loaded before the first worker acquired control (including a direct reader link).
       await Promise.allSettled((message.urls||[]).slice(0,120).filter(href=>cacheable(new URL(href))).map(async href => {
