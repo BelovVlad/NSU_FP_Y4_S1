@@ -62,6 +62,55 @@ body.pdf-tone-mine .canvas-wrap.rendering::after{content:'';position:absolute;in
   .mobile-nav{position:fixed;left:0;right:0;bottom:0;z-index:45;height:64px;display:grid;grid-template-columns:72px 1fr 72px;align-items:center;border-top:1px solid var(--line);background:rgba(18,22,28,.98);box-shadow:0 -6px 18px rgba(0,0,0,.18)}.m-btn{width:46px;height:46px;margin:auto;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--text);font-size:25px;line-height:1;cursor:pointer}.m-btn:active{background:var(--accent-soft);border-color:rgba(212,93,104,.55)}.m-btn:disabled{opacity:.4}.m-page-info{height:44px;min-width:92px;justify-self:center;padding:0 13px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--text);font-size:15px;font-weight:700;letter-spacing:.01em;cursor:pointer}.m-page-info:active,.m-page-info[aria-expanded="true"]{border-color:var(--line);background:var(--accent-soft)}.page-jump{position:fixed;z-index:49;left:50%;bottom:calc(72px + var(--keyboard-offset,0px));transform:translateX(-50%);width:min(94vw,390px);padding:8px;border:1px solid var(--line);border-radius:13px;background:rgba(18,22,28,.985);box-shadow:0 12px 34px rgba(0,0,0,.42);backdrop-filter:blur(14px)}.page-jump.open{display:block}.page-jump-form{display:grid;grid-template-columns:auto minmax(72px,1fr) auto auto auto;align-items:center;gap:7px}.page-jump-label{padding-left:3px;color:var(--muted);font-size:12px;font-weight:700}.page-jump-input{width:100%;height:40px;min-width:0;border:1px solid var(--line);border-radius:9px;background:#0f1318;color:var(--text);text-align:center;font-size:16px;font-weight:750;outline:none}.page-jump-input:focus{border-color:var(--accent)}.page-jump-total{color:var(--muted);font-size:13px;white-space:nowrap}.page-jump-go,.page-jump-close{height:40px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--text);cursor:pointer}.page-jump-go{padding:0 10px;font-size:12px;font-weight:750}.page-jump-close{width:40px;padding:0;font-size:20px;line-height:1}.page-jump-go:active,.page-jump-close:active{background:var(--accent-soft);border-color:var(--accent)}.canvas-wrap.pinch-preview{will-change:transform}
   .pdf-link:hover{background:transparent;box-shadow:none}.pdf-link:active{background:rgba(212,93,104,.16)}
 }
+
+/* Selectable PDF text layer */
+.text-layer{position:absolute;inset:0;z-index:3;overflow:hidden;line-height:1;pointer-events:auto;user-select:text;-webkit-user-select:text}
+.text-layer span{position:absolute;transform-origin:0 0;color:transparent;white-space:pre;cursor:text}
+.text-layer ::selection{background:rgba(70,145,255,.34)}
+.highlight-layer{z-index:2}
+.annotation-layer{z-index:4}
+
+/* Optional continuous scroll */
+.continuous-pages{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;padding:0 0 28px}
+.continuous-page{position:relative;min-width:120px;min-height:160px;background:#fff;box-shadow:0 8px 28px rgba(0,0,0,.5);line-height:0}
+.continuous-page canvas{display:block}
+.continuous-page .text-layer{z-index:3}
+body.pdf-tone-black .continuous-page canvas{filter:invert(.92) hue-rotate(180deg) brightness(.94) contrast(.92) saturate(.88)}
+body.pdf-tone-mine .continuous-page canvas{filter:url(#nsuPaletteFilter) contrast(.98) saturate(.94)}
+body.continuous-mode .stage{display:block;padding:18px 20px}
+body.continuous-mode .canvas-wrap{display:none!important}
+.view-mode-btn.active{border-color:var(--accent);background:var(--accent-soft)}
+
+/* Embedded desktop viewer: compact controls even in a narrow iframe */
+body.embed-view .toolbar{
+  height:46px;grid-template-columns:auto 1fr auto;gap:6px;padding:0 8px
+}
+body.embed-view .left .title,body.embed-view #back,body.embed-view .direct-link,body.embed-view .tone-switch,body.embed-view .search-toggle{display:none!important}
+body.embed-view .left{min-width:36px}
+body.embed-view .controls{display:flex!important;gap:4px;justify-content:flex-start;overflow-x:auto;scrollbar-width:none}
+body.embed-view .controls::-webkit-scrollbar{display:none}
+body.embed-view .controls .btn{height:32px;min-width:32px;padding:0 8px;border-radius:7px}
+body.embed-view .controls .btn.icon{width:32px;padding:0}
+body.embed-view .page-input{width:48px;height:30px}
+body.embed-view .zoom-edit{height:30px}
+body.embed-view .zoom-input{height:28px;width:42px}
+body.embed-view .right{gap:4px}
+body.embed-view .viewer,body.embed-view.outline-open .viewer{inset:46px 0 0;left:0}
+body.embed-view.search-open .viewer{top:98px}
+body.embed-view .outline-panel{top:46px}
+body.embed-view .mobile-nav{display:none!important}
+body.embed-view .stage{padding:10px}
+body.embed-view .expand-viewer{display:inline-flex}
+.expand-viewer{display:none}
+
+@media(max-width:760px){
+  body.embed-view .toolbar{grid-template-columns:auto minmax(0,1fr) auto}
+  body.embed-view .controls{display:flex!important}
+  body.embed-view .viewer,body.embed-view.outline-open .viewer{inset:46px 0 0}
+  body.embed-view .outline-panel{top:46px;bottom:0}
+  body.embed-view .outline-backdrop{inset:46px 0 0}
+}
+
 </style>
 </head>
 <body>
@@ -90,8 +139,10 @@ body.pdf-tone-mine .canvas-wrap.rendering::after{content:'';position:absolute;in
     <label class="zoom-edit" title="Введите масштаб от 35 до 400%"><input id="zoom" class="zoom-input" type="number" min="35" max="400" step="1" value="100" inputmode="numeric" aria-label="Масштаб в процентах"><span class="zoom-percent">%</span></label>
     <button id="zoomIn" class="btn icon" type="button" title="Увеличить">+</button>
     <button id="fit" class="btn" type="button">По ширине</button>
+    <button id="viewMode" class="btn icon view-mode-btn" type="button" title="Непрерывная прокрутка" aria-label="Непрерывная прокрутка">⇅</button>
   </div>
   <div class="right">
+    <button id="expandViewer" class="btn icon expand-viewer" type="button" title="Развернуть" aria-label="Развернуть">⛶</button>
     <div class="tone-switch" id="toneSwitch" role="group" aria-label="Цветовой режим PDF" hidden>
       <button class="tone-btn" type="button" data-tone="black" title="Чёрный режим" aria-label="Чёрный режим" aria-pressed="false">
         <svg class="tone-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.7 8.7 0 0 1 8.8 3.8 8.8 8.8 0 1 0 20.2 15.2Z" fill="currentColor"/></svg>
@@ -127,7 +178,7 @@ body.pdf-tone-mine .canvas-wrap.rendering::after{content:'';position:absolute;in
 <div id="outlineBackdrop" class="outline-backdrop"></div>
 
 <div id="loading" class="loading"><span class="dot"></span><span id="loadingText">Загрузка страницы…</span></div>
-<main id="viewer" class="viewer"><div id="stage" class="stage"><div class="canvas-wrap"><canvas id="canvas"></canvas><div id="highlightLayer" class="highlight-layer"></div><div id="annotationLayer" class="annotation-layer"></div></div></div></main>
+<main id="viewer" class="viewer"><div id="stage" class="stage"><div class="canvas-wrap"><canvas id="canvas"></canvas><div id="highlightLayer" class="highlight-layer"></div><div id="textLayer" class="text-layer"></div><div id="annotationLayer" class="annotation-layer"></div></div></div></main>
 
 <nav class="mobile-nav" aria-label="Навигация по PDF">
   <button id="mPrev" class="m-btn" type="button" title="Предыдущая страница">‹</button>
@@ -180,6 +231,8 @@ const pageParam=Number(params.get('page')||0);
 const findParam=params.get('find')||'';
 const versionParam=params.get('v')||'';
 const themeParam=params.get('theme')||'';
+const embedParam=params.get('embed')==='1';
+if(embedParam)document.body.classList.add('embed-view');
 function applyViewerTheme(theme){
   document.body.classList.remove('theme-na19','theme-na19x');
   if(theme==='na19')document.body.classList.add('theme-na19');
@@ -191,7 +244,7 @@ window.addEventListener('message',e=>{
   applyViewerTheme(e.data.theme||'');
 });
 const $=id=>document.getElementById(id);
-const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText'),mPrev=$('mPrev'),mNext=$('mNext'),mPageInfo=$('mPageInfo'),pageJump=$('pageJump'),pageJumpForm=$('pageJumpForm'),pageJumpInput=$('pageJumpInput'),pageJumpTotal=$('pageJumpTotal'),pageJumpClose=$('pageJumpClose'),searchToggle=$('searchToggle'),searchPanel=$('searchPanel'),searchInput=$('searchInput'),searchPrev=$('searchPrev'),searchNext=$('searchNext'),searchStatus=$('searchStatus'),searchClose=$('searchClose'),highlightLayer=$('highlightLayer'),annotationLayer=$('annotationLayer'),outlineToggle=$('outlineToggle'),outlinePanel=$('outlinePanel'),outlineTree=$('outlineTree'),outlineClose=$('outlineClose'),outlineBackdrop=$('outlineBackdrop'),toneSwitch=$('toneSwitch');
+const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText'),mPrev=$('mPrev'),mNext=$('mNext'),mPageInfo=$('mPageInfo'),pageJump=$('pageJump'),pageJumpForm=$('pageJumpForm'),pageJumpInput=$('pageJumpInput'),pageJumpTotal=$('pageJumpTotal'),pageJumpClose=$('pageJumpClose'),searchToggle=$('searchToggle'),searchPanel=$('searchPanel'),searchInput=$('searchInput'),searchPrev=$('searchPrev'),searchNext=$('searchNext'),searchStatus=$('searchStatus'),searchClose=$('searchClose'),highlightLayer=$('highlightLayer'),annotationLayer=$('annotationLayer'),outlineToggle=$('outlineToggle'),outlinePanel=$('outlinePanel'),outlineTree=$('outlineTree'),outlineClose=$('outlineClose'),outlineBackdrop=$('outlineBackdrop'),toneSwitch=$('toneSwitch'),textLayer=$('textLayer'),viewMode=$('viewMode'),expandViewer=$('expandViewer');
 const toneButtons=[...toneSwitch.querySelectorAll('[data-tone]')];
 const canvasWrap=canvas.parentElement;
 
@@ -227,7 +280,7 @@ applyPdfTone(rememberedTone(),false);
 toneButtons.forEach(btn=>btn.addEventListener('click',()=>applyPdfTone(btn.dataset.tone)));
 
 const CSS_UNITS=96/72;
-let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=false,pdfUrl='',renderSerial=0,preloadSerial=0;
+let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=false,pdfUrl='',renderSerial=0,preloadSerial=0,continuousMode=false,continuousObserver=null,continuousRoot=null;
 let searchQuery='',searchPage=0,searchOccurrence=-1,searchBusy=false,searchToken=0,searchSource='auto';
 let outlineLoaded=false,outlineEntries=[];
 const pageCache=new Map(),warmedPages=new Set(),textCache=new Map(),annotationCache=new Map();
@@ -286,6 +339,7 @@ function closeSearch(){searchToken++;searchBusy=false;searchPanel.classList.remo
 function resetSearch(){searchToken++;searchBusy=false;searchQuery='';searchPage=pageNum;searchOccurrence=-1;searchSource='auto';searchStatus.textContent=searchInput.value.trim()?'Enter — найти':'Введите текст';clearHighlights()}
 function clearHighlights(){highlightLayer.replaceChildren()}
 function clearAnnotations(){annotationLayer.replaceChildren()}
+function clearTextLayer(layer=textLayer){if(layer)layer.replaceChildren()}
 function findMatches(text,q){const hits=[];if(!q)return hits;let from=0;while(true){const i=text.indexOf(q,from);if(i<0)break;hits.push(i);from=i+Math.max(1,q.length)}return hits}
 
 function resolvePdfUrl(path,lfs=params.get('lfs')==='1'){
@@ -404,6 +458,32 @@ async function drawSearchHighlights(page,viewport){
       const hit=s.includes(searchQuery)||(searchQuery.includes(' ')&&tokens.some(t=>s.includes(t)));if(!hit)continue;
       const tx=pdfjsLib.Util.transform(viewport.transform,item.transform),fontHeight=Math.max(2,Math.hypot(tx[2],tx[3])),width=Math.max(3,(item.width||0)*viewport.scale),angle=Math.atan2(tx[1],tx[0]);
       const mark=document.createElement('div');mark.className='search-mark';mark.style.left=`${tx[4]}px`;mark.style.top=`${tx[5]-fontHeight}px`;mark.style.width=`${width}px`;mark.style.height=`${fontHeight}px`;mark.style.transformOrigin='0 0';if(Math.abs(angle)>.001)mark.style.transform=`rotate(${angle}rad)`;highlightLayer.appendChild(mark);
+    }
+  }catch{}
+}
+
+async function renderSelectableText(page,viewport,layer=textLayer){
+  if(!layer)return;
+  layer.replaceChildren();
+  layer.style.width=`${viewport.width}px`;layer.style.height=`${viewport.height}px`;
+  try{
+    const content=await page.getTextContent();
+    for(const item of content.items||[]){
+      if(!item.str)continue;
+      const tx=pdfjsLib.Util.transform(viewport.transform,item.transform);
+      const angle=Math.atan2(tx[1],tx[0]);
+      const fontHeight=Math.max(1,Math.hypot(tx[2],tx[3]));
+      const span=document.createElement('span');
+      span.textContent=item.str;
+      span.style.left=tx[4]+'px';
+      span.style.top=(tx[5]-fontHeight)+'px';
+      span.style.fontSize=fontHeight+'px';
+      span.style.fontFamily='sans-serif';
+      const estimated=Math.max(1,item.str.length*fontHeight*.5);
+      const desired=Math.max(1,(item.width||0)*viewport.scale);
+      const sx=desired/estimated;
+      span.style.transform=(Math.abs(angle)>.001?`rotate(${angle}rad) `:'')+`scaleX(${sx})`;
+      layer.appendChild(span);
     }
   }catch{}
 }
@@ -555,21 +635,93 @@ async function searchStep(direction){
 }
 
 async function renderPage(options={}){
-  if(!pdf)return;pageNum=validPage(pageNum);const target=pageNum,serial=++renderSerial;
+  if(!pdf)return;if(continuousMode){await renderContinuous(pageNum);return}pageNum=validPage(pageNum);const target=pageNum,serial=++renderSerial;
   stage.querySelector('.error')?.remove();canvasWrap.hidden=false;
-  showLoading();clearAnnotations();canvasWrap.classList.add('rendering');if(renderTask){try{renderTask.cancel()}catch{}}
+  showLoading();clearAnnotations();clearTextLayer();canvasWrap.classList.add('rendering');if(renderTask){try{renderTask.cancel()}catch{}}
   try{
     const page=await getCachedPage(target);if(serial!==renderSerial)return;const base=page.getViewport({scale:1});const mobile=window.matchMedia('(max-width:760px)').matches;if(fitWidth){const available=Math.max(120,viewer.clientWidth-(mobile?20:52));scale=Math.min(2.4,available/(base.width*CSS_UNITS))}
     const viewport=page.getViewport({scale:scale*CSS_UNITS});
     const dpr=window.devicePixelRatio||1;
     let ratio=Math.min(3,Math.max(1,dpr));
     const maxPixels=mobile?8000000:16000000,cssPixels=Math.max(1,viewport.width*viewport.height);if(cssPixels*ratio*ratio>maxPixels)ratio=Math.sqrt(maxPixels/cssPixels);
-    canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;highlightLayer.style.width=annotationLayer.style.width=`${Math.floor(viewport.width)}px`;highlightLayer.style.height=annotationLayer.style.height=`${Math.floor(viewport.height)}px`;
+    canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;highlightLayer.style.width=textLayer.style.width=annotationLayer.style.width=`${Math.floor(viewport.width)}px`;highlightLayer.style.height=textLayer.style.height=annotationLayer.style.height=`${Math.floor(viewport.height)}px`;
     renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});await renderTask.promise;if(serial!==renderSerial)return;renderTask=null;canvasWrap.classList.remove('rendering');warmedPages.add(target);updateControls();savePage();hideLoading();
     if(options.anchor){const r=canvasWrap.getBoundingClientRect(),a=options.anchor;viewer.scrollBy({left:r.left+a.x*r.width-a.clientX,top:r.top+a.y*r.height-a.clientY,behavior:'auto'})}else viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});
-    trimPageCache(target);await Promise.allSettled([drawSearchHighlights(page,viewport),renderAnnotations(page,viewport)]);void preloadAround(target);
+    trimPageCache(target);await Promise.allSettled([drawSearchHighlights(page,viewport),renderSelectableText(page,viewport),renderAnnotations(page,viewport)]);void preloadAround(target);
   }catch(err){if(serial===renderSerial)canvasWrap.classList.remove('rendering');if(err?.name!=='RenderingCancelledException'&&serial===renderSerial)fail(err?.message||String(err))}
 }
+
+function destroyContinuous(){
+  continuousObserver?.disconnect();continuousObserver=null;
+  continuousRoot?.remove();continuousRoot=null;
+  document.body.classList.remove('continuous-mode');
+}
+async function renderContinuousPage(el,n){
+  if(!pdf||el.dataset.rendered==='1')return;
+  el.dataset.rendered='1';
+  try{
+    const page=await getCachedPage(n);
+    const base=page.getViewport({scale:1});
+    let useScale=scale;
+    if(fitWidth){
+      const available=Math.max(120,viewer.clientWidth-50);
+      useScale=Math.min(2.4,available/(base.width*CSS_UNITS));
+    }
+    const viewport=page.getViewport({scale:useScale*CSS_UNITS});
+    el.style.width=Math.floor(viewport.width)+'px';el.style.height=Math.floor(viewport.height)+'px';
+    const cnv=document.createElement('canvas');
+    const ctx2=cnv.getContext('2d',{alpha:false});
+    const dpr=Math.min(2,Math.max(1,window.devicePixelRatio||1));
+    cnv.width=Math.floor(viewport.width*dpr);cnv.height=Math.floor(viewport.height*dpr);
+    cnv.style.width=Math.floor(viewport.width)+'px';cnv.style.height=Math.floor(viewport.height)+'px';
+    const tl=document.createElement('div');tl.className='text-layer';
+    el.append(cnv,tl);
+    await page.render({canvasContext:ctx2,viewport,transform:dpr===1?null:[dpr,0,0,dpr,0,0]}).promise;
+    await renderSelectableText(page,viewport,tl);
+  }catch{el.dataset.rendered='0'}
+}
+function updateContinuousCurrentPage(){
+  if(!continuousMode||!continuousRoot)return;
+  const top=viewer.getBoundingClientRect().top+20;
+  let best=pageNum,bestDist=Infinity;
+  for(const el of continuousRoot.children){
+    const r=el.getBoundingClientRect(),d=Math.abs(r.top-top);
+    if(d<bestDist){bestDist=d;best=Number(el.dataset.page)||best}
+  }
+  if(best!==pageNum){pageNum=best;updateControls();savePage();updateOutlineActive()}
+}
+async function renderContinuous(targetPage=pageNum){
+  if(!pdf)return;
+  pageNum=validPage(targetPage);
+  document.body.classList.add('continuous-mode');
+  canvasWrap.hidden=true;clearAnnotations();clearTextLayer();clearHighlights();
+  continuousObserver?.disconnect();continuousRoot?.remove();
+  continuousRoot=document.createElement('div');continuousRoot.className='continuous-pages';
+  stage.appendChild(continuousRoot);
+  const first=await getCachedPage(1),base=first.getViewport({scale:scale*CSS_UNITS});
+  for(let n=1;n<=pdf.numPages;n++){
+    const el=document.createElement('section');el.className='continuous-page';el.dataset.page=String(n);
+    el.style.width=Math.floor(base.width)+'px';el.style.height=Math.floor(base.height)+'px';
+    continuousRoot.appendChild(el);
+  }
+  continuousObserver=new IntersectionObserver(entries=>{
+    for(const entry of entries)if(entry.isIntersecting)void renderContinuousPage(entry.target,Number(entry.target.dataset.page));
+  },{root:viewer,rootMargin:'900px 0px'});
+  for(const el of continuousRoot.children)continuousObserver.observe(el);
+  requestAnimationFrame(()=>{
+    continuousRoot?.querySelector('[data-page="'+pageNum+'"]')?.scrollIntoView({block:'start'});
+    updateContinuousCurrentPage();
+  });
+  updateControls();hideLoading();
+}
+async function setContinuousMode(on){
+  continuousMode=!!on;
+  viewMode.classList.toggle('active',continuousMode);
+  viewMode.setAttribute('aria-pressed',continuousMode?'true':'false');
+  if(continuousMode)await renderContinuous(pageNum);
+  else{destroyContinuous();canvasWrap.hidden=false;await renderPage()}
+}
+viewer.addEventListener('scroll',()=>{if(continuousMode)requestAnimationFrame(updateContinuousCurrentPage)},{passive:true});
 
 async function open(){
   if(!raw){fail('В ссылке не указан файл.');return}
@@ -580,7 +732,7 @@ async function open(){
   }catch(err){fail(err?.message||String(err))}
 }
 
-function go(delta){if(!pdf)return;const n=pageNum+delta;if(n<1||n>pdf.numPages)return;pageNum=n;renderPage()}
+function go(delta){if(!pdf)return;const n=pageNum+delta;if(n<1||n>pdf.numPages)return;pageNum=n;if(continuousMode)continuousRoot?.querySelector('[data-page="'+pageNum+'"]')?.scrollIntoView({block:'start',behavior:'smooth'});else renderPage()}
 let pendingNavigation=null,navigationSerial=0;
 async function applyNavigation(){
   if(!pdf||!pendingNavigation)return;
@@ -613,7 +765,7 @@ back.onclick=()=>{
 };
 outlineToggle.onclick=()=>outlinePanel.classList.contains('open')?closeOutline():void openOutline();outlineClose.onclick=closeOutline;outlineBackdrop.onclick=closeOutline;
 prev.onclick=()=>go(-1);next.onclick=()=>go(1);mPrev.onclick=()=>go(-1);mNext.onclick=()=>go(1);mPageInfo.onclick=()=>pageJump.classList.contains('open')?closePageJump():openPageJump();pageJumpClose.onclick=closePageJump;pageJumpForm.addEventListener('submit',e=>{e.preventDefault();jumpToPage()});document.addEventListener('pointerdown',e=>{if(!pageJump.classList.contains('open'))return;if(pageJump.contains(e.target)||mPageInfo.contains(e.target))return;closePageJump()});
-pageInput.onchange=()=>{if(!pdf)return;pageNum=validPage(pageInput.value,pageNum);renderPage()};
+pageInput.onchange=()=>{if(!pdf)return;pageNum=validPage(pageInput.value,pageNum);if(continuousMode)continuousRoot?.querySelector('[data-page="'+pageNum+'"]')?.scrollIntoView({block:'start'});else renderPage()};
 function clampScale(value){return Math.max(.35,Math.min(4,value))}
 function zoomAnchorFromClient(clientX,clientY){
   const rect=canvasWrap.getBoundingClientRect();
@@ -629,7 +781,7 @@ function setZoomScale(nextScale,anchor=null){
   fitWidth=false;
   scale=clampScale(nextScale);
   updateControls();
-  void renderPage(anchor?{anchor}:{});
+  if(continuousMode)void renderContinuous(pageNum);else void renderPage(anchor?{anchor}:{});
 }
 function applyCustomZoom(){
   if(!pdf)return;
@@ -645,7 +797,13 @@ zoomLabel.addEventListener('keydown',e=>{
 });
 zoomLabel.addEventListener('change',applyCustomZoom);
 zoomLabel.addEventListener('focus',()=>zoomLabel.select());
-fit.onclick=()=>{fitWidth=true;renderPage()};
+fit.onclick=()=>{fitWidth=true;if(continuousMode)void renderContinuous(pageNum);else renderPage()};
+viewMode.onclick=()=>{void setContinuousMode(!continuousMode)};
+expandViewer.onclick=()=>{
+  const url=location.href.replace(/([?&])embed=1(&|$)/,(m,a,b)=>b?a:'').replace(/[?&]$/,'');
+  if(window.parent!==window)window.parent.postMessage({type:'nsu-open-pdf-fullscreen',url},location.origin);
+  else document.documentElement.requestFullscreen?.().catch?.(()=>{});
+};
 searchToggle.onclick=openSearch;searchClose.onclick=closeSearch;searchNext.onclick=()=>searchStep(1);searchPrev.onclick=()=>searchStep(-1);searchInput.oninput=resetSearch;searchInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchStep(e.shiftKey?-1:1)}});
 window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();openSearch();return}if(e.key==='Escape'){if(pageJump.classList.contains('open'))closePageJump();else if(outlinePanel.classList.contains('open'))closeOutline();else if(searchPanel.classList.contains('open'))closeSearch();else back.click();return}if(document.activeElement===searchInput||document.activeElement===pageJumpInput||document.activeElement===zoomLabel)return;if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)});
 let wheelZoomTimer=0,wheelZoomStartScale=0,wheelZoomTargetScale=0,wheelZoomAnchor=null;
