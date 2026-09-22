@@ -610,9 +610,10 @@ function finishWheelZoom(){
   updateControls();
   void renderPage(anchor?{anchor}:{});
 }
-viewer.addEventListener('wheel',e=>{
+function handleWheelZoom(e){
   if(!pdf||(!e.ctrlKey&&!e.metaKey))return;
   e.preventDefault();
+  e.stopPropagation();
   closePageJump();
   fitWidth=false;
 
@@ -624,19 +625,23 @@ viewer.addEventListener('wheel',e=>{
     wheelZoomTargetScale=scale;
   }
 
-  wheelZoomAnchor=zoomAnchorFromClient(e.clientX,e.clientY);
+  const clientX=Math.max(rect.left,Math.min(rect.right,e.clientX));
+  const clientY=Math.max(rect.top,Math.min(rect.bottom,e.clientY));
+  wheelZoomAnchor=zoomAnchorFromClient(clientX,clientY);
+
   const sensitivity=e.deltaMode===1?.045:e.deltaMode===2?.18:.0026;
   wheelZoomTargetScale=clampScale(wheelZoomTargetScale*Math.exp(-e.deltaY*sensitivity));
 
   const previewRatio=wheelZoomTargetScale/wheelZoomStartScale;
   canvasWrap.classList.add('pinch-preview');
-  canvasWrap.style.transformOrigin=(e.clientX-rect.left)+'px '+(e.clientY-rect.top)+'px';
+  canvasWrap.style.transformOrigin=(clientX-rect.left)+'px '+(clientY-rect.top)+'px';
   canvasWrap.style.transform='scale('+previewRatio+')';
   zoomLabel.value=String(Math.round(wheelZoomTargetScale*100));
 
   clearTimeout(wheelZoomTimer);
   wheelZoomTimer=setTimeout(finishWheelZoom,90);
-},{passive:false});
+}
+window.addEventListener('wheel',handleWheelZoom,{passive:false,capture:true});
 
 function touchDistance(touches){const dx=touches[0].clientX-touches[1].clientX,dy=touches[0].clientY-touches[1].clientY;return Math.hypot(dx,dy)}
 function touchMidpoint(touches){return{x:(touches[0].clientX+touches[1].clientX)/2,y:(touches[0].clientY+touches[1].clientY)/2}}
