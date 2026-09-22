@@ -6,6 +6,7 @@
   const installed = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone;
   const installButton = document.getElementById('installApp');
   const downloadsButton = document.getElementById('offlineFiles');
+  const settingsButton = document.getElementById('appSettings');
   const saveButton = document.getElementById('saveOffline');
   function notice(text) {
     let node = document.getElementById('appNotice');
@@ -51,6 +52,155 @@
     node.addEventListener('close',()=>node.remove());node.showModal();return node;
   }
   function paragraph(parent,text) {const node=document.createElement('p');node.textContent=text;parent.append(node);return node;}
+  const fmtBytes = value => {
+    const n=Number(value)||0;
+    if(n<1048576)return Math.max(0,n/1024).toFixed(n<10240?1:0)+' КБ';
+    return (n/1048576).toFixed(n>=104857600?0:1)+' МБ';
+  };
+  const encPath = path => String(path).split('/').map(encodeURIComponent).join('/');
+  const lfsPaths = new Set([
+    'ФЭЧ/03_Литератру/PhysRevD.pdf',
+    'ФЭЧ/04_Литератру/PhysRevD.pdf'
+  ]);
+  function fileSubject(path){
+    const parts=String(path).split('/');
+    return parts[0]==='База'&&parts[1]==='КМ'?'КМ':parts[0]||'';
+  }
+  function offlineUrls(file){
+    const lfs=lfsPaths.has(file.path);
+    const direct=lfs
+      ? new URL('https://media.githubusercontent.com/media/BelovVlad/NSU_FP_Y4_S1/main/'+encPath(file.path))
+      : new URL('../'+encPath(file.path),base);
+    if(file.version)direct.searchParams.set('v',file.version);
+    const viewer=new URL('pdfjs/viewer.html',base);
+    viewer.searchParams.set('file',file.path);
+    viewer.searchParams.set('subject',file.subject||fileSubject(file.path));
+    viewer.searchParams.set('title',file.title||file.path.split('/').pop().replace(/\.pdf$/i,''));
+    if(file.version)viewer.searchParams.set('v',file.version);
+    if(lfs)viewer.searchParams.set('lfs','1');
+    return {direct:direct.href,viewer:viewer.href};
+  }
+  async function storageText(){
+    try{
+      const estimate=await navigator.storage?.estimate?.();
+      if(!estimate)return 'Данные хранятся на этом устройстве.';
+      return 'Использовано около '+fmtBytes(estimate.usage||0)+(estimate.quota?' из '+fmtBytes(estimate.quota):'')+'.';
+    }catch{return 'Данные хранятся на этом устройстве.'}
+  }
+  async function activateWaitingWorker(){
+    await ready;
+    if(!registration?.waiting)return false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>location.reload(),{once:true});
+    registration.waiting.postMessage({type:'ACTIVATE'});
+    return true;
+  }
+  async function checkForUpdate(status,button){
+    if(button)button.disabled=true;
+    if(status)status.textContent='Проверяю обновления…';
+    try{
+      await ready;
+      await registration.update();
+      await new Promise(resolve=>setTimeout(resolve,700));
+      if(registration.waiting){
+        if(status)status.textContent='Доступно обновление.';
+        if(button){button.disabled=false;button.textContent='Обновить сейчас';button.dataset.ready='1';}
+        return true;
+      }
+      if(status)status.textContent='У вас актуальная версия.';
+      return false;
+    }catch(error){
+      if(status)status.textContent=error.message||'Не удалось проверить обновления.';
+      return false;
+    }finally{
+      if(button&&!registration?.waiting)button.disabled=false;
+    }
+  }
+  async function downloadAllPdfs(status,progress,button){
+    button.disabled=true;
+    button.textContent='Скачиваю…';
+    try{
+      const response=await fetch(new URL('search-index/files.json',base),{cache:'no-cache'});
+      if(!response.ok)throw new Error('Не удалось получить список материалов.');
+      const catalogue=await response.json();
+      const pdfs=(catalogue.files||[]).filter(file=>file.type==='pdf');
+      const totalBytes=pdfs.reduce((sum,file)=>sum+(Number(file.size)||0),0);
+      const saved=await request('LIST_PDFS');
+      const savedUrls=new Set(saved.map(file=>file.url));
+      let done=0,downloaded=0,failed=0,skipped=0;
+      progress.hidden=false;
+      const bar=progress.querySelector('span');
+      for(const file of pdfs){
+        const urls=offlineUrls(file);
+        if(savedUrls.has(urls.direct)){skipped++;done++;bar.style.width=(done/pdfs.length*100)+'%';continue;}
+        status.textContent='Скачиваю '+(done+1)+' / '+pdfs.length+': '+(file.title||file.path);
+        try{
+          const result=await request('SAVE_PDF',{url:urls.direct,viewer:urls.viewer,title:file.title||file.path});
+          downloaded+=Number(result?.bytes)||0;
+        }catch{failed++}
+        done++;
+        bar.style.width=(done/pdfs.length*100)+'%';
+      }
+      status.textContent='Готово: '+(pdfs.length-failed)+' / '+pdfs.length+
+        ' PDF · добавлено '+fmtBytes(downloaded)+(skipped?' · уже было '+skipped:'')+
+        (failed?' · ошибок '+failed:'')+'. Всего в каталоге около '+fmtBytes(totalBytes)+'.';
+      navigator.storage?.persist?.().catch(()=>{});
+    }catch(error){
+      status.textContent=error.message||'Не удалось скачать материалы.';
+    }finally{
+      button.disabled=false;button.textContent='Скачать все PDF';
+    }
+  }
+  async function openManager(){
+    const panel=dialog('Приложение и данные');
+    panel.classList.add('app-manager');
+    const body=document.createElement('div');body.className='app-manager-body';panel.append(body);
+
+    const summary=document.createElement('div');summary.className='app-manager-summary';
+    const state=document.createElement('strong');state.textContent=installed()?'Приложение установлено':'Сайт можно установить как приложение';
+    const storage=document.createElement('span');storage.className='app-manager-storage';storage.textContent='Считаю данные…';
+    summary.append(state,storage);body.append(summary);
+    storage.textContent=await storageText();
+
+    const appSection=document.createElement('section');appSection.className='app-manager-section';
+    appSection.innerHTML='<h3>Приложение</h3><div class="app-manager-actions"></div>';
+    const appActions=appSection.querySelector('.app-manager-actions');
+    const install=document.createElement('button');install.type='button';install.className='app-manager-btn primary';
+    install.textContent=installed()?'Как установлено':'Установить приложение';
+    install.onclick=()=>installButton?.click();
+    const update=document.createElement('button');update.type='button';update.className='app-manager-btn';
+    update.textContent=registration?.waiting?'Обновить сейчас':'Проверить обновления';
+    const updateStatus=document.createElement('div');updateStatus.className='app-manager-status';
+    if(registration?.waiting){update.dataset.ready='1';updateStatus.textContent='Доступно обновление.'}
+    update.onclick=async()=>{
+      if(update.dataset.ready==='1'||registration?.waiting){await activateWaitingWorker();return;}
+      await checkForUpdate(updateStatus,update);
+    };
+    appActions.append(install,update);appSection.append(updateStatus);body.append(appSection);
+
+    const dataSection=document.createElement('section');dataSection.className='app-manager-section';
+    dataSection.innerHTML='<h3>Офлайн-данные</h3><div class="app-manager-actions"></div>';
+    const dataActions=dataSection.querySelector('.app-manager-actions');
+    const saved=document.createElement('button');saved.type='button';saved.className='app-manager-btn';saved.textContent='Сохранённые PDF';
+    saved.onclick=()=>downloadsButton?.click();
+    const all=document.createElement('button');all.type='button';all.className='app-manager-btn primary';all.textContent='Скачать все PDF';
+    const clear=document.createElement('button');clear.type='button';clear.className='app-manager-btn danger';clear.textContent='Удалить сохранённые PDF';
+    const status=document.createElement('div');status.className='app-manager-status';
+    const progress=document.createElement('div');progress.className='app-manager-progress';progress.hidden=true;progress.innerHTML='<span></span>';
+    all.onclick=()=>downloadAllPdfs(status,progress,all);
+    clear.onclick=async()=>{
+      if(!confirm('Удалить все PDF, сохранённые для офлайн-доступа на этом устройстве?'))return;
+      clear.disabled=true;status.textContent='Удаляю сохранённые PDF…';
+      try{await request('CLEAR_PDFS');status.textContent='Сохранённые PDF удалены.';storage.textContent=await storageText();}
+      catch(error){status.textContent=error.message}
+      finally{clear.disabled=false}
+    };
+    dataActions.append(saved,all,clear);
+    dataSection.append(progress,status);
+    const note=document.createElement('p');note.className='app-manager-note';
+    note.textContent='«Скачать все PDF» загружает материалы целиком. Сейчас каталог занимает примерно 250 МБ; фактический объём может меняться после обновлений.';
+    dataSection.append(note);body.append(dataSection);
+  }
+  settingsButton?.addEventListener('click',()=>{void openManager()});
   installButton?.addEventListener('click',async()=>{
     if(installPrompt) {
       const prompt=installPrompt;installPrompt=null;
@@ -98,10 +248,9 @@
     registration=value;
     function offerUpdate(){
       if(!registration.waiting || !registration.active || !navigator.serviceWorker.controller)return;
-      let button=document.getElementById('appUpdate');
-      if(button)return;
-      button=document.createElement('button');button.id='appUpdate';button.className='app-update';button.textContent='Обновить приложение';document.body.append(button);
-      button.onclick=()=>{navigator.serviceWorker.addEventListener('controllerchange',()=>location.reload(),{once:true});registration.waiting?.postMessage({type:'ACTIVATE'});};
+      settingsButton?.classList.add('has-update');
+      settingsButton?.setAttribute('title','Доступно обновление приложения');
+      notice('Доступно обновление приложения. Откройте «Приложение» → «Обновить сейчас».');
     }
     offerUpdate();
     registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker?.addEventListener('statechange',()=>{if(worker.state==='installed')offerUpdate();});});
