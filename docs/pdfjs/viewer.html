@@ -91,6 +91,7 @@ body.embed-view .controls{display:flex!important;gap:4px;justify-content:flex-st
 body.embed-view .controls::-webkit-scrollbar{display:none}
 body.embed-view .controls .btn{height:32px;min-width:32px;padding:0 8px;border-radius:7px}
 body.embed-view .controls .btn.icon{width:32px;padding:0}
+body.embed-view #prev,body.embed-view #next,body.embed-view #zoomOut,body.embed-view #zoomIn,body.embed-view #fit{display:none!important}
 body.embed-view .page-input{width:48px;height:30px}
 body.embed-view .zoom-edit{height:30px}
 body.embed-view .zoom-input{height:28px;width:42px}
@@ -139,7 +140,7 @@ body.embed-view .expand-viewer{display:inline-flex}
     <label class="zoom-edit" title="Введите масштаб от 35 до 400%"><input id="zoom" class="zoom-input" type="number" min="35" max="400" step="1" value="100" inputmode="numeric" aria-label="Масштаб в процентах"><span class="zoom-percent">%</span></label>
     <button id="zoomIn" class="btn icon" type="button" title="Увеличить">+</button>
     <button id="fit" class="btn" type="button">По ширине</button>
-    <button id="viewMode" class="btn icon view-mode-btn" type="button" title="Непрерывная прокрутка" aria-label="Непрерывная прокрутка">⇅</button>
+    <button id="viewMode" class="btn icon view-mode-btn" type="button" title="Непрерывная прокрутка страниц" aria-label="Непрерывная прокрутка страниц">⇅</button>
   </div>
   <div class="right">
     <button id="expandViewer" class="btn icon expand-viewer" type="button" title="Развернуть" aria-label="Развернуть">⛶</button>
@@ -478,7 +479,7 @@ async function renderSelectableText(page,viewport,layer=textLayer){
       span.style.left=tx[4]+'px';
       span.style.top=(tx[5]-fontHeight)+'px';
       span.style.fontSize=fontHeight+'px';
-      span.style.fontFamily='sans-serif';
+      span.style.fontFamily='sans-serif';span.style.lineHeight='1';
       const estimated=Math.max(1,item.str.length*fontHeight*.5);
       const desired=Math.max(1,(item.width||0)*viewport.scale);
       const sx=desired/estimated;
@@ -705,7 +706,15 @@ async function renderContinuous(targetPage=pageNum){
     continuousRoot.appendChild(el);
   }
   continuousObserver=new IntersectionObserver(entries=>{
-    for(const entry of entries)if(entry.isIntersecting)void renderContinuousPage(entry.target,Number(entry.target.dataset.page));
+    const vr=viewer.getBoundingClientRect();
+    for(const entry of entries){
+      const el=entry.target;
+      if(entry.isIntersecting)void renderContinuousPage(el,Number(el.dataset.page));
+      else if(el.dataset.rendered==='1'){
+        const r=el.getBoundingClientRect();
+        if(r.bottom<vr.top-1800||r.top>vr.bottom+1800){el.replaceChildren();el.dataset.rendered='0'}
+      }
+    }
   },{root:viewer,rootMargin:'900px 0px'});
   for(const el of continuousRoot.children)continuousObserver.observe(el);
   requestAnimationFrame(()=>{
@@ -825,6 +834,15 @@ function handleWheelZoom(e){
   closePageJump();
   fitWidth=false;
 
+  const sensitivity=e.deltaMode===1?.045:e.deltaMode===2?.18:.0026;
+  if(continuousMode){
+    scale=clampScale(scale*Math.exp(-e.deltaY*sensitivity));
+    zoomLabel.value=String(Math.round(scale*100));
+    clearTimeout(wheelZoomTimer);
+    wheelZoomTimer=setTimeout(()=>{wheelZoomTimer=0;void renderContinuous(pageNum)},90);
+    return;
+  }
+
   const rect=canvasWrap.getBoundingClientRect();
   if(rect.width<1||rect.height<1)return;
 
@@ -837,7 +855,6 @@ function handleWheelZoom(e){
   const clientY=Math.max(rect.top,Math.min(rect.bottom,e.clientY));
   wheelZoomAnchor=zoomAnchorFromClient(clientX,clientY);
 
-  const sensitivity=e.deltaMode===1?.045:e.deltaMode===2?.18:.0026;
   wheelZoomTargetScale=clampScale(wheelZoomTargetScale*Math.exp(-e.deltaY*sensitivity));
 
   const previewRatio=wheelZoomTargetScale/wheelZoomStartScale;
