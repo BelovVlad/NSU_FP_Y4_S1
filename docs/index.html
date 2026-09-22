@@ -848,6 +848,114 @@ body.music-na19x .pdf-fullscreen-loader{
   }
 }
 
+
+/* PDF-first subject workspace */
+.workspace{
+  --subject-list-width:340px;
+  display:grid;
+  grid-template-columns:minmax(280px,var(--subject-list-width)) 8px minmax(0,1fr);
+  gap:0;
+  align-items:start;
+  margin-top:10px
+}
+.subject-list-col{min-width:0;padding-right:10px}
+.workspace-resizer{
+  width:8px;align-self:stretch;min-height:420px;position:relative;cursor:col-resize;
+  touch-action:none;user-select:none
+}
+.workspace-resizer::before{
+  content:"";position:absolute;left:3px;top:10px;bottom:10px;width:2px;border-radius:2px;
+  background:color-mix(in srgb,var(--line) 78%,transparent);
+  transition:background .15s,box-shadow .15s
+}
+.workspace-resizer:hover::before,.workspace-resizer.dragging::before{
+  background:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 16%,transparent)
+}
+.preview-panel{min-width:0;position:sticky;top:8px;align-self:start}
+.preview-toolbar{
+  min-height:42px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:6px 8px 6px 12px;border-bottom:1px solid var(--line2);
+  background:color-mix(in srgb,var(--panel) 94%,var(--accent) 6%)
+}
+.preview-toolbar-actions{position:relative;display:flex;align-items:center;gap:6px}
+.preview-more{
+  width:32px;height:30px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);
+  color:var(--text2);cursor:pointer;font-size:17px;line-height:1
+}
+.preview-more:hover{border-color:var(--accent);color:var(--cream)}
+.preview-menu{
+  position:absolute;z-index:8;right:38px;top:35px;min-width:148px;padding:5px;
+  border:1px solid var(--line);border-radius:8px;background:var(--panel);
+  box-shadow:0 14px 34px rgba(0,0,0,.38)
+}
+.preview-menu[hidden]{display:none!important}
+.preview-menu button{
+  width:100%;height:32px;padding:0 9px;border:0;border-radius:6px;background:transparent;
+  color:var(--text2);text-align:left;cursor:pointer;font-size:12px
+}
+.preview-menu button:hover{background:var(--soft);color:var(--cream)}
+.preview-open-full{width:32px;height:30px;margin-left:0;padding:0;justify-content:center}
+.preview-open-full .ui-icon{width:15px;height:15px}
+.preview-frame-wrap{
+  height:calc(100vh - 278px);min-height:610px;max-height:none;padding:0;background:#0a1016
+}
+.preview-frame{border:0;border-radius:0}
+.preview-info-only,.preview-file-pane{min-height:610px}
+.preview-kicker{font-size:12px;color:#9ca6ae}
+.preview-date{font-size:12px;color:#8d98a2}
+.info-title{font-size:12px}.info-row{font-size:12px}.tag{font-size:11px}
+.preview-file-path{font-size:12px}.action{font-size:12px}
+
+/* Less vertical chrome above the document */
+.hero{min-height:116px;padding:12px 22px 10px}
+.hero-row{margin-top:7px}
+.hero h1{font-size:30px}
+.hero-sub{margin-top:5px;font-size:14px}
+.hero-people{margin-top:7px}
+.person-chip{padding:3px 7px;font-size:10px}
+.breadcrumbs{font-size:11px}
+.hero-art{width:clamp(560px,62vw,900px)}
+.tabs{height:38px;margin-top:0}
+.tab{height:38px;font-size:12.5px}
+
+/* Readability: important metadata is no longer 9–10 px and titles may wrap. */
+.file-row{min-height:68px;align-items:center}
+.file-name{
+  font-size:13px;line-height:1.35;white-space:normal;text-overflow:clip;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical
+}
+.file-desc{
+  margin-top:4px;font-size:12px;line-height:1.35;color:#929ca6;
+  white-space:normal;text-overflow:clip;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical
+}
+.file-date{font-size:12px;color:#a0a9b1}
+.file-size{font-size:12px;color:#7d8892}
+.entry-part{font-size:11.5px}
+.entry-no{font-size:12px}
+.panel-count{font-size:12px}
+.sort-select{font-size:12px}
+.new-badge{font-size:9px}
+.search-result-meta,.recent-meta,.recent-date,.course-name,.stat-label{font-size:11.5px}
+
+@media(max-width:1180px){
+  .workspace{--subject-list-width:315px}
+  .preview-frame-wrap{height:calc(100vh - 260px);min-height:540px}
+}
+@media(max-width:900px){
+  .workspace{display:block}
+  .workspace-resizer{display:none}
+  .subject-list-col{padding-right:0}
+  .preview-panel{position:static;margin-top:10px}
+}
+@media(max-width:720px){
+  .hero{min-height:112px;padding:11px 13px 9px}
+  .hero h1{font-size:27px}
+  .hero-people{display:none}
+  .tabs{height:36px}.tab{height:36px}
+  .file-name{font-size:13px}
+  .file-desc,.file-date,.file-size{font-size:12px}
+}
+
 </style>
 </head>
 <body>
@@ -1311,6 +1419,10 @@ window.addEventListener('message',e=>{
     void closePdfFullscreen();
     return;
   }
+  if(e.data?.type==='nsu-open-pdf-fullscreen'&&e.data.url){
+    void openPdfFullscreen(e.data.url);
+    return;
+  }
   if(e.data?.type==='nsu-pdf-ready'&&e.source===pdfFullscreenFrame.contentWindow){
     pdfFullscreen.classList.add('ready');
   }
@@ -1398,11 +1510,11 @@ function entryRows(group){
 }
 
 function preview(f,entry=null){
-  if(!f)return '<aside class="panel preview-panel"><div class="preview-placeholder"><div><div class="big">Выберите материал</div><div class="small">Справа появится предпросмотр и информация о файле.</div></div></div></aside>';
+  if(!f)return '<aside class="panel preview-panel"><div class="preview-placeholder"><div><div class="big">Выберите материал</div><div class="small">Справа появится предпросмотр.</div></div></div></aside>';
   const m=fileMeta(f),isPdf=f.ext==='.pdf',isNotebook=f.ext==='.ipynb';
   const displayTitle=entry?.title||niceName(f);
   const url=isPdf?viewerUrl(f,entry?.page||0,displayTitle):isNotebook?notebookUrl(f,0,displayTitle,false):githubUrl(f);
-  const frameUrl=isPdf?url:isNotebook?notebookUrl(f,0,displayTitle,true):url;
+  const frameUrl=isPdf?(url+'&embed=1'):isNotebook?notebookUrl(f,0,displayTitle,true):url;
   const frame=(isPdf||isNotebook)
     ?'<iframe class="preview-frame" src="'+esc(frameUrl)+'" loading="lazy" title="'+esc(displayTitle)+'"></iframe>'
     :'<div class="preview-placeholder"><div><div class="big">Файл</div><div class="small">Предпросмотр для этого формата недоступен.</div></div></div>';
@@ -1413,8 +1525,11 @@ function preview(f,entry=null){
   const infoValue=isNotebook?(m.cell_count||'—'):pageRange;
   const fullLabel=isNotebook?'Открыть Notebook':'Открыть PDF';
   return '<aside class="panel preview-panel">'+
-    '<div class="preview-head"><div class="preview-kicker">'+esc(entry?((entry.number?'№ '+entry.number+' · ':'')+sectionOf(f)):sectionOf(f))+'<span class="preview-date">'+esc(fmtDate(date))+'</span></div><h2 class="preview-title">'+esc(displayTitle)+'</h2>'+(entry?.subtitle?'<div class="file-desc" style="margin-top:6px">'+esc(entry.subtitle)+'</div>':'')+'</div>'+
-    '<div class="preview-tabs"><button class="preview-tab active" data-preview-tab="view">Просмотр</button><button class="preview-tab" data-preview-tab="info">Информация</button><button class="preview-tab" data-preview-tab="file">Файл</button>'+((isPdf||isNotebook)?'<a class="preview-open-full" href="'+esc(url)+'" title="'+esc(fullLabel+' на всю страницу')+'">'+iconSvg('expand')+'<span>'+esc(fullLabel)+'</span></a>':'')+'</div>'+
+    '<div class="preview-toolbar"><div class="preview-kicker">'+esc(entry?((entry.number?'№ '+entry.number+' · ':'')+sectionOf(f)):sectionOf(f))+'<span class="preview-date"> · '+esc(fmtDate(date))+'</span></div>'+
+      '<div class="preview-toolbar-actions"><button class="preview-more" type="button" aria-label="Дополнительные действия" title="Информация и файл">•••</button>'+
+      '<div class="preview-menu" hidden><button type="button" data-preview-tab="view">Документ</button><button type="button" data-preview-tab="info">Информация</button><button type="button" data-preview-tab="file">Файл</button></div>'+
+      ((isPdf||isNotebook)?'<a class="preview-open-full" href="'+esc(url)+'" aria-label="'+esc(fullLabel+' на весь экран')+'" title="'+esc(fullLabel+' на весь экран')+'">'+iconSvg('expand')+'</a>':'')+
+      '</div></div>'+
     '<div class="preview-pane" data-preview-pane="view"><div class="preview-frame-wrap">'+frame+'</div></div>'+
     '<div class="preview-pane preview-info-only" data-preview-pane="info" hidden><div class="preview-info"><div class="info-box"><div class="info-title">Информация</div>'+
       '<div class="info-row"><span>Файл</span><span>'+esc(f.name||f.path.split('/').pop())+'</span></div>'+
@@ -1425,15 +1540,18 @@ function preview(f,entry=null){
     '<div class="preview-pane preview-file-pane" data-preview-pane="file" hidden><div class="info-title">Путь в репозитории</div><div class="preview-file-path">'+esc(f.path)+'</div><div class="preview-file-actions"><a class="action primary" href="'+esc(url)+'">Открыть'+(isPdf?' PDF':isNotebook?' Notebook':' файл')+'</a><a class="action" target="_blank" rel="noopener" href="'+esc(githubUrl(f))+'">GitHub ↗</a></div></div>'+
   '</aside>';
 }
-
 function bindPreviewTabs(){
-  const tabs=$$('.preview-tab[data-preview-tab]');
-  tabs.forEach(btn=>btn.onclick=()=>{
+  const panel=$('.preview-panel');if(!panel)return;
+  const menu=panel.querySelector('.preview-menu'),more=panel.querySelector('.preview-more');
+  if(more&&menu)more.onclick=e=>{e.stopPropagation();menu.hidden=!menu.hidden};
+  panel.querySelectorAll('[data-preview-tab]').forEach(btn=>btn.onclick=()=>{
     const key=btn.dataset.previewTab;
-    tabs.forEach(x=>x.classList.toggle('active',x===btn));
-    $$('[data-preview-pane]').forEach(p=>p.hidden=p.dataset.previewPane!==key);
+    panel.querySelectorAll('[data-preview-pane]').forEach(p=>p.hidden=p.dataset.previewPane!==key);
+    if(menu)menu.hidden=true;
   });
+  panel.onclick=e=>{if(menu&&!e.target.closest('.preview-toolbar-actions'))menu.hidden=true};
 }
+
 // Update the surrounding UI without removing a live iframe from the DOM.
 // Detaching and reinserting an iframe would reload its document as well.
 function patchPreview(current,next){
@@ -1463,6 +1581,33 @@ function patchPreview(current,next){
 function patchPreviewHtml(current,html){
   const template=document.createElement('template');template.innerHTML=html;
   patchPreview(current,template.content.firstElementChild);
+}
+function bindWorkspaceResizer(){
+  const workspace=$('.workspace'),handle=$('.workspace-resizer');
+  if(!workspace||!handle||innerWidth<=900)return;
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  const applySaved=()=>{
+    let saved=340;try{saved=Number(localStorage.getItem('nsu-subject-list-width'))||340}catch{}
+    const max=Math.max(280,Math.min(520,workspace.clientWidth-520));
+    workspace.style.setProperty('--subject-list-width',clamp(saved,280,max)+'px');
+  };
+  applySaved();
+  handle.onpointerdown=e=>{
+    if(e.button!==0)return;e.preventDefault();
+    handle.classList.add('dragging');handle.setPointerCapture?.(e.pointerId);
+    const startX=e.clientX,startW=parseFloat(getComputedStyle(workspace).getPropertyValue('--subject-list-width'))||340;
+    const move=ev=>{
+      const max=Math.max(280,Math.min(520,workspace.clientWidth-520));
+      workspace.style.setProperty('--subject-list-width',clamp(startW+ev.clientX-startX,280,max)+'px');
+    };
+    const up=()=>{
+      handle.classList.remove('dragging');
+      handle.removeEventListener('pointermove',move);handle.removeEventListener('pointerup',up);handle.removeEventListener('pointercancel',up);
+      try{localStorage.setItem('nsu-subject-list-width',String(Math.round(parseFloat(getComputedStyle(workspace).getPropertyValue('--subject-list-width'))||340)))}catch{}
+    };
+    handle.addEventListener('pointermove',move);handle.addEventListener('pointerup',up);handle.addEventListener('pointercancel',up);
+  };
+  handle.ondblclick=()=>{workspace.style.setProperty('--subject-list-width','340px');try{localStorage.setItem('nsu-subject-list-width','340')}catch{}};
 }
 function renderSubject(){
   const firstSection=sectionsFor(state.subject)[0]||'';
@@ -1496,10 +1641,11 @@ function renderSubject(){
     patchPreviewHtml(main.querySelector('.preview-panel'),preview(previewFile,state.selectedEntry));
   }else main.innerHTML=hero(state.subject)+
     '<div id="subjectTabs">'+tabs(state.subject)+'</div>'+
-    '<div class="workspace"><div><section class="panel list-panel"><div class="panel-head"><h2 class="panel-title">'+esc(listTitle)+' <span class="panel-count">'+count+'</span></h2><select id="sortSelect" class="sort-select"><option value="date">По порядку</option><option value="name">По названию</option></select></div><div class="file-list">'+listHtml+'</div></section></div>'+preview(previewFile,state.selectedEntry)+'</div>';
+    '<div class="workspace"><div class="subject-list-col"><section class="panel list-panel"><div class="panel-head"><h2 class="panel-title">'+esc(listTitle)+' <span class="panel-count">'+count+'</span></h2><select id="sortSelect" class="sort-select"><option value="date">По порядку</option><option value="name">По названию</option></select></div><div class="file-list">'+listHtml+'</div></section></div><div class="workspace-resizer" role="separator" aria-orientation="vertical" title="Потяните, чтобы изменить ширину списка"></div>'+preview(previewFile,state.selectedEntry)+'</div>';
 
   syncSubjectHash();
   bindPreviewTabs();
+  bindWorkspaceResizer();
   const sort=$('#sortSelect');if(sort){sort.value=state.sort;sort.onchange=()=>{state.sort=sort.value;renderSubject()}}
   $$('.tab').forEach(b=>b.onclick=()=>{state.section=b.dataset.section;state.selected=null;state.selectedEntry=null;renderSubject()});
   $$('.file-row[data-entry]').forEach(r=>r.onclick=()=>{
