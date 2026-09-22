@@ -121,3 +121,21 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   .compact-view.reader-chrome-hidden .search-panel{top:0}
   .compact-view.reader-chrome-hidden .loading{top:10px}
 }
+
+
+/* Continuous reading on phones: page arrows are redundant; keep only the current page indicator. */
+.compact-view.continuous-mode{--reader-bottom:52px}
+.compact-view.continuous-mode .mobile-nav{
+  grid-template-columns:1fr;
+  height:var(--reader-bottom);
+  padding-top:4px
+}
+.compact-view.continuous-mode #mPrev,
+.compact-view.continuous-mode #mNext{display:none}
+.compact-view.continuous-mode .m-page-info{justify-self:center;height:40px}
+
+/* Temporary transform used during pinch / trackpad zoom in the continuous strip. */
+.continuous-pages.pinch-preview{
+  will-change:transform;
+  transition:none;
+}
