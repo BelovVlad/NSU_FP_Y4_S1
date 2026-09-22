@@ -23,7 +23,7 @@ window.MathJax={
 };
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
-<link rel="stylesheet" href="viewer.css?build=10">
+<link rel="stylesheet" href="viewer.css?build=11">
 <script defer src="outline.js?build=1"></script>
 </head>
 <body>
@@ -80,7 +80,7 @@ const findStatus=document.getElementById('findStatus');
 const findPrev=document.getElementById('findPrev');
 const findNext=document.getElementById('findNext');
 const zoomSelect=document.getElementById('zoomSelect');
-let notebook=null,notebookUrl='',findHits=[],findCursor=-1;
+let notebook=null,notebookUrl='',findHits=[],findCursor=-1,findTargets=[],referenceRows=[],findJumpTimer=0;
 
 if(embed)document.body.classList.add('embed');
 const knowledgeReader=raw.startsWith('База/')&&!raw.startsWith('База/КМ/');
@@ -154,7 +154,7 @@ function internalMaterialUrl(path){
   const low=path.toLowerCase();
   if(low.endsWith('.ipynb')){
     const u=new URL('viewer.html',location.href);
-    u.searchParams.set('build','10');
+    u.searchParams.set('build','11');
     u.searchParams.set('file',path);
     u.searchParams.set('title',path.split('/').pop().replace(/\.ipynb$/i,'').replace(/_/g,' '));
     if(theme)u.searchParams.set('theme',theme);
@@ -484,22 +484,68 @@ function renderCell(cell,index,language){
 function cellText(cell){
   return normalize(joinValue(cell.source)+' '+(cell.outputs||[]).map(outputSearchText).join(' '));
 }
-function clearFindHit(){document.querySelectorAll('.cell.find-hit').forEach(el=>el.classList.remove('find-hit'))}
+function clearFindHit(){main.querySelectorAll('.find-hit').forEach(el=>el.classList.remove('find-hit'))}
 function scrollToCell(n,smooth=true){
   const el=document.getElementById('cell-'+n);if(!el)return false;
   clearFindHit();el.classList.add('find-hit');el.scrollIntoView({behavior:smooth?'smooth':'auto',block:'center'});return true;
 }
 function rebuildFindHits(){
+  clearTimeout(findJumpTimer);
   const q=normalize(findInput.value);
-  findHits=[];findCursor=-1;clearFindHit();
+  findHits=[];findTargets=[];findCursor=-1;clearFindHit();
   if(!q||!notebook){findStatus.textContent='';return}
+  if(referenceRows.length){
+    const terms=referenceSearchText(q).split(' ').filter(Boolean);
+    const matches=terms.length?referenceRows.filter(row=>terms.every(term=>row.text.includes(term))):[];
+    findTargets=matches.map(row=>row.element);
+    findHits=matches.map(row=>Number(row.element.closest('[data-cell]').dataset.cell));
+  }
+  // Notes and formulas outside tables remain searchable as a fallback.
+  if(!findHits.length)
   (notebook.cells||[]).forEach((cell,i)=>{if(cellText(cell).includes(q))findHits.push(i+1)});
   findStatus.textContent=findHits.length?'0/'+findHits.length:'0/0';
 }
+function referenceSearchText(text){
+  const symbols={'ℏ':'hbar','ħ':'hbar','ε':'epsilon','ϵ':'epsilon','μ':'mu','µ':'mu','α':'alpha','ν':'nu','λ':'lambda','ρ':'rho','σ':'sigma','π':'pi','φ':'phi','Φ':'phi','ω':'omega','∞':'infty','₀':'0','₁':'1','₂':'2'};
+  return normalize(text).replace(/[ℏħεϵμµανλρσπφΦω∞₀₁₂]/g,ch=>symbols[ch]).replace(/\\(?:mathrm|mathbf|text|mathfrak|bar)\b/g,'').replace(/[\\_{}]/g,'').replace(/\s+/g,' ').trim();
+}
+function indexReferenceRows(){
+  referenceRows=[];
+  if(!notebook?.metadata?.nsu_reference)return;
+  main.querySelectorAll('.markdown-body tbody tr').forEach(element=>{
+    const copy=element.cloneNode(true);
+    copy.querySelectorAll('.math-placeholder').forEach(el=>{el.textContent=mathRegistry.get(el.dataset.mathId)?.tex||el.textContent});
+    const text=[...copy.children].map(cell=>cell.textContent).join(' ');
+    referenceRows.push({element,text:referenceSearchText(text)});
+  });
+}
+function adaptReferenceTables(){
+  if(!notebook?.metadata?.nsu_reference)return;
+  main.querySelectorAll('.markdown-body table').forEach(table=>{
+    const labels=[...table.querySelectorAll('thead th')].map(th=>th.textContent.trim());
+    table.querySelectorAll('tbody tr').forEach(row=>{
+      row.setAttribute('role','row');
+      [...row.children].forEach((cell,i)=>{
+        cell.setAttribute('role','cell');cell.dataset.label=labels[i]||'';
+        const value=document.createElement('div');value.className='reference-value';
+        value.append(...cell.childNodes);cell.append(value);
+      });
+    });
+  });
+}
+function showFindHit(smooth=true){
+  if(findCursor<0||!findHits.length)return;
+  findStatus.textContent=(findCursor+1)+'/'+findHits.length;
+  const row=findTargets[findCursor];
+  if(!row){scrollToCell(findHits[findCursor],smooth);return}
+  clearFindHit();row.classList.add('find-hit');
+  row.scrollIntoView({behavior:smooth&&!matchMedia('(prefers-reduced-motion:reduce)').matches?'smooth':'auto',block:'center',inline:'nearest'});
+}
 function moveFind(direction){
+  clearTimeout(findJumpTimer);
   if(!findHits.length){rebuildFindHits();if(!findHits.length)return}
   findCursor=(findCursor+direction+findHits.length)%findHits.length;
-  const n=findHits[findCursor];findStatus.textContent=(findCursor+1)+'/'+findHits.length;scrollToCell(n,true);
+  showFindHit();
 }
 async function typeset(){await renderAllMath(main)}
 function notifyReady(){
@@ -533,6 +579,8 @@ async function openNotebook(){
     const response=await fetch(notebookUrl,{cache:version?'force-cache':'no-cache'});
     if(!response.ok)throw new Error('HTTP '+response.status);
     notebook=await response.json();
+    document.body.classList.toggle('reference-reader',!!notebook.metadata?.nsu_reference);
+    if(notebook.metadata?.nsu_reference){findInput.placeholder='Название или символ…';findInput.setAttribute('aria-label','Найти величину по названию или символу')}
     mathRegistry.clear();mathSerial=0;
     const cells=Array.isArray(notebook.cells)?notebook.cells:[];
     const language=String(notebook.metadata?.language_info?.name||notebook.metadata?.kernelspec?.language||'python').toLowerCase().replace(/[^a-z0-9_+-]/g,'')||'python';
@@ -547,14 +595,15 @@ async function openNotebook(){
       root.querySelectorAll('table').forEach(table=>table.setAttribute('role','table'));
     });
     if(window.hljs)main.querySelectorAll('pre code').forEach(el=>{try{hljs.highlightElement(el)}catch{}});
+    adaptReferenceTables();indexReferenceRows();
     window.notebookOutline?.build(main,mathRegistry);
     await typeset();
     notifyReady();
 
     if(initialFind){
       findInput.value=initialFind;rebuildFindHits();
-      if(initialCell&&findHits.includes(initialCell)){findCursor=findHits.indexOf(initialCell);findStatus.textContent=(findCursor+1)+'/'+findHits.length;scrollToCell(initialCell,false)}
-      else if(findHits.length){findCursor=0;findStatus.textContent='1/'+findHits.length;scrollToCell(findHits[0],false)}
+      if(initialCell&&findHits.includes(initialCell)){findCursor=findHits.indexOf(initialCell);showFindHit(false)}
+      else if(findHits.length){findCursor=0;showFindHit(false)}
       else if(initialCell)scrollToCell(initialCell,false);
     }else if(initialCell){
       scrollToCell(initialCell,false);
@@ -571,7 +620,11 @@ back.onclick=()=>{
   if(history.length>1)history.back();
   else location.href='../'+(subject?'#subject='+encodeURIComponent(subject):'');
 };
-findInput.addEventListener('input',rebuildFindHits);
+findInput.addEventListener('input',()=>{
+  rebuildFindHits();
+  if(referenceRows.length&&normalize(findInput.value).length>=2&&findHits.length)
+    findJumpTimer=setTimeout(()=>{findCursor=0;showFindHit()},220);
+});
 findInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();moveFind(e.shiftKey?-1:1)}});
 findNext.onclick=()=>moveFind(1);
 findPrev.onclick=()=>moveFind(-1);

@@ -387,6 +387,37 @@ class SiteTests(unittest.TestCase):
         self.page.wait_for_selector('.markdown-body')
         self.assertFalse(self.page.locator('#tocToggle').is_visible())
 
+    def test_reference_search_targets_rows_and_accepts_symbols(self):
+        from urllib.parse import urlencode
+        self.stub_notebook_dependencies()
+        fixture={'nbformat':4,'metadata':{'nsu_reference':{'version':1}},'cells':[{
+            'cell_type':'markdown','source':r'''<h1>Constants</h1><table><thead><tr><th>Quantity</th><th>Symbol</th><th>Value</th></tr></thead>
+            <tbody><tr><td>Reduced Planck constant</td><td>$\hbar$</td><td>First value</td></tr>
+            <tr><td>Another Planck constant</td><td>h</td><td>Second value</td></tr>
+            <tr><td>Magnetic permeability</td><td>$\mu_0$</td><td>Third value</td></tr></tbody></table><p>Independent explanatory note</p>'''}]}
+        self.page.route('**/*.ipynb',lambda route:route.fulfill(json=fixture))
+        self.page.goto(self.base+'notebook/viewer.html?'+urlencode({'file':self.nb}))
+        self.page.wait_for_selector('tbody tr')
+        self.page.locator('#findInput').fill('Planck')
+        self.page.wait_for_function("document.querySelector('#findStatus').textContent==='1/2'")
+        self.assertIn('Reduced',self.page.locator('tr.find-hit').inner_text())
+        self.page.locator('#findNext').click()
+        self.assertIn('Another',self.page.locator('tr.find-hit').inner_text())
+        for query in ['hbar','ℏ','mu0','μ₀']:
+            self.page.locator('#findInput').fill(query)
+            self.page.locator('#findInput').press('Enter')
+            self.assertEqual(self.page.locator('#findStatus').inner_text(),'1/1')
+            self.assertIn('Reduced' if query in ['hbar','ℏ'] else 'Magnetic',self.page.locator('tr.find-hit').inner_text())
+        self.page.set_viewport_size({'width':320,'height':640})
+        self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
+        self.assertEqual(self.page.locator('tbody td').nth(1).get_attribute('data-label'),'Symbol')
+        self.page.locator('#findInput').fill('Independent')
+        self.page.locator('#findInput').press('Enter')
+        self.assertEqual(self.page.locator('.cell.find-hit').count(),1)
+        self.page.locator('#findInput').fill('')
+        self.assertEqual(self.page.locator('.find-hit').count(),0)
+        self.assertEqual(self.page.locator('#findStatus').inner_text(),'')
+
 
 if __name__ == '__main__':
     unittest.main()

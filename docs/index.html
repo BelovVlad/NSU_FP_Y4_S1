@@ -970,7 +970,7 @@ body.music-na19x .pdf-fullscreen-loader{
 }
 
 </style>
-<link rel="stylesheet" href="knowledge.css?v=1">
+<link rel="stylesheet" href="knowledge.css?v=2">
 </head>
 <body>
 <div id="overlay" class="mobile-overlay"></div>
@@ -1171,7 +1171,7 @@ function sortedEntries(items){
 }
 function githubUrl(f){return 'https://github.com/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(f.path)}
 function notebookUrl(f,cell=0,titleOverride='',embed=false){
-  let url='notebook/viewer.html?build=10&file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
+  let url='notebook/viewer.html?build=11&file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
   if(cell)url+='&cell='+encodeURIComponent(cell);
   if(fileMeta(f).version)url+='&v='+encodeURIComponent(fileMeta(f).version);
   const theme=currentPdfTheme();if(theme)url+='&theme='+encodeURIComponent(theme);
@@ -1653,17 +1653,30 @@ function bindWorkspaceResizer(){
   handle.ondblclick=()=>{workspace.style.setProperty('--subject-list-width','340px');try{localStorage.setItem('nsu-subject-list-width','340')}catch{}};
 }
 const KNOWLEDGE_TOPICS={
-  'Физические константы':['α','Физические величины и константы в СИ и СГС.'],
-  'Системы единиц и фундаментальные соотношения':['[m]','Перевод единиц, размерности и связи физических величин.'],
-  'Погрешности':['±','Заметки о погрешностях измерений.'],
-  'Комплексные числа':['ℂ','Заметки о комплексных числах.'],
-  'Интегралы':['∫','Таблицы интегралов, методы интегрирования и вычеты.'],
-  'Дифференциальные уравнения':['y′','Уравнения первого порядка и линейные системы.'],
-  'Векторные операции':['a·b','Скалярное, векторное и смешанное произведения.'],
-  'Векторные дифференциальные операторы':['∇','Градиент, дивергенция, ротор и интегральные теоремы.'],
-  'Теория функций комлексного переменного':['ℂ','Множества, комплексные функции и вычеты.'],
-  'Словарик':['Аа','Термины и короткие пояснения.']
+  'Физические константы':['atom','Основные постоянные, частицы, атомные масштабы и термодинамика.'],
+  'Системы единиц и фундаментальные соотношения':['ruler','СИ и СГС, электричество и магнетизм, переводы энергии и массы.'],
+  'Погрешности':['errors','Заметки о погрешностях измерений.'],
+  'Комплексные числа':['complex','Заметки о комплексных числах.'],
+  'Интегралы':['integral','Таблицы интегралов, методы интегрирования и вычеты.'],
+  'Дифференциальные уравнения':['curve','Уравнения первого порядка и линейные системы.'],
+  'Векторные операции':['vectors','Скалярное, векторное и смешанное произведения.'],
+  'Векторные дифференциальные операторы':['field','Градиент, дивергенция, ротор и интегральные теоремы.'],
+  'Теория функций комлексного переменного':['contour','Множества, комплексные функции и вычеты.'],
+  'Словарик':['book','Термины и короткие пояснения.']
 };
+const KNOWLEDGE_ICONS={
+  atom:'<circle cx="16" cy="16" r="2"/><ellipse cx="16" cy="16" rx="13" ry="5"/><ellipse cx="16" cy="16" rx="13" ry="5" transform="rotate(60 16 16)"/><ellipse cx="16" cy="16" rx="13" ry="5" transform="rotate(120 16 16)"/>',
+  ruler:'<rect x="4" y="9" width="24" height="14" rx="2" transform="rotate(-35 16 16)"/><path d="M9 9v5m5-5v8m5-8v5m5-5v8" transform="rotate(-35 16 16)"/>',
+  errors:'<path d="M5 27h23M9 6v15m-3-15h6M6 21h6m7-18v11m-3-11h6m-6 11h6m5 0v9m-3-9h6m-6 9h6"/><circle cx="9" cy="14" r="2"/><circle cx="19" cy="8" r="2"/><circle cx="27" cy="19" r="2"/>',
+  complex:'<path d="M4 24h24m-4-4 4 4-4 4M8 28V4L4 8m4-4 4 4M8 24l15-14m-6 0h6v6M23 18v6M15 10h-7"/><circle cx="23" cy="10" r="2"/>',
+  integral:'<path d="M5 5v22h23M8 21c6 0 5-14 11-14 4 0 3 10 8 10M10 21v6m4-11v11m4-19v19m4-16v16m4-10v10"/>',
+  curve:'<path d="M4 26h25M6 28V4m3 18c4 0 5-13 10-13s5 9 9 9M13 23 23 3"/><circle cx="18" cy="13" r="2"/>',
+  vectors:'<path d="M7 25V5m-4 4 4-4 4 4M7 25h20m-4-4 4 4-4 4M7 25 24 8m-7 0h7v7"/><circle cx="7" cy="25" r="2"/>',
+  field:'<path d="M5 5l7 7m-7-2V5h5m17 0-7 7m2-7h5v5M5 27l7-7m-7 2v5h5m17 0-7-7m2 7h5v-5"/><circle cx="16" cy="16" r="3"/>',
+  contour:'<path d="M4 25h25M7 28V4M12 12c-3 4-1 10 5 10s11-5 9-10-8-8-11-4M12 7l3 1-1 4"/><circle cx="19" cy="14" r="2"/>',
+  book:'<path d="M16 8c-4-3-8-3-12-2v21c4-1 8-1 12 2 4-3 8-3 12-2V6c-4-1-8-1-12 2v21M8 11l4 1m-4 4 4 1m8-5 4-1m-4 6 4-1"/>'
+};
+function knowledgeIcon(name){return '<svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">'+(KNOWLEDGE_ICONS[name]||KNOWLEDGE_ICONS.book)+'</svg>'}
 function knowledgeCategory(f){return f.path.split('/').slice(2,-1).at(-1)||'Справочники'}
 function knowledgeSection(f){return f.path.split('/').length===2?'Справочники':sectionOf(f)}
 function renderKnowledge(){
@@ -1686,9 +1699,9 @@ function renderKnowledge(){
     const categories=[...new Set(visible.map(knowledgeCategory))];
     categories.sort((a,b)=>['Физика','Математика','Справочники'].indexOf(a)-['Физика','Математика','Справочники'].indexOf(b));
     results.innerHTML=categories.map(category=>'<section class="knowledge-group"><h3>'+esc(category)+'</h3><div class="knowledge-grid">'+visible.filter(f=>knowledgeCategory(f)===category).map(f=>{
-      const name=niceName(f),topic=KNOWLEDGE_TOPICS[name]||['≡',fileDesc(f)];
+      const name=niceName(f),topic=KNOWLEDGE_TOPICS[name]||['book',fileDesc(f)];
       const url=f.ext==='.ipynb'?notebookUrl(f):f.ext==='.pdf'?viewerUrl(f):githubUrl(f);
-      return '<a class="knowledge-card" href="'+esc(url)+'"><span class="knowledge-symbol" aria-hidden="true">'+esc(topic[0])+'</span><div class="knowledge-card-copy"><span class="knowledge-kind">'+esc(knowledgeSection(f))+'</span><h4>'+esc(name)+'</h4><p>'+esc(topic[1])+'</p></div><span class="knowledge-arrow" aria-hidden="true">↗</span></a>';
+      return '<a class="knowledge-card" href="'+esc(url)+'"><span class="knowledge-symbol" aria-hidden="true">'+knowledgeIcon(topic[0])+'</span><div class="knowledge-card-copy"><span class="knowledge-kind">'+esc(knowledgeSection(f))+'</span><h4>'+esc(name)+'</h4><p>'+esc(topic[1])+'</p></div><span class="knowledge-arrow" aria-hidden="true">↗</span></a>';
     }).join('')+'</div></section>').join('')||'<div class="empty">Темы не найдены. Попробуйте другое название или выберите все материалы.</div>';
     $('#knowledgeStatus').textContent='Найдено материалов: '+visible.length;
   };
