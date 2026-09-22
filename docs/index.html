@@ -971,8 +971,8 @@ body.music-na19x .pdf-fullscreen-loader{
 
 </style>
 <link rel="stylesheet" href="knowledge.css?v=3">
-<link rel="stylesheet" href="app.css">
-<script defer src="app.js"></script>
+<link rel="stylesheet" href="app.css?v=2">
+<script defer src="app.js?v=2"></script>
 </head>
 <body>
 <div id="overlay" class="mobile-overlay"></div>
@@ -1022,8 +1022,14 @@ body.music-na19x .pdf-fullscreen-loader{
       <audio id="siteMusic" preload="none" loop></audio>
     </div>
     <div class="sidebar-bottom">
-      <button id="installApp" class="app-install" type="button">Установить приложение</button>
-      <button id="offlineFiles" class="app-offline" type="button">Сохранённые PDF</button>
+      <button id="appSettings" class="app-settings" type="button" aria-label="Управление приложением и офлайн-данными" title="Управление приложением">
+        <span class="app-settings-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2Z"/><path d="M19.1 13.5c.05-.49.05-.99 0-1.48l2-1.55-2-3.46-2.48 1a8.3 8.3 0 0 0-1.28-.74L15 4.6h-4l-.35 2.67c-.45.2-.88.45-1.28.74l-2.48-1-2 3.46 2 1.55a7.9 7.9 0 0 0 0 1.48l-2 1.55 2 3.46 2.48-1c.4.29.83.54 1.28.74L11 20.9h4l.35-2.65c.45-.2.88-.45 1.28-.74l2.48 1 2-3.46-2-1.55Z"/></svg>
+        </span>
+        <span>Приложение</span>
+      </button>
+      <button id="installApp" type="button" hidden>Установить приложение</button>
+      <button id="offlineFiles" type="button" hidden>Сохранённые PDF</button>
       <a class="repo-link" href="https://github.com/BelovVlad/NSU_FP_Y4_S1" target="_blank" rel="noopener"><span>GitHub</span><span data-icon="external" aria-hidden="true"></span></a>
     </div>
   </aside>
