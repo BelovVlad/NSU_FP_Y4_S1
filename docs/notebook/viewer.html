@@ -23,7 +23,8 @@ window.MathJax={
 };
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
-<link rel="stylesheet" href="viewer.css?build=9">
+<link rel="stylesheet" href="viewer.css?build=10">
+<script defer src="outline.js?build=1"></script>
 </head>
 <body>
 <header class="toolbar">
@@ -33,8 +34,9 @@ window.MathJax={
     <div id="subtitle" class="subtitle">Просмотр без выполнения кода</div>
   </div>
   <div class="actions">
+    <button id="tocToggle" class="toc-toggle" type="button" title="Оглавление" aria-label="Оглавление" aria-controls="notebookOutline" aria-expanded="false" hidden><span aria-hidden="true">☰</span><span class="toc-caption">Содержание</span></button>
     <div class="find-box">
-      <input id="findInput" class="find-input" type="search" autocomplete="off" placeholder="Поиск по notebook…">
+      <input id="findInput" class="find-input" type="search" autocomplete="off" placeholder="Поиск в тексте…" aria-label="Поиск по материалу">
       <span id="findStatus" class="find-status"></span>
       <button id="findPrev" class="find-btn" type="button" title="Предыдущее">↑</button>
       <button id="findNext" class="find-btn" type="button" title="Следующее">↓</button>
@@ -46,9 +48,16 @@ window.MathJax={
     <a id="github" class="github-link" target="_blank" rel="noopener">GitHub ↗</a>
   </div>
 </header>
+<div class="notebook-layout">
 <main id="main" class="notebook-shell">
   <div class="loading"><div class="loading-inner"><div class="spinner"></div><div>Загружаю notebook…</div></div></div>
 </main>
+<aside id="notebookOutline" class="notebook-outline" aria-label="Оглавление материала" hidden>
+  <div class="toc-head"><h2>Содержание</h2><button id="tocClose" type="button" aria-label="Закрыть оглавление">×</button></div>
+  <nav id="tocLinks" aria-label="Разделы материала"></nav>
+</aside>
+</div>
+<div id="tocBackdrop" class="toc-backdrop" hidden></div>
 <script>
 const OWNER='BelovVlad',REPO='NSU_FP_Y4_S1',BRANCH='main';
 const params=new URLSearchParams(location.search);
@@ -74,6 +83,8 @@ const zoomSelect=document.getElementById('zoomSelect');
 let notebook=null,notebookUrl='',findHits=[],findCursor=-1;
 
 if(embed)document.body.classList.add('embed');
+const knowledgeReader=raw.startsWith('База/')&&!raw.startsWith('База/КМ/');
+if(knowledgeReader)document.body.classList.add('knowledge-reader');
 function applyTheme(value){
   document.body.classList.remove('theme-na19','theme-na19x');
   if(value==='na19')document.body.classList.add('theme-na19');
@@ -143,11 +154,13 @@ function internalMaterialUrl(path){
   const low=path.toLowerCase();
   if(low.endsWith('.ipynb')){
     const u=new URL('viewer.html',location.href);
-    u.searchParams.set('build','9');
+    u.searchParams.set('build','10');
     u.searchParams.set('file',path);
     u.searchParams.set('title',path.split('/').pop().replace(/\.ipynb$/i,'').replace(/_/g,' '));
     if(theme)u.searchParams.set('theme',theme);
     if(embed)u.searchParams.set('embed','1');
+    if(full)u.searchParams.set('full','1');
+    if(subject)u.searchParams.set('subject',subject);
     return u.href;
   }
   if(low.endsWith('.pdf')){
@@ -168,6 +181,11 @@ function wrapScrollableTables(root){
     wrap.setAttribute('aria-label','Прокручиваемая таблица');
     table.parentNode.insertBefore(wrap,table);
     wrap.appendChild(table);
+    const hint=document.createElement('div');
+    hint.className='table-scroll-hint';hint.textContent='Таблицу можно прокрутить влево и вправо ↔';hint.hidden=true;
+    wrap.before(hint);
+    const update=()=>{const overflow=wrap.scrollWidth>wrap.clientWidth+1;hint.hidden=!overflow;if(overflow)wrap.tabIndex=0;else wrap.removeAttribute('tabindex')};
+    const observer=new ResizeObserver(update);observer.observe(wrap);observer.observe(table);
   });
 }
 function patchLinks(root){
@@ -520,6 +538,7 @@ async function openNotebook(){
     const language=String(notebook.metadata?.language_info?.name||notebook.metadata?.kernelspec?.language||'python').toLowerCase().replace(/[^a-z0-9_+-]/g,'')||'python';
     const kernel=notebook.metadata?.kernelspec?.display_name||language;
     subtitle.textContent=cells.length+' ячеек · '+kernel+' · локальный просмотр';
+    if(knowledgeReader)subtitle.textContent='База знаний · '+(raw.split('/').slice(2,-1).at(-1)||'Справочники');
     main.innerHTML='<section class="notebook-head"><h1>'+escapeHtml(title.textContent)+'</h1><div class="notebook-meta"><span class="meta-chip">'+cells.length+' ячеек</span><span class="meta-chip">'+escapeHtml(kernel)+'</span><span class="meta-chip">nbformat '+escapeHtml(notebook.nbformat||'—')+'</span></div></section><div class="cells">'+cells.map((c,i)=>renderCell(c,i,language)).join('')+'</div>';
 
     main.querySelectorAll('.markdown-body,.output-body').forEach(root=>{
@@ -528,6 +547,7 @@ async function openNotebook(){
       root.querySelectorAll('table').forEach(table=>table.setAttribute('role','table'));
     });
     if(window.hljs)main.querySelectorAll('pre code').forEach(el=>{try{hljs.highlightElement(el)}catch{}});
+    window.notebookOutline?.build(main,mathRegistry);
     await typeset();
     notifyReady();
 
@@ -538,7 +558,7 @@ async function openNotebook(){
       else if(initialCell)scrollToCell(initialCell,false);
     }else if(initialCell){
       scrollToCell(initialCell,false);
-    }
+    }else window.notebookOutline?.restoreHash();
   }catch(err){
     main.innerHTML='<div class="error"><div><strong>Не удалось открыть notebook.</strong><br><br>'+escapeHtml(err?.message||String(err))+'</div></div>';
     notifyReady();

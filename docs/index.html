@@ -966,6 +966,7 @@ body.music-na19x .pdf-fullscreen-loader{
 }
 
 </style>
+<link rel="stylesheet" href="knowledge.css?v=1">
 </head>
 <body>
 <div id="overlay" class="mobile-overlay"></div>
@@ -1166,7 +1167,7 @@ function sortedEntries(items){
 }
 function githubUrl(f){return 'https://github.com/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(f.path)}
 function notebookUrl(f,cell=0,titleOverride='',embed=false){
-  let url='notebook/viewer.html?build=9&file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
+  let url='notebook/viewer.html?build=10&file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
   if(cell)url+='&cell='+encodeURIComponent(cell);
   if(fileMeta(f).version)url+='&v='+encodeURIComponent(fileMeta(f).version);
   const theme=currentPdfTheme();if(theme)url+='&theme='+encodeURIComponent(theme);
@@ -1416,6 +1417,7 @@ document.addEventListener('fullscreenchange',()=>{
 document.addEventListener('click',e=>{
   const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary,a[href*="pdfjs/viewer.html"],a[href*="notebook/viewer.html"]');
   if(!a)return;
+  if(a.classList.contains('knowledge-card'))return;
   const href=a.getAttribute('href')||'';
   if(!href.includes('pdfjs/viewer.html')&&!href.includes('notebook/viewer.html'))return;
   e.preventDefault();
@@ -1618,7 +1620,61 @@ function bindWorkspaceResizer(){
   };
   handle.ondblclick=()=>{workspace.style.setProperty('--subject-list-width','340px');try{localStorage.setItem('nsu-subject-list-width','340')}catch{}};
 }
+const KNOWLEDGE_TOPICS={
+  'Физические константы':['α','Физические величины и константы в СИ и СГС.'],
+  'Системы единиц и фундаментальные соотношения':['[m]','Перевод единиц, размерности и связи физических величин.'],
+  'Погрешности':['±','Заметки о погрешностях измерений.'],
+  'Комплексные числа':['ℂ','Заметки о комплексных числах.'],
+  'Интегралы':['∫','Таблицы интегралов, методы интегрирования и вычеты.'],
+  'Дифференциальные уравнения':['y′','Уравнения первого порядка и линейные системы.'],
+  'Векторные операции':['a·b','Скалярное, векторное и смешанное произведения.'],
+  'Векторные дифференциальные операторы':['∇','Градиент, дивергенция, ротор и интегральные теоремы.'],
+  'Теория функций комлексного переменного':['ℂ','Множества, комплексные функции и вычеты.'],
+  'Словарик':['Аа','Термины и короткие пояснения.']
+};
+function knowledgeCategory(f){return f.path.split('/').slice(2,-1).at(-1)||'Справочники'}
+function knowledgeSection(f){return f.path.split('/').length===2?'Справочники':sectionOf(f)}
+function renderKnowledge(){
+  const files=filesFor('База');
+  const topicOrder=Object.keys(KNOWLEDGE_TOPICS);
+  files.sort((a,b)=>(topicOrder.indexOf(niceName(a))<0?999:topicOrder.indexOf(niceName(a)))-(topicOrder.indexOf(niceName(b))<0?999:topicOrder.indexOf(niceName(b))));
+  const sections=[...new Set(files.map(knowledgeSection))].sort((a,b)=>['Практика','Теория','Справочники'].indexOf(a)-['Практика','Теория','Справочники'].indexOf(b));
+  if(!sections.includes(state.section))state.section='';
+  main.innerHTML=hero('База')+'<section class="knowledge-catalog" aria-label="Разделы базы знаний">'+
+    '<div class="knowledge-head"><div><h2>Разделы базы <span class="panel-count">'+files.length+'</span></h2><p>Выберите тему, чтобы открыть материал и его оглавление.</p></div><label class="knowledge-search"><span>Найти тему</span><input id="knowledgeSearch" type="search" placeholder="Название или тема…" autocomplete="off"></label></div>'+
+    '<div class="knowledge-filters" role="group" aria-label="Тип материалов">'+['',...sections].map(s=>'<button type="button" data-knowledge-section="'+esc(s)+'" aria-pressed="'+(state.section===s)+'">'+esc(s||'Все материалы')+'</button>').join('')+'</div><div id="knowledgeResults"></div><p id="knowledgeStatus" class="sr-only" role="status"></p></section>';
+  const input=$('#knowledgeSearch'),results=$('#knowledgeResults');
+  const update=()=>{
+    const q=input.value.trim().toLocaleLowerCase('ru-RU').replace(/ё/g,'е');
+    const visible=files.filter(f=>{
+      const topic=KNOWLEDGE_TOPICS[niceName(f)];
+      const text=[niceName(f),knowledgeCategory(f),topic?.[1]||''].join(' ').toLocaleLowerCase('ru-RU').replace(/ё/g,'е');
+      return (!state.section||knowledgeSection(f)===state.section)&&(!q||text.includes(q));
+    });
+    const categories=[...new Set(visible.map(knowledgeCategory))];
+    categories.sort((a,b)=>['Физика','Математика','Справочники'].indexOf(a)-['Физика','Математика','Справочники'].indexOf(b));
+    results.innerHTML=categories.map(category=>'<section class="knowledge-group"><h3>'+esc(category)+'</h3><div class="knowledge-grid">'+visible.filter(f=>knowledgeCategory(f)===category).map(f=>{
+      const name=niceName(f),topic=KNOWLEDGE_TOPICS[name]||['≡',fileDesc(f)];
+      const url=f.ext==='.ipynb'?notebookUrl(f):f.ext==='.pdf'?viewerUrl(f):githubUrl(f);
+      return '<a class="knowledge-card" href="'+esc(url)+'"><span class="knowledge-symbol" aria-hidden="true">'+esc(topic[0])+'</span><div class="knowledge-card-copy"><span class="knowledge-kind">'+esc(knowledgeSection(f))+'</span><h4>'+esc(name)+'</h4><p>'+esc(topic[1])+'</p></div><span class="knowledge-arrow" aria-hidden="true">↗</span></a>';
+    }).join('')+'</div></section>').join('')||'<div class="empty">Темы не найдены. Попробуйте другое название или выберите все материалы.</div>';
+    $('#knowledgeStatus').textContent='Найдено материалов: '+visible.length;
+  };
+  input.oninput=update;
+  $$('[data-knowledge-section]').forEach(button=>button.onclick=()=>{
+    state.section=button.dataset.knowledgeSection;
+    $$('[data-knowledge-section]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
+    update();
+  });
+  update();syncSubjectHash();
+}
 function renderSubject(){
+  if(state.subject==='База'){
+    const selected=state.selected;state.selected=null;state.selectedEntry=null;
+    renderKnowledge();
+    if(selected&&subjectOf(selected)==='База')location.href=selected.ext==='.ipynb'?notebookUrl(selected):selected.ext==='.pdf'?viewerUrl(selected):githubUrl(selected);
+    return;
+  }
   const firstSection=sectionsFor(state.subject)[0]||'';
   if(!state.section)state.section=firstSection;
   const group=structuredGroup(state.subject,state.section);

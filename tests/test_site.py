@@ -47,13 +47,21 @@ class SiteTests(unittest.TestCase):
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
         cls.root = Path(cls.temp.name)
-        for relative in ['docs/index.html', 'docs/search-worker.js', 'docs/pdfjs/viewer.html', 'docs/pdfjs/controls.css',
-                         'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/giscus-config.json']:
+        for relative in ['docs/index.html', 'docs/knowledge.css', 'docs/search-worker.js', 'docs/pdfjs/viewer.html', 'docs/pdfjs/controls.css',
+                         'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/notebook/outline.js', 'docs/giscus-config.json']:
             target = cls.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / relative, target)
         cls.a = 'ОВФ/01_Лекции/a.pdf'
         cls.b = 'ФЭЧ/01_Лекции/b.pdf'
+        cls.nb = 'База/Практика/Физика/Физические константы.ipynb'
+        cls.empty_nb = 'База/Словарик.ipynb'
+        for path,source in [(cls.nb,'<h1>Reference</h1>'+('<p>Introduction</p>'*30)+
+            '<h2>Units</h2>'+('<p>Units and values</p>'*30)+'<h3>Detail</h3><h4>Nested</h4>'+('<p>Details</p>'*30)+
+            '<h2>Units</h2>'+('<p>Last section</p>'*30)),(cls.empty_nb,'<p>No headings yet</p>')]:
+            target=cls.root/path
+            target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_text(json.dumps({'nbformat':4,'metadata':{},'cells':[{'cell_type':'markdown','source':source}]}),encoding='utf-8')
         for path in [cls.a, cls.b]:
             target = cls.root / path
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -295,6 +303,65 @@ class SiteTests(unittest.TestCase):
         self.home()
         self.page.locator('.feedback-setup').wait_for()
         self.assertIn(('GET','/docs/giscus-config.json'),self.requests)
+
+    def stub_notebook_dependencies(self):
+        # These navigation fixtures contain trusted, pre-rendered HTML; the
+        # Markdown/TeX libraries are checked separately with real notebooks.
+        self.context.route('https://cdn.jsdelivr.net/**',lambda route:route.fulfill(
+            body='window.marked={parse:s=>s};window.DOMPurify={sanitize:s=>s};',content_type='text/javascript'))
+        self.context.route('https://cdnjs.cloudflare.com/**',lambda route:route.fulfill(body='',content_type='text/javascript'))
+
+    def test_knowledge_cards_filter_and_open_reading_page(self):
+        self.stub_notebook_dependencies()
+        self.context.route('**/search-index/files.json',lambda route:route.fulfill(json={'files':[
+            {'path':self.nb,'type':'ipynb'},{'path':self.empty_nb,'type':'ipynb'}]}))
+        self.page.goto(self.base+'#subject=База')
+        self.page.wait_for_selector('.knowledge-card')
+        self.assertEqual(self.page.locator('.knowledge-card').count(),2)
+        self.assertEqual(self.page.locator('.preview-frame').count(),0)
+        self.page.locator('#knowledgeSearch').fill('константы')
+        self.assertEqual(self.page.locator('.knowledge-card').count(),1)
+        self.page.locator('.knowledge-card').click()
+        self.page.wait_for_url('**/notebook/viewer.html?**')
+        self.page.wait_for_selector('#tocLinks a')
+        self.page.locator('#back').click()
+        self.page.wait_for_selector('.knowledge-card')
+        self.assertIn('subject=',self.page.url)
+
+    def test_notebook_outline_hierarchy_anchors_and_scroll(self):
+        from urllib.parse import urlencode
+        self.stub_notebook_dependencies()
+        self.page.goto(self.base+'notebook/viewer.html?'+urlencode({'file':self.nb}))
+        self.page.wait_for_selector('#tocLinks a')
+        links=self.page.locator('#tocLinks a')
+        self.assertEqual(links.count(),5)
+        hrefs=links.evaluate_all('(els)=>els.map(el=>el.hash)')
+        self.assertEqual(len(set(hrefs)),5)
+        self.assertEqual(self.page.locator('#tocLinks details').count(),2)
+        links.last.click()
+        self.page.wait_for_function("document.querySelector('#tocLinks a[aria-current]').hash===location.hash")
+        self.page.reload()
+        self.page.wait_for_function("document.querySelector('#tocLinks a[aria-current]')?.hash===location.hash")
+        self.page.locator('#zoomSelect').select_option('150')
+        self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
+
+    def test_notebook_mobile_contents_and_no_headings(self):
+        from urllib.parse import urlencode
+        self.stub_notebook_dependencies()
+        self.page.set_viewport_size({'width':320,'height':640})
+        self.page.goto(self.base+'notebook/viewer.html?'+urlencode({'file':self.nb}))
+        self.page.locator('#tocToggle').click()
+        self.assertTrue(self.page.locator('#notebookOutline').is_visible())
+        self.assertGreaterEqual(self.page.locator('#notebookOutline').bounding_box()['height'],640)
+        self.assertTrue(self.page.evaluate('document.documentElement.scrollWidth<=innerWidth'))
+        self.page.keyboard.press('Escape')
+        self.assertEqual(self.page.locator('#tocToggle').get_attribute('aria-expanded'),'false')
+        self.page.locator('#tocToggle').click()
+        self.page.locator('#tocLinks a').last.click()
+        self.assertFalse(self.page.locator('#notebookOutline').is_visible())
+        self.page.goto(self.base+'notebook/viewer.html?'+urlencode({'file':self.empty_nb}))
+        self.page.wait_for_selector('.markdown-body')
+        self.assertFalse(self.page.locator('#tocToggle').is_visible())
 
 
 if __name__ == '__main__':
