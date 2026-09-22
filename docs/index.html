@@ -872,7 +872,6 @@ body.music-na19x .pdf-fullscreen-loader{
       <button class="nav-btn" data-view="search"><span class="nav-ico" data-icon="search" aria-hidden="true"></span>Поиск</button>
       <button class="nav-btn" data-view="literature"><span class="nav-ico" data-icon="literature" aria-hidden="true"></span>Литература</button>
       <button class="nav-btn" data-view="additional-literature"><span class="nav-ico" data-icon="literature" aria-hidden="true"></span>Доп. литература</button>
-      <button class="nav-btn" data-view="tasks"><span class="nav-ico" data-icon="tasks" aria-hidden="true"></span>Задачи</button>
       <button class="nav-btn" data-view="archive"><span class="nav-ico" data-icon="archive" aria-hidden="true"></span>Архив</button>
     </div>
 
@@ -1742,7 +1741,6 @@ function render(){
   else if(state.view==='search')runSearch(searchInput.value);
   else if(state.view==='literature')renderFiltered('Литература',f=>sectionOf(f)==='Литература');
   else if(state.view==='additional-literature')renderFiltered('Доп. литература',f=>subjectOf(f)==='ДЛ');
-  else if(state.view==='tasks')renderFiltered('Задачи',f=>sectionOf(f)==='Задачи'||sectionOf(f)==='Семинары');
   else if(state.view==='archive')renderFiltered('Все материалы',()=>true);
 }
 
