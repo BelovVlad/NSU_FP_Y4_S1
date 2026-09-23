@@ -113,8 +113,14 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   }
   .compact-view .toolbar{
     transition:transform .14s ease,opacity .14s ease;
-    will-change:transform;
     box-shadow:0 5px 18px rgba(0,0,0,.22)
+  }
+  /* A permanent will-change:transform turns the toolbar into the containing
+     block for its fixed settings sheet on Chromium/Samsung Internet. */
+  .compact-view.tools-open .toolbar{
+    transform:none!important;
+    opacity:1;
+    pointer-events:auto
   }
   .compact-view.reader-chrome-hidden .toolbar{
     transform:translate3d(0,calc(-100% - env(safe-area-inset-top,0px)),0);
@@ -130,8 +136,11 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
     top:max(8px,env(safe-area-inset-top,0px));
     bottom:max(8px,env(safe-area-inset-bottom,0px));
     width:min(360px,60vw);
+    height:auto;
     max-height:none;
-    overscroll-behavior:contain
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch
   }
   .compact-view.tools-open .tools-backdrop{inset:0}
 }
@@ -178,3 +187,14 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
     opacity:1;color:var(--text);background:color-mix(in srgb,var(--bar) 74%,transparent)
   }
 }
+
+
+/* Mobile compositing: avoid briefly exposing the unfiltered white PDF surface
+   while a filtered page is promoted/demoted during pinch or rotation. */
+.compact-view canvas{transition:none}
+.compact-view .canvas-wrap,
+.compact-view .continuous-page{background:var(--pdf-bg)}
+.compact-view.pdf-tone-black .canvas-wrap,
+.compact-view.pdf-tone-black .continuous-page{background:#15191c}
+.compact-view.pdf-tone-mine .canvas-wrap,
+.compact-view.pdf-tone-mine .continuous-page{background:#293133}
