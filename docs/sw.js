@@ -1,15 +1,15 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v10';
+const SHELL_VERSION = 'v11';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
-const CORE = ['index.html', 'app.js?v=4', 'app.css?v=6', 'knowledge.css?v=3', 'manifest.webmanifest',
+const CORE = ['index.html', 'app.js?v=4', 'app.css?v=6', 'knowledge.css?v=3', 'manifest.webmanifest?v=2',
   'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=15', 'notebook/outline.js?build=2',
   'pdfjs/viewer.html', 'pdfjs/controls.css?v=7', 'assets/nsu-fp-emblem.webp',
-  'assets/app-192.png', 'assets/app-512.png'];
+  'assets/app-192.png?v=2', 'assets/app-512.png?v=2'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json'];
 const absolute = path => new URL(path, BASE).href;
 const local = url => url.origin === BASE.origin && url.pathname.startsWith(ROOT.pathname);
