@@ -105,21 +105,35 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 @media(prefers-reduced-motion:reduce){.outline-panel,.viewer{transition:none}}
 
 
-/* Phone landscape: hide the upper reader bar while moving down; reveal it on a small upward scroll. */
+/* Phone landscape: the toolbar overlays a stable viewer instead of changing its geometry. */
 @media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .compact-view .viewer,.compact-view.outline-open .viewer{
+    top:0;
+    padding-top:var(--reader-head)
+  }
   .compact-view .toolbar{
-    transition:transform .18s ease,opacity .18s ease;
-    will-change:transform
+    transition:transform .14s ease,opacity .14s ease;
+    will-change:transform;
+    box-shadow:0 5px 18px rgba(0,0,0,.22)
   }
   .compact-view.reader-chrome-hidden .toolbar{
-    transform:translateY(calc(-100% - env(safe-area-inset-top,0px)));
+    transform:translate3d(0,calc(-100% - env(safe-area-inset-top,0px)),0);
     opacity:.98;
     pointer-events:none
   }
-  .compact-view.reader-chrome-hidden .viewer{top:0}
   .compact-view.reader-chrome-hidden .outline-panel{top:0}
   .compact-view.reader-chrome-hidden .search-panel{top:0}
   .compact-view.reader-chrome-hidden .loading{top:10px}
+  .compact-view .reader-controls{
+    left:auto;
+    right:max(8px,env(safe-area-inset-right,0px));
+    top:max(8px,env(safe-area-inset-top,0px));
+    bottom:max(8px,env(safe-area-inset-bottom,0px));
+    width:min(360px,60vw);
+    max-height:none;
+    overscroll-behavior:contain
+  }
+  .compact-view.tools-open .tools-backdrop{inset:0}
 }
 
 
@@ -136,7 +150,6 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 
 /* Temporary transform used during pinch / trackpad zoom in the continuous strip. */
 .continuous-pages.pinch-preview{
-  will-change:transform;
   transition:none;
 }
 
