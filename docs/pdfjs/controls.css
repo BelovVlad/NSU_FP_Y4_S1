@@ -135,13 +135,23 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
     right:max(8px,env(safe-area-inset-right,0px));
     top:max(8px,env(safe-area-inset-top,0px));
     bottom:max(8px,env(safe-area-inset-bottom,0px));
-    width:min(360px,60vw);
+    width:min(480px,72vw);
     height:auto;
     max-height:none;
     overflow-y:auto;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:10px;
+    padding:12px;
+    align-content:start;
     overscroll-behavior:contain;
     -webkit-overflow-scrolling:touch
   }
+  .compact-view .reader-controls .tools-heading{grid-column:1/-1}
+  .compact-view .reader-controls .zoom-controls{grid-column:1/-1}
+  .compact-view .reader-controls #viewMode{grid-column:1}
+  .compact-view .reader-controls #saveOffline{grid-column:2}
+  .compact-view .reader-controls .tone-switch{grid-column:1/-1;grid-row:auto}
+  .compact-view .reader-controls .direct-link{grid-column:1/-1}
   .compact-view.tools-open .tools-backdrop{inset:0}
 }
 
@@ -198,3 +208,16 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 .compact-view.pdf-tone-black .continuous-page{background:#15191c}
 .compact-view.pdf-tone-mine .canvas-wrap,
 .compact-view.pdf-tone-mine .continuous-page{background:#293133}
+
+
+/* Samsung Internet/Chromium: on compact layouts #readerControls is portalled
+   to <body>, so it cannot be clipped by the fixed header's compositing layer. */
+.compact-view.tools-open > .reader-controls{
+  position:fixed;
+  z-index:60;
+}
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .compact-view.tools-open > .reader-controls{
+    min-height:calc(100dvh - max(8px,env(safe-area-inset-top,0px)) - max(8px,env(safe-area-inset-bottom,0px)));
+  }
+}
