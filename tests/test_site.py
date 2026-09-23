@@ -278,6 +278,20 @@ class SiteTests(unittest.TestCase):
         self.page.keyboard.press('Escape')
         self.assertEqual(self.page.locator('#toolsToggle').get_attribute('aria-expanded'),'false')
 
+    def test_phone_landscape_settings_stay_inside_viewport(self):
+        self.page.set_viewport_size({'width':844,'height':390})
+        self.pdf()
+        self.page.locator('#toolsToggle').click()
+        self.page.wait_for_function("document.body.classList.contains('tools-open')")
+        box=self.page.locator('#readerControls').bounding_box()
+        self.assertGreaterEqual(box['x'],0)
+        self.assertGreaterEqual(box['y'],0)
+        self.assertLessEqual(box['x']+box['width'],844)
+        self.assertLessEqual(box['y']+box['height'],390)
+        self.assertGreater(box['height'],180)
+        self.assertTrue(self.page.locator('#toolsClose').is_visible())
+        self.assertEqual(self.page.locator('#readerControls').evaluate("(el)=>getComputedStyle(el).position"),'fixed')
+
     def test_mobile_zoom_continuous_mode_and_page_navigation(self):
         self.page.set_viewport_size({'width':390,'height':844})
         self.pdf()
