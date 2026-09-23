@@ -168,6 +168,11 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .search-view{max-width:1180px;margin:14px auto 0}
 .search-title{margin:0 0 5px;font-family:Georgia,"Times New Roman",serif;color:var(--cream);font-size:28px}
 .search-note{margin-bottom:14px;color:#727d87;font-size:12px}
+.literature-tabs{display:flex;gap:6px;width:max-content;max-width:100%;margin:12px 0 14px;padding:4px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.literature-tab{height:36px;padding:0 14px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:650;white-space:nowrap}
+.literature-tab:hover{color:var(--text);background:rgba(255,255,255,.035)}
+.literature-tab.active{border-color:rgba(214,76,80,.28);background:var(--soft);color:#f5d7d2}
+@media(max-width:520px){.literature-tabs{width:100%}.literature-tab{flex:1;min-width:0;padding:0 8px}}
 .search-result{padding:13px 14px;border-bottom:1px solid var(--line2);cursor:pointer}
 .search-result:hover{background:#111921}
 .search-result-title{color:#ece7e1;font-size:13px;font-weight:700}
@@ -1053,7 +1058,6 @@ body.music-na19x .pdf-fullscreen-loader{
       <button class="nav-btn" data-view="subjects"><span class="nav-ico" data-icon="subjects" aria-hidden="true"></span>Предметы</button>
       <button class="nav-btn" data-view="search"><span class="nav-ico" data-icon="search" aria-hidden="true"></span>Поиск</button>
       <button class="nav-btn" data-view="literature"><span class="nav-ico" data-icon="literature" aria-hidden="true"></span>Литература</button>
-      <button class="nav-btn" data-view="additional-literature"><span class="nav-ico" data-icon="additional_literature" aria-hidden="true"></span>Доп. литература</button>
       <button class="nav-btn" data-view="archive"><span class="nav-ico" data-icon="archive" aria-hidden="true"></span>Архив</button>
     </div>
 
@@ -1166,7 +1170,7 @@ let FILES=[];
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 hydrateIcons();
 const initialSubject=hashSubject();
-const state={view:(ORDER.includes(initialSubject)?'subjects':'home'),subject:(ORDER.includes(initialSubject)?initialSubject:'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchBusy:false,sort:'date'};
+const state={view:(ORDER.includes(initialSubject)?'subjects':'home'),subject:(ORDER.includes(initialSubject)?initialSubject:'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchBusy:false,sort:'date',literatureTab:'main'};
 const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicPanel=$('#musicPanel'),musicVolume=$('#musicVolume'),musicVolumeValue=$('#musicVolumeValue'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame'),pdfFullscreenLoader=$('#pdfFullscreenLoader'),pdfFullscreenLoaderText=$('#pdfFullscreenLoaderText');
 let searchRun=0,searchTimer=0,searchWorker=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
@@ -2072,9 +2076,7 @@ async function runSearch(q){
   try{ensureSearchWorker().postMessage({type:'search',id:run,query:q})}
   catch{state.searchBusy=false;searchStatus('Не удалось запустить поиск.',true)}
 }
-function renderFiltered(title,predicate){
-  const list=FILES.filter(predicate);
-  main.innerHTML='<section class="search-view"><h1 class="search-title">'+esc(title)+'</h1><div class="search-note">'+list.length+' файл(ов)</div><div class="panel filtered-list"><div class="file-list">'+fileRows(list)+'</div></div></section>';
+function bindFilteredRows(){
   document.querySelectorAll('.file-row').forEach(r=>r.onclick=()=>{
     const f=FILES.find(x=>x.path===r.dataset.path);
     if(!f)return;
@@ -2091,13 +2093,40 @@ function renderFiltered(title,predicate){
     render();
   });
 }
+function renderFiltered(title,predicate){
+  const list=FILES.filter(predicate);
+  main.innerHTML='<section class="search-view"><h1 class="search-title">'+esc(title)+'</h1><div class="search-note">'+list.length+' файл(ов)</div><div class="panel filtered-list"><div class="file-list">'+fileRows(list)+'</div></div></section>';
+  bindFilteredRows();
+}
+function renderLiterature(){
+  const extra=state.literatureTab==='additional';
+  const list=FILES.filter(extra
+    ? f=>subjectOf(f)==='ДЛ'
+    : f=>subjectOf(f)!=='ДЛ'&&sectionOf(f)==='Литература');
+  main.innerHTML='<section class="search-view">'+
+    '<h1 class="search-title">Литература</h1>'+
+    '<div class="literature-tabs" role="tablist" aria-label="Разделы литературы">'+
+      '<button class="literature-tab '+(!extra?'active':'')+'" type="button" data-literature-tab="main" role="tab" aria-selected="'+(!extra)+'">Литература</button>'+
+      '<button class="literature-tab '+(extra?'active':'')+'" type="button" data-literature-tab="additional" role="tab" aria-selected="'+extra+'">Доп. литература</button>'+
+    '</div>'+
+    '<div class="search-note">'+list.length+' файл(ов)</div>'+
+    '<div class="panel filtered-list"><div class="file-list">'+fileRows(list)+'</div></div>'+
+  '</section>';
+  document.querySelectorAll('[data-literature-tab]').forEach(btn=>btn.onclick=()=>{
+    const next=btn.dataset.literatureTab;
+    if(next===state.literatureTab)return;
+    state.literatureTab=next;
+    renderLiterature();
+  });
+  bindFilteredRows();
+}
 
 function render(){
   if(state.view==='home')renderHome();
   else if(state.view==='subjects')renderSubject();
   else if(state.view==='search')runSearch(searchInput.value);
-  else if(state.view==='literature')renderFiltered('Литература',f=>sectionOf(f)==='Литература');
-  else if(state.view==='additional-literature')renderFiltered('Доп. литература',f=>subjectOf(f)==='ДЛ');
+  else if(state.view==='literature')renderLiterature();
+  else if(state.view==='additional-literature'){state.view='literature';state.literatureTab='additional';setActiveNav('literature');renderLiterature()}
   else if(state.view==='archive')renderFiltered('Все материалы',()=>true);
 }
 
