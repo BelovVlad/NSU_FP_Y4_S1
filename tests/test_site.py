@@ -283,13 +283,17 @@ class SiteTests(unittest.TestCase):
         self.pdf()
         self.page.locator('#toolsToggle').click()
         self.page.wait_for_function("document.body.classList.contains('tools-open')")
+        self.assertTrue(self.page.locator('#readerControls').evaluate("(el)=>el.parentElement===document.body"))
         box=self.page.locator('#readerControls').bounding_box()
         self.assertGreaterEqual(box['x'],0)
         self.assertGreaterEqual(box['y'],0)
         self.assertLessEqual(box['x']+box['width'],844)
         self.assertLessEqual(box['y']+box['height'],390)
-        self.assertGreater(box['height'],180)
+        self.assertGreaterEqual(box['width'],440)
+        self.assertGreater(box['height'],330)
         self.assertTrue(self.page.locator('#toolsClose').is_visible())
+        self.assertTrue(self.page.locator('#fit').is_visible())
+        self.assertTrue(self.page.locator('#viewMode').is_visible())
         self.assertEqual(self.page.locator('#readerControls').evaluate("(el)=>getComputedStyle(el).position"),'fixed')
 
     def test_mobile_zoom_continuous_mode_and_page_navigation(self):
