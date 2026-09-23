@@ -969,10 +969,68 @@ body.music-na19x .pdf-fullscreen-loader{
   .subject-list-col .file-name{-webkit-line-clamp:3}
 }
 
+
+/* Phone landscape: use the same drawer navigation as portrait instead of the half-desktop sidebar. */
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  html,body,.shell,.app{min-height:100dvh}
+  body.music-na19x::before{display:none!important}
+  body.music-na19x .shell{z-index:auto!important}
+  .sidebar{
+    height:100dvh;min-height:0;max-height:100dvh;
+    z-index:210;
+    transform:translateX(-100%);
+    transition:transform .18s ease;
+    box-shadow:none!important;
+    filter:none!important;
+    pointer-events:none;
+    overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior-y:contain;
+    touch-action:pan-y;
+    -webkit-overflow-scrolling:touch;
+    padding-top:max(12px,env(safe-area-inset-top));
+    padding-bottom:max(10px,env(safe-area-inset-bottom))
+  }
+  .sidebar.open{transform:none;pointer-events:auto}
+  .sidebar .brand,
+  .sidebar .main-nav,
+  .sidebar .subjects-label,
+  .sidebar .subject-nav,
+  .sidebar .music-control,
+  .sidebar .sidebar-bottom{flex:none}
+  .sidebar .subject-nav{
+    min-height:auto;
+    overflow:visible;
+    padding-bottom:10px
+  }
+  .mobile-overlay{
+    position:fixed;z-index:200;inset:0;background:rgba(0,0,0,.5);
+    box-shadow:none!important;backdrop-filter:none!important;pointer-events:none
+  }
+  .mobile-overlay.show{display:block;pointer-events:auto}
+  body.menu-open{overflow:hidden}
+  body.menu-open .app{pointer-events:none}
+  .app{margin-left:0}
+  .workspace{display:block}
+  .workspace-resizer,.preview-panel,.search-pro-preview{display:none!important}
+  .subject-list-col{padding-right:0}
+  .search-pro-layout{display:block}
+  .topbar{
+    position:sticky;top:0;z-index:35;height:52px;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    padding:0 max(8px,env(safe-area-inset-right)) 0 max(8px,env(safe-area-inset-left));
+    gap:7px;box-shadow:0 5px 16px rgba(0,0,0,.18)
+  }
+  .menu-btn{display:grid;place-items:center;width:36px;height:36px;border:1px solid var(--line);border-radius:8px;background:#0d141b;color:#d9d1c8}
+  .top-meta,.kbd{display:none}
+  .searchbox input{height:36px;padding-right:10px}
+  .main{padding-left:10px;padding-right:10px}
+}
+
 </style>
 <link rel="stylesheet" href="knowledge.css?v=3">
-<link rel="stylesheet" href="app.css">
-<script defer src="app.js"></script>
+<link rel="stylesheet" href="app.css?v=6">
+<script defer src="app.js?v=4"></script>
 </head>
 <body>
 <div id="overlay" class="mobile-overlay"></div>
@@ -1022,8 +1080,17 @@ body.music-na19x .pdf-fullscreen-loader{
       <audio id="siteMusic" preload="none" loop></audio>
     </div>
     <div class="sidebar-bottom">
-      <button id="installApp" class="app-install" type="button">Установить приложение</button>
-      <button id="offlineFiles" class="app-offline" type="button">Сохранённые PDF</button>
+      <button id="appSettings" class="app-settings" type="button" aria-label="Управление приложением и офлайн-данными" title="Управление приложением">
+        <span class="app-settings-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.09a2 2 0 0 1 1 1.74v.5a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </span>
+        <span>Приложение</span>
+      </button>
+      <button id="installApp" type="button" hidden>Установить приложение</button>
+      <button id="offlineFiles" type="button" hidden>Сохранённые PDF</button>
       <a class="repo-link" href="https://github.com/BelovVlad/NSU_FP_Y4_S1" target="_blank" rel="noopener"><span>GitHub</span><span data-icon="external" aria-hidden="true"></span></a>
     </div>
   </aside>
@@ -1110,6 +1177,7 @@ function isNewDate(v){if(!v)return false;const d=new Date(v);return Number.isFin
 
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function encPath(p){return p.split('/').map(encodeURIComponent).join('/')}
+function isPhoneLayout(){return matchMedia('(max-width:720px), (orientation:landscape) and (max-height:600px) and (pointer:coarse)').matches}
 function subjectOf(f){const p=f.path.split('/');return p[0]==='База'&&p[1]==='КМ'?'КМ':p[0]}
 function rawSection(f){
   const parts=f.path.split('/');
@@ -1454,8 +1522,8 @@ function setActiveNav(view){
   }
   $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
 }
-function closeMenu(){sidebar.classList.remove('open');overlay.classList.remove('show')}
-function openMenu(){sidebar.classList.add('open');overlay.classList.add('show')}
+function closeMenu(){sidebar.classList.remove('open');overlay.classList.remove('show');document.body.classList.remove('menu-open')}
+function openMenu(){sidebar.classList.add('open');overlay.classList.add('show');document.body.classList.add('menu-open')}
 
 function renderSubjectNav(){
   subjectNav.innerHTML=ORDER.filter(s=>FILES.some(f=>subjectOf(f)===s)).map(s=>{
@@ -1767,13 +1835,13 @@ function renderSubject(){
   $$('.file-row[data-entry]').forEach(r=>r.onclick=()=>{
     const item=(group?.items||[]).find(i=>i.id===r.dataset.entry);if(!item)return;
     state.selectedEntry=item;
-    if(innerWidth<=720&&previewFile?.ext==='.pdf'){openPdfFullscreen(viewerUrl(previewFile,item.page||0,item.title),item.title);return}
+    if(isPhoneLayout()&&previewFile?.ext==='.pdf'){openPdfFullscreen(viewerUrl(previewFile,item.page||0,item.title),item.title);return}
     renderSubject();
   });
   $$('.file-row[data-path]').forEach(r=>r.onclick=()=>{
     const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;
-    if(innerWidth<=720&&f.ext==='.pdf'){openPdfFullscreen(viewerUrl(f),niceName(f));return}
-    if(innerWidth<=720&&f.ext==='.ipynb'){openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
+    if(isPhoneLayout()&&f.ext==='.pdf'){openPdfFullscreen(viewerUrl(f),niceName(f));return}
+    if(isPhoneLayout()&&f.ext==='.ipynb'){openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
     state.selected=f;state.selectedEntry=null;renderSubject();
   });
 }
@@ -2088,7 +2156,7 @@ document.addEventListener('keydown',e=>{
 });
 
 function enableMobileImmersiveMode(){
-  if(!window.matchMedia('(max-width:720px)').matches)return;
+  if(!window.matchMedia('(max-width:720px), (orientation:landscape) and (max-height:600px) and (pointer:coarse)').matches)return;
   if(document.fullscreenElement||!document.documentElement.requestFullscreen)return;
   try{
     const result=document.documentElement.requestFullscreen({navigationUI:'hide'});

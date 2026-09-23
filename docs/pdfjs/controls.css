@@ -103,3 +103,65 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 .page-jump-go,.page-jump-close{height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);cursor:pointer}
 .page-jump-close{width:36px;padding:0;font-size:20px}
 @media(prefers-reduced-motion:reduce){.outline-panel,.viewer{transition:none}}
+
+
+/* Phone landscape: hide the upper reader bar while moving down; reveal it on a small upward scroll. */
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .compact-view .toolbar{
+    transition:transform .18s ease,opacity .18s ease;
+    will-change:transform
+  }
+  .compact-view.reader-chrome-hidden .toolbar{
+    transform:translateY(calc(-100% - env(safe-area-inset-top,0px)));
+    opacity:.98;
+    pointer-events:none
+  }
+  .compact-view.reader-chrome-hidden .viewer{top:0}
+  .compact-view.reader-chrome-hidden .outline-panel{top:0}
+  .compact-view.reader-chrome-hidden .search-panel{top:0}
+  .compact-view.reader-chrome-hidden .loading{top:10px}
+}
+
+
+/* Continuous reading on phones: page arrows are redundant; keep only the current page indicator. */
+.compact-view.continuous-mode{--reader-bottom:52px}
+.compact-view.continuous-mode .mobile-nav{
+  grid-template-columns:1fr;
+  height:var(--reader-bottom);
+  padding-top:4px
+}
+.compact-view.continuous-mode #mPrev,
+.compact-view.continuous-mode #mNext{display:none}
+.compact-view.continuous-mode .m-page-info{justify-self:center;height:40px}
+
+/* Temporary transform used during pinch / trackpad zoom in the continuous strip. */
+.continuous-pages.pinch-preview{
+  will-change:transform;
+  transition:none;
+}
+
+
+/* In phone landscape the strip uses the full height. Keep only a tiny translucent page badge. */
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .compact-view.continuous-mode{--reader-bottom:0px}
+  .compact-view.continuous-mode .viewer{bottom:0}
+  .compact-view.continuous-mode .mobile-nav{
+    left:auto;right:max(8px,env(safe-area-inset-right,0px));bottom:max(6px,env(safe-area-inset-bottom,0px));
+    width:auto;height:auto;min-height:0;padding:0;border:0;background:transparent;
+    display:block;pointer-events:none
+  }
+  .compact-view.continuous-mode .m-page-info{
+    pointer-events:auto;min-width:0;width:auto;height:22px;padding:0 7px;
+    border:0;border-radius:999px;
+    background:color-mix(in srgb,var(--bar) 28%,transparent);
+    color:color-mix(in srgb,var(--text) 42%,transparent);
+    font-size:10px;font-weight:650;line-height:22px;
+    box-shadow:none;backdrop-filter:blur(3px);
+    opacity:.72
+  }
+  .compact-view.continuous-mode .m-page-info:active,
+  .compact-view.continuous-mode .m-page-info:focus-visible,
+  .compact-view.continuous-mode .m-page-info[aria-expanded=true]{
+    opacity:1;color:var(--text);background:color-mix(in srgb,var(--bar) 74%,transparent)
+  }
+}

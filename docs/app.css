@@ -17,3 +17,51 @@
 #saveOffline{white-space:normal;font-size:11px;line-height:1.2}
 .compact-view #saveOffline{font-size:12px}
 @media(prefers-reduced-motion:reduce){.app-dialog::backdrop{backdrop-filter:none}}
+
+
+/* Compact application controls live behind one settings row in the sidebar. */
+.app-settings{display:none}
+.app-settings-icon{width:22px;height:22px;display:grid;place-items:center;flex:0 0 22px;color:var(--text2,#c5c8ca)}
+.app-settings-icon svg{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+@media(max-width:720px), (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .app-settings{
+    width:100%;min-width:0;min-height:40px;display:flex;align-items:center;gap:9px;margin:0 0 8px;padding:8px 10px;
+    border:1px solid var(--line,#2b323d);border-radius:8px;background:var(--panel,#121c24);
+    color:var(--cream,#ead4b7);font:650 12px/1.25 system-ui;text-align:left;cursor:pointer;overflow:hidden
+  }
+  .app-settings>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .app-settings:active{background:color-mix(in srgb,var(--panel,#121c24) 86%,var(--accent,#d45d68) 14%)}
+}
+@media(hover:hover) and (pointer:fine){
+  .app-settings:hover{border-color:var(--accent,#d45d68)}
+}
+
+.app-manager{width:min(520px,calc(100% - 24px));padding:0;overflow:hidden}
+.app-manager .app-dialog-head{padding:18px 18px 14px;border-bottom:1px solid #2c3943}
+.app-manager-body{padding:14px 18px 18px}
+.app-manager-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 0 11px;margin-bottom:12px;border-bottom:1px solid #27333d}
+.app-manager-summary strong{color:#9cabb5;font-size:11px;font-weight:600}
+.app-manager-summary span{color:#c5d0d7;font-size:11px;text-align:right}
+.app-manager-section+.app-manager-section{margin-top:14px;padding-top:14px;border-top:1px solid #27333d}
+.app-manager-section h3{margin:0 0 8px;color:#d9e0e4;font:700 12px/1.35 system-ui}
+.app-manager-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.app-manager-btn{
+  min-height:40px;padding:8px 10px;border:1px solid #34414d;border-radius:8px;background:#142029;
+  color:#e7ebee;font:620 12px/1.35 system-ui;text-align:left;cursor:pointer
+}
+.app-manager-btn:hover{border-color:var(--accent,#d45d68)}
+.app-manager-btn.primary{color:#f0d9bd;border-color:color-mix(in srgb,var(--accent,#d45d68) 55%,#34414d)}
+.app-manager-btn.danger{color:#e8a9ad}
+.app-manager-btn:disabled{opacity:.55;cursor:default}
+.app-manager-note{margin:9px 0 0!important;color:#8999a4!important;font-size:11px!important;line-height:1.5!important}
+.app-manager-progress{height:7px;margin-top:10px;overflow:hidden;border-radius:999px;background:#202b34}
+.app-manager-progress>span{display:block;width:0;height:100%;background:var(--accent,#d45d68);transition:width .18s linear}
+.app-manager-status{min-height:18px;margin-top:7px;color:#9eabb4;font-size:11px;line-height:1.45}
+.app-manager-storage{font-variant-numeric:tabular-nums}
+
+@media(max-width:520px){
+  .app-dialog.app-manager{width:calc(100% - 18px);max-height:88dvh;border-radius:14px}
+  .app-manager .app-dialog-head{padding:15px 14px 12px}
+  .app-manager-body{padding:12px 14px 15px}
+  .app-manager-actions{grid-template-columns:1fr}
+}

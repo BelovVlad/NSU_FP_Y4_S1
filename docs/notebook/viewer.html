@@ -23,10 +23,10 @@ window.MathJax={
 };
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
-<link rel="stylesheet" href="viewer.css?build=13">
+<link rel="stylesheet" href="viewer.css?build=15">
 <script defer src="outline.js?build=2"></script>
-<link rel="stylesheet" href="../app.css">
-<script defer src="../app.js"></script>
+<link rel="stylesheet" href="../app.css?v=5">
+<script defer src="../app.js?v=3"></script>
 </head>
 <body>
 <header class="toolbar">
@@ -664,6 +664,33 @@ window.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();findInput.focus();findInput.select()}
   if(e.key==='Escape'&&full&&window.parent!==window)window.parent.postMessage({type:'nsu-close-pdf'},location.origin);
 });
+
+// On a phone held horizontally, keep the document full-height while reading.
+// A downward scroll hides the upper toolbar; a small upward scroll reveals it again.
+const notebookLandscapePhone=window.matchMedia('(orientation:landscape) and (max-height:600px) and (pointer:coarse)');
+const notebookToolbar=document.querySelector('.toolbar');
+let notebookChromeLastY=window.scrollY,notebookChromeDirection=0;
+function setNotebookChromeHidden(hidden){
+  document.body.classList.toggle('notebook-chrome-hidden',!!hidden&&notebookLandscapePhone.matches);
+}
+function updateNotebookChrome(){
+  const y=window.scrollY,delta=y-notebookChromeLastY;
+  notebookChromeLastY=y;
+  if(!notebookLandscapePhone.matches||document.body.classList.contains('toc-open')){
+    notebookChromeDirection=0;setNotebookChromeHidden(false);return;
+  }
+  if(y<18){notebookChromeDirection=0;setNotebookChromeHidden(false);return;}
+  if(Math.abs(delta)<2)return;
+  if(Math.sign(delta)!==Math.sign(notebookChromeDirection))notebookChromeDirection=0;
+  notebookChromeDirection+=delta;
+  if(notebookChromeDirection>12){setNotebookChromeHidden(true);notebookChromeDirection=0;}
+  else if(notebookChromeDirection<-5){setNotebookChromeHidden(false);notebookChromeDirection=0;}
+}
+window.addEventListener('scroll',()=>requestAnimationFrame(updateNotebookChrome),{passive:true});
+notebookLandscapePhone.addEventListener('change',()=>{notebookChromeLastY=window.scrollY;notebookChromeDirection=0;setNotebookChromeHidden(false)});
+notebookToolbar.addEventListener('focusin',()=>setNotebookChromeHidden(false));
+notebookToolbar.addEventListener('pointerdown',()=>setNotebookChromeHidden(false),{passive:true});
+
 // The deferred MathJax script has executed by DOMContentLoaded; its startup
 // promise can then be awaited even when the notebook fetch is very fast.
 window.addEventListener('DOMContentLoaded',openNotebook,{once:true});

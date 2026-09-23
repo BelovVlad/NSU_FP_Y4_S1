@@ -126,7 +126,7 @@ body.embed .toolbar{min-height:48px;padding:5px 8px}
 body.embed .back,body.embed .notebook-head{display:none}
 body.embed .title-wrap{grid-column:1/3}
 body.embed .notebook-shell{padding:7px 6px 34px}
-@media(max-width:720px){
+@media(max-width:720px), (orientation:landscape) and (max-height:600px) and (pointer:coarse){
   .find-results{position:fixed;top:calc(var(--notebook-toolbar-height) + 4px);left:12px;right:12px;width:auto}
   .reference-nav{padding:0 6px 16px;gap:6px}.reference-nav a{font-size:11px}
   .toolbar{grid-template-columns:auto minmax(0,1fr);align-items:start;gap:8px;padding:7px 8px}
@@ -184,7 +184,7 @@ body.embed .notebook-shell{padding:7px 6px 34px}
   #tocLinks a{min-height:40px}
   .toc-backdrop{position:fixed;z-index:40;inset:0;background:#0008}
 }
-@media(max-width:720px){
+@media(max-width:720px), (orientation:landscape) and (max-height:600px) and (pointer:coarse){
   .knowledge-reader .notebook-shell{padding-top:12px}
   .actions{gap:5px}.find-box{padding-left:7px;gap:2px}.find-status{min-width:20px}.find-btn{width:26px}
   .zoom-select{min-width:62px}.toc-toggle{width:38px;padding:0}
@@ -202,4 +202,97 @@ body.embed .notebook-shell{padding:7px 6px 34px}
   .reference-value{min-width:0;flex:1;overflow-x:auto}
   .reference-reader .table-scroll tr.find-hit{border-color:var(--accent);background:rgba(var(--accent-rgb),.12)}
   .reference-reader .table-scroll tr.find-hit td:first-child{background:rgba(var(--accent-rgb),.14)}
+}
+
+
+/* Mobile polish: horizontal formulas remain swipeable without looking like inputs. */
+.math-inline,.math-display,.reference-value{
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+}
+.math-inline::-webkit-scrollbar,.math-display::-webkit-scrollbar,.reference-value::-webkit-scrollbar{
+  width:0;height:0;display:none;
+}
+
+/* Make the document hierarchy obvious in the outline. */
+#tocLinks>ul>li>a{
+  margin:4px 0 5px;
+  padding:9px 10px;
+  border-left-color:color-mix(in srgb,var(--accent) 58%,var(--line));
+  border-radius:0 7px 7px 0;
+  background:color-mix(in srgb,var(--panel) 84%,var(--accent) 16%);
+  color:var(--cream);
+  font-weight:720;
+}
+#tocLinks ul ul{
+  position:relative;
+  margin-left:10px;
+  padding-left:13px;
+  border-left:1px solid color-mix(in srgb,var(--line) 70%,var(--accent) 30%);
+}
+#tocLinks ul ul ul{
+  margin-left:8px;
+  padding-left:12px;
+  border-left-style:dashed;
+  border-left-color:color-mix(in srgb,var(--line) 82%,var(--accent) 18%);
+}
+#tocLinks ul ul>li>a{
+  position:relative;
+  padding-left:10px;
+  color:var(--text2);
+  font-weight:520;
+}
+#tocLinks ul ul>li>a::before{
+  content:"";
+  position:absolute;
+  left:-14px;
+  top:50%;
+  width:10px;
+  height:1px;
+  background:color-mix(in srgb,var(--line) 68%,var(--accent) 32%);
+}
+#tocLinks ul ul ul>li>a{
+  color:var(--muted);
+  font-size:11.5px;
+  font-weight:450;
+}
+#tocLinks details{
+  margin:3px 0 7px 7px;
+  padding-left:8px;
+  border-left:1px dashed color-mix(in srgb,var(--line) 82%,var(--accent) 18%);
+}
+#tocLinks details>summary{
+  margin:2px 0 3px;
+  padding:6px 8px;
+  border-radius:6px;
+  background:color-mix(in srgb,var(--panel2) 88%,transparent);
+  color:color-mix(in srgb,var(--muted) 82%,var(--cream) 18%);
+  font-size:10.5px;
+  font-weight:650;
+  letter-spacing:.015em;
+}
+#tocLinks details[open]>summary{color:var(--text2)}
+#tocLinks a[aria-current]{
+  border-left-color:var(--accent);
+  background:rgba(var(--accent-rgb),.13);
+  color:var(--cream);
+}
+@media(max-width:1100px){
+  #tocLinks{padding-left:12px;padding-right:12px}
+  #tocLinks ul ul{margin-left:12px;padding-left:14px}
+  #tocLinks>ul>li>a{min-height:42px}
+}
+
+
+/* Phone landscape: reading chrome follows scroll direction. */
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .toolbar{
+    transition:transform .18s ease,opacity .18s ease;
+    will-change:transform
+  }
+  body.notebook-chrome-hidden .toolbar{
+    transform:translateY(calc(-100% - env(safe-area-inset-top,0px)));
+    opacity:.98;
+    pointer-events:none
+  }
 }
