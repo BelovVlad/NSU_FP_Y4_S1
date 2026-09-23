@@ -69,7 +69,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
 .view-mode-btn.active{border-color:var(--accent);background:var(--accent-soft)}
 
 </style>
-<link rel="stylesheet" href="controls.css?v=6">
+<link rel="stylesheet" href="controls.css?v=7">
 <link rel="stylesheet" href="../app.css?v=6">
 <script defer src="../app.js?v=4"></script>
 </head>
@@ -244,7 +244,19 @@ const $=id=>document.getElementById(id);
 const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText'),mPrev=$('mPrev'),mNext=$('mNext'),mPageInfo=$('mPageInfo'),pageJump=$('pageJump'),pageJumpForm=$('pageJumpForm'),pageJumpInput=$('pageJumpInput'),pageJumpTotal=$('pageJumpTotal'),pageJumpClose=$('pageJumpClose'),searchToggle=$('searchToggle'),searchPanel=$('searchPanel'),searchInput=$('searchInput'),searchPrev=$('searchPrev'),searchNext=$('searchNext'),searchStatus=$('searchStatus'),searchClose=$('searchClose'),highlightLayer=$('highlightLayer'),annotationLayer=$('annotationLayer'),outlineToggle=$('outlineToggle'),outlinePanel=$('outlinePanel'),outlineTree=$('outlineTree'),outlineClose=$('outlineClose'),outlineBackdrop=$('outlineBackdrop'),toneSwitch=$('toneSwitch'),textLayer=$('textLayer'),viewMode=$('viewMode'),expandViewer=$('expandViewer');
 const toneButtons=[...toneSwitch.querySelectorAll('[data-tone]')];
 const canvasWrap=canvas.parentElement;
-const toolsToggle=$('toolsToggle'),toolsClose=$('toolsClose'),toolsBackdrop=$('toolsBackdrop');
+const toolsToggle=$('toolsToggle'),toolsClose=$('toolsClose'),toolsBackdrop=$('toolsBackdrop'),readerControls=$('readerControls');
+const readerControlsHome=readerControls.parentNode;
+const readerControlsMarker=document.createComment('reader-controls-home');
+readerControlsHome.insertBefore(readerControlsMarker,readerControls);
+function syncReaderControlsPortal(){
+  if(compactQuery.matches){
+    if(readerControls.parentNode!==document.body)document.body.appendChild(readerControls);
+  }else if(readerControls.parentNode!==readerControlsHome){
+    readerControlsHome.insertBefore(readerControls,readerControlsMarker.nextSibling);
+  }
+}
+syncReaderControlsPortal();
+compactQuery.addEventListener('change',syncReaderControlsPortal);
 function closeTools(restoreFocus=false){
   document.body.classList.remove('tools-open');toolsToggle.setAttribute('aria-expanded','false');
   if(restoreFocus&&compactQuery.matches)toolsToggle.focus();
