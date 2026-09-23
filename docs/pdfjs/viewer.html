@@ -32,11 +32,10 @@ body.theme-na19x .outline-link.depth-1{border-left-color:#78858d;background:rgba
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 .search-panel{position:fixed;z-index:35;top:58px;left:0;right:0;height:52px;display:none;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--line);background:rgba(18,22,28,.98);box-shadow:0 6px 18px rgba(0,0,0,.22)}.search-panel.open{display:flex}.search-input{height:36px;min-width:120px;max-width:520px;flex:1;border:1px solid var(--line);border-radius:9px;background:#0f1318;color:var(--text);padding:0 11px;outline:none}.search-status{min-width:125px;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.search-panel .btn{height:36px}.search-close{font-size:18px}
 .outline-panel{position:fixed;z-index:34;left:0;top:58px;bottom:0;width:var(--outlineW);display:flex;flex-direction:column;border-right:1px solid var(--line);background:rgba(18,22,28,.985);box-shadow:14px 0 34px rgba(0,0,0,.34);transform:translateX(-102%);transition:transform .18s ease}.outline-panel.open{transform:translateX(0)}.outline-head{height:52px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 12px;border-bottom:1px solid var(--line);flex:none}.outline-title{font-size:14px;font-weight:800}.outline-tree{min-height:0;flex:1;overflow:auto;padding:9px 8px 18px}.outline-empty{padding:18px 12px;color:var(--muted);font-size:13px;line-height:1.5}.outline-row{position:relative}.outline-link{width:100%;min-height:37px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:1px 0;padding:7px 9px;border:0;border-radius:8px;background:transparent;color:var(--text);text-align:left;text-decoration:none;cursor:pointer;transition:background .12s ease,border-color .12s ease,color .12s ease}.outline-link:hover{background:rgba(255,255,255,.045)}.outline-link.active{background:var(--accent-soft)!important;box-shadow:inset 4px 0 0 var(--accent);color:var(--text)}.outline-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.outline-page{color:var(--muted);font-size:10px;font-variant-numeric:tabular-nums}.outline-link.depth-0{min-height:44px;margin:8px 0 4px;padding:9px 10px;border:1px solid #313944;background:#1a2028}.outline-link.depth-0 .outline-label{font-size:13.5px;font-weight:800;letter-spacing:-.01em}.outline-link.depth-0 .outline-page{font-size:11px;font-weight:700;color:#aab3c0}.outline-link.depth-1{margin-left:10px;width:calc(100% - 10px);padding:8px 9px 8px 13px;border-left:2px solid #46505d;background:rgba(255,255,255,.018)}.outline-link.depth-1 .outline-label{font-size:12.5px;font-weight:680}.outline-link.depth-1 .outline-label::before{content:'› ';color:#768292;font-weight:900}.outline-link.depth-2{margin-left:24px;width:calc(100% - 24px);padding:7px 9px 7px 12px;border-left:1px solid #39424d;color:#d4dae2}.outline-link.depth-2 .outline-label{font-size:12px;font-weight:560}.outline-link.depth-2 .outline-label::before{content:'· ';color:#707b89;font-weight:900}.outline-link.depth-3{margin-left:38px;width:calc(100% - 38px);padding:6px 9px 6px 11px;border-left:1px dashed #343c46;color:#b9c1cc}.outline-link.depth-3 .outline-label{font-size:11.5px;font-weight:500}.outline-link.depth-3 .outline-label::before{content:'– ';color:#697482}.outline-backdrop{display:none}
-.viewer{position:absolute;inset:58px 0 0;overflow:auto;background:var(--pdf-bg);transition:left .18s ease}.viewer{left:0}body.outline-open .viewer{left:var(--outlineW)}body.search-open .viewer{top:110px}.stage{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:24px}.canvas-wrap{position:relative;line-height:0;box-shadow:0 8px 28px rgba(0,0,0,.5)}canvas{display:block;max-width:none;background:white;transition:filter .16s ease,background-color .16s ease;will-change:filter}
+.viewer{position:absolute;inset:58px 0 0;overflow:auto;background:var(--pdf-bg);transition:left .18s ease}.viewer{left:0}body.outline-open .viewer{left:var(--outlineW)}body.search-open .viewer{top:110px}.stage{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:24px}.canvas-wrap{position:relative;line-height:0;box-shadow:0 8px 28px rgba(0,0,0,.5)}canvas{display:block;max-width:none;background:transparent;transition:filter .16s ease,background-color .16s ease;will-change:filter}
 body.pdf-tone-black canvas{filter:invert(.92) hue-rotate(180deg) brightness(.94) contrast(.92) saturate(.88);background:#15191c}
 body.pdf-tone-mine canvas{filter:url(#nsuPaletteFilter) contrast(.98) saturate(.94);background:#293133}
 body.pdf-tone-mine .canvas-wrap{background:#293133}
-body.pdf-tone-mine .canvas-wrap.rendering::after{content:'';position:absolute;inset:0;z-index:12;background:#293133;pointer-events:none}
 .tone-switch{height:36px;display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;background:#0f151b;overflow:hidden;flex:none}
 .tone-switch[hidden]{display:none!important}
 .canvas-wrap[hidden]{display:none}
@@ -60,7 +59,7 @@ body.pdf-tone-mine .canvas-wrap.rendering::after{content:'';position:absolute;in
 
 /* Optional continuous scroll */
 .continuous-pages{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;padding:0 0 28px}
-.continuous-page{position:relative;min-width:120px;min-height:160px;background:#fff;box-shadow:0 8px 28px rgba(0,0,0,.5);line-height:0}
+.continuous-page{position:relative;min-width:120px;min-height:160px;background:var(--pdf-bg);box-shadow:0 8px 28px rgba(0,0,0,.5);line-height:0;contain:layout paint}
 .continuous-page canvas{display:block}
 .continuous-page .text-layer{z-index:3}
 body.pdf-tone-black .continuous-page canvas{filter:invert(.92) hue-rotate(180deg) brightness(.94) contrast(.92) saturate(.88)}
@@ -70,7 +69,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
 .view-mode-btn.active{border-color:var(--accent);background:var(--accent-soft)}
 
 </style>
-<link rel="stylesheet" href="controls.css?v=4">
+<link rel="stylesheet" href="controls.css?v=5">
 <link rel="stylesheet" href="../app.css?v=6">
 <script defer src="../app.js?v=4"></script>
 </head>
@@ -254,7 +253,7 @@ toolsToggle.onclick=()=>{
   setReaderChromeHidden(false);
   if(document.body.classList.contains('tools-open')){closeTools();return}
   closeOutline();closeSearch();closePageJump();
-  document.body.classList.add('tools-open');toolsToggle.setAttribute('aria-expanded','true');toolsClose.focus();
+  document.body.classList.add('tools-open');toolsToggle.setAttribute('aria-expanded','true');try{toolsClose.focus({preventScroll:true})}catch{toolsClose.focus()}
 };
 toolsClose.onclick=()=>closeTools(true);toolsBackdrop.onclick=()=>closeTools(true);
 
@@ -290,7 +289,7 @@ applyPdfTone(rememberedTone(),false);
 toneButtons.forEach(btn=>btn.addEventListener('click',()=>applyPdfTone(btn.dataset.tone)));
 
 const CSS_UNITS=96/72;
-let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=false,pdfUrl='',renderSerial=0,preloadSerial=0,continuousMode=false,continuousObserver=null,continuousRoot=null;
+let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=false,pdfUrl='',renderSerial=0,preloadSerial=0,continuousMode=false,continuousObserver=null,continuousRoot=null,continuousRenderSerial=0,gestureActive=false;
 let searchQuery='',searchPage=0,searchOccurrence=-1,searchBusy=false,searchToken=0,searchSource='auto';
 let outlineLoaded=false,outlineEntries=[];
 const pageCache=new Map(),warmedPages=new Set(),textCache=new Map(),annotationCache=new Map();
@@ -649,21 +648,63 @@ function fittedScale(base){
   const available=Math.max(120,viewer.clientWidth-parseFloat(padding.paddingLeft)-parseFloat(padding.paddingRight));
   return Math.min(2.4,available/(base.width*CSS_UNITS));
 }
+function canvasRenderRatio(viewport,{continuous=false}={}){
+  const mobile=compactQuery.matches;
+  const dpr=Math.max(1,window.devicePixelRatio||1);
+  const qualityBoost=fitWidth?1.12:1;
+  let ratio=Math.min(3.5,dpr*qualityBoost);
+  const cssPixels=Math.max(1,viewport.width*viewport.height);
+  let maxPixels;
+  if(continuous){
+    maxPixels=mobile?(landscapePhoneQuery.matches?7000000:9500000):18000000;
+  }else{
+    maxPixels=mobile?12000000:24000000;
+  }
+  if(cssPixels*ratio*ratio>maxPixels)ratio=Math.max(.55,Math.sqrt(maxPixels/cssPixels));
+  return ratio;
+}
 async function renderPage(options={}){
-  if(!pdf)return;if(continuousMode){await renderContinuous(pageNum);return}pageNum=validPage(pageNum);const target=pageNum,serial=++renderSerial;
+  if(!pdf)return;
+  if(continuousMode){await renderContinuous(pageNum);return}
+  pageNum=validPage(pageNum);
+  const target=pageNum,serial=++renderSerial;
   stage.querySelector('.error')?.remove();canvasWrap.hidden=false;
-  showLoading();clearAnnotations();clearTextLayer();canvasWrap.classList.add('rendering');if(renderTask){try{renderTask.cancel()}catch{}}
+  showLoading();clearAnnotations();clearTextLayer();clearHighlights();canvasWrap.classList.add('rendering');
+  if(renderTask){try{renderTask.cancel()}catch{}}
   try{
-    const page=await getCachedPage(target);if(serial!==renderSerial)return;const base=page.getViewport({scale:1});const mobile=compactQuery.matches;if(fitWidth)scale=fittedScale(base);
+    const page=await getCachedPage(target);
+    if(serial!==renderSerial)return;
+    const base=page.getViewport({scale:1});
+    if(fitWidth)scale=fittedScale(base);
     const viewport=page.getViewport({scale:scale*CSS_UNITS});
-    const dpr=window.devicePixelRatio||1;
-    let ratio=Math.min(3,Math.max(1,dpr));
-    const maxPixels=mobile?8000000:16000000,cssPixels=Math.max(1,viewport.width*viewport.height);if(cssPixels*ratio*ratio>maxPixels)ratio=Math.sqrt(maxPixels/cssPixels);
-    canvas.width=Math.floor(viewport.width*ratio);canvas.height=Math.floor(viewport.height*ratio);canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;highlightLayer.style.width=textLayer.style.width=annotationLayer.style.width=`${Math.floor(viewport.width)}px`;highlightLayer.style.height=textLayer.style.height=annotationLayer.style.height=`${Math.floor(viewport.height)}px`;
-    renderTask=page.render({canvasContext:ctx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0]});await renderTask.promise;if(serial!==renderSerial)return;renderTask=null;canvasWrap.classList.remove('rendering');warmedPages.add(target);updateControls();savePage();hideLoading();
-    if(options.anchor){const r=canvasWrap.getBoundingClientRect(),a=options.anchor;viewer.scrollBy({left:r.left+a.x*r.width-a.clientX,top:r.top+a.y*r.height-a.clientY,behavior:'auto'})}else viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});
-    trimPageCache(target);await Promise.allSettled([drawSearchHighlights(page,viewport),renderSelectableText(page,viewport),renderAnnotations(page,viewport)]);void preloadAround(target);
-  }catch(err){if(serial===renderSerial)canvasWrap.classList.remove('rendering');if(err?.name!=='RenderingCancelledException'&&serial===renderSerial)fail(err?.message||String(err))}
+    const ratio=canvasRenderRatio(viewport);
+    const width=Math.max(1,Math.floor(viewport.width*ratio)),height=Math.max(1,Math.floor(viewport.height*ratio));
+    const buffer=document.createElement('canvas');
+    buffer.width=width;buffer.height=height;
+    const bufferCtx=buffer.getContext('2d',{alpha:false});
+    renderTask=page.render({canvasContext:bufferCtx,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0],background:'#fff'});
+    await renderTask.promise;
+    if(serial!==renderSerial)return;
+    renderTask=null;
+    canvas.width=width;canvas.height=height;
+    canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;
+    ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(buffer,0,0);
+    highlightLayer.style.width=textLayer.style.width=annotationLayer.style.width=`${Math.floor(viewport.width)}px`;
+    highlightLayer.style.height=textLayer.style.height=annotationLayer.style.height=`${Math.floor(viewport.height)}px`;
+    canvasWrap.classList.remove('rendering');warmedPages.add(target);updateControls();savePage();hideLoading();
+    if(options.anchor){
+      const r=canvasWrap.getBoundingClientRect(),a=options.anchor;
+      viewer.scrollBy({left:r.left+a.x*r.width-a.clientX,top:r.top+a.y*r.height-a.clientY,behavior:'auto'});
+    }else{
+      viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});
+    }
+    trimPageCache(target);
+    await Promise.allSettled([drawSearchHighlights(page,viewport),renderSelectableText(page,viewport),renderAnnotations(page,viewport)]);
+    void preloadAround(target);
+  }catch(err){
+    if(serial===renderSerial){renderTask=null;canvasWrap.classList.remove('rendering');hideLoading()}
+    if(err?.name!=='RenderingCancelledException'&&serial===renderSerial)fail(err?.message||String(err));
+  }
 }
 
 function destroyContinuous(){
@@ -671,26 +712,55 @@ function destroyContinuous(){
   continuousRoot?.remove();continuousRoot=null;
   document.body.classList.remove('continuous-mode');
 }
-async function renderContinuousPage(el,n){
-  if(!pdf||el.dataset.rendered==='1')return;
-  el.dataset.rendered='1';
+async function renderContinuousPage(el,n,force=false){
+  if(!pdf||!el?.isConnected)return;
+  if(el.dataset.rendering==='1')return;
+  if(!force&&el.dataset.rendered==='1'&&el.dataset.stale!=='1')return;
+  const token=String(++continuousRenderSerial);
+  el.dataset.renderToken=token;el.dataset.rendering='1';
   try{
     const page=await getCachedPage(n);
     const base=page.getViewport({scale:1});
     let useScale=scale;
     if(fitWidth)useScale=fittedScale(base);
     const viewport=page.getViewport({scale:useScale*CSS_UNITS});
-    el.style.width=Math.floor(viewport.width)+'px';el.style.height=Math.floor(viewport.height)+'px';
+    const ratio=canvasRenderRatio(viewport,{continuous:true});
     const cnv=document.createElement('canvas');
-    const ctx2=cnv.getContext('2d',{alpha:false});
-    const dpr=Math.min(2,Math.max(1,window.devicePixelRatio||1));
-    cnv.width=Math.floor(viewport.width*dpr);cnv.height=Math.floor(viewport.height*dpr);
+    cnv.width=Math.max(1,Math.floor(viewport.width*ratio));cnv.height=Math.max(1,Math.floor(viewport.height*ratio));
     cnv.style.width=Math.floor(viewport.width)+'px';cnv.style.height=Math.floor(viewport.height)+'px';
+    const ctx2=cnv.getContext('2d',{alpha:false});
+    const task=page.render({canvasContext:ctx2,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0],background:'#fff'});
+    await task.promise;
+    if(!continuousMode||!el.isConnected||el.dataset.renderToken!==token)return;
     const tl=document.createElement('div');tl.className='text-layer';
-    el.append(cnv,tl);
-    await page.render({canvasContext:ctx2,viewport,transform:dpr===1?null:[dpr,0,0,dpr,0,0]}).promise;
+    el.style.width=Math.floor(viewport.width)+'px';el.style.height=Math.floor(viewport.height)+'px';
+    el.replaceChildren(cnv,tl);
+    el.dataset.rendered='1';el.dataset.stale='0';
     await renderSelectableText(page,viewport,tl);
-  }catch{el.dataset.rendered='0'}
+  }catch{
+    if(el?.isConnected&&el.dataset.renderToken===token)el.dataset.rendered='0';
+  }finally{
+    if(el?.isConnected&&el.dataset.renderToken===token)el.dataset.rendering='0';
+  }
+}
+function setupContinuousObserver(){
+  continuousObserver?.disconnect();
+  if(!continuousRoot)return;
+  continuousObserver=new IntersectionObserver(entries=>{
+    const vr=viewer.getBoundingClientRect();
+    for(const entry of entries){
+      const el=entry.target;
+      if(entry.isIntersecting){
+        void renderContinuousPage(el,Number(el.dataset.page),el.dataset.stale==='1');
+      }else if(el.dataset.rendered==='1'&&el.dataset.rendering!=='1'){
+        const r=el.getBoundingClientRect();
+        if(r.bottom<vr.top-1400||r.top>vr.bottom+1400){
+          el.replaceChildren();el.dataset.rendered='0';el.dataset.stale='0';
+        }
+      }
+    }
+  },{root:viewer,rootMargin:compactQuery.matches?'600px 0px':'1000px 0px'});
+  for(const el of continuousRoot.children)continuousObserver.observe(el);
 }
 function updateContinuousCurrentPage(){
   if(!continuousMode||!continuousRoot)return;
@@ -729,6 +799,45 @@ function restoreContinuousAnchor(anchor){
   viewer.scrollTop+=wanted-anchor.clientY;
   updateContinuousCurrentPage();
 }
+function continuousCenterAnchor(){
+  const r=viewer.getBoundingClientRect();
+  return continuousAnchorFromClient(r.top+r.height/2);
+}
+function commitContinuousScale(nextScale,anchor=continuousCenterAnchor(),keepFit=false){
+  if(!continuousMode||!continuousRoot)return false;
+  const previous=Math.max(.01,scale);
+  scale=clampScale(nextScale);
+  if(!keepFit)fitWidth=false;
+  const factor=scale/previous;
+  continuousObserver?.disconnect();
+  for(const el of continuousRoot.children){
+    el.dataset.renderToken=String(++continuousRenderSerial);
+    el.dataset.rendering='0';
+    const oldW=parseFloat(el.style.width)||el.getBoundingClientRect().width;
+    const oldH=parseFloat(el.style.height)||el.getBoundingClientRect().height;
+    const newW=Math.max(1,oldW*factor),newH=Math.max(1,oldH*factor);
+    el.style.width=Math.floor(newW)+'px';el.style.height=Math.floor(newH)+'px';
+    const cnv=el.querySelector('canvas');
+    if(cnv){
+      cnv.style.width=Math.floor(newW)+'px';cnv.style.height=Math.floor(newH)+'px';
+      el.dataset.rendered='1';el.dataset.stale='1';
+    }
+    const tl=el.querySelector('.text-layer');
+    if(tl){tl.style.pointerEvents='none';tl.style.visibility='hidden'}
+  }
+  if(anchor)restoreContinuousAnchor(anchor);
+  setupContinuousObserver();
+  updateControls();
+  requestAnimationFrame(updateContinuousCurrentPage);
+  return true;
+}
+async function fitContinuousToWidth(anchor=continuousCenterAnchor()){
+  if(!pdf||!continuousMode||!continuousRoot)return;
+  const first=await getCachedPage(1);
+  const next=fittedScale(first.getViewport({scale:1}));
+  fitWidth=true;
+  commitContinuousScale(next,anchor,true);
+}
 async function renderContinuous(targetPage=pageNum,anchor=null){
   if(!pdf)return;
   pageNum=validPage(targetPage);
@@ -745,18 +854,7 @@ async function renderContinuous(targetPage=pageNum,anchor=null){
     el.style.width=Math.floor(base.width)+'px';el.style.height=Math.floor(base.height)+'px';
     continuousRoot.appendChild(el);
   }
-  continuousObserver=new IntersectionObserver(entries=>{
-    const vr=viewer.getBoundingClientRect();
-    for(const entry of entries){
-      const el=entry.target;
-      if(entry.isIntersecting)void renderContinuousPage(el,Number(el.dataset.page));
-      else if(el.dataset.rendered==='1'){
-        const r=el.getBoundingClientRect();
-        if(r.bottom<vr.top-1800||r.top>vr.bottom+1800){el.replaceChildren();el.dataset.rendered='0'}
-      }
-    }
-  },{root:viewer,rootMargin:'900px 0px'});
-  for(const el of continuousRoot.children)continuousObserver.observe(el);
+  setupContinuousObserver();
   requestAnimationFrame(()=>{
     if(anchor)restoreContinuousAnchor(anchor);
     else continuousRoot?.querySelector('[data-page="'+pageNum+'"]')?.scrollIntoView({block:'start'});
@@ -780,7 +878,7 @@ function setReaderChromeHidden(hidden){
 function updateReaderChrome(){
   const y=viewer.scrollTop,delta=y-readerChromeLastScroll;
   readerChromeLastScroll=y;
-  if(!landscapePhoneQuery.matches||!compactQuery.matches||
+  if(gestureActive||!landscapePhoneQuery.matches||!compactQuery.matches||
      document.body.classList.contains('tools-open')||
      document.body.classList.contains('search-open')||
      document.body.classList.contains('outline-open')){
@@ -858,10 +956,12 @@ function zoomAnchorFromClient(clientX,clientY){
 }
 function setZoomScale(nextScale,anchor=null){
   if(!pdf)return;
-  fitWidth=false;
-  scale=clampScale(nextScale);
-  updateControls();
-  if(continuousMode)void renderContinuous(pageNum);else void renderPage(anchor?{anchor}:{});
+  const next=clampScale(nextScale);
+  if(continuousMode){
+    commitContinuousScale(next,anchor||continuousCenterAnchor(),false);
+    return;
+  }
+  fitWidth=false;scale=next;updateControls();void renderPage(anchor?{anchor}:{});
 }
 function applyCustomZoom(){
   if(!pdf)return;
@@ -877,7 +977,7 @@ zoomLabel.addEventListener('keydown',e=>{
 });
 zoomLabel.addEventListener('change',applyCustomZoom);
 zoomLabel.addEventListener('focus',()=>zoomLabel.select());
-fit.onclick=()=>{fitWidth=true;closeTools();if(continuousMode)void renderContinuous(pageNum);else renderPage()};
+fit.onclick=()=>{fitWidth=true;closeTools();if(continuousMode)void fitContinuousToWidth();else void renderPage()};
 viewMode.onclick=()=>{void setContinuousMode(!continuousMode)};
 expandViewer.onclick=()=>{
   const url=location.href.replace(/([?&])embed=1(&|$)/,(m,a,b)=>b?a:'').replace(/[?&]$/,'');
@@ -895,14 +995,13 @@ function finishWheelZoom(){
   canvasWrap.style.transform='';canvasWrap.style.transformOrigin='';
   continuousRoot?.classList.remove('pinch-preview');
   if(continuousRoot){continuousRoot.style.transform='';continuousRoot.style.transformOrigin=''}
-  scale=clampScale(nextScale);
-  updateControls();
-  if(wasContinuous&&continuousMode)void renderContinuous(anchor?.page||pageNum,anchor);
-  else void renderPage(anchor?{anchor}:{});
+  gestureActive=false;
+  if(wasContinuous&&continuousMode)commitContinuousScale(nextScale,anchor,false);
+  else{scale=clampScale(nextScale);updateControls();void renderPage(anchor?{anchor}:{})}
 }
 function handleWheelZoom(e){
   if(!pdf||(!e.ctrlKey&&!e.metaKey))return;
-  e.preventDefault();e.stopPropagation();closePageJump();fitWidth=false;
+  e.preventDefault();e.stopPropagation();closePageJump();fitWidth=false;gestureActive=true;
   const sensitivity=e.deltaMode===1?.045:e.deltaMode===2?.18:.0026;
 
   if(!wheelZoomTargetScale){
@@ -941,7 +1040,7 @@ function touchMidpoint(touches){return{x:(touches[0].clientX+touches[1].clientX)
 let pinchState=null;
 viewer.addEventListener('touchstart',e=>{
   if(!pdf||e.touches.length!==2)return;
-  e.preventDefault();closePageJump();fitWidth=false;
+  e.preventDefault();closePageJump();fitWidth=false;gestureActive=true;
   const mid=touchMidpoint(e.touches),distance=touchDistance(e.touches);
   if(distance<8)return;
 
@@ -980,10 +1079,10 @@ function finishPinch(e){
   canvasWrap.classList.remove('pinch-preview');canvasWrap.style.transform='';canvasWrap.style.transformOrigin='';
   continuousRoot?.classList.remove('pinch-preview');
   if(continuousRoot){continuousRoot.style.transform='';continuousRoot.style.transformOrigin=''}
+  gestureActive=false;
   if(Math.abs(nextScale-scale)<.005){updateControls();return}
-  scale=nextScale;updateControls();
-  if(wasContinuous&&continuousMode)void renderContinuous(anchor?.page||pageNum,anchor);
-  else void renderPage({anchor});
+  if(wasContinuous&&continuousMode)commitContinuousScale(nextScale,anchor,false);
+  else{scale=clampScale(nextScale);updateControls();void renderPage({anchor})}
 }
 viewer.addEventListener('touchend',finishPinch,{passive:true});
 viewer.addEventListener('touchcancel',finishPinch,{passive:true});
@@ -997,8 +1096,15 @@ window.addEventListener('orientationchange',()=>setTimeout(()=>{if(pageJump.clas
 let resizeTimer;
 let viewerWidth=viewer.clientWidth;
 new ResizeObserver(()=>{
-  if(viewer.clientWidth===viewerWidth)return;viewerWidth=viewer.clientWidth;
-  if(pdf&&fitWidth){clearTimeout(resizeTimer);resizeTimer=setTimeout(renderPage,180)}
+  if(viewer.clientWidth===viewerWidth)return;
+  viewerWidth=viewer.clientWidth;
+  if(!pdf||!fitWidth||gestureActive)return;
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(()=>{
+    if(!pdf||!fitWidth||gestureActive)return;
+    if(continuousMode)void fitContinuousToWidth(continuousCenterAnchor());
+    else void renderPage();
+  },220);
 }).observe(viewer);
 open();
 </script>
