@@ -311,6 +311,15 @@ class SiteTests(unittest.TestCase):
         self.assertTrue(self.page.locator('#viewMode').is_visible())
         self.assertEqual(self.page.locator('#readerControls').evaluate("(el)=>getComputedStyle(el).position"),'fixed')
 
+    def test_portrait_pdf_uses_higher_raster_quality_than_landscape(self):
+        self.page.set_viewport_size({'width':390,'height':844})
+        self.pdf()
+        portrait=self.page.evaluate("canvasRenderRatio({width:360,height:510},{continuous:true})")
+        self.page.set_viewport_size({'width':844,'height':390})
+        self.page.wait_for_timeout(50)
+        landscape=self.page.evaluate("canvasRenderRatio({width:360,height:510},{continuous:true})")
+        self.assertGreater(portrait,landscape)
+
     def test_mobile_pdf_search_highlights_in_continuous_mode(self):
         self.page.set_viewport_size({'width':390,'height':844})
         self.pdf()
