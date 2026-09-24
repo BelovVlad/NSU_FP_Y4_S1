@@ -405,3 +405,204 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   .compact-view .tone-switch{height:46px}
   .compact-view .tone-btn{height:36px}
 }
+
+
+/* Canonical compact settings sheet.
+   Keep this block last: it deliberately overrides the older compact/landscape
+   experiments above so every mobile browser and the Android WebView use the
+   same geometry. */
+.compact-view .reader-controls,
+.compact-view.tools-open > .reader-controls{
+  box-sizing:border-box;
+  position:fixed;
+  z-index:60;
+  left:50%;
+  right:auto;
+  top:auto;
+  bottom:calc(var(--reader-bottom) + 8px);
+  transform:translateX(-50%);
+  width:min(calc(100vw - 16px),520px);
+  min-width:0;
+  min-height:0;
+  height:auto;
+  max-height:calc(100dvh - var(--reader-head) - var(--reader-bottom) - 16px);
+  overflow-x:hidden;
+  overflow-y:auto;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  grid-template-areas:
+    "head head"
+    "zoom zoom"
+    "view offline"
+    "tone tone"
+    "file file";
+  align-items:stretch;
+  align-content:start;
+  gap:8px;
+  padding:12px;
+  border-radius:18px;
+}
+.compact-view .reader-controls:has(.tone-switch[hidden]){
+  grid-template-areas:
+    "head head"
+    "zoom zoom"
+    "view offline"
+    "file file";
+}
+.compact-view .tools-heading{
+  grid-area:head;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 40px;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  min-width:0;
+  min-height:40px;
+  padding:0;
+}
+.compact-view .tools-heading>span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  line-height:1.2;
+}
+.compact-view .tools-heading .btn{
+  justify-self:end;
+  width:40px;
+  height:40px;
+  margin:0;
+  padding:0;
+}
+.compact-view .zoom-controls{
+  grid-area:zoom;
+  display:grid;
+  grid-template-columns:94px 72px minmax(0,1fr);
+  grid-template-rows:auto 44px;
+  align-items:center;
+  justify-content:stretch;
+  width:100%;
+  min-width:0;
+  margin:0;
+  padding:9px;
+  gap:7px 8px;
+  overflow:hidden;
+}
+.compact-view .zoom-controls>.control-label{
+  grid-column:1/-1;
+  grid-row:1;
+  width:auto;
+  min-width:0;
+  margin:0 0 1px 1px;
+}
+.compact-view .zoom-controls>.control-pair{
+  grid-column:1;
+  grid-row:2;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  width:94px;
+  min-width:0;
+  gap:6px;
+}
+.compact-view .zoom-controls>.control-pair .btn.icon{
+  width:44px;
+  min-width:0;
+  height:44px;
+  margin:0;
+}
+.compact-view .zoom-controls>.zoom-edit{
+  grid-column:2;
+  grid-row:2;
+  width:72px;
+  min-width:0;
+  height:44px;
+  margin:0;
+}
+.compact-view .zoom-controls>#fit{
+  grid-column:3;
+  grid-row:2;
+  width:100%;
+  min-width:0;
+  height:44px;
+  margin:0;
+  padding:0 10px;
+  overflow:hidden;
+}
+.compact-view .zoom-controls>#fit .tool-caption{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.compact-view #viewMode{grid-area:view}
+.compact-view #saveOffline{grid-area:offline}
+.compact-view .tone-switch{
+  grid-area:tone;
+  width:100%;
+  min-width:0;
+  margin:0;
+}
+.compact-view .direct-link{grid-area:file}
+.compact-view .reader-controls>.rail-button{
+  min-width:0;
+  margin:0;
+}
+.compact-view.tools-open .tools-backdrop{
+  inset:0;
+}
+
+@media(max-width:380px){
+  .compact-view .reader-controls,
+  .compact-view.tools-open > .reader-controls{
+    width:calc(100vw - 12px);
+    padding:10px;
+    gap:7px;
+    border-radius:16px;
+  }
+  .compact-view .zoom-controls{
+    grid-template-columns:86px 64px minmax(0,1fr);
+    padding:8px;
+    gap:6px;
+  }
+  .compact-view .zoom-controls>.control-pair{
+    grid-template-columns:40px 40px;
+    width:86px;
+    gap:6px;
+  }
+  .compact-view .zoom-controls>.control-pair .btn.icon{
+    width:40px;
+    height:42px;
+  }
+  .compact-view .zoom-controls>.zoom-edit{
+    width:64px;
+    height:42px;
+  }
+  .compact-view .zoom-controls>#fit{
+    height:42px;
+    padding:0 7px;
+  }
+  .compact-view #fit .tool-icon{width:18px;height:18px}
+  .compact-view #fit .tool-caption{font-size:11px}
+}
+
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .compact-view .reader-controls,
+  .compact-view.tools-open > .reader-controls{
+    left:auto;
+    right:max(8px,env(safe-area-inset-right,0px));
+    top:50%;
+    bottom:auto;
+    transform:translateY(-50%);
+    width:min(500px,70vw);
+    min-width:0;
+    min-height:0;
+    height:auto;
+    max-height:calc(100dvh - max(8px,env(safe-area-inset-top,0px)) - max(8px,env(safe-area-inset-bottom,0px)));
+    padding:10px;
+    gap:7px;
+  }
+  .compact-view .tools-heading{min-height:36px;grid-template-columns:minmax(0,1fr) 36px}
+  .compact-view .tools-heading .btn{width:36px;height:36px}
+  .compact-view .zoom-controls{padding:7px}
+  .compact-view .reader-controls>.rail-button{height:44px}
+  .compact-view .tone-switch{height:44px}
+  .compact-view .tone-btn{height:34px}
+}
