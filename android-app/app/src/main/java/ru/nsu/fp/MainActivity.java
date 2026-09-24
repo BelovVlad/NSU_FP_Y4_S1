@@ -3,187 +3,157 @@ package ru.nsu.fp;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Insets;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
-import android.view.WindowInsetsController;
+import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
     private static final String START_URL = "https://belovvlad.github.io/NSU_FP_Y4_S1/";
     private static final String INTERNAL_HOST = "belovvlad.github.io";
     private static final int APP_BG = Color.rgb(8, 13, 18);
+    private static final int TEXT = Color.rgb(234, 212, 183);
 
     private FrameLayout root;
     private WebView webView;
+    private TextView stateView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        configureEdgeToEdge();
+        configureWindow();
 
         root = new FrameLayout(this);
         root.setBackgroundColor(APP_BG);
+        setContentView(root);
 
-        webView = new WebView(this);
-        webView.setBackgroundColor(APP_BG);
-        webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        webView.setScrollbarFadingEnabled(true);
-        webView.setClipToPadding(true);
-
-        root.addView(webView, new FrameLayout.LayoutParams(
+        stateView = new TextView(this);
+        stateView.setText("NSU FP\nЗагрузка…");
+        stateView.setTextColor(TEXT);
+        stateView.setTextSize(18f);
+        stateView.setGravity(Gravity.CENTER);
+        stateView.setBackgroundColor(APP_BG);
+        root.addView(stateView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         ));
-        setContentView(root);
 
-        configureInsets();
-        configureWebView();
+        try {
+            webView = new WebView(this);
+            configureWebView();
 
-        if (savedInstanceState == null) {
-            webView.loadUrl(START_URL);
-        } else {
-            webView.restoreState(savedInstanceState);
-        }
-    }
+            root.addView(webView, 0, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+            ));
 
-    private void configureEdgeToEdge() {
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
-        getWindow().setNavigationBarColor(Color.TRANSPARENT);
-
-        if (Build.VERSION.SDK_INT >= 29) {
-            getWindow().setNavigationBarContrastEnforced(false);
-        }
-
-        WindowManager.LayoutParams attrs = getWindow().getAttributes();
-        if (Build.VERSION.SDK_INT >= 30) {
-            attrs.layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
-            getWindow().setDecorFitsSystemWindows(false);
-        } else {
-            attrs.layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            );
-        }
-        getWindow().setAttributes(attrs);
-
-        if (Build.VERSION.SDK_INT >= 30) {
-            WindowInsetsController controller = getWindow().getInsetsController();
-            if (controller != null) {
-                controller.setSystemBarsAppearance(
-                        0,
-                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-                                | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
-                );
-            }
-        } else if (Build.VERSION.SDK_INT >= 26) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    getWindow().getDecorView().getSystemUiVisibility()
-                            & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                            & ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-            );
-        }
-    }
-
-    private void configureInsets() {
-        root.setOnApplyWindowInsetsListener((view, windowInsets) -> {
-            int left;
-            int top;
-            int right;
-            int bottom;
-
-            if (Build.VERSION.SDK_INT >= 30) {
-                Insets bars = windowInsets.getInsets(
-                        WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout()
-                );
-                left = bars.left;
-                top = bars.top;
-                right = bars.right;
-                bottom = bars.bottom;
+            if (savedInstanceState == null) {
+                webView.loadUrl(START_URL);
             } else {
-                left = windowInsets.getSystemWindowInsetLeft();
-                top = windowInsets.getSystemWindowInsetTop();
-                right = windowInsets.getSystemWindowInsetRight();
-                bottom = windowInsets.getSystemWindowInsetBottom();
+                webView.restoreState(savedInstanceState);
             }
+        } catch (Throwable error) {
+            stateView.setText("Не удалось запустить Android WebView.\n\n" +
+                    error.getClass().getSimpleName() + ": " +
+                    (error.getMessage() == null ? "без описания" : error.getMessage()));
+        }
+    }
 
-            // The WebView itself still fills the complete physical window.
-            // Padding moves the page controls away from system icons while the
-            // WebView's dark background remains visible underneath the bars.
-            webView.setPadding(left, top, right, bottom);
-            return windowInsets;
-        });
-        root.requestApplyInsets();
+    private void configureWindow() {
+        Window window = getWindow();
+        window.setStatusBarColor(Color.TRANSPARENT);
+        window.setNavigationBarColor(Color.TRANSPARENT);
+
+        if (android.os.Build.VERSION.SDK_INT >= 29) {
+            window.setNavigationBarContrastEnforced(false);
+        }
+
+        // Broadly compatible edge-to-edge flags. Unlike requestFullscreen(),
+        // these do not create Android's fullscreen education popup and do not
+        // consume the Back gesture.
+        int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+
+        // Keep system icons light on the dark app background.
+        flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        if (android.os.Build.VERSION.SDK_INT >= 26) {
+            flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+        }
+        window.getDecorView().setSystemUiVisibility(flags);
+
+        if (android.os.Build.VERSION.SDK_INT >= 28) {
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.layoutInDisplayCutoutMode =
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            window.setAttributes(params);
+        }
     }
 
     private void configureWebView() {
+        webView.setBackgroundColor(APP_BG);
+        webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
-        settings.setLoadWithOverviewMode(false);
         settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(false);
         settings.setSupportZoom(false);
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
-        settings.setAllowFileAccess(false);
-        settings.setAllowContentAccess(false);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        settings.setUserAgentString(settings.getUserAgentString() + " NSUFPAndroid/1.0");
+        settings.setUserAgentString(settings.getUserAgentString() + " NSUFPAndroid/2");
 
         CookieManager cookies = CookieManager.getInstance();
         cookies.setAcceptCookie(true);
         cookies.setAcceptThirdPartyCookies(webView, true);
 
-        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
         webView.setWebChromeClient(new WebChromeClient());
-
         webView.setWebViewClient(new WebViewClient() {
             @Override
+            public void onPageFinished(WebView view, String url) {
+                stateView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                if (request.isForMainFrame()) {
+                    stateView.setVisibility(View.VISIBLE);
+                    CharSequence description = error == null ? "Неизвестная ошибка" : error.getDescription();
+                    stateView.setText("Не удалось открыть сайт.\n\n" + description +
+                            "\n\nПроверьте интернет и запустите приложение снова.");
+                }
+            }
+
+            @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return handleNavigation(request.getUrl());
+                return openExternalIfNeeded(request.getUrl());
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return handleNavigation(Uri.parse(url));
+                return openExternalIfNeeded(Uri.parse(url));
             }
         });
-
-        webView.setDownloadListener((url, userAgent, contentDisposition, mimeType, contentLength) -> {
-            try {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                startActivity(intent);
-            } catch (Exception ignored) {
-            }
-        });
-
-        if (Build.VERSION.SDK_INT >= 33) {
-            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
-                    android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT,
-                    this::handleBack
-            );
-        }
     }
 
-    private boolean handleNavigation(Uri uri) {
+    private boolean openExternalIfNeeded(Uri uri) {
         if (uri == null) return false;
 
         String scheme = uri.getScheme();
@@ -204,19 +174,11 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    private void handleBack() {
-        if (webView != null && webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            finish();
-        }
-    }
-
     @Override
     @SuppressWarnings("deprecation")
     public void onBackPressed() {
-        if (Build.VERSION.SDK_INT < 33) {
-            handleBack();
+        if (webView != null && webView.canGoBack()) {
+            webView.goBack();
         } else {
             super.onBackPressed();
         }
@@ -224,7 +186,9 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        webView.saveState(outState);
+        if (webView != null) {
+            webView.saveState(outState);
+        }
         super.onSaveInstanceState(outState);
     }
 
@@ -232,6 +196,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         if (webView != null) {
             webView.stopLoading();
+            webView.loadUrl("about:blank");
             webView.setWebChromeClient(null);
             webView.setWebViewClient(null);
             webView.destroy();
