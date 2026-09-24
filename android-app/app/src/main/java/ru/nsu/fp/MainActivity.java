@@ -282,8 +282,19 @@ public class MainActivity extends Activity {
     @Override
     @SuppressWarnings("deprecation")
     public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) webView.goBack();
-        else super.onBackPressed();
+        if (webView == null) {
+            super.onBackPressed();
+            return;
+        }
+
+        webView.evaluateJavascript(
+                "(window.nsuHandleAndroidBack ? window.nsuHandleAndroidBack() : false)",
+                handled -> {
+                    if ("true".equals(handled)) return;
+                    if (webView.canGoBack()) webView.goBack();
+                    else MainActivity.super.onBackPressed();
+                }
+        );
     }
 
     @Override
