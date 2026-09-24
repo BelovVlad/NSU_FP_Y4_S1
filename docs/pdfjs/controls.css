@@ -606,3 +606,42 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   .compact-view .tone-switch{height:44px}
   .compact-view .tone-btn{height:34px}
 }
+
+
+/* Site-wide search preview: the parent card owns navigation and actions.
+   Render only the matched document page here; never stack a second toolbar,
+   search field or mobile page bar over the result. */
+.search-preview-mode{
+  --reader-rail:0px;
+  --reader-head:0px;
+  --reader-bottom:0px;
+}
+.search-preview-mode .toolbar,
+.search-preview-mode .reader-controls,
+.search-preview-mode .mobile-nav,
+.search-preview-mode .search-panel,
+.search-preview-mode .outline-panel,
+.search-preview-mode .outline-backdrop,
+.search-preview-mode .tools-backdrop,
+.search-preview-mode .page-jump{
+  display:none!important;
+}
+.search-preview-mode .viewer,
+.search-preview-mode.compact-view .viewer,
+.search-preview-mode.compact-view.outline-open .viewer{
+  inset:0!important;
+  top:0!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  padding-top:0!important;
+}
+.search-preview-mode .stage,
+.search-preview-mode.compact-view .stage,
+.search-preview-mode.compact-view.continuous-mode .stage{
+  min-height:100%;
+  padding:8px!important;
+}
+.search-preview-mode .loading{
+  top:10px!important;
+}
