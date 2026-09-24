@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="color-scheme" content="dark">\n<meta id="appThemeColor" name="theme-color" content="#0d1015">\n<meta name="mobile-web-app-capable" content="yes">\n<link rel="manifest" href="../manifest.webmanifest?v=3">
+<meta name="color-scheme" content="dark">\n<meta id="appThemeColor" name="theme-color" content="#0d1015">\n<meta name="mobile-web-app-capable" content="yes">\n<link rel="manifest" href="../manifest.webmanifest?v=4">
 <title>PDF · ФФ НГУ</title>
 <style>
 :root{--bg:#0d1015;--pdf-bg:#1e1e1e;--bar:#12161c;--panel:#171c23;--line:#2b323d;--text:#eef1f5;--muted:#8993a1;--accent:#d45d68;--accent-soft:rgba(212,93,104,.14);--outlineW:320px}
@@ -29,6 +29,9 @@ body.theme-na19x .outline-link.depth-0{background:#30373d;border-color:#68757d}
 body.theme-na19 .outline-link.depth-1{border-left-color:#396368;background:rgba(83,200,197,.025)}
 body.theme-na19x .outline-link.depth-1{border-left-color:#78858d;background:rgba(255,255,255,.025)}
 
+/* Native PWA/fullscreen backdrop */
+html:fullscreen,html:fullscreen body{background:var(--bg)!important}
+html:fullscreen::backdrop{background:var(--bg)!important}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 .search-panel{position:fixed;z-index:35;top:58px;left:0;right:0;height:52px;display:none;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--line);background:rgba(18,22,28,.98);box-shadow:0 6px 18px rgba(0,0,0,.22)}.search-panel.open{display:flex}.search-input{height:36px;min-width:120px;max-width:520px;flex:1;border:1px solid var(--line);border-radius:9px;background:#0f1318;color:var(--text);padding:0 11px;outline:none}.search-status{min-width:125px;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.search-panel .btn{height:36px}.search-close{font-size:18px}
 .outline-panel{position:fixed;z-index:34;left:0;top:58px;bottom:0;width:var(--outlineW);display:flex;flex-direction:column;border-right:1px solid var(--line);background:rgba(18,22,28,.985);box-shadow:14px 0 34px rgba(0,0,0,.34);transform:translateX(-102%);transition:transform .18s ease}.outline-panel.open{transform:translateX(0)}.outline-head{height:52px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 12px;border-bottom:1px solid var(--line);flex:none}.outline-title{font-size:14px;font-weight:800}.outline-tree{min-height:0;flex:1;overflow:auto;padding:9px 8px 18px}.outline-empty{padding:18px 12px;color:var(--muted);font-size:13px;line-height:1.5}.outline-row{position:relative}.outline-link{width:100%;min-height:37px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:1px 0;padding:7px 9px;border:0;border-radius:8px;background:transparent;color:var(--text);text-align:left;text-decoration:none;cursor:pointer;transition:background .12s ease,border-color .12s ease,color .12s ease}.outline-link:hover{background:rgba(255,255,255,.045)}.outline-link.active{background:var(--accent-soft)!important;box-shadow:inset 4px 0 0 var(--accent);color:var(--text)}.outline-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.outline-page{color:var(--muted);font-size:10px;font-variant-numeric:tabular-nums}.outline-link.depth-0{min-height:44px;margin:8px 0 4px;padding:9px 10px;border:1px solid #313944;background:#1a2028}.outline-link.depth-0 .outline-label{font-size:13.5px;font-weight:800;letter-spacing:-.01em}.outline-link.depth-0 .outline-page{font-size:11px;font-weight:700;color:#aab3c0}.outline-link.depth-1{margin-left:10px;width:calc(100% - 10px);padding:8px 9px 8px 13px;border-left:2px solid #46505d;background:rgba(255,255,255,.018)}.outline-link.depth-1 .outline-label{font-size:12.5px;font-weight:680}.outline-link.depth-1 .outline-label::before{content:'› ';color:#768292;font-weight:900}.outline-link.depth-2{margin-left:24px;width:calc(100% - 24px);padding:7px 9px 7px 12px;border-left:1px solid #39424d;color:#d4dae2}.outline-link.depth-2 .outline-label{font-size:12px;font-weight:560}.outline-link.depth-2 .outline-label::before{content:'· ';color:#707b89;font-weight:900}.outline-link.depth-3{margin-left:38px;width:calc(100% - 38px);padding:6px 9px 6px 11px;border-left:1px dashed #343c46;color:#b9c1cc}.outline-link.depth-3 .outline-label{font-size:11.5px;font-weight:500}.outline-link.depth-3 .outline-label::before{content:'– ';color:#697482}.outline-backdrop{display:none}
@@ -71,7 +74,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
 </style>
 <link rel="stylesheet" href="controls.css?v=8">
 <link rel="stylesheet" href="../app.css?v=6">
-<script defer src="../app.js?v=5"></script>
+<script defer src="../app.js?v=6"></script>
 </head>
 <body>
 <svg class="pdf-tone-filters" aria-hidden="true" focusable="false">
