@@ -64,7 +64,7 @@ jobs:
           cp android-app/app/build/outputs/apk/debug/app-debug.apk docs/android/NSU-FP.apk
           cat > docs/android/version.json <<'EOF'
           {
-            "versionCode": 3,
+            "versionCode": 4,
             "versionName": "1.2",
             "apkUrl": "https://raw.githubusercontent.com/BelovVlad/NSU_FP_Y4_S1/main/docs/android/NSU-FP.apk"
           }
