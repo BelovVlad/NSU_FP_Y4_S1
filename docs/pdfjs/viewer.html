@@ -69,7 +69,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
 .view-mode-btn.active{border-color:var(--accent);background:var(--accent-soft)}
 
 </style>
-<link rel="stylesheet" href="controls.css?v=9">
+<link rel="stylesheet" href="controls.css?v=10">
 <link rel="stylesheet" href="../app.css?v=6">
 <script defer src="../app.js?v=12"></script>
 </head>
@@ -204,7 +204,9 @@ const findParam=params.get('find')||'';
 const versionParam=params.get('v')||'';
 const themeParam=params.get('theme')||'';
 const embedParam=params.get('embed')==='1';
+const searchPreviewParam=params.get('searchpreview')==='1';
 if(embedParam)document.body.classList.add('embed-view');
+if(searchPreviewParam)document.body.classList.add('search-preview-mode');
 const landscapePhoneQuery=window.matchMedia('(orientation:landscape) and (max-height:600px) and (pointer:coarse)');
 const portraitPhoneQuery=window.matchMedia('(orientation:portrait) and (max-width:760px) and (pointer:coarse)');
 const phoneStripQuery=window.matchMedia('(orientation:portrait) and (max-width:760px) and (pointer:coarse), (orientation:landscape) and (max-height:600px) and (pointer:coarse)');
@@ -361,6 +363,14 @@ async function openOutline(){if(!pdf)return;setReaderChromeHidden(false);closeTo
 function openSearch(){setReaderChromeHidden(false);closeTools();closeOutline();searchPanel.classList.add('open');document.body.classList.add('search-open');searchToggle.setAttribute('aria-expanded','true');void loadIndexedSearchPages();setTimeout(()=>searchInput.focus(),0)}
 function closeSearch(){searchToken++;searchBusy=false;searchPanel.classList.remove('open');document.body.classList.remove('search-open');searchToggle.setAttribute('aria-expanded','false');searchStatus.textContent='Enter — найти';clearHighlights()}
 function resetSearch(){searchToken++;searchBusy=false;searchQuery='';searchPage=pageNum;searchOccurrence=-1;searchSource='auto';searchStatus.textContent=searchInput.value.trim()?'Enter — найти':'Введите текст';clearHighlights()}
+function runExternalFind(query){
+  const value=String(query||'').trim();
+  closeSearch();
+  searchInput.value=value;
+  resetSearch();
+  searchInput.blur();
+  if(value)void searchStep(1);
+}
 function clearHighlights(){highlightLayer.replaceChildren()}
 function clearAnnotations(){annotationLayer.replaceChildren()}
 function clearTextLayer(layer=textLayer){if(layer)layer.replaceChildren()}
@@ -936,7 +946,7 @@ landscapePhoneQuery.addEventListener('change',()=>{
   readerChromeLastScroll=viewer.scrollTop;readerChromeDirection=0;setReaderChromeHidden(false);
 });
 portraitPhoneQuery.addEventListener('change',event=>{
-  if(event.matches&&pdf&&!continuousMode)void setContinuousMode(true);
+  if(event.matches&&pdf&&!continuousMode&&!searchPreviewParam)void setContinuousMode(true);
 });
 
 
@@ -945,7 +955,7 @@ async function open(){
   title.textContent=titleParam||raw.split('/').pop();document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Открываю документ…');
   try{
     pdfUrl=resolvePdfUrl(raw);direct.href=pdfUrl;
-    pdf=await loadPdfDocument(pdfUrl);document.getElementById('saveOffline').disabled=false;pageNum=validPage(pageParam||rememberedPage());searchPage=pageNum;scale=1;fitWidth=embedParam||compactQuery.matches;updateControls();if(phoneStripQuery.matches)await setContinuousMode(true);else await renderPage();window.NSUApp?.warm();notifyParentPdfReady();if(pendingNavigation)await applyNavigation();else if(findParam.trim()){searchInput.value=findParam;openSearch();resetSearch();void searchStep(1)}
+    pdf=await loadPdfDocument(pdfUrl);document.getElementById('saveOffline').disabled=false;pageNum=validPage(pageParam||rememberedPage());searchPage=pageNum;scale=1;fitWidth=embedParam||compactQuery.matches;updateControls();if(phoneStripQuery.matches&&!searchPreviewParam)await setContinuousMode(true);else await renderPage();window.NSUApp?.warm();notifyParentPdfReady();if(pendingNavigation)await applyNavigation();else if(findParam.trim())runExternalFind(findParam)
   }catch(err){fail(err?.message||String(err))}
 }
 
@@ -963,8 +973,7 @@ async function applyNavigation(){
   closeSearch();resetSearch();
   if(nextPage!==pageNum){pageNum=nextPage;await renderPage()}
   if(serial!==navigationSerial)return;
-  searchInput.value=query;
-  if(query){openSearch();resetSearch();void searchStep(1)}
+  runExternalFind(query)
 }
 window.addEventListener('message',event=>{
   if(event.origin!==location.origin||event.source!==window.parent||event.data?.type!=='nsu-viewer-navigate')return;
