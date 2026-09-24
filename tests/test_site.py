@@ -338,6 +338,34 @@ class SiteTests(unittest.TestCase):
         self.page.evaluate("closeSearch()")
         self.assertEqual(self.page.locator('.continuous-page .search-mark').count(),0)
 
+    def test_continuous_reader_restores_same_anchor_after_background_cycle(self):
+        self.page.set_viewport_size({'width':390,'height':844})
+        self.pdf()
+        self.page.wait_for_function("document.body.classList.contains('continuous-mode')")
+        self.page.evaluate("""() => {
+            const p=document.querySelector('.continuous-page[data-page="2"]');
+            p.scrollIntoView({block:'start'});
+            viewer.scrollTop += 120;
+            updateContinuousCurrentPage();
+            captureReaderPosition();
+            window.__savedAnchor={...suspendedReaderAnchor};
+            viewer.scrollTop=0;
+        }""")
+        self.page.wait_for_timeout(50)
+        self.page.evaluate("""() => {
+            readerSuspended=false;
+            suspendedReaderAnchor={...window.__savedAnchor};
+            restoreReaderPosition();
+        }""")
+        self.page.wait_for_timeout(100)
+        restored=self.page.evaluate("""() => {
+            const r=viewer.getBoundingClientRect();
+            const a=continuousAnchorFromClient(r.top+Math.min(24,Math.max(4,r.height*.08)));
+            return {page:a?.page,fraction:a?.fraction,saved:window.__savedAnchor};
+        }""")
+        self.assertEqual(restored['page'],restored['saved']['page'])
+        self.assertLess(abs(restored['fraction']-restored['saved']['fraction']),0.08)
+
     def test_mobile_zoom_continuous_mode_and_page_navigation(self):
         self.page.set_viewport_size({'width':390,'height':844})
         self.pdf()
