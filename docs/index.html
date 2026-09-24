@@ -1514,18 +1514,25 @@ async function openPdfFullscreen(url,title='PDF'){
   document.body.classList.add('pdf-open');
   if(pdfFullscreenLoaderText)pdfFullscreenLoaderText.textContent=isNotebook?'Открываю Notebook…':'Открываю PDF…';
 
-  pdfFullscreenFrame.src='about:blank';
-  requestAnimationFrame(()=>{pdfFullscreenFrame.src=themed.href});
+  requestAnimationFrame(()=>{
+    try{
+      // Replace the iframe document instead of navigating it. Otherwise
+      // Android WebView adds every opened PDF to the joint Back history.
+      pdfFullscreenFrame.contentWindow.location.replace(themed.href);
+    }catch{
+      pdfFullscreenFrame.src=themed.href;
+    }
+  });
 }
 
 async function closePdfFullscreen(fromHistory=false){
   if(!pdfFullscreen.classList.contains('open'))return;
-  if(!fromHistory&&pdfHistoryArmed&&history.state?.nsuPdfOverlay){
-    history.back();
-    return;
-  }
+  const popOverlayState=!fromHistory&&pdfHistoryArmed&&history.state?.nsuPdfOverlay;
+  // Hide first. Even if Android is still draining an old iframe history entry,
+  // the user must never see the previous PDF.
   pdfHistoryArmed=false;
   hidePdfOverlay();
+  if(popOverlayState)history.back();
 }
 
 window.addEventListener('popstate',()=>{
@@ -1536,12 +1543,10 @@ window.addEventListener('popstate',()=>{
 
 window.nsuHandleAndroidBack=()=>{
   if(!pdfFullscreen.classList.contains('open'))return false;
-  if(pdfHistoryArmed&&history.state?.nsuPdfOverlay){
-    history.back();
-  }else{
-    pdfHistoryArmed=false;
-    hidePdfOverlay();
-  }
+  const popOverlayState=pdfHistoryArmed&&history.state?.nsuPdfOverlay;
+  pdfHistoryArmed=false;
+  hidePdfOverlay();
+  if(popOverlayState)history.back();
   return true;
 };
 document.addEventListener('click',e=>{
