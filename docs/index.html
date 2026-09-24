@@ -1309,7 +1309,7 @@ function readOpenHistory(){
 function recordOpenedPath(path){
   path=String(path||'').trim();
   if(!path)return;
-  const next=[{path,openedAt:Date.now()},...readOpenHistory().filter(item=>item.path!==path)].slice(0,12);
+  const next=[{path,openedAt:Date.now()},...readOpenHistory().filter(item=>item.path!==path)].slice(0,8);
   try{localStorage.setItem(OPEN_HISTORY_KEY,JSON.stringify(next))}catch{}
 }
 function recordOpenedFile(file){if(file?.path)recordOpenedPath(file.path)}
@@ -1327,8 +1327,26 @@ function rememberedPdfPage(file){
     return Number.isInteger(page)&&page>0?page:0;
   }catch{return 0}
 }
-function openedHistoryFiles(limit=5){
+function openedHistoryFiles(limit=8){
   return readOpenHistory().map(item=>({item,file:fileByPath(item.path)})).filter(row=>row.file).slice(0,limit);
+}
+function applyPdfPosition(position){
+  const path=String(position?.file||'').trim();
+  const page=Number(position?.page);
+  if(!path||!Number.isInteger(page)||page<1)return;
+  try{localStorage.setItem('nsu-pdf-page:'+path,String(page))}catch{}
+  document.querySelectorAll('.history-row').forEach(row=>{
+    if(row.dataset.historyPath!==path)return;
+    const label=row.querySelector('.recent-date');
+    if(label)label.textContent='стр. '+page;
+  });
+}
+function persistOpenPdfPosition(){
+  try{
+    const position=pdfFullscreenFrame.contentWindow?.nsuPersistReaderPosition?.();
+    if(position)applyPdfPosition(position);
+    return position||null;
+  }catch{return null}
 }
 
 
@@ -1512,6 +1530,7 @@ musicAudio.addEventListener('error',()=>syncMusicUi(false));
 let pdfHistoryArmed=false;
 
 function hidePdfOverlay(){
+  persistOpenPdfPosition();
   pdfFullscreen.classList.remove('open','ready');
   pdfFullscreen.setAttribute('aria-hidden','true');
   document.body.classList.remove('pdf-open');
@@ -1519,6 +1538,7 @@ function hidePdfOverlay(){
 
 async function openPdfFullscreen(url,title='PDF'){
   if(!url)return;
+  if(pdfFullscreen.classList.contains('open'))persistOpenPdfPosition();
   recordOpenedUrl(url);
   const themed=new URL(url,location.href);
   const theme=currentPdfTheme();
@@ -1588,7 +1608,12 @@ document.addEventListener('click',e=>{
 },true);
 window.addEventListener('message',e=>{
   if(e.origin!==location.origin)return;
+  if(e.data?.type==='nsu-pdf-position'){
+    applyPdfPosition(e.data);
+    return;
+  }
   if(e.data?.type==='nsu-close-pdf'){
+    applyPdfPosition(e.data);
     void closePdfFullscreen();
     return;
   }
@@ -1600,6 +1625,11 @@ window.addEventListener('message',e=>{
     pdfFullscreen.classList.add('ready');
   }
 });
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&pdfFullscreen.classList.contains('open'))persistOpenPdfPosition();
+});
+window.addEventListener('pagehide',()=>{if(pdfFullscreen.classList.contains('open'))persistOpenPdfPosition()});
+window.addEventListener('beforeunload',()=>{if(pdfFullscreen.classList.contains('open'))persistOpenPdfPosition()});
 
 function setActiveNav(view){
   if(view!=='search'){
@@ -2034,7 +2064,7 @@ window.addEventListener('message',event=>{
 
 function renderHome(){
   const recent=FILES.slice().sort((a,b)=>(new Date(updatedValue(b)||0))-(new Date(updatedValue(a)||0))).slice(0,7);
-  const opened=openedHistoryFiles(5);
+  const opened=openedHistoryFiles(8);
   const openedHtml=opened.length?opened.map(({file:f})=>{
     const page=rememberedPdfPage(f);
     const right=f.ext==='.pdf'?(page?'стр. '+page:'PDF'):'Notebook';
