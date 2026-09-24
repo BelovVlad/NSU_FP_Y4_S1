@@ -486,6 +486,24 @@ async function getPageSearchData(n){
   return data;
 }
 
+function itemHighlightRanges(text,query){
+  const s=normalizeText(text),q=normalizeText(query);
+  if(!s||!q)return[];
+  const needles=s.includes(q)?[q]:(q.includes(' ')?q.split(' ').filter(t=>t.length>1&&s.includes(t)):[]);
+  const ranges=[];
+  for(const needle of needles){
+    let from=0;
+    while(from<s.length){
+      const start=s.indexOf(needle,from);
+      if(start<0)break;
+      ranges.push({start,length:needle.length,total:s.length});
+      from=start+Math.max(1,needle.length);
+    }
+  }
+  ranges.sort((a,b)=>a.start-b.start||b.length-a.length);
+  return ranges.filter((range,i)=>!ranges.slice(0,i).some(prev=>range.start>=prev.start&&range.start+range.length<=prev.start+prev.length));
+}
+
 async function drawSearchHighlights(page,viewport,layer=highlightLayer,targetPage=pageNum){
   clearHighlights(layer);
   if(!searchQuery||searchPage!==targetPage)return;
@@ -493,12 +511,27 @@ async function drawSearchHighlights(page,viewport,layer=highlightLayer,targetPag
     const data=await getPageSearchData(targetPage);
     if(searchPage!==targetPage)return;
     layer.style.width=`${viewport.width}px`;layer.style.height=`${viewport.height}px`;
-    const tokens=searchQuery.split(' ').filter(t=>t.length>1);
     for(const item of data.items){
-      const s=normalizeText(item.str);if(!s)continue;
-      const hit=s.includes(searchQuery)||(searchQuery.includes(' ')&&tokens.some(t=>s.includes(t)));if(!hit)continue;
-      const tx=pdfjsLib.Util.transform(viewport.transform,item.transform),fontHeight=Math.max(2,Math.hypot(tx[2],tx[3])),width=Math.max(3,(item.width||0)*viewport.scale),angle=Math.atan2(tx[1],tx[0]);
-      const mark=document.createElement('div');mark.className='search-mark';mark.style.left=`${tx[4]}px`;mark.style.top=`${tx[5]-fontHeight}px`;mark.style.width=`${width}px`;mark.style.height=`${fontHeight}px`;mark.style.transformOrigin='0 0';if(Math.abs(angle)>.001)mark.style.transform=`rotate(${angle}rad)`;layer.appendChild(mark);
+      const ranges=itemHighlightRanges(item.str,searchQuery);
+      if(!ranges.length)continue;
+      const tx=pdfjsLib.Util.transform(viewport.transform,item.transform);
+      const fontHeight=Math.max(2,Math.hypot(tx[2],tx[3]));
+      const fullWidth=Math.max(3,(item.width||0)*viewport.scale);
+      const angle=Math.atan2(tx[1],tx[0]);
+      const cos=Math.cos(angle),sin=Math.sin(angle);
+      for(const range of ranges){
+        const offset=fullWidth*(range.start/Math.max(1,range.total));
+        const width=Math.max(3,fullWidth*(range.length/Math.max(1,range.total)));
+        const mark=document.createElement('div');
+        mark.className='search-mark';
+        mark.style.left=`${tx[4]+cos*offset}px`;
+        mark.style.top=`${tx[5]-fontHeight+sin*offset}px`;
+        mark.style.width=`${width}px`;
+        mark.style.height=`${fontHeight}px`;
+        mark.style.transformOrigin='0 0';
+        if(Math.abs(angle)>.001)mark.style.transform=`rotate(${angle}rad)`;
+        layer.appendChild(mark);
+      }
     }
   }catch{}
 }
