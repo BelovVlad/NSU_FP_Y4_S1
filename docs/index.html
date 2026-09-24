@@ -1332,11 +1332,21 @@ function openedHistoryFiles(limit=8){
 }
 function applyPdfPosition(position){
   const path=String(position?.file||'').trim();
+  const canonical=String(position?.canonicalFile||'').trim();
   const page=Number(position?.page);
+  const savedAt=Number(position?.savedAt)||Date.now();
   if(!path||!Number.isInteger(page)||page<1)return;
-  try{localStorage.setItem('nsu-pdf-page:'+path,String(page))}catch{}
+  const paths=[...new Set([path,canonical].filter(Boolean))];
+  try{
+    const latest=Math.max(0,...paths.map(p=>Number(localStorage.getItem('nsu-pdf-page-ts:'+p))||0));
+    if(latest>savedAt)return;
+    for(const p of paths){
+      localStorage.setItem('nsu-pdf-page:'+p,String(page));
+      localStorage.setItem('nsu-pdf-page-ts:'+p,String(savedAt));
+    }
+  }catch{}
   document.querySelectorAll('.history-row').forEach(row=>{
-    if(row.dataset.historyPath!==path)return;
+    if(!paths.includes(row.dataset.historyPath))return;
     const label=row.querySelector('.recent-date');
     if(label)label.textContent='стр. '+page;
   });
