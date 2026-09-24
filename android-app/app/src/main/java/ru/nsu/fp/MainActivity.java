@@ -141,7 +141,7 @@ public class MainActivity extends Activity {
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        settings.setUserAgentString(settings.getUserAgentString() + " NSUFPAndroid/3");
+        settings.setUserAgentString(settings.getUserAgentString() + " NSUFPAndroid/" + BuildConfig.VERSION_CODE);
 
         CookieManager cookies = CookieManager.getInstance();
         cookies.setAcceptCookie(true);
