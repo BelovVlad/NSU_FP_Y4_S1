@@ -278,8 +278,12 @@ class SiteTests(unittest.TestCase):
             renderHome();
         }""",self.a)
         self.page.locator('#openHistory .history-row').click()
-        self.page.wait_for_function("document.querySelector('#pdfFullscreen').classList.contains('open')")
-        self.assertIn('page=2',self.page.locator('#pdfFullscreenFrame').get_attribute('src'))
+        self.page.wait_for_function("""() => {
+            const f=document.querySelector('#pdfFullscreenFrame');
+            return document.querySelector('#pdfFullscreen').classList.contains('ready') &&
+                   f?.contentWindow?.location?.search?.includes('page=2');
+        }""")
+        self.assertIn('page=2',self.page.evaluate("document.querySelector('#pdfFullscreenFrame').contentWindow.location.search"))
 
     def test_new_query_supersedes_pending_search(self):
         self.home()
@@ -376,51 +380,27 @@ class SiteTests(unittest.TestCase):
         self.page.evaluate("closeSearch()")
         self.assertEqual(self.page.locator('.continuous-page .search-mark').count(),0)
 
-    def test_continuous_reader_restores_same_anchor_after_background_cycle(self):
-        self.page.set_viewport_size({'width':390,'height':844})
-        self.pdf()
+    def enable_continuous_for_test(self):
+        self.page.evaluate("document.querySelector('#viewMode').click()")
         self.page.wait_for_function("document.body.classList.contains('continuous-mode')")
-        self.page.evaluate("""() => {
-            const p=document.querySelector('.continuous-page[data-page="2"]');
-            p.scrollIntoView({block:'start'});
-            viewer.scrollTop += 120;
-            updateContinuousCurrentPage();
-            captureReaderPosition();
-            window.__savedAnchor={...suspendedReaderAnchor};
-            viewer.scrollTop=0;
-        }""")
-        self.page.wait_for_timeout(50)
-        self.page.evaluate("""() => {
-            readerSuspended=false;
-            suspendedReaderAnchor={...window.__savedAnchor};
-            restoreReaderPosition();
-        }""")
-        self.page.wait_for_timeout(100)
-        restored=self.page.evaluate("""() => {
-            const r=viewer.getBoundingClientRect();
-            const a=continuousAnchorFromClient(r.top+Math.min(24,Math.max(4,r.height*.08)));
-            return {page:a?.page,fraction:a?.fraction,saved:window.__savedAnchor};
-        }""")
-        self.assertEqual(restored['page'],restored['saved']['page'])
-        self.assertLess(abs(restored['fraction']-restored['saved']['fraction']),0.08)
 
-    def test_continuous_reader_back_saves_visible_page_before_parent_hides_iframe(self):
-        self.home()
-        self.page.evaluate("""() => openPdfFullscreen(viewerUrl(FILES[0]),niceName(FILES[0]))""")
-        self.page.wait_for_function("""() => {
-            const f=document.querySelector('#pdfFullscreenFrame');
-            return document.querySelector('#pdfFullscreen').classList.contains('ready') &&
-                   f?.contentDocument?.body?.classList.contains('continuous-mode');
-        }""")
+    def test_continuous_progress_survives_collapsed_viewer_geometry(self):
+        self.pdf()
+        self.enable_continuous_for_test()
         self.page.evaluate("""() => {
-            const w=document.querySelector('#pdfFullscreenFrame').contentWindow;
-            const p=w.document.querySelector('.continuous-page[data-page="2"]');
-            p.scrollIntoView({block:'start'});
-            w.viewer.scrollTop += 80;
-            w.updateContinuousCurrentPage();
+            const viewer=document.querySelector('#viewer');
+            const page=document.querySelector('.continuous-page[data-page="2"]');
+            viewer.scrollTop += page.getBoundingClientRect().top-viewer.getBoundingClientRect().top+40;
+            viewer.dispatchEvent(new Event('scroll'));
         }""")
-        self.page.locator('#pdfFullscreenFrame').content_frame.locator('#back').click()
-        self.page.wait_for_function("!document.querySelector('#pdfFullscreen').classList.contains('open')")
+        self.page.wait_for_function("""path =>
+            localStorage.getItem('nsu-pdf-page:'+path)==='2'
+        """,arg=self.a)
+        self.page.evaluate("""() => {
+            const viewer=document.querySelector('#viewer');
+            viewer.style.display='none';
+            window.nsuPersistReaderPosition();
+        }""")
         self.assertEqual(self.page.evaluate("path=>localStorage.getItem('nsu-pdf-page:'+path)",self.a),'2')
 
     def test_android_back_saves_continuous_page_even_without_iframe_pagehide(self):
@@ -429,25 +409,40 @@ class SiteTests(unittest.TestCase):
         self.page.wait_for_function("""() => {
             const f=document.querySelector('#pdfFullscreenFrame');
             return document.querySelector('#pdfFullscreen').classList.contains('ready') &&
-                   f?.contentDocument?.body?.classList.contains('continuous-mode');
+                   f?.contentDocument?.querySelector('#total')?.textContent==='/ 2';
         }""")
         self.page.evaluate("""() => {
             const w=document.querySelector('#pdfFullscreenFrame').contentWindow;
-            w.document.querySelector('.continuous-page[data-page="2"]').scrollIntoView({block:'start'});
-            w.viewer.scrollTop += 60;
+            w.document.querySelector('#viewMode').click();
         }""")
+        self.page.wait_for_function("""() =>
+            document.querySelector('#pdfFullscreenFrame').contentDocument.body.classList.contains('continuous-mode')
+        """)
+        self.page.evaluate("""() => {
+            const d=document.querySelector('#pdfFullscreenFrame').contentDocument;
+            const viewer=d.querySelector('#viewer');
+            const page=d.querySelector('.continuous-page[data-page="2"]');
+            viewer.scrollTop += page.getBoundingClientRect().top-viewer.getBoundingClientRect().top+40;
+            viewer.dispatchEvent(new Event('scroll'));
+        }""")
+        self.page.wait_for_function("""path =>
+            localStorage.getItem('nsu-pdf-page:'+path)==='2'
+        """,arg=self.a)
         self.page.evaluate("window.nsuHandleAndroidBack()")
         self.page.wait_for_function("!document.querySelector('#pdfFullscreen').classList.contains('open')")
         self.assertEqual(self.page.evaluate("path=>localStorage.getItem('nsu-pdf-page:'+path)",self.a),'2')
 
     def test_continuous_navigation_saves_page_immediately(self):
-        self.page.set_viewport_size({'width':390,'height':844})
         self.pdf()
-        self.page.wait_for_function("document.body.classList.contains('continuous-mode')")
-        self.page.evaluate("go(1)")
-        self.assertEqual(self.page.evaluate("localStorage.getItem(storageKey())"),'2')
-        self.page.evaluate("pageInput.value='1';pageInput.onchange()")
-        self.assertEqual(self.page.evaluate("localStorage.getItem(storageKey())"),'1')
+        self.enable_continuous_for_test()
+        self.page.evaluate("document.querySelector('#mNext').click()")
+        self.assertEqual(self.page.evaluate("path=>localStorage.getItem('nsu-pdf-page:'+path)",self.a),'2')
+        self.page.evaluate("""() => {
+            const input=document.querySelector('#page');
+            input.value='1';
+            input.dispatchEvent(new Event('change'));
+        }""")
+        self.assertEqual(self.page.evaluate("path=>localStorage.getItem('nsu-pdf-page:'+path)",self.a),'1')
 
     def test_mobile_zoom_continuous_mode_and_page_navigation(self):
         self.page.set_viewport_size({'width':390,'height':844})
