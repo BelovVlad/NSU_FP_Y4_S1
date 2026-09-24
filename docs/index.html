@@ -7,10 +7,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#080d12">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#080d12">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.webmanifest?v=5">
+<link rel="manifest" href="manifest.webmanifest?v=6">
 <title>NSU FP · 4 курс</title>
 <style>
 :root{
@@ -1032,33 +1033,10 @@ body.music-na19x .pdf-fullscreen-loader{
   .main{padding-left:10px;padding-right:10px}
 }
 
-/* Installed fullscreen surface */
-html:fullscreen,
-html:fullscreen body,
-html:fullscreen .shell,
-html:fullscreen .app{
-  background:var(--bg)!important;
-}
-html:fullscreen::backdrop{
-  background:var(--bg)!important;
-}
-@media (display-mode: fullscreen){
-  html,body,.shell,.app{
-    min-height:100dvh;
-    background:var(--bg);
-  }
-  @media(max-width:720px){
-    .topbar{
-      padding-left:max(10px,env(safe-area-inset-left,0px));
-      padding-right:max(10px,env(safe-area-inset-right,0px));
-    }
-  }
-}
-
 </style>
 <link rel="stylesheet" href="knowledge.css?v=3">
 <link rel="stylesheet" href="app.css?v=6">
-<script defer src="app.js?v=7"></script>
+<script defer src="app.js?v=8"></script>
 </head>
 <body>
 <div id="overlay" class="mobile-overlay"></div>
