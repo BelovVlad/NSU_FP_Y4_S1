@@ -666,27 +666,6 @@ body:not(.music-active) .action{
 
 /* Atmosphere mini-player */
 .music-row{display:flex;align-items:center;gap:9px;min-height:54px;padding:0 9px}
-.music-panel{
-  margin-top:7px;padding:10px 11px 11px;border:1px solid color-mix(in srgb,var(--line) 82%,var(--accent) 18%);
-  border-radius:10px;background:linear-gradient(180deg,color-mix(in srgb,var(--panel2) 88%,var(--accent) 12%),color-mix(in srgb,var(--panel) 95%,transparent));
-  box-shadow:inset 0 1px rgba(255,255,255,.025)
-}
-.music-panel:not([hidden]){animation:musicVolumeIn .18s ease-out}
-@keyframes musicVolumeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-.music-volume-head{display:grid;grid-template-columns:16px 1fr auto;align-items:center;gap:6px;margin-bottom:7px;color:var(--text2);font-size:9px;font-weight:700;letter-spacing:.02em}
-.music-volume-icon{display:grid;place-items:center;color:var(--accent);font-size:13px;transform:translateY(-1px)}
-.music-volume-value{color:var(--muted);font-variant-numeric:tabular-nums;font-weight:650}
-.music-volume{
-  width:100%;height:4px;display:block;margin:0;appearance:none;border-radius:999px;outline:0;cursor:pointer;
-  background:linear-gradient(90deg,var(--accent) 0 var(--music-volume,28%),color-mix(in srgb,var(--line) 76%,transparent) var(--music-volume,28%) 100%)
-}
-.music-volume::-webkit-slider-thumb{
-  appearance:none;width:12px;height:12px;border:2px solid var(--panel);border-radius:50%;background:var(--cream);
-  box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 70%,transparent)
-}
-.music-volume::-moz-range-thumb{
-  width:10px;height:10px;border:2px solid var(--panel);border-radius:50%;background:var(--cream)
-}
 .music-toggle.playing .music-pearl-shell{animation:pearlBreath 3.8s ease-in-out infinite}
 @keyframes pearlBreath{0%,100%{transform:scale(1);opacity:.94}50%{transform:scale(1.045);opacity:1}}
 
@@ -727,7 +706,6 @@ body.music-na19x::after{
   .music-toggle.playing .music-pearl-shell{filter:none!important}
 }
 @media(prefers-reduced-motion:reduce){
-  .music-panel:not([hidden]),
   .music-toggle.playing .music-pearl,
   .music-toggle.playing .music-pearl-shell,
   body.music-na19x .hero-art .hero-art-na19x{animation:none!important}
@@ -1127,21 +1105,13 @@ body{
     <nav id="subjectNav" class="subject-nav"></nav>
     <div class="music-control">
       <div class="music-row">
-        <button id="musicToggle" class="music-toggle" type="button" aria-pressed="false" aria-controls="musicPanel" aria-expanded="false" aria-label="Включить музыку" title="Включить музыку">
+        <button id="musicToggle" class="music-toggle" type="button" aria-pressed="false" aria-label="Включить музыку" title="Включить музыку">
           <span class="music-pearl-shell" aria-hidden="true">
             <img class="music-pearl music-pearl-play" src="assets/1.png" alt="">
             <img class="music-pearl music-pearl-pause" src="assets/2.png" alt="">
           </span>
         </button>
         <span class="music-copy"><span class="music-label">Атмосфера</span></span>
-      </div>
-      <div id="musicPanel" class="music-panel" hidden>
-        <div class="music-volume-head">
-          <span class="music-volume-icon" aria-hidden="true">◖</span>
-          <span>Громкость</span>
-          <span id="musicVolumeValue" class="music-volume-value">28%</span>
-        </div>
-        <input id="musicVolume" class="music-volume" type="range" min="0" max="100" value="28" step="1" aria-label="Громкость атмосферы">
       </div>
       <audio id="siteMusic" preload="none" loop></audio>
     </div>
@@ -1232,7 +1202,7 @@ const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll
 hydrateIcons();
 const initialSubject=hashSubject();
 const state={view:(ORDER.includes(initialSubject)?'subjects':'home'),subject:(ORDER.includes(initialSubject)?initialSubject:'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchBusy:false,sort:'date',literatureTab:'main'};
-const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicPanel=$('#musicPanel'),musicVolume=$('#musicVolume'),musicVolumeValue=$('#musicVolumeValue'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame'),pdfFullscreenLoader=$('#pdfFullscreenLoader'),pdfFullscreenLoaderText=$('#pdfFullscreenLoaderText');
+const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame'),pdfFullscreenLoader=$('#pdfFullscreenLoader'),pdfFullscreenLoaderText=$('#pdfFullscreenLoaderText');
 let searchRun=0,searchTimer=0,searchWorker=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
 function syncSubjectHash(){if(state.view!=='subjects'||!ORDER.includes(state.subject))return;const h='#subject='+encodeURIComponent(state.subject);if(location.hash!==h)history.replaceState(null,'',h)}
@@ -1337,7 +1307,7 @@ function chooseMusicTrack(forceId=''){
   if(forceId)activeMusicTrack=MUSIC_TRACKS.find(t=>t.id===forceId)||MUSIC_TRACKS[0];
   else activeMusicTrack=Math.random()<0.10?MUSIC_TRACKS[1]:MUSIC_TRACKS[0];
   musicAudio.src=activeMusicTrack.src;
-  musicAudio.volume=Number(musicVolume.value)/100;
+  musicAudio.volume=1;
   return activeMusicTrack;
 }
 function currentPdfTheme(){
@@ -1359,11 +1329,9 @@ function setMusicTheme(on){
 function syncMusicUi(playing){
   musicToggle.classList.toggle('playing',playing);
   musicToggle.setAttribute('aria-pressed',playing?'true':'false');
-  musicToggle.setAttribute('aria-expanded',playing?'true':'false');
   const action=playing?'Приостановить музыку':'Включить музыку';
   musicToggle.setAttribute('aria-label',action);
   musicToggle.title=action;
-  musicPanel.hidden=!playing;
   setMusicTheme(playing);
   if(playing&&activeMusicTrack?.id==='na19x')startMusicGlitch();
   else stopMusicGlitch();
@@ -1495,6 +1463,7 @@ async function toggleMusic(){
   try{
     await ensureMusicAnalyser();
     if(musicAudioContext?.state==='suspended')await musicAudioContext.resume();
+    musicAudio.volume=1;
     await musicAudio.play();
   }catch(e){
     console.error('Music playback failed',e);
@@ -1502,13 +1471,7 @@ async function toggleMusic(){
   }
 }
 musicToggle.addEventListener('click',()=>{void toggleMusic()});
-musicVolume.addEventListener('input',()=>{
-  const value=Number(musicVolume.value);
-  musicAudio.volume=value/100;
-  musicVolumeValue.textContent=value+'%';
-  musicVolume.style.setProperty('--music-volume',value+'%');
-});
-musicVolume.style.setProperty('--music-volume',musicVolume.value+'%');
+musicAudio.volume=1;
 musicAudio.addEventListener('play',()=>syncMusicUi(true));
 musicAudio.addEventListener('pause',()=>syncMusicUi(false));
 musicAudio.addEventListener('error',()=>syncMusicUi(false));
