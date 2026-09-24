@@ -209,9 +209,17 @@ class SiteTests(unittest.TestCase):
         self.search('a')  # The UI deliberately requires at least two characters.
         self.search('alpha')
         self.page.wait_for_function("document.querySelector('.search-preview-frame')?.contentDocument.querySelector('#total')?.textContent==='/ 2'")
+        self.assertIn('searchpreview=1',self.page.locator('.search-preview-frame').get_attribute('src'))
+        self.assertIn('embed=1',self.page.locator('.search-preview-frame').get_attribute('src'))
+        self.assertTrue(self.page.evaluate("document.querySelector('.search-preview-frame').contentDocument.body.classList.contains('search-preview-mode')"))
+        self.assertFalse(self.page.evaluate("document.querySelector('.search-preview-frame').contentDocument.body.classList.contains('search-open')"))
+        self.assertNotEqual(self.page.evaluate("document.querySelector('.search-preview-frame').contentDocument.activeElement?.id"),'searchInput')
+        self.assertEqual(self.page.evaluate("getComputedStyle(document.querySelector('.search-preview-frame').contentDocument.querySelector('.toolbar')).display"),'none')
         self.page.evaluate("window.savedDocument=document.querySelector('.search-preview-frame').contentDocument")
         self.page.locator('.search-group-main').click()
         self.assertTrue(self.page.evaluate("savedDocument===document.querySelector('.search-preview-frame').contentDocument"))
+        self.assertFalse(self.page.evaluate("savedDocument.body.classList.contains('search-open')"))
+        self.assertNotEqual(self.page.evaluate("savedDocument.activeElement?.id"),'searchInput')
 
     def test_preview_fills_available_height_without_resetting_pdf(self):
         self.page.set_viewport_size({'width':1440,'height':900})
