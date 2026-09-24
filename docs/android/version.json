@@ -1,5 +1,6 @@
 {
-  "versionCode": 5,
-  "versionName": "1.3",
-  "apkUrl": "https://raw.githubusercontent.com/BelovVlad/NSU_FP_Y4_S1/main/docs/android/NSU-FP.apk"
+  "versionCode": 6,
+  "versionName": "1.4",
+  "apkUrl": "https://raw.githubusercontent.com/BelovVlad/NSU_FP_Y4_S1/main/docs/android/NSU-FP.apk",
+  "requiresReinstallBelow": 6
 }
