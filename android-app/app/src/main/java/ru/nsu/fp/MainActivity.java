@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Message;
 import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
@@ -39,6 +40,7 @@ public class MainActivity extends Activity {
 
     private FrameLayout root;
     private WebView webView;
+    private WebView authWebView;
     private TextView stateView;
     private long updateDownloadId = -1L;
     private BroadcastReceiver downloadReceiver;
@@ -136,6 +138,8 @@ public class MainActivity extends Activity {
         settings.setSupportZoom(false);
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
+        settings.setSupportMultipleWindows(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setUserAgentString(settings.getUserAgentString() + " NSUFPAndroid/" + BuildConfig.VERSION_CODE);
 
@@ -145,7 +149,30 @@ public class MainActivity extends Activity {
         cookies.setAcceptCookie(true);
         cookies.setAcceptThirdPartyCookies(webView, true);
 
-        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+                closeAuthWebView(false);
+
+                authWebView = new WebView(MainActivity.this);
+                configureAuthWebView(authWebView);
+                root.addView(authWebView, new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                ));
+
+                WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+                transport.setWebView(authWebView);
+                resultMsg.sendToTarget();
+                return true;
+            }
+
+            @Override
+            public void onCloseWindow(WebView window) {
+                if (window == authWebView) closeAuthWebView(true);
+                else super.onCloseWindow(window);
+            }
+        });
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -164,6 +191,7 @@ public class MainActivity extends Activity {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                if (!request.isForMainFrame()) return false;
                 return openExternalIfNeeded(request.getUrl());
             }
 
@@ -172,6 +200,108 @@ public class MainActivity extends Activity {
                 return openExternalIfNeeded(Uri.parse(url));
             }
         });
+    }
+
+    private void configureAuthWebView(WebView auth) {
+        auth.setBackgroundColor(APP_BG);
+        auth.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+        WebSettings settings = auth.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(true);
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(false);
+        settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(false);
+        settings.setDisplayZoomControls(false);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setUserAgentString(webView.getSettings().getUserAgentString());
+
+        CookieManager cookies = CookieManager.getInstance();
+        cookies.setAcceptCookie(true);
+        cookies.setAcceptThirdPartyCookies(auth, true);
+
+        auth.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onCloseWindow(WebView window) {
+                closeAuthWebView(true);
+            }
+        });
+
+        auth.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                Uri uri = request.getUrl();
+                String scheme = uri == null ? null : uri.getScheme();
+                if ("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme)) {
+                    // GitHub OAuth and the giscus callback must stay in the same
+                    // Android WebView cookie/storage jar as the embedded comments.
+                    return false;
+                }
+                try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
+                catch (Exception ignored) {}
+                return true;
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Uri uri = Uri.parse(url);
+                String scheme = uri.getScheme();
+                if ("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme)) return false;
+                try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
+                catch (Exception ignored) {}
+                return true;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                Uri uri;
+                try { uri = Uri.parse(url); }
+                catch (Exception ignored) { return; }
+
+                // Some OAuth flows return to the site instead of calling
+                // window.close(). Treat that as a completed auth popup.
+                if (isInternalSite(uri)) closeAuthWebView(true);
+            }
+        });
+    }
+
+    private boolean isInternalSite(Uri uri) {
+        if (uri == null) return false;
+        String scheme = uri.getScheme();
+        String host = uri.getHost();
+        String path = uri.getPath();
+        return ("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme))
+                && INTERNAL_HOST.equalsIgnoreCase(host)
+                && path != null
+                && path.startsWith("/NSU_FP_Y4_S1/");
+    }
+
+    private void closeAuthWebView(boolean refreshComments) {
+        WebView popup = authWebView;
+        authWebView = null;
+        if (popup != null) {
+            try { root.removeView(popup); } catch (Exception ignored) {}
+            try {
+                popup.stopLoading();
+                popup.setWebChromeClient(null);
+                popup.setWebViewClient(null);
+                popup.destroy();
+            } catch (Exception ignored) {}
+        }
+
+        try { CookieManager.getInstance().flush(); } catch (Exception ignored) {}
+
+        if (refreshComments && webView != null) {
+            // Give giscus a moment to consume the OAuth callback/postMessage,
+            // then remount it so the authenticated state is visible immediately.
+            webView.postDelayed(() -> webView.evaluateJavascript(
+                    "if(typeof mountFeedback==='function'){mountFeedback();}",
+                    null
+            ), 450);
+        }
     }
 
     private final class NativeBridge {
@@ -269,10 +399,7 @@ public class MainActivity extends Activity {
         String host = uri.getHost();
         String path = uri.getPath();
 
-        if (("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme))
-                && INTERNAL_HOST.equalsIgnoreCase(host)
-                && path != null
-                && path.startsWith("/NSU_FP_Y4_S1/")) return false;
+        if (isInternalSite(uri)) return false;
 
         try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
         catch (Exception ignored) {}
@@ -282,6 +409,11 @@ public class MainActivity extends Activity {
     @Override
     @SuppressWarnings("deprecation")
     public void onBackPressed() {
+        if (authWebView != null) {
+            if (authWebView.canGoBack()) authWebView.goBack();
+            else closeAuthWebView(false);
+            return;
+        }
         if (webView == null) {
             super.onBackPressed();
             return;
@@ -305,6 +437,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        closeAuthWebView(false);
         if (downloadReceiver != null) {
             try { unregisterReceiver(downloadReceiver); } catch (Exception ignored) {}
         }
