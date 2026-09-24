@@ -308,6 +308,7 @@ toneButtons.forEach(btn=>btn.addEventListener('click',()=>applyPdfTone(btn.datas
 
 const CSS_UNITS=96/72;
 let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=false,pdfUrl='',renderSerial=0,preloadSerial=0,continuousMode=false,continuousObserver=null,continuousRoot=null,continuousRenderSerial=0,gestureActive=false;
+let readerSuspended=document.hidden,suspendedReaderAnchor=null,resumeAnchorToken=0;
 let searchQuery='',searchPage=0,searchOccurrence=-1,searchBusy=false,searchToken=0,searchSource='auto';
 let outlineLoaded=false,outlineEntries=[];
 const pageCache=new Map(),warmedPages=new Set(),textCache=new Map(),annotationCache=new Map();
@@ -845,7 +846,7 @@ function setupContinuousObserver(){
   for(const el of continuousRoot.children)continuousObserver.observe(el);
 }
 function updateContinuousCurrentPage(){
-  if(!continuousMode||!continuousRoot)return;
+  if(readerSuspended||document.hidden||!continuousMode||!continuousRoot)return;
   const top=viewer.getBoundingClientRect().top+20;
   let best=pageNum,bestDist=Infinity;
   for(const el of continuousRoot.children){
@@ -885,6 +886,50 @@ function continuousCenterAnchor(){
   const r=viewer.getBoundingClientRect();
   return continuousAnchorFromClient(r.top+r.height/2);
 }
+function captureReaderPosition(){
+  if(!pdf)return;
+  if(continuousMode&&continuousRoot){
+    const r=viewer.getBoundingClientRect();
+    const clientY=r.top+Math.min(24,Math.max(4,r.height*.08));
+    const anchor=continuousAnchorFromClient(clientY);
+    if(anchor){
+      suspendedReaderAnchor={page:anchor.page,fraction:anchor.fraction};
+      pageNum=validPage(anchor.page,pageNum);
+      updateControls();
+    }
+  }else{
+    suspendedReaderAnchor=null;
+  }
+  savePage();
+}
+function restoreReaderPosition(){
+  if(!pdf)return;
+  if(continuousMode&&continuousRoot&&suspendedReaderAnchor){
+    const token=++resumeAnchorToken;
+    const restore=()=>{
+      if(token!==resumeAnchorToken||readerSuspended||document.hidden||!continuousMode||!continuousRoot)return;
+      const r=viewer.getBoundingClientRect();
+      const clientY=r.top+Math.min(24,Math.max(4,r.height*.08));
+      restoreContinuousAnchor({...suspendedReaderAnchor,clientY});
+      savePage();
+    };
+    requestAnimationFrame(()=>requestAnimationFrame(restore));
+  }else{
+    updateControls();
+    savePage();
+  }
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){
+    captureReaderPosition();
+    readerSuspended=true;
+    return;
+  }
+  readerSuspended=false;
+  lockReaderChrome(900);
+  restoreReaderPosition();
+});
+window.addEventListener('pagehide',()=>captureReaderPosition());
 function commitContinuousScale(nextScale,anchor=continuousCenterAnchor(),keepFit=false){
   if(!continuousMode||!continuousRoot)return false;
   lockReaderChrome(700);
@@ -981,7 +1026,7 @@ function updateReaderChrome(){
   else if(readerChromeDirection<-5){setReaderChromeHidden(false);readerChromeDirection=0;}
 }
 viewer.addEventListener('scroll',()=>{
-  if(continuousMode)requestAnimationFrame(updateContinuousCurrentPage);
+  if(!readerSuspended&&!document.hidden&&continuousMode)requestAnimationFrame(updateContinuousCurrentPage);
   requestAnimationFrame(updateReaderChrome);
 },{passive:true});
 landscapePhoneQuery.addEventListener('change',()=>{
