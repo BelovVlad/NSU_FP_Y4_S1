@@ -3,7 +3,10 @@
   const base = new URL('./',document.currentScript.src);
   const supported = 'serviceWorker' in navigator && window.isSecureContext;
   let registration, installPrompt;
-  const installed = () => matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const fullscreenInstalled = () => matchMedia('(display-mode: fullscreen)').matches;
+  const standaloneInstalled = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+  const installed = () => fullscreenInstalled() || standaloneInstalled();
+  const needsFullscreenReinstall = () => standaloneInstalled() && !fullscreenInstalled();
   const installButton = document.getElementById('installApp');
   const downloadsButton = document.getElementById('offlineFiles');
   const settingsButton = document.getElementById('appSettings');
@@ -106,7 +109,9 @@
         if(button){button.disabled=false;button.textContent='Обновить сейчас';button.dataset.ready='1';}
         return true;
       }
-      if(status)status.textContent='У вас актуальная версия.';
+      if(status)status.textContent=needsFullscreenReinstall()
+        ?'Файлы приложения актуальны, но Android всё ещё запускает старую установленную версию в режиме standalone. Для постоянного полноэкранного запуска удалите приложение с главного экрана и установите его заново.'
+        :'У вас актуальная версия.';
       return false;
     }catch(error){
       if(status)status.textContent=error.message||'Не удалось проверить обновления.';
@@ -174,6 +179,7 @@
     update.textContent=registration?.waiting?'Обновить сейчас':'Проверить обновления';
     const updateStatus=document.createElement('div');updateStatus.className='app-manager-status';
     if(registration?.waiting){update.dataset.ready='1';updateStatus.textContent='Доступно обновление.'}
+    else if(needsFullscreenReinstall())updateStatus.textContent='Режим запуска: standalone. Для постоянного fullscreen нужна переустановка приложения; обычная проверка обновлений это не меняет.';
     update.onclick=async()=>{
       if(update.dataset.ready==='1'||registration?.waiting){await activateWaitingWorker();return;}
       await checkForUpdate(updateStatus,update);
