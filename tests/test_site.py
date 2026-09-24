@@ -162,6 +162,13 @@ class SiteTests(unittest.TestCase):
         for file in metadata['files']:
             self.assertTrue((ROOT/file['path']).is_file(),file['path'])
 
+    def test_music_is_fixed_full_volume_without_slider(self):
+        self.home()
+        self.assertEqual(self.page.locator('#musicPanel').count(),0)
+        self.assertEqual(self.page.locator('#musicVolume').count(),0)
+        self.page.evaluate("chooseMusicTrack('na19')")
+        self.assertEqual(self.page.evaluate("document.querySelector('#siteMusic').volume"),1)
+
     def test_search_retries_only_failed_shards(self):
         self.home()
         self.failed_paths.add('/docs/search-index/part-00.json')
@@ -310,8 +317,8 @@ class SiteTests(unittest.TestCase):
         self.page.wait_for_function("document.body.classList.contains('continuous-mode')")
         self.page.evaluate("""() => {
             getPageSearchData = async n => ({
-                text:'alpha beta',
-                items:[{str:'alpha',width:50,transform:[1,0,0,12,72,760]}]
+                text:'prefix alpha suffix words',
+                items:[{str:'prefix alpha suffix words',width:240,transform:[1,0,0,12,72,760]}]
             });
             searchInput.value='alpha';
             resetSearch();
@@ -325,6 +332,9 @@ class SiteTests(unittest.TestCase):
             return p && p.dataset.rendered==='1' && p.querySelectorAll('.search-mark').length>0;
         }""")
         self.assertGreater(self.page.locator('.continuous-page[data-page="1"] .search-mark').count(),0)
+        mark=self.page.locator('.continuous-page[data-page="1"] .search-mark').first.bounding_box()
+        page_box=self.page.locator('.continuous-page[data-page="1"]').bounding_box()
+        self.assertLess(mark['width'],page_box['width']*.45)
         self.page.evaluate("closeSearch()")
         self.assertEqual(self.page.locator('.continuous-page .search-mark').count(),0)
 
