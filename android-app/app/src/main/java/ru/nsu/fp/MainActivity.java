@@ -1,16 +1,25 @@
 package ru.nsu.fp;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -19,6 +28,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import java.io.File;
 
 public class MainActivity extends Activity {
     private static final String START_URL = "https://belovvlad.github.io/NSU_FP_Y4_S1/";
@@ -29,11 +40,12 @@ public class MainActivity extends Activity {
     private FrameLayout root;
     private WebView webView;
     private TextView stateView;
+    private long updateDownloadId = -1L;
+    private BroadcastReceiver downloadReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         configureEdgeToEdge();
 
         root = new FrameLayout(this);
@@ -52,21 +64,19 @@ public class MainActivity extends Activity {
                 ViewGroup.LayoutParams.MATCH_PARENT
         ));
 
+        registerUpdateReceiver();
+
         try {
             webView = new WebView(this);
             configureWebView();
-
             root.addView(webView, 0, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
             ));
             root.requestApplyInsets();
 
-            if (savedInstanceState == null) {
-                webView.loadUrl(START_URL);
-            } else {
-                webView.restoreState(savedInstanceState);
-            }
+            if (savedInstanceState == null) webView.loadUrl(START_URL);
+            else webView.restoreState(savedInstanceState);
         } catch (Throwable error) {
             stateView.setText("Не удалось запустить Android WebView.\n\n" +
                     error.getClass().getSimpleName() + ": " +
@@ -78,26 +88,16 @@ public class MainActivity extends Activity {
         Window window = getWindow();
         window.setStatusBarColor(Color.TRANSPARENT);
         window.setNavigationBarColor(Color.TRANSPARENT);
+        if (Build.VERSION.SDK_INT >= 29) window.setNavigationBarContrastEnforced(false);
 
-        if (android.os.Build.VERSION.SDK_INT >= 29) {
-            window.setNavigationBarContrastEnforced(false);
-        }
-
-        // Broadly compatible edge-to-edge flags. Unlike requestFullscreen(),
-        // these do not create Android's fullscreen education popup and do not
-        // consume the Back gesture.
         int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-
-        // Keep system icons light on the dark app background.
         flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        if (android.os.Build.VERSION.SDK_INT >= 26) {
-            flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-        }
+        if (Build.VERSION.SDK_INT >= 26) flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         window.getDecorView().setSystemUiVisibility(flags);
 
-        if (android.os.Build.VERSION.SDK_INT >= 28) {
+        if (Build.VERSION.SDK_INT >= 28) {
             WindowManager.LayoutParams params = window.getAttributes();
             params.layoutInDisplayCutoutMode =
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
@@ -106,21 +106,13 @@ public class MainActivity extends Activity {
     }
 
     private void applySafeInsets() {
-        // Keep the window edge-to-edge so the background reaches under the
-        // status/navigation bars, but move the actual web content away from
-        // those bars. This avoids the system clock/icons covering the site toolbar.
         root.setOnApplyWindowInsetsListener((view, insets) -> {
             int left = insets.getSystemWindowInsetLeft();
             int top = insets.getSystemWindowInsetTop();
             int right = insets.getSystemWindowInsetRight();
             int bottom = insets.getSystemWindowInsetBottom();
-
-            if (webView != null) {
-                webView.setPadding(left, top, right, bottom);
-            }
-            if (stateView != null) {
-                stateView.setPadding(left, top, right, bottom);
-            }
+            if (webView != null) webView.setPadding(left, top, right, bottom);
+            if (stateView != null) stateView.setPadding(left, top, right, bottom);
             return insets;
         });
         root.requestApplyInsets();
@@ -142,6 +134,8 @@ public class MainActivity extends Activity {
         settings.setDisplayZoomControls(false);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setUserAgentString(settings.getUserAgentString() + " NSUFPAndroid/" + BuildConfig.VERSION_CODE);
+
+        webView.addJavascriptInterface(new NativeBridge(), "NSUFPAndroid");
 
         CookieManager cookies = CookieManager.getInstance();
         cookies.setAcceptCookie(true);
@@ -176,9 +170,97 @@ public class MainActivity extends Activity {
         });
     }
 
+    private final class NativeBridge {
+        @JavascriptInterface
+        public int getVersionCode() {
+            return BuildConfig.VERSION_CODE;
+        }
+
+        @JavascriptInterface
+        public String getVersionName() {
+            return BuildConfig.VERSION_NAME;
+        }
+
+        @JavascriptInterface
+        public String startUpdate(String url) {
+            try {
+                Uri uri = Uri.parse(url);
+                String host = uri.getHost();
+                String path = uri.getPath();
+                boolean allowed = "raw.githubusercontent.com".equalsIgnoreCase(host)
+                        && path != null
+                        && path.equals("/BelovVlad/NSU_FP_Y4_S1/main/docs/android/NSU-FP.apk");
+                if (!allowed) return "error:Недопустимый адрес APK.";
+
+                if (Build.VERSION.SDK_INT >= 26 && !getPackageManager().canRequestPackageInstalls()) {
+                    runOnUiThread(() -> startActivity(new Intent(
+                            Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                            Uri.parse("package:" + getPackageName())
+                    )));
+                    return "permission";
+                }
+
+                runOnUiThread(() -> enqueueUpdate(uri));
+                return "downloading";
+            } catch (Exception error) {
+                return "error:" + (error.getMessage() == null ? "Не удалось начать обновление." : error.getMessage());
+            }
+        }
+    }
+
+    private void enqueueUpdate(Uri uri) {
+        try {
+            File dir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+            if (dir == null) throw new IllegalStateException("Нет каталога загрузок.");
+            File target = new File(dir, "NSU-FP-update.apk");
+            if (target.exists()) target.delete();
+
+            DownloadManager.Request request = new DownloadManager.Request(uri);
+            request.setTitle("NSU FP — обновление");
+            request.setDescription("Загрузка новой версии приложения");
+            request.setMimeType("application/vnd.android.package-archive");
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            request.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_DOWNLOADS, "NSU-FP-update.apk");
+
+            DownloadManager manager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+            updateDownloadId = manager.enqueue(request);
+        } catch (Exception error) {
+            updateDownloadId = -1L;
+        }
+    }
+
+    private void registerUpdateReceiver() {
+        downloadReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L);
+                if (id == updateDownloadId) installDownloadedApk(id);
+            }
+        };
+        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+        if (Build.VERSION.SDK_INT >= 33) registerReceiver(downloadReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        else registerReceiver(downloadReceiver, filter);
+    }
+
+    private void installDownloadedApk(long id) {
+        DownloadManager manager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        DownloadManager.Query query = new DownloadManager.Query().setFilterById(id);
+        try (Cursor cursor = manager.query(query)) {
+            if (cursor == null || !cursor.moveToFirst()) return;
+            int status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
+            if (status != DownloadManager.STATUS_SUCCESSFUL) return;
+        }
+
+        Uri apk = manager.getUriForDownloadedFile(id);
+        if (apk == null) return;
+        Intent install = new Intent(Intent.ACTION_VIEW);
+        install.setDataAndType(apk, "application/vnd.android.package-archive");
+        install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(install);
+    }
+
     private boolean openExternalIfNeeded(Uri uri) {
         if (uri == null) return false;
-
         String scheme = uri.getScheme();
         String host = uri.getHost();
         String path = uri.getPath();
@@ -186,37 +268,31 @@ public class MainActivity extends Activity {
         if (("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme))
                 && INTERNAL_HOST.equalsIgnoreCase(host)
                 && path != null
-                && path.startsWith("/NSU_FP_Y4_S1/")) {
-            return false;
-        }
+                && path.startsWith("/NSU_FP_Y4_S1/")) return false;
 
-        try {
-            startActivity(new Intent(Intent.ACTION_VIEW, uri));
-        } catch (Exception ignored) {
-        }
+        try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
+        catch (Exception ignored) {}
         return true;
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            super.onBackPressed();
-        }
+        if (webView != null && webView.canGoBack()) webView.goBack();
+        else super.onBackPressed();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        if (webView != null) {
-            webView.saveState(outState);
-        }
+        if (webView != null) webView.saveState(outState);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onDestroy() {
+        if (downloadReceiver != null) {
+            try { unregisterReceiver(downloadReceiver); } catch (Exception ignored) {}
+        }
         if (webView != null) {
             webView.stopLoading();
             webView.loadUrl("about:blank");
