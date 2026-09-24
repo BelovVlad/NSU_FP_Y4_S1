@@ -65,7 +65,11 @@ public class MainActivity extends Activity {
         ));
 
         try {
+            try {
             registerUpdateReceiver();
+        } catch (Throwable ignored) {
+            downloadReceiver = null;
+        }
         } catch (Throwable ignored) {
             downloadReceiver = null;
         }
@@ -90,19 +94,14 @@ public class MainActivity extends Activity {
 
     private void configureEdgeToEdge() {
         Window window = getWindow();
-
-        // Reliable status-bar-only fullscreen. This hides the top status bar
-        // without using browser fullscreen and without touching the Back gesture.
         window.setFlags(
                 WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN
         );
-
         window.setNavigationBarColor(APP_BG);
         if (Build.VERSION.SDK_INT >= 29) {
             window.setNavigationBarContrastEnforced(false);
         }
-
         if (Build.VERSION.SDK_INT >= 28) {
             WindowManager.LayoutParams params = window.getAttributes();
             params.layoutInDisplayCutoutMode =
