@@ -1490,7 +1490,6 @@ function hidePdfOverlay(){
   pdfFullscreen.classList.remove('open','ready');
   pdfFullscreen.setAttribute('aria-hidden','true');
   document.body.classList.remove('pdf-open');
-  pdfFullscreenFrame.src='about:blank';
 }
 
 async function openPdfFullscreen(url,title='PDF'){
@@ -1534,6 +1533,17 @@ window.addEventListener('popstate',()=>{
   pdfHistoryArmed=false;
   hidePdfOverlay();
 });
+
+window.nsuHandleAndroidBack=()=>{
+  if(!pdfFullscreen.classList.contains('open'))return false;
+  if(pdfHistoryArmed&&history.state?.nsuPdfOverlay){
+    history.back();
+  }else{
+    pdfHistoryArmed=false;
+    hidePdfOverlay();
+  }
+  return true;
+};
 document.addEventListener('click',e=>{
   const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary,a[href*="pdfjs/viewer.html"],a[href*="notebook/viewer.html"]');
   if(!a)return;
