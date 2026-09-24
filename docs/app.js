@@ -137,6 +137,14 @@
         button.disabled=false;
         return;
       }
+      if(current && current < Number(meta.requiresReinstallBelow||0)){
+        button.textContent='Скачать APK '+(meta.versionName||'');
+        button.disabled=false;
+        button.onclick=()=>{ location.href=meta.apkUrl; };
+        status.textContent='Для перехода на '+(meta.versionName||'новую версию')+
+          ' нужно один раз удалить старое NSU FP и установить скачанный APK заново. После этой переустановки следующие APK будут ставиться поверх приложения.';
+        return;
+      }
       button.textContent='Обновить приложение';
       button.disabled=false;
       button.onclick=()=>{
