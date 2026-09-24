@@ -3,8 +3,9 @@
   "short_name": "NSU FP",
   "start_url": "./",
   "scope": "./",
-  "display": "standalone",
+  "display": "fullscreen",
   "display_override": [
+    "fullscreen",
     "standalone"
   ],
   "background_color": "#080d12",
