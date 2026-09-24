@@ -716,18 +716,19 @@ function fittedScale(base){
 }
 function canvasRenderRatio(viewport,{continuous=false}={}){
   const mobile=compactQuery.matches;
+  const portrait=portraitPhoneQuery.matches&&!searchPreviewParam;
   const dpr=Math.max(1,window.devicePixelRatio||1);
-  // Small glyphs are most sensitive in fit-to-width mode. Oversample a little
-  // above the physical DPR, but keep a strict pixel budget so phones do not
-  // trade sharpness for memory pressure and jank.
-  const qualityBoost=fitWidth?(mobile?1.25:1.16):1.04;
-  let ratio=Math.min(mobile?3.8:3.6,dpr*qualityBoost);
+  // Portrait phones show a whole A4 page at a very small CSS width, so glyphs
+  // need substantially more raster samples than the physical DPR alone gives.
+  // Keep landscape unchanged: that mode is far more sensitive to zoom/rotation jank.
+  const qualityBoost=portrait?(fitWidth?1.65:1.35):(fitWidth?(mobile?1.25:1.16):1.04);
+  let ratio=Math.min(portrait?5.0:(mobile?3.8:3.6),dpr*qualityBoost);
   const cssPixels=Math.max(1,viewport.width*viewport.height);
   let maxPixels;
   if(continuous){
-    maxPixels=mobile?12000000:22000000;
+    maxPixels=portrait?18000000:(mobile?12000000:22000000);
   }else{
-    maxPixels=mobile?16000000:28000000;
+    maxPixels=portrait?24000000:(mobile?16000000:28000000);
   }
   if(cssPixels*ratio*ratio>maxPixels)ratio=Math.max(.8,Math.sqrt(maxPixels/cssPixels));
   return ratio;
