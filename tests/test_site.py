@@ -252,6 +252,26 @@ class SiteTests(unittest.TestCase):
         self.page.evaluate('window.scrollTo(0,0)')
         self.page.wait_for_function("Math.abs(document.querySelector('.preview-panel').getBoundingClientRect().bottom-(innerHeight-8))<2")
 
+    def test_home_has_open_history_before_updates_and_no_stats(self):
+        self.home()
+        self.assertEqual(self.page.locator('.stats').count(),0)
+        self.page.evaluate("""path => {
+            localStorage.setItem('nsu-open-history-v1',JSON.stringify([{path,openedAt:Date.now()}]));
+            localStorage.setItem('nsu-pdf-page:'+path,'2');
+            renderHome();
+        }""",self.a)
+        self.assertEqual(self.page.locator('#openHistory .history-row').count(),1)
+        self.assertIn('стр. 2',self.page.locator('#openHistory .history-row').inner_text())
+        order=self.page.evaluate("""() => {
+            const history=document.querySelector('#openHistory');
+            const updates=document.querySelector('#recentUpdates');
+            return !!(history.compareDocumentPosition(updates)&Node.DOCUMENT_POSITION_FOLLOWING);
+        }""")
+        self.assertTrue(order)
+        self.page.locator('#openHistory .history-row').click()
+        self.page.wait_for_function("document.querySelector('#pdfFullscreen').classList.contains('open')")
+        self.assertIn('page=2',self.page.locator('#pdfFullscreenFrame').get_attribute('src'))
+
     def test_new_query_supersedes_pending_search(self):
         self.home()
         self.page.evaluate("runSearch('alpha');runSearch('needle')")
