@@ -195,6 +195,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 .course-code{color:#f0dbca;font-weight:750;font-size:12px}.course-name{margin-top:4px;color:#6e7881;font-size:9.5px;line-height:1.35}
 .recent{padding:17px}.recent-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px 0;border-bottom:1px solid var(--line2);cursor:pointer}.recent-row:last-child{border-bottom:0}
 .recent-name{color:#dcd8d2;font-size:11px}.recent-meta,.recent-date{margin-top:2px;color:#69747d;font-size:9.5px}
+.history-empty{padding:10px 0;color:#69747d;font-size:10.5px;line-height:1.45}
 .mobile-overlay{display:none}
 @media(max-width:1180px){
   .workspace{grid-template-columns:minmax(400px,1fr) minmax(340px,.8fr)}
@@ -1298,6 +1299,38 @@ function keywords(f){
   return [...new Set(source)].slice(0,4);
 }
 
+const OPEN_HISTORY_KEY='nsu-open-history-v1';
+function readOpenHistory(){
+  try{
+    const value=JSON.parse(localStorage.getItem(OPEN_HISTORY_KEY)||'[]');
+    return Array.isArray(value)?value.filter(item=>item&&typeof item.path==='string'):[];
+  }catch{return[]}
+}
+function recordOpenedPath(path){
+  path=String(path||'').trim();
+  if(!path)return;
+  const next=[{path,openedAt:Date.now()},...readOpenHistory().filter(item=>item.path!==path)].slice(0,12);
+  try{localStorage.setItem(OPEN_HISTORY_KEY,JSON.stringify(next))}catch{}
+}
+function recordOpenedFile(file){if(file?.path)recordOpenedPath(file.path)}
+function recordOpenedUrl(url){
+  try{
+    const parsed=new URL(url,location.href);
+    const path=parsed.searchParams.get('file');
+    if(path)recordOpenedPath(path);
+  }catch{}
+}
+function rememberedPdfPage(file){
+  if(!file||file.ext!=='.pdf')return 0;
+  try{
+    const page=Number(localStorage.getItem('nsu-pdf-page:'+file.path));
+    return Number.isInteger(page)&&page>0?page:0;
+  }catch{return 0}
+}
+function openedHistoryFiles(limit=5){
+  return readOpenHistory().map(item=>({item,file:fileByPath(item.path)})).filter(row=>row.file).slice(0,limit);
+}
+
 
 let activeMusicTrack=null;
 let musicAudioContext=null,musicSourceNode=null,musicAnalyser=null,musicAnalyserData=null,musicGlitchFrame=0;
@@ -1486,6 +1519,7 @@ function hidePdfOverlay(){
 
 async function openPdfFullscreen(url,title='PDF'){
   if(!url)return;
+  recordOpenedUrl(url);
   const themed=new URL(url,location.href);
   const theme=currentPdfTheme();
   if(theme)themed.searchParams.set('theme',theme);else themed.searchParams.delete('theme');
@@ -1544,8 +1578,9 @@ window.nsuHandleAndroidBack=()=>{
 document.addEventListener('click',e=>{
   const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary,a[href*="pdfjs/viewer.html"],a[href*="notebook/viewer.html"]');
   if(!a)return;
-  if(a.classList.contains('knowledge-card')||a.closest('.app-downloads'))return;
   const href=a.getAttribute('href')||'';
+  recordOpenedUrl(href);
+  if(a.classList.contains('knowledge-card')||a.closest('.app-downloads'))return;
   if(!href.includes('pdfjs/viewer.html')&&!href.includes('notebook/viewer.html'))return;
   e.preventDefault();
   e.stopImmediatePropagation();
@@ -1887,12 +1922,14 @@ function renderSubject(){
     const item=(group?.items||[]).find(i=>i.id===r.dataset.entry);if(!item)return;
     state.selectedEntry=item;
     if(isPhoneLayout()&&previewFile?.ext==='.pdf'){openPdfFullscreen(viewerUrl(previewFile,item.page||0,item.title),item.title);return}
+    recordOpenedFile(previewFile);
     renderSubject();
   });
   $$('.file-row[data-path]').forEach(r=>r.onclick=()=>{
     const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;
     if(isPhoneLayout()&&f.ext==='.pdf'){openPdfFullscreen(viewerUrl(f),niceName(f));return}
     if(isPhoneLayout()&&f.ext==='.ipynb'){openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
+    recordOpenedFile(f);
     state.selected=f;state.selectedEntry=null;renderSubject();
   });
 }
@@ -1996,18 +2033,28 @@ window.addEventListener('message',event=>{
 
 
 function renderHome(){
-  const subjectCount=ORDER.filter(s=>FILES.some(f=>subjectOf(f)===s)).length;
   const recent=FILES.slice().sort((a,b)=>(new Date(updatedValue(b)||0))-(new Date(updatedValue(a)||0))).slice(0,7);
+  const opened=openedHistoryFiles(5);
+  const openedHtml=opened.length?opened.map(({file:f})=>{
+    const page=rememberedPdfPage(f);
+    const right=f.ext==='.pdf'?(page?'стр. '+page:'PDF'):'Notebook';
+    return '<div class="recent-row history-row" data-history-path="'+esc(f.path)+'"><div><div class="recent-name">'+esc(niceName(f))+'</div><div class="recent-meta">'+esc(subjectOf(f)+' · '+sectionOf(f))+'</div></div><div class="recent-date">'+esc(right)+'</div></div>';
+  }).join(''):'<div class="history-empty">Здесь появятся последние открытые материалы.</div>';
   main.innerHTML='<div class="home-grid">'+
     '<section class="panel welcome"><h2>Материалы 4 курса</h2><p>Физический факультет НГУ · 1 семестр</p>'+
-      '<div class="stats"><div class="stat"><div class="stat-num">'+subjectCount+'</div><div class="stat-label">предметов</div></div><div class="stat"><div class="stat-num">'+countBySection('Лекции')+'</div><div class="stat-label">лекционных файлов</div></div><div class="stat"><div class="stat-num">'+countBySection('Семинары')+'</div><div class="stat-label">семинаров</div></div><div class="stat"><div class="stat-num">'+FILES.length+'</div><div class="stat-label">всего материалов</div></div></div>'+
       '<div class="course-grid">'+ORDER.filter(s=>FILES.some(f=>subjectOf(f)===s)).map(s=>'<div class="course-card" data-subject="'+esc(s)+'"><div class="course-code">'+esc(s)+'</div><div class="course-name">'+esc((META[s]||{}).name||s)+'</div></div>').join('')+'</div>'+
     '</section>'+
-    '<section class="panel recent"><h2 class="panel-title">Недавно обновлено</h2>'+recent.map(f=>{const m=fileMeta(f),b=isNewDate(m.created_at)?'<span class="new-badge">NEW</span>':'';return '<div class="recent-row" data-path="'+esc(f.path)+'"><div><div class="recent-name"><span class="file-name-line">'+esc(niceName(f))+b+'</span></div><div class="recent-meta">'+esc(subjectOf(f)+' · '+sectionOf(f))+'</div></div><div class="recent-date">'+esc(fmtDate(updatedValue(f)))+'</div></div>'}).join('')+'</section>'+
+    '<section id="openHistory" class="panel recent"><h2 class="panel-title">История открытия</h2>'+openedHtml+'</section>'+
+    '<section id="recentUpdates" class="panel recent"><h2 class="panel-title">Недавно обновлено</h2>'+recent.map(f=>{const m=fileMeta(f),b=isNewDate(m.created_at)?'<span class="new-badge">NEW</span>':'';return '<div class="recent-row updated-row" data-path="'+esc(f.path)+'"><div><div class="recent-name"><span class="file-name-line">'+esc(niceName(f))+b+'</span></div><div class="recent-meta">'+esc(subjectOf(f)+' · '+sectionOf(f))+'</div></div><div class="recent-date">'+esc(fmtDate(updatedValue(f)))+'</div></div>'}).join('')+'</section>'+
     '<section class="panel feedback-panel"><div class="feedback-head"><div class="feedback-copy"><div class="feedback-kicker">Обратная связь</div><h2 class="feedback-title">Идеи и замечания</h2><p class="feedback-desc">Есть что улучшить, нашли ошибку или не хватает материала? Напишите здесь — сообщения хранятся в GitHub Discussions.</p></div></div><div id="giscusMount" class="giscus-wrap"><div class="feedback-loading">Загружаю обсуждение…</div></div></section>'+
   '</div>';
   $$('.course-card').forEach(c=>c.onclick=()=>{state.view='subjects';state.subject=c.dataset.subject;state.section='';state.selected=null;state.selectedEntry=null;setActiveNav('subjects');renderSubjectNav();render()});
-  $$('.recent-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
+  $$('.history-row').forEach(r=>r.onclick=()=>{
+    const f=fileByPath(r.dataset.historyPath);if(!f)return;
+    if(f.ext==='.pdf'){void openPdfFullscreen(viewerUrl(f,rememberedPdfPage(f),niceName(f)),niceName(f));return}
+    if(f.ext==='.ipynb'){void openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
+  });
+  $$('.updated-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
   void mountFeedback();
 }
 
