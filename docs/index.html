@@ -1474,6 +1474,15 @@ musicAudio.addEventListener('play',()=>syncMusicUi(true));
 musicAudio.addEventListener('pause',()=>syncMusicUi(false));
 musicAudio.addEventListener('error',()=>syncMusicUi(false));
 
+let pdfHistoryArmed=false;
+
+function hidePdfOverlay(){
+  pdfFullscreen.classList.remove('open','ready');
+  pdfFullscreen.setAttribute('aria-hidden','true');
+  document.body.classList.remove('pdf-open');
+  pdfFullscreenFrame.src='about:blank';
+}
+
 async function openPdfFullscreen(url,title='PDF'){
   if(!url)return;
   const themed=new URL(url,location.href);
@@ -1482,39 +1491,38 @@ async function openPdfFullscreen(url,title='PDF'){
   const isNotebook=themed.pathname.includes('/notebook/viewer.html');
   if(isNotebook){themed.searchParams.delete('embed');themed.searchParams.set('full','1')}
 
+  // This is deliberately an in-app fixed overlay, not the browser Fullscreen API.
+  // Android Back can therefore close the document instead of first exiting immersive mode.
+  if(!pdfFullscreen.classList.contains('open')){
+    const current=history.state&&typeof history.state==='object'?history.state:{};
+    history.pushState({...current,nsuPdfOverlay:true},'',location.href);
+    pdfHistoryArmed=true;
+  }
+
   pdfFullscreen.classList.remove('ready');
   pdfFullscreen.classList.add('open');
   pdfFullscreen.setAttribute('aria-hidden','false');
   document.body.classList.add('pdf-open');
-  pdfFullscreen.dataset.requestedFullscreen='1';
   if(pdfFullscreenLoaderText)pdfFullscreenLoaderText.textContent=isNotebook?'Открываю Notebook…':'Открываю PDF…';
 
   pdfFullscreenFrame.src='about:blank';
-
-  let fullscreenPromise=null;
-  try{
-    if(document.fullscreenElement!==pdfFullscreen&&pdfFullscreen.requestFullscreen){
-      fullscreenPromise=pdfFullscreen.requestFullscreen();
-    }
-  }catch{}
-
   requestAnimationFrame(()=>{pdfFullscreenFrame.src=themed.href});
-  try{if(fullscreenPromise)await fullscreenPromise}catch{}
 }
-async function closePdfFullscreen(fromFullscreenChange=false){
-  pdfFullscreen.classList.remove('open','ready');
-  pdfFullscreen.setAttribute('aria-hidden','true');
-  document.body.classList.remove('pdf-open');
-  pdfFullscreen.dataset.requestedFullscreen='0';
-  pdfFullscreenFrame.src='about:blank';
-  if(!fromFullscreenChange&&document.fullscreenElement===pdfFullscreen){
-    try{await document.exitFullscreen()}catch{}
+
+async function closePdfFullscreen(fromHistory=false){
+  if(!pdfFullscreen.classList.contains('open'))return;
+  if(!fromHistory&&pdfHistoryArmed&&history.state?.nsuPdfOverlay){
+    history.back();
+    return;
   }
+  pdfHistoryArmed=false;
+  hidePdfOverlay();
 }
-document.addEventListener('fullscreenchange',()=>{
-  if(!document.fullscreenElement&&pdfFullscreen.dataset.requestedFullscreen==='1'&&pdfFullscreen.classList.contains('open')){
-    void closePdfFullscreen(true);
-  }
+
+window.addEventListener('popstate',()=>{
+  if(!pdfFullscreen.classList.contains('open'))return;
+  pdfHistoryArmed=false;
+  hidePdfOverlay();
 });
 document.addEventListener('click',e=>{
   const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary,a[href*="pdfjs/viewer.html"],a[href*="notebook/viewer.html"]');
