@@ -304,6 +304,30 @@ class SiteTests(unittest.TestCase):
         self.assertTrue(self.page.locator('#viewMode').is_visible())
         self.assertEqual(self.page.locator('#readerControls').evaluate("(el)=>getComputedStyle(el).position"),'fixed')
 
+    def test_mobile_pdf_search_highlights_in_continuous_mode(self):
+        self.page.set_viewport_size({'width':390,'height':844})
+        self.pdf()
+        self.page.wait_for_function("document.body.classList.contains('continuous-mode')")
+        self.page.evaluate("""() => {
+            getPageSearchData = async n => ({
+                text:'alpha beta',
+                items:[{str:'alpha',width:50,transform:[1,0,0,12,72,760]}]
+            });
+            searchInput.value='alpha';
+            resetSearch();
+            searchQuery='alpha';
+            searchPage=1;
+            pageNum=1;
+        }""")
+        self.page.evaluate("renderContinuous(1)")
+        self.page.wait_for_function("""() => {
+            const p=document.querySelector('.continuous-page[data-page="1"]');
+            return p && p.dataset.rendered==='1' && p.querySelectorAll('.search-mark').length>0;
+        }""")
+        self.assertGreater(self.page.locator('.continuous-page[data-page="1"] .search-mark').count(),0)
+        self.page.evaluate("closeSearch()")
+        self.assertEqual(self.page.locator('.continuous-page .search-mark').count(),0)
+
     def test_mobile_zoom_continuous_mode_and_page_navigation(self):
         self.page.set_viewport_size({'width':390,'height':844})
         self.pdf()
