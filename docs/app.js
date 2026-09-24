@@ -3,7 +3,7 @@
   const base = new URL('./',document.currentScript.src);
   const supported = 'serviceWorker' in navigator && window.isSecureContext;
   let registration, installPrompt;
-  const installed = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const installed = () => matchMedia('(display-mode: fullscreen)').matches || matchMedia('(display-mode: standalone)').matches || navigator.standalone;
   const installButton = document.getElementById('installApp');
   const downloadsButton = document.getElementById('offlineFiles');
   const settingsButton = document.getElementById('appSettings');
@@ -270,51 +270,9 @@
   window.NSUApp={ready,request};
   updateInstallButton();
 
-  /* Runtime immersive fallback for installed mobile apps. */
-  // Manifest display-mode updates are not always applied immediately to an
-  // already-installed Samsung/Chromium PWA. On the first ordinary tap, ask
-  // the browser to enter immersive fullscreen using that user activation.
-  const mobilePointer=()=>matchMedia('(pointer:coarse)').matches;
-  const fullscreenDisplay=()=>matchMedia('(display-mode: fullscreen)').matches;
-  const standaloneDisplay=()=>matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
-  let immersiveBusy=false;
-  async function enterImmersive(){
-    if(immersiveBusy || document.fullscreenElement || fullscreenDisplay() || !mobilePointer())return false;
-    // Do not force fullscreen in a normal browser tab; this fallback is only
-    // for the installed app that is still launching in the old standalone mode.
-    if(!standaloneDisplay() || !document.documentElement.requestFullscreen)return false;
-    immersiveBusy=true;
-    try{
-      try{await document.documentElement.requestFullscreen({navigationUI:'hide'});}
-      catch{await document.documentElement.requestFullscreen();}
-      return !!document.fullscreenElement;
-    }catch{
-      return false;
-    }finally{
-      immersiveBusy=false;
-    }
-  }
-  function armImmersive(){
-    if(fullscreenDisplay() || !standaloneDisplay() || !mobilePointer() || !document.documentElement.requestFullscreen)return;
-    const trigger=event=>{
-      const target=event.target instanceof Element?event.target:null;
-      // Opening the keyboard on the first tap should not simultaneously move
-      // the whole viewport; the next tap on a normal control can enter fullscreen.
-      if(target?.closest('input,textarea,select,[contenteditable="true"]'))return;
-      void enterImmersive().then(ok=>{
-        if(ok){
-          document.removeEventListener('pointerup',trigger,true);
-          document.removeEventListener('click',trigger,true);
-        }
-      });
-    };
-    // pointerup works on Samsung Internet; click is a fallback for keyboards
-    // and accessibility activation.
-    document.addEventListener('pointerup',trigger,true);
-    document.addEventListener('click',trigger,true);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',armImmersive,{once:true});
-  else armImmersive();
+  /* Fullscreen is controlled by the installed PWA manifest.
+     Do not call the Fullscreen API here: Samsung/Android shows a large
+     system education bubble on every forced immersive entry. */
 
   // A reader can be the first page visited: retain libraries loaded before worker activation.
   const warm=()=>ready.then(()=>request('WARM',{urls:[location.href,...performance.getEntriesByType('resource').map(entry=>entry.name)]})).catch(()=>{});
