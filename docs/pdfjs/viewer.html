@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="dark">\n<meta id="appThemeColor" name="theme-color" content="#0d1015">\n<meta name="mobile-web-app-capable" content="yes">\n<link rel="manifest" href="../manifest.webmanifest?v=3">
 <title>PDF · ФФ НГУ</title>
 <style>
 :root{--bg:#0d1015;--pdf-bg:#1e1e1e;--bar:#12161c;--panel:#171c23;--line:#2b323d;--text:#eef1f5;--muted:#8993a1;--accent:#d45d68;--accent-soft:rgba(212,93,104,.14);--outlineW:320px}
@@ -234,6 +234,8 @@ function applyViewerTheme(theme){
   document.body.classList.remove('theme-na19','theme-na19x');
   if(theme==='na19')document.body.classList.add('theme-na19');
   else if(theme==='na19x')document.body.classList.add('theme-na19x');
+  const meta=document.getElementById('appThemeColor');
+  if(meta)meta.content=theme==='na19'?'#071112':theme==='na19x'?'#171b1e':'#0d1015';
 }
 applyViewerTheme(themeParam);
 window.addEventListener('message',e=>{
