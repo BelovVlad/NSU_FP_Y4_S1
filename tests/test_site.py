@@ -325,6 +325,12 @@ class SiteTests(unittest.TestCase):
         self.assertLessEqual(controls['x']+controls['width'],320)
         self.assertLessEqual(controls['y']+controls['height'],self.page.locator('.mobile-nav').bounding_box()['y'])
         self.assertEqual(self.page.locator('#readerControls').evaluate('(el)=>el.scrollWidth<=el.clientWidth'),True)
+        zoom=self.page.locator('.zoom-controls').bounding_box()
+        self.assertGreater(zoom['width'],controls['width']-30)
+        for selector in ('#zoomOut','#zoomIn','#zoom','#fit'):
+            child=self.page.locator(selector).bounding_box()
+            self.assertGreaterEqual(child['x'],zoom['x']-1)
+            self.assertLessEqual(child['x']+child['width'],zoom['x']+zoom['width']+1)
         self.page.locator('#toolsClose').click()
         self.page.locator('#searchToggle').click()
         self.assertEqual(self.page.locator('#searchToggle').get_attribute('aria-expanded'),'true')
