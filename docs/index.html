@@ -11,6 +11,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NSU FP">
+<link rel="apple-touch-icon" href="assets/app-192.png?v=2">
 <link rel="manifest" href="manifest.webmanifest?v=7">
 <title>NSU FP · 4 курс</title>
 <style>
@@ -1033,6 +1035,34 @@ body.music-na19x .pdf-fullscreen-loader{
   .main{padding-left:10px;padding-right:10px}
 }
 
+/* iPhone / iOS PWA safe areas: keep controls below the status bar / Dynamic Island. */
+@media(max-width:720px){
+  .topbar{
+    height:calc(58px + env(safe-area-inset-top,0px));
+    min-height:calc(58px + env(safe-area-inset-top,0px));
+    padding-top:env(safe-area-inset-top,0px);
+    padding-left:max(10px,env(safe-area-inset-left,0px));
+    padding-right:max(10px,env(safe-area-inset-right,0px));
+  }
+  .main{
+    padding-bottom:max(28px,calc(12px + env(safe-area-inset-bottom,0px)));
+  }
+}
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .topbar{
+    height:calc(52px + env(safe-area-inset-top,0px));
+    min-height:calc(52px + env(safe-area-inset-top,0px));
+    padding-top:env(safe-area-inset-top,0px);
+  }
+  .sidebar{
+    width:calc(var(--sideW) + env(safe-area-inset-left,0px));
+    padding-left:max(16px,env(safe-area-inset-left,0px));
+  }
+  .main{
+    padding-bottom:max(20px,calc(8px + env(safe-area-inset-bottom,0px)));
+  }
+}
+
 /* Installed app edge-to-edge fill */
 html,body{
   width:100%;
@@ -1068,7 +1098,7 @@ body{
 </style>
 <link rel="stylesheet" href="knowledge.css?v=3">
 <link rel="stylesheet" href="app.css?v=6">
-<script defer src="app.js?v=11"></script>
+<script defer src="app.js?v=12"></script>
 </head>
 <body>
 <div id="overlay" class="mobile-overlay"></div>
@@ -1125,7 +1155,6 @@ body{
         </span>
         <span>Приложение</span>
       </button>
-      <button id="installApp" type="button" hidden>Установить приложение</button>
       <button id="offlineFiles" type="button" hidden>Сохранённые PDF</button>
       <a class="repo-link" href="https://github.com/BelovVlad/NSU_FP_Y4_S1" target="_blank" rel="noopener"><span>GitHub</span><span data-icon="external" aria-hidden="true"></span></a>
     </div>
