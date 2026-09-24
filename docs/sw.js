@@ -1,5 +1,5 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v30';
+const SHELL_VERSION = 'v31';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
@@ -48,13 +48,10 @@ self.addEventListener('install', event => event.waitUntil((async () => {
 self.addEventListener('activate', event => event.waitUntil((async () => {
   const keys=await caches.keys();
   const oldShells=keys.filter(name => name.startsWith(PREFIX+'shell-') && name !== SHELL);
-  const upgrading=oldShells.length>0;
   await Promise.all(oldShells.map(name => caches.delete(name)));
+  // Take control for future requests, but never navigate/reload an already open
+  // document. A reader may be backgrounded in Android Recents.
   await self.clients.claim();
-  if(upgrading){
-    const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
-    await Promise.allSettled(windows.map(client=>client.navigate(client.url)));
-  }
 })()));
 
 async function readRange(response, range) {
