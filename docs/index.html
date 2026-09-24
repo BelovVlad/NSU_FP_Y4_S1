@@ -2119,7 +2119,7 @@ function searchPreviewHtml(q){
   const hit=g.hits[searchSelectedHit]||g.hits[0]||{page:0,snippet:''},f=g.f;
   const isPdf=f.ext==='.pdf',isNotebook=f.ext==='.ipynb';
   let openUrl=isPdf?viewerUrl(f,hit.page||0,niceName(f)):isNotebook?notebookUrl(f,hit.page||0,niceName(f),false):githubUrl(f);
-  let frameUrl=isPdf?openUrl:isNotebook?notebookUrl(f,hit.page||0,niceName(f),true):openUrl;
+  let frameUrl=isPdf?openUrl+'&embed=1&searchpreview=1':isNotebook?notebookUrl(f,hit.page||0,niceName(f),true):openUrl;
   if((isPdf||isNotebook)&&q){openUrl+='&find='+encodeURIComponent(q);frameUrl+='&find='+encodeURIComponent(q)}
   const frame=(isPdf||isNotebook)
     ?'<div class="search-preview-frame-wrap"><iframe class="search-preview-frame" src="'+esc(frameUrl)+'" loading="lazy" title="'+esc(niceName(f))+'"></iframe></div>'
@@ -2128,14 +2128,20 @@ function searchPreviewHtml(q){
   return '<div class="search-preview-head"><div><div class="search-preview-kicker">'+esc(subjectOf(f)+' · '+sectionOf(f)+loc)+'</div><h2 class="search-preview-title">'+esc(niceName(f))+'</h2></div><button class="search-preview-close" type="button">×</button></div><div class="search-preview-toolbar"><a class="search-open" href="'+esc(openUrl)+'">Открыть'+(hit.page?(isNotebook?' ячейку ':' стр. ')+hit.page:'')+'</a><div class="search-hit-nav"><button class="search-prev-hit" type="button">‹</button><span class="search-hit-position">'+(searchSelectedHit+1)+' / '+g.hits.length+'</span><button class="search-next-hit" type="button">›</button></div></div>'+frame+'<div class="search-preview-text">'+searchHi(hit.snippet||'',q)+'</div>';
 }
 
+function dismissSearchKeyboard(){
+  searchInput.blur();
+  const active=document.activeElement;
+  if(active&&active!==document.body&&typeof active.blur==='function')active.blur();
+}
 function bindSearchUi(q){
-  $$('.search-filter-chip').forEach(b=>b.onclick=()=>{if(b.dataset.searchFilter==='subject')searchFilterSubject=b.dataset.value;else searchFilterSection=b.dataset.value;searchSelectedGroup=0;searchSelectedHit=0;searchMobilePreview=false;renderSearchResults(q)});
-  $$('.search-group-main').forEach(b=>b.onclick=()=>{searchSelectedGroup=Number(b.dataset.searchGroupMain)||0;searchSelectedHit=0;searchMobilePreview=true;renderSearchResults(q)});
-  $$('.search-page-hit').forEach(b=>b.onclick=e=>{e.stopPropagation();searchSelectedGroup=Number(b.dataset.searchGroup)||0;searchSelectedHit=Number(b.dataset.searchHit)||0;searchMobilePreview=true;renderSearchResults(q)});
-  const prev=$('.search-prev-hit'),next=$('.search-next-hit'),close=$('.search-preview-close');
-  if(prev)prev.onclick=()=>{const g=searchGroups[searchSelectedGroup];if(!g)return;searchSelectedHit=(searchSelectedHit-1+g.hits.length)%g.hits.length;searchMobilePreview=true;renderSearchResults(q)};
-  if(next)next.onclick=()=>{const g=searchGroups[searchSelectedGroup];if(!g)return;searchSelectedHit=(searchSelectedHit+1)%g.hits.length;searchMobilePreview=true;renderSearchResults(q)};
-  if(close)close.onclick=()=>{searchMobilePreview=false;const p=$('#searchPreview');if(p)p.classList.remove('mobile-visible')};
+  $$('.search-filter-chip').forEach(b=>b.onclick=()=>{dismissSearchKeyboard();if(b.dataset.searchFilter==='subject')searchFilterSubject=b.dataset.value;else searchFilterSection=b.dataset.value;searchSelectedGroup=0;searchSelectedHit=0;searchMobilePreview=false;renderSearchResults(q)});
+  $$('.search-group-main').forEach(b=>b.onclick=()=>{dismissSearchKeyboard();searchSelectedGroup=Number(b.dataset.searchGroupMain)||0;searchSelectedHit=0;searchMobilePreview=true;renderSearchResults(q)});
+  $$('.search-page-hit').forEach(b=>b.onclick=e=>{e.stopPropagation();dismissSearchKeyboard();searchSelectedGroup=Number(b.dataset.searchGroup)||0;searchSelectedHit=Number(b.dataset.searchHit)||0;searchMobilePreview=true;renderSearchResults(q)});
+  const prev=$('.search-prev-hit'),next=$('.search-next-hit'),close=$('.search-preview-close'),open=$('.search-open');
+  if(prev)prev.onclick=()=>{dismissSearchKeyboard();const g=searchGroups[searchSelectedGroup];if(!g)return;searchSelectedHit=(searchSelectedHit-1+g.hits.length)%g.hits.length;searchMobilePreview=true;renderSearchResults(q)};
+  if(next)next.onclick=()=>{dismissSearchKeyboard();const g=searchGroups[searchSelectedGroup];if(!g)return;searchSelectedHit=(searchSelectedHit+1)%g.hits.length;searchMobilePreview=true;renderSearchResults(q)};
+  if(open)open.onclick=()=>dismissSearchKeyboard();
+  if(close)close.onclick=()=>{dismissSearchKeyboard();searchMobilePreview=false;const p=$('#searchPreview');if(p)p.classList.remove('mobile-visible')};
 }
 function renderSearchResults(q){
   searchGroups=searchGroupsAll.filter(g=>(searchFilterSubject==='all'||subjectOf(g.f)===searchFilterSubject)&&(searchFilterSection==='all'||sectionOf(g.f)===searchFilterSection));
