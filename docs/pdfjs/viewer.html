@@ -197,7 +197,8 @@ function currentMaterialPath(path){
   }
   return path;
 }
-const raw=currentMaterialPath(params.get('file'));
+const sourceFileParam=params.get('file')||'';
+const raw=currentMaterialPath(sourceFileParam);
 const subject=params.get('subject')||'';
 const titleParam=params.get('title')||'';
 const pageParam=Number(params.get('page')||0);
@@ -309,6 +310,7 @@ toneButtons.forEach(btn=>btn.addEventListener('click',()=>applyPdfTone(btn.datas
 const CSS_UNITS=96/72;
 let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=false,pdfUrl='',renderSerial=0,preloadSerial=0,continuousMode=false,continuousObserver=null,continuousRoot=null,continuousRenderSerial=0,gestureActive=false;
 let readerSuspended=document.hidden,suspendedReaderAnchor=null,resumeAnchorToken=0;
+let lastStablePage=1,lastStableAnchor=null,lastSavedAt=0;
 let searchQuery='',searchPage=0,searchOccurrence=-1,searchBusy=false,searchToken=0,searchSource='auto';
 let outlineLoaded=false,outlineEntries=[];
 const pageCache=new Map(),warmedPages=new Set(),textCache=new Map(),annotationCache=new Map();
@@ -340,17 +342,47 @@ function validPage(value,fallback=1){
   const n=Number(value);
   return Math.max(1,Math.min(pdf?.numPages||1,Number.isFinite(n)?Math.trunc(n):fallback));
 }
-function storageKey(){return 'nsu-pdf-page:'+(raw||pdfUrl)}
-function savePage(){
-  const page=validPage(pageNum,1);
+function storageKeys(){
+  const keys=[raw,sourceFileParam].filter(Boolean).map(path=>'nsu-pdf-page:'+path);
+  return [...new Set(keys.length?keys:['nsu-pdf-page:'+pdfUrl])];
+}
+function timestampKeys(){
+  return storageKeys().map(key=>key.replace('nsu-pdf-page:','nsu-pdf-page-ts:'));
+}
+function savePage(value=pageNum,{touchTimestamp=true}={}){
+  const fallback=Number.isInteger(lastStablePage)&&lastStablePage>0?lastStablePage:1;
+  const page=validPage(value,fallback);
   pageNum=page;
-  try{localStorage.setItem(storageKey(),String(page))}catch{}
+  lastStablePage=page;
+  if(touchTimestamp)lastSavedAt=Date.now();
+  try{
+    for(const key of storageKeys())localStorage.setItem(key,String(page));
+    if(touchTimestamp)for(const key of timestampKeys())localStorage.setItem(key,String(lastSavedAt));
+  }catch{}
   return page;
 }
-function rememberedPage(){try{return Number(localStorage.getItem(storageKey()))||1}catch{return 1}}
+function rememberedPage(){
+  try{
+    for(const key of storageKeys()){
+      const page=Number(localStorage.getItem(key));
+      if(Number.isInteger(page)&&page>0)return page;
+    }
+  }catch{}
+  return 1;
+}
 function persistReaderPosition(notifyParent=true){
-  captureReaderPosition();
-  const position={type:'nsu-pdf-position',file:raw||'',page:savePage()};
+  if(pdf){
+    if(!readerSuspended&&!document.hidden)captureReaderPosition({measure:true});
+    else savePage(lastStablePage,{touchTimestamp:false});
+  }
+  const page=pdf?lastStablePage:Math.max(1,Number(lastStablePage)||1);
+  const position={
+    type:'nsu-pdf-position',
+    file:sourceFileParam||raw||'',
+    canonicalFile:raw||sourceFileParam||'',
+    page,
+    savedAt:lastSavedAt||Date.now()
+  };
   if(notifyParent&&window.parent!==window){
     try{window.parent.postMessage(position,location.origin)}catch{}
   }
@@ -862,13 +894,21 @@ function setupContinuousObserver(){
 }
 function updateContinuousCurrentPage(){
   if(readerSuspended||document.hidden||!continuousMode||!continuousRoot)return;
-  const top=viewer.getBoundingClientRect().top+20;
-  let best=pageNum,bestDist=Infinity;
-  for(const el of continuousRoot.children){
-    const r=el.getBoundingClientRect(),d=Math.abs(r.top-top);
-    if(d<bestDist){bestDist=d;best=Number(el.dataset.page)||best}
+  const vr=viewer.getBoundingClientRect();
+  if(vr.width<2||vr.height<2)return;
+  const clientY=vr.top+Math.min(28,Math.max(8,vr.height*.08));
+  const anchor=continuousAnchorFromClient(clientY);
+  if(!anchor)return;
+  lastStableAnchor={page:anchor.page,fraction:anchor.fraction};
+  const next=validPage(anchor.page,pageNum);
+  if(next!==pageNum){
+    pageNum=next;
+    savePage(next);
+    updateControls();
+    updateOutlineActive();
+  }else{
+    lastStablePage=next;
   }
-  if(best!==pageNum){pageNum=best;updateControls();savePage();updateOutlineActive()}
 }
 function continuousAnchorFromClient(clientY){
   if(!continuousRoot)return null;
@@ -901,43 +941,58 @@ function continuousCenterAnchor(){
   const r=viewer.getBoundingClientRect();
   return continuousAnchorFromClient(r.top+r.height/2);
 }
-function captureReaderPosition(){
-  if(!pdf)return;
+function captureReaderPosition({measure=true}={}){
+  if(!pdf)return lastStablePage;
   if(continuousMode&&continuousRoot){
     const r=viewer.getBoundingClientRect();
-    const clientY=r.top+Math.min(24,Math.max(4,r.height*.08));
-    const anchor=continuousAnchorFromClient(clientY);
-    if(anchor){
-      suspendedReaderAnchor={page:anchor.page,fraction:anchor.fraction};
-      pageNum=validPage(anchor.page,pageNum);
-      updateControls();
+    const canMeasure=measure&&!readerSuspended&&!document.hidden&&r.width>=2&&r.height>=2;
+    if(canMeasure){
+      const clientY=r.top+Math.min(28,Math.max(8,r.height*.08));
+      const anchor=continuousAnchorFromClient(clientY);
+      if(anchor){
+        lastStableAnchor={page:anchor.page,fraction:anchor.fraction};
+        suspendedReaderAnchor={...lastStableAnchor};
+        pageNum=validPage(anchor.page,lastStablePage);
+        updateControls();
+        return savePage(pageNum);
+      }
     }
-  }else{
-    suspendedReaderAnchor=null;
+    if(lastStableAnchor)suspendedReaderAnchor={...lastStableAnchor};
+    pageNum=validPage(lastStablePage,pageNum);
+    updateControls();
+    return savePage(lastStablePage,{touchTimestamp:false});
   }
-  savePage();
+  suspendedReaderAnchor=null;
+  return savePage(pageNum);
 }
 function restoreReaderPosition(){
   if(!pdf)return;
-  if(continuousMode&&continuousRoot&&suspendedReaderAnchor){
+  if(continuousMode&&continuousRoot&&(suspendedReaderAnchor||lastStableAnchor)){
     const token=++resumeAnchorToken;
+    const saved=suspendedReaderAnchor||lastStableAnchor;
     const restore=()=>{
       if(token!==resumeAnchorToken||readerSuspended||document.hidden||!continuousMode||!continuousRoot)return;
       const r=viewer.getBoundingClientRect();
-      const clientY=r.top+Math.min(24,Math.max(4,r.height*.08));
-      restoreContinuousAnchor({...suspendedReaderAnchor,clientY});
-      savePage();
+      if(r.width<2||r.height<2)return;
+      const clientY=r.top+Math.min(28,Math.max(8,r.height*.08));
+      restoreContinuousAnchor({...saved,clientY});
+      savePage(saved.page,{touchTimestamp:false});
     };
     requestAnimationFrame(()=>requestAnimationFrame(restore));
   }else{
+    pageNum=validPage(lastStablePage,pageNum);
     updateControls();
-    savePage();
+    savePage(lastStablePage,{touchTimestamp:false});
   }
 }
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden){
-    captureReaderPosition();
+    // Android can collapse the WebView immediately after visibility changes.
+    // Freeze first, then persist the last page measured while visible.
     readerSuspended=true;
+    suspendedReaderAnchor=lastStableAnchor?{...lastStableAnchor}:null;
+    savePage(lastStablePage,{touchTimestamp:false});
+    persistReaderPosition();
     return;
   }
   readerSuspended=false;
@@ -985,7 +1040,8 @@ async function fitContinuousToWidth(anchor=continuousCenterAnchor()){
 async function renderContinuous(targetPage=pageNum,anchor=null){
   if(!pdf)return;
   pageNum=validPage(targetPage);
-  savePage();
+  lastStablePage=pageNum;
+  savePage(pageNum);
   document.body.classList.add('continuous-mode');
   canvasWrap.hidden=true;clearAnnotations();clearTextLayer();clearHighlights();
   continuousObserver?.disconnect();continuousRoot?.remove();
@@ -1010,7 +1066,7 @@ async function renderContinuous(targetPage=pageNum,anchor=null){
 }
 async function setContinuousMode(on){
   const next=!!on;
-  if(continuousMode&&!next)captureReaderPosition();
+  if(continuousMode&&!next)captureReaderPosition({measure:true});
   continuousMode=next;
   savePage();
   viewMode.classList.toggle('active',continuousMode);
@@ -1065,7 +1121,7 @@ async function open(){
   title.textContent=titleParam||raw.split('/').pop();document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Открываю документ…');
   try{
     pdfUrl=resolvePdfUrl(raw);direct.href=pdfUrl;
-    pdf=await loadPdfDocument(pdfUrl);document.getElementById('saveOffline').disabled=false;pageNum=validPage(pageParam||rememberedPage());searchPage=pageNum;scale=1;fitWidth=embedParam||compactQuery.matches;updateControls();if(phoneStripQuery.matches&&!searchPreviewParam)await setContinuousMode(true);else await renderPage();window.NSUApp?.warm();notifyParentPdfReady();if(pendingNavigation)await applyNavigation();else if(findParam.trim())runExternalFind(findParam)
+    pdf=await loadPdfDocument(pdfUrl);document.getElementById('saveOffline').disabled=false;pageNum=validPage(pageParam||rememberedPage());lastStablePage=pageNum;searchPage=pageNum;scale=1;fitWidth=embedParam||compactQuery.matches;updateControls();if(phoneStripQuery.matches&&!searchPreviewParam)await setContinuousMode(true);else await renderPage();window.NSUApp?.warm();notifyParentPdfReady();if(pendingNavigation)await applyNavigation();else if(findParam.trim())runExternalFind(findParam)
   }catch(err){fail(err?.message||String(err))}
 }
 
