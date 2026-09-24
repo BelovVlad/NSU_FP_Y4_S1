@@ -224,12 +224,6 @@
       updateStatus.textContent='Материалы сайта обновляются автоматически. APK проверяется отдельно.';
       update.onclick=()=>checkNativeApkUpdate(updateStatus,update);
     }else{
-      if(!installed()){
-        const install=document.createElement('button');install.type='button';install.className='app-manager-btn primary';
-        install.textContent='Установить приложение';
-        install.onclick=()=>installButton?.click();
-        appActions.append(install);
-      }
       update.textContent=registration?.waiting?'Обновить сейчас':'Проверить обновления';
       if(registration?.waiting){update.dataset.ready='1';updateStatus.textContent='Доступно обновление.'}
       update.onclick=async()=>{
