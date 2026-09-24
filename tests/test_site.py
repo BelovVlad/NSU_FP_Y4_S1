@@ -534,14 +534,10 @@ class SiteTests(unittest.TestCase):
         self.page.wait_for_function("document.querySelectorAll('.app-downloads li').length===0")
         self.assertEqual(self.page.evaluate("NSUApp.request('LIST_PDFS')"),[])
 
-    def test_pwa_install_fallback_and_invalid_pdf(self):
+    def test_pwa_has_no_install_cta_and_invalid_pdf(self):
         from urllib.parse import quote
         self.pwa_ready()
-        self.page.locator('#installApp').click()
-        self.assertTrue(self.page.locator('#appDialog').is_visible())
-        self.assertIn('Chrome',self.page.locator('#appDialog').inner_text())
-        self.page.keyboard.press('Escape')
-        self.page.locator('#appDialog').wait_for(state='detached')
+        self.assertEqual(self.page.locator('#installApp').count(),0)
         result=self.page.evaluate('''async args=>{try {await NSUApp.request('SAVE_PDF',args);return 'unexpected success';}
             catch(error){return error.message;}}''',{'url':self.base+'../'+quote(self.nb),
                 'viewer':self.base+'pdfjs/viewer.html','title':'Not a PDF'})
