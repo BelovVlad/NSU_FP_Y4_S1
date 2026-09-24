@@ -11,7 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.webmanifest?v=6">
+<link rel="manifest" href="manifest.webmanifest?v=7">
 <title>NSU FP · 4 курс</title>
 <style>
 :root{
@@ -1031,6 +1031,38 @@ body.music-na19x .pdf-fullscreen-loader{
   .top-meta,.kbd{display:none}
   .searchbox input{height:36px;padding-right:10px}
   .main{padding-left:10px;padding-right:10px}
+}
+
+/* Installed app edge-to-edge fill */
+html,body{
+  width:100%;
+  min-width:100%;
+  min-height:100%;
+  background:#080d12;
+}
+body{
+  min-height:100dvh;
+  overscroll-behavior:none;
+}
+.shell,.app{
+  min-height:100dvh;
+  background:var(--bg);
+}
+@media (display-mode: fullscreen){
+  html,body,.shell,.app{
+    width:100%;
+    min-width:100%;
+    min-height:100dvh;
+    background:var(--bg);
+  }
+  .topbar{
+    padding-left:max(10px,env(safe-area-inset-left,0px));
+    padding-right:max(10px,env(safe-area-inset-right,0px));
+  }
+  .sidebar{
+    padding-top:max(12px,env(safe-area-inset-top,0px));
+    padding-bottom:max(10px,env(safe-area-inset-bottom,0px));
+  }
 }
 
 </style>
