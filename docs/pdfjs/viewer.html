@@ -61,6 +61,7 @@ body.pdf-tone-mine .canvas-wrap{background:#293133}
 .continuous-pages{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;padding:0 0 28px}
 .continuous-page{position:relative;min-width:120px;min-height:160px;background:var(--pdf-bg);box-shadow:0 8px 28px rgba(0,0,0,.5);line-height:0;contain:layout paint}
 .continuous-page canvas{display:block}
+.continuous-page .highlight-layer{position:absolute;left:0;top:0;z-index:2;overflow:hidden;pointer-events:none}
 .continuous-page .text-layer{z-index:3}
 body.pdf-tone-black .continuous-page canvas{filter:invert(.92) hue-rotate(180deg) brightness(.94) contrast(.92) saturate(.88)}
 body.pdf-tone-mine .continuous-page canvas{filter:url(#nsuPaletteFilter) contrast(.98) saturate(.94)}
@@ -371,7 +372,11 @@ function runExternalFind(query){
   searchInput.blur();
   if(value)void searchStep(1);
 }
-function clearHighlights(){highlightLayer.replaceChildren()}
+function clearHighlights(layer=null){
+  if(layer){layer.replaceChildren();return}
+  highlightLayer.replaceChildren();
+  continuousRoot?.querySelectorAll('.highlight-layer').forEach(node=>node.replaceChildren());
+}
 function clearAnnotations(){annotationLayer.replaceChildren()}
 function clearTextLayer(layer=textLayer){if(layer)layer.replaceChildren()}
 function findMatches(text,q){const hits=[];if(!q)return hits;let from=0;while(true){const i=text.indexOf(q,from);if(i<0)break;hits.push(i);from=i+Math.max(1,q.length)}return hits}
@@ -481,17 +486,19 @@ async function getPageSearchData(n){
   return data;
 }
 
-async function drawSearchHighlights(page,viewport){
-  clearHighlights();if(!searchQuery||searchPage!==pageNum)return;
+async function drawSearchHighlights(page,viewport,layer=highlightLayer,targetPage=pageNum){
+  clearHighlights(layer);
+  if(!searchQuery||searchPage!==targetPage)return;
   try{
-    const data=await getPageSearchData(pageNum);if(searchPage!==pageNum)return;
-    highlightLayer.style.width=`${viewport.width}px`;highlightLayer.style.height=`${viewport.height}px`;
+    const data=await getPageSearchData(targetPage);
+    if(searchPage!==targetPage)return;
+    layer.style.width=`${viewport.width}px`;layer.style.height=`${viewport.height}px`;
     const tokens=searchQuery.split(' ').filter(t=>t.length>1);
     for(const item of data.items){
       const s=normalizeText(item.str);if(!s)continue;
       const hit=s.includes(searchQuery)||(searchQuery.includes(' ')&&tokens.some(t=>s.includes(t)));if(!hit)continue;
       const tx=pdfjsLib.Util.transform(viewport.transform,item.transform),fontHeight=Math.max(2,Math.hypot(tx[2],tx[3])),width=Math.max(3,(item.width||0)*viewport.scale),angle=Math.atan2(tx[1],tx[0]);
-      const mark=document.createElement('div');mark.className='search-mark';mark.style.left=`${tx[4]}px`;mark.style.top=`${tx[5]-fontHeight}px`;mark.style.width=`${width}px`;mark.style.height=`${fontHeight}px`;mark.style.transformOrigin='0 0';if(Math.abs(angle)>.001)mark.style.transform=`rotate(${angle}rad)`;highlightLayer.appendChild(mark);
+      const mark=document.createElement('div');mark.className='search-mark';mark.style.left=`${tx[4]}px`;mark.style.top=`${tx[5]-fontHeight}px`;mark.style.width=`${width}px`;mark.style.height=`${fontHeight}px`;mark.style.transformOrigin='0 0';if(Math.abs(angle)>.001)mark.style.transform=`rotate(${angle}rad)`;layer.appendChild(mark);
     }
   }catch{}
 }
@@ -760,11 +767,15 @@ async function renderContinuousPage(el,n,force=false){
     const task=page.render({canvasContext:ctx2,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0],background:'#fff'});
     await task.promise;
     if(!continuousMode||!el.isConnected||el.dataset.renderToken!==token)return;
+    const hl=document.createElement('div');hl.className='highlight-layer';
     const tl=document.createElement('div');tl.className='text-layer';
     el.style.width=Math.floor(viewport.width)+'px';el.style.height=Math.floor(viewport.height)+'px';
-    el.replaceChildren(cnv,tl);
+    el.replaceChildren(cnv,hl,tl);
     el.dataset.rendered='1';el.dataset.stale='0';
-    await renderSelectableText(page,viewport,tl);
+    await Promise.allSettled([
+      drawSearchHighlights(page,viewport,hl,n),
+      renderSelectableText(page,viewport,tl)
+    ]);
   }catch{
     if(el?.isConnected&&el.dataset.renderToken===token)el.dataset.rendered='0';
   }finally{
