@@ -34,11 +34,12 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        configureWindow();
+        configureEdgeToEdge();
 
         root = new FrameLayout(this);
         root.setBackgroundColor(APP_BG);
         setContentView(root);
+        applySafeInsets();
 
         stateView = new TextView(this);
         stateView.setText("NSU FP\nЗагрузка…");
@@ -59,6 +60,7 @@ public class MainActivity extends Activity {
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
             ));
+            root.requestApplyInsets();
 
             if (savedInstanceState == null) {
                 webView.loadUrl(START_URL);
@@ -72,7 +74,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void configureWindow() {
+    private void configureEdgeToEdge() {
         Window window = getWindow();
         window.setStatusBarColor(Color.TRANSPARENT);
         window.setNavigationBarColor(Color.TRANSPARENT);
@@ -103,6 +105,27 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void applySafeInsets() {
+        // Keep the window edge-to-edge so the background reaches under the
+        // status/navigation bars, but move the actual web content away from
+        // those bars. This avoids the system clock/icons covering the site toolbar.
+        root.setOnApplyWindowInsetsListener((view, insets) -> {
+            int left = insets.getSystemWindowInsetLeft();
+            int top = insets.getSystemWindowInsetTop();
+            int right = insets.getSystemWindowInsetRight();
+            int bottom = insets.getSystemWindowInsetBottom();
+
+            if (webView != null) {
+                webView.setPadding(left, top, right, bottom);
+            }
+            if (stateView != null) {
+                stateView.setPadding(left, top, right, bottom);
+            }
+            return insets;
+        });
+        root.requestApplyInsets();
+    }
+
     private void configureWebView() {
         webView.setBackgroundColor(APP_BG);
         webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -118,7 +141,7 @@ public class MainActivity extends Activity {
         settings.setBuiltInZoomControls(false);
         settings.setDisplayZoomControls(false);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        settings.setUserAgentString(settings.getUserAgentString() + " NSUFPAndroid/2");
+        settings.setUserAgentString(settings.getUserAgentString() + " NSUFPAndroid/3");
 
         CookieManager cookies = CookieManager.getInstance();
         cookies.setAcceptCookie(true);
