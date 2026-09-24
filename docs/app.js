@@ -3,7 +3,8 @@
   const base = new URL('./',document.currentScript.src);
   const supported = 'serviceWorker' in navigator && window.isSecureContext;
   let registration, installPrompt;
-  const nativeAndroid = /\bNSUFPAndroid\//.test(navigator.userAgent);
+  const nativeBridge = window.NSUFPAndroid || null;
+  const nativeAndroid = !!nativeBridge || /\bNSUFPAndroid\//.test(navigator.userAgent);
   const installed = () => nativeAndroid || matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
   const installButton = document.getElementById('installApp');
   const downloadsButton = document.getElementById('offlineFiles');
@@ -136,9 +137,22 @@
         button.disabled=false;
         return;
       }
-      button.textContent='Скачать обновление';
+      button.textContent='Обновить приложение';
       button.disabled=false;
-      button.onclick=()=>{ location.href=meta.apkUrl; };
+      button.onclick=()=>{
+        if(nativeBridge?.startUpdate){
+          const result=String(nativeBridge.startUpdate(meta.apkUrl)||'');
+          if(result==='permission'){
+            status.textContent='Разрешите установку приложений для NSU FP и нажмите кнопку ещё раз.';
+          }else if(result==='downloading'){
+            status.textContent='Скачиваю APK. После загрузки Android откроет установщик.';
+          }else if(result.startsWith('error:')){
+            status.textContent=result.slice(6);
+          }
+        }else{
+          location.href=meta.apkUrl;
+        }
+      };
       status.textContent='Доступна новая версия приложения '+(meta.versionName||'')+'.';
     }catch(error){
       status.textContent=error.message||'Не удалось проверить APK.';
