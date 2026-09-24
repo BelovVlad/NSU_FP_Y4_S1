@@ -1,12 +1,12 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v27';
+const SHELL_VERSION = 'v28';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
-const CORE = ['index.html', 'app.js?v=12', 'app.css?v=6', 'knowledge.css?v=3', 'manifest.webmanifest?v=7',
+const CORE = ['index.html', 'app.js?v=13', 'app.css?v=6', 'knowledge.css?v=3', 'manifest.webmanifest?v=7',
   'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=18', 'notebook/outline.js?build=2',
   'pdfjs/viewer.html', 'pdfjs/controls.css?v=10', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png?v=2', 'assets/app-512.png?v=2'];
@@ -42,10 +42,19 @@ self.addEventListener('install', event => event.waitUntil((async () => {
     const response = await fetch(absolute(path), {cache:'no-cache'});
     await put(data, absolute(path), response);
   }));
+  // UI fixes must not sit in "waiting" behind the old shell.
+  await self.skipWaiting();
 })()));
 self.addEventListener('activate', event => event.waitUntil((async () => {
-  await Promise.all((await caches.keys()).filter(name => name.startsWith(PREFIX+'shell-') && name !== SHELL).map(name => caches.delete(name)));
+  const keys=await caches.keys();
+  const oldShells=keys.filter(name => name.startsWith(PREFIX+'shell-') && name !== SHELL);
+  const upgrading=oldShells.length>0;
+  await Promise.all(oldShells.map(name => caches.delete(name)));
   await self.clients.claim();
+  if(upgrading){
+    const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+    await Promise.allSettled(windows.map(client=>client.navigate(client.url)));
+  }
 })()));
 
 async function readRange(response, range) {
@@ -73,24 +82,32 @@ async function resource(request, event) {
     !url.pathname.startsWith(absolute('search-index/').replace(BASE.origin,''));
   const cache = await caches.open(shell ? SHELL : DATA);
   const cached = await cache.match(key);
+  const html = request.mode === 'navigate' || /\.html$/i.test(url.pathname) || url.href === BASE.href;
   const immutable = library(url) || url.searchParams.has('v') || url.searchParams.has('build');
-  if(cached && immutable) return cached;
+
   const network = (async () => {
-    const response = await fetch(request);
+    const response = await fetch(request,{cache:html?'no-cache':'default'});
     if(!response.ok && response.type !== 'opaque') throw new Error('HTTP '+response.status);
     await put(cache,key,response.clone());
     return response;
   })();
+
+  // HTML chooses the versioned JS/CSS. On a slow mobile network, never serve
+  // an old HTML shell merely because 1.8 seconds elapsed. Cache is offline-only.
+  if(html){
+    try { return await network; }
+    catch {
+      if(cached) return cached;
+      if(request.mode === 'navigate') return new Response('<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Нет подключения</title><body style="background:#080d12;color:#eee;font:18px system-ui;padding:24px"><h1>Этот материал ещё не сохранён</h1><p>Откройте его при подключении к интернету.</p><a style="color:#f4b8a5" href="'+BASE.href+'">К материалам</a></body></html>',{status:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
+      return Response.error();
+    }
+  }
+
+  if(cached && immutable) return cached;
   event.waitUntil(network.catch(()=>{}));
-  if(cached) {
-    // Fresh catalogue data and HTML online; immediate offline fallback, bounded wait on weak networks.
-    return Promise.race([network.catch(()=>cached),new Promise(resolve=>setTimeout(()=>resolve(cached),1800))]);
-  }
+  if(cached) return Promise.race([network.catch(()=>cached),new Promise(resolve=>setTimeout(()=>resolve(cached),1800))]);
   try { return await network; }
-  catch {
-    if(request.mode === 'navigate') return new Response('<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Нет подключения</title><body style="background:#080d12;color:#eee;font:18px system-ui;padding:24px"><h1>Этот материал ещё не сохранён</h1><p>Откройте его при подключении к интернету.</p><a style="color:#f4b8a5" href="'+BASE.href+'">К материалам</a></body></html>',{status:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
-    return Response.error();
-  }
+  catch { return Response.error(); }
 }
 self.addEventListener('fetch', event => {
   if(event.request.method !== 'GET') return;

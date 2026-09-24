@@ -301,8 +301,17 @@
     }catch(error){saveButton.textContent='Без интернета';notice(error.message);}
     finally{saveButton.disabled=false;}
   });
+  let controllerReloading=false;
+  if(supported&&navigator.serviceWorker.controller){
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(controllerReloading)return;
+      controllerReloading=true;
+      location.reload();
+    },{once:true});
+  }
   const ready = supported ? navigator.serviceWorker.register(new URL('sw.js',base),{scope:base.pathname,updateViaCache:'none'}).then(async value=>{
     registration=value;
+    value.update().catch(()=>{});
     function offerUpdate(){
       if(!registration.waiting || !registration.active || !navigator.serviceWorker.controller)return;
       if(nativeAndroid)return;
