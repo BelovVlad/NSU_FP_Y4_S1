@@ -1959,14 +1959,19 @@ function renderSimpleMarkdown(source){
 async function loadSubjectLinks(){
   const target=document.getElementById('subjectLinksContent');
   if(!target)return;
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),8000);
   try{
     const url='https://raw.githubusercontent.com/BelovVlad/NSU_FP_Y4_S1/main/'+encPath('ТДиСФ/link.md');
-    const response=await fetch(url,{cache:'no-cache'});
+    const response=await fetch(url,{cache:'no-cache',signal:controller.signal});
     if(!response.ok)throw new Error('HTTP '+response.status);
+    if(!target.isConnected)return;
     target.innerHTML=renderSimpleMarkdown(await response.text());
   }catch(error){
     console.error(error);
-    target.innerHTML='<div class="links-error">Не удалось загрузить link.md. Проверьте подключение и повторите попытку.</div>';
+    if(target.isConnected)target.innerHTML='<div class="links-error">Не удалось загрузить link.md. Проверьте подключение и повторите попытку.</div>';
+  }finally{
+    clearTimeout(timeout);
   }
 }
 function renderSubjectLinks(){
