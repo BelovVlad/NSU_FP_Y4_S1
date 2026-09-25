@@ -1,3 +1,3 @@
-# [Яндекс Диск](https://disk.yandex.ru/d/o4IQOWgLr_1y)
+# [Яндекс Диск](https://disk.yandex.ru/d/o4IQOWgLr_1y-g)
 
 Хранилище с литературой, презентациями и семинарами.
