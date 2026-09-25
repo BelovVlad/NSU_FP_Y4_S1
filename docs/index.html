@@ -2098,12 +2098,12 @@ function renderHome(){
     '<section class="panel feedback-panel"><div class="feedback-head"><div class="feedback-copy"><div class="feedback-kicker">Обратная связь</div><h2 class="feedback-title">Идеи и замечания</h2><p class="feedback-desc">Есть что улучшить, нашли ошибку или не хватает материала? Напишите здесь — сообщения хранятся в GitHub Discussions.</p></div></div><div id="giscusMount" class="giscus-wrap"><div class="feedback-loading">Загружаю обсуждение…</div></div></section>'+
   '</div>';
   $$('.course-card').forEach(c=>c.onclick=()=>{state.view='subjects';state.subject=c.dataset.subject;state.section='';state.selected=null;state.selectedEntry=null;setActiveNav('subjects');renderSubjectNav();render()});
-  $('.history-row').forEach(r=>r.onclick=()=>{
+  $$('.history-row').forEach(r=>r.onclick=()=>{
     const f=fileByPath(r.dataset.historyPath);if(!f)return;
     if(f.ext==='.pdf'){void openPdfFullscreen(viewerUrl(f,rememberedPdfPage(f),niceName(f)),niceName(f));return}
     if(f.ext==='.ipynb'){void openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
   });
-  $('.history-remove').forEach(button=>button.onclick=event=>{
+  $$('.history-remove').forEach(button=>button.onclick=event=>{
     event.preventDefault();
     event.stopPropagation();
     const row=button.closest('.history-row');
@@ -2116,7 +2116,7 @@ function renderHome(){
       panel.insertAdjacentHTML('beforeend','<div class="history-empty">Здесь появятся последние открытые материалы.</div>');
     }
   });
-  $('.updated-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
+  $$('.updated-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
   void mountFeedback();
 }
 
