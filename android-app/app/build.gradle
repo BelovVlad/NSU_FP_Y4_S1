@@ -1,0 +1,44 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'ru.nsu.fp'
+    compileSdk 35
+
+    signingConfigs {
+        nsufp {
+            storeFile file('../keys/nsufp-update.keystore')
+            storePassword 'nsufp2026'
+            keyAlias 'nsufp'
+            keyPassword 'nsufp2026'
+        }
+    }
+
+    defaultConfig {
+        applicationId 'ru.nsu.fp'
+        minSdk 26
+        targetSdk 35
+        versionCode 9
+        versionName '1.7'
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.nsufp
+        }
+        release {
+            signingConfig signingConfigs.nsufp
+            minifyEnabled false
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

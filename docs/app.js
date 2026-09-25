@@ -3,7 +3,9 @@
   const base = new URL('./',document.currentScript.src);
   const supported = 'serviceWorker' in navigator && window.isSecureContext;
   let registration, installPrompt;
-  const installed = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const nativeBridge = window.NSUFPAndroid || null;
+  const nativeAndroid = !!nativeBridge || /\bNSUFPAndroid\//.test(navigator.userAgent);
+  const installed = () => nativeAndroid || matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
   const installButton = document.getElementById('installApp');
   const downloadsButton = document.getElementById('offlineFiles');
   const settingsButton = document.getElementById('appSettings');
@@ -30,9 +32,13 @@
     }));
   }
   function updateInstallButton() {
-    if(installButton) installButton.textContent=installed()?'Приложение установлено':'Установить приложение';
+    if(!installButton)return;
+    if(nativeAndroid){installButton.hidden=true;return;}
+    installButton.hidden=false;
+    installButton.textContent=installed()?'Приложение установлено':'Установить приложение';
   }
   window.addEventListener('beforeinstallprompt',event=>{
+    if(nativeAndroid)return;
     event.preventDefault();installPrompt=event;updateInstallButton();
   });
   window.addEventListener('appinstalled',()=>{
@@ -115,6 +121,53 @@
       if(button&&!registration?.waiting)button.disabled=false;
     }
   }
+  async function checkNativeApkUpdate(status,button){
+    if(button)button.disabled=true;
+    status.textContent='Проверяю обновление APK…';
+    try{
+      const metaUrl=new URL('android/version.json',base);
+      metaUrl.searchParams.set('_',Date.now());
+      const response=await fetch(metaUrl,{cache:'no-store'});
+      if(!response.ok)throw new Error('APK обновление ещё не опубликовано.');
+      const meta=await response.json();
+      const current=Number((navigator.userAgent.match(/NSUFPAndroid\/(\d+)/)||[])[1]||0);
+      if(current && Number(meta.versionCode)<=current){
+        status.textContent='Установлена актуальная версия APK. Материалы сайта обновляются автоматически.';
+        button.textContent='Проверить обновление приложения';
+        button.disabled=false;
+        return;
+      }
+      if(current && current < Number(meta.requiresReinstallBelow||0)){
+        button.textContent='Скачать APK '+(meta.versionName||'');
+        button.disabled=false;
+        button.onclick=()=>{ location.href=meta.apkUrl; };
+        status.textContent='Для перехода на '+(meta.versionName||'новую версию')+
+          ' нужно один раз удалить старое NSU FP и установить скачанный APK заново. После этой переустановки следующие APK будут ставиться поверх приложения.';
+        return;
+      }
+      button.textContent='Обновить приложение';
+      button.disabled=false;
+      button.onclick=()=>{
+        if(nativeBridge?.startUpdate){
+          const result=String(nativeBridge.startUpdate(meta.apkUrl)||'');
+          if(result==='permission'){
+            status.textContent='Разрешите установку приложений для NSU FP и нажмите кнопку ещё раз.';
+          }else if(result==='downloading'){
+            status.textContent='Скачиваю APK. После загрузки Android откроет установщик.';
+          }else if(result.startsWith('error:')){
+            status.textContent=result.slice(6);
+          }
+        }else{
+          location.href=meta.apkUrl;
+        }
+      };
+      status.textContent='Доступна новая версия приложения '+(meta.versionName||'')+'.';
+    }catch(error){
+      status.textContent=error.message||'Не удалось проверить APK.';
+      if(button)button.disabled=false;
+    }
+  }
+
   async function downloadAllPdfs(status,progress,button){
     button.disabled=true;
     button.textContent='Скачиваю…';
@@ -162,22 +215,22 @@
     storage.textContent=await storageText();
 
     const appSection=document.createElement('section');appSection.className='app-manager-section';
-    appSection.innerHTML='<h3>'+(installed()?'Обновления':'Приложение')+'</h3><div class="app-manager-actions"></div>';
+    appSection.innerHTML='<h3>'+(nativeAndroid?'Приложение':'Обновления')+'</h3><div class="app-manager-actions"></div>';
     const appActions=appSection.querySelector('.app-manager-actions');
-    if(!installed()){
-      const install=document.createElement('button');install.type='button';install.className='app-manager-btn primary';
-      install.textContent='Установить приложение';
-      install.onclick=()=>installButton?.click();
-      appActions.append(install);
-    }
     const update=document.createElement('button');update.type='button';update.className='app-manager-btn';
-    update.textContent=registration?.waiting?'Обновить сейчас':'Проверить обновления';
     const updateStatus=document.createElement('div');updateStatus.className='app-manager-status';
-    if(registration?.waiting){update.dataset.ready='1';updateStatus.textContent='Доступно обновление.'}
-    update.onclick=async()=>{
-      if(update.dataset.ready==='1'||registration?.waiting){await activateWaitingWorker();return;}
-      await checkForUpdate(updateStatus,update);
-    };
+    if(nativeAndroid){
+      update.textContent='Проверить обновление приложения';
+      updateStatus.textContent='Материалы сайта обновляются автоматически. APK проверяется отдельно.';
+      update.onclick=()=>checkNativeApkUpdate(updateStatus,update);
+    }else{
+      update.textContent=registration?.waiting?'Обновить сейчас':'Проверить обновления';
+      if(registration?.waiting){update.dataset.ready='1';updateStatus.textContent='Доступно обновление.'}
+      update.onclick=async()=>{
+        if(update.dataset.ready==='1'||registration?.waiting){await activateWaitingWorker();return;}
+        await checkForUpdate(updateStatus,update);
+      };
+    }
     appActions.append(update);appSection.append(updateStatus);body.append(appSection);
 
     const dataSection=document.createElement('section');dataSection.className='app-manager-section';
@@ -205,6 +258,7 @@
   }
   settingsButton?.addEventListener('click',()=>{void openManager()});
   installButton?.addEventListener('click',async()=>{
+    if(nativeAndroid)return;
     if(installPrompt) {
       const prompt=installPrompt;installPrompt=null;
       try {await prompt.prompt();await prompt.userChoice;}catch{notice('Откройте меню браузера и выберите «Установить приложение».');}
@@ -249,8 +303,10 @@
   });
   const ready = supported ? navigator.serviceWorker.register(new URL('sw.js',base),{scope:base.pathname,updateViaCache:'none'}).then(async value=>{
     registration=value;
+    value.update().catch(()=>{});
     function offerUpdate(){
       if(!registration.waiting || !registration.active || !navigator.serviceWorker.controller)return;
+      if(nativeAndroid)return;
       settingsButton?.classList.add('has-update');
       settingsButton?.setAttribute('title','Доступно обновление приложения');
       notice('Доступно обновление приложения. Откройте «Приложение» → «Обновить сейчас».');
@@ -269,6 +325,7 @@
   ready.catch(()=>{});
   window.NSUApp={ready,request};
   updateInstallButton();
+
   // A reader can be the first page visited: retain libraries loaded before worker activation.
   const warm=()=>ready.then(()=>request('WARM',{urls:[location.href,...performance.getEntriesByType('resource').map(entry=>entry.name)]})).catch(()=>{});
   window.NSUApp.warm=warm;

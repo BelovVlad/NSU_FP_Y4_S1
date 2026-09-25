@@ -162,6 +162,13 @@ class SiteTests(unittest.TestCase):
         for file in metadata['files']:
             self.assertTrue((ROOT/file['path']).is_file(),file['path'])
 
+    def test_music_is_fixed_full_volume_without_slider(self):
+        self.home()
+        self.assertEqual(self.page.locator('#musicPanel').count(),0)
+        self.assertEqual(self.page.locator('#musicVolume').count(),0)
+        self.page.evaluate("chooseMusicTrack('na19')")
+        self.assertEqual(self.page.evaluate("document.querySelector('#siteMusic').volume"),1)
+
     def test_search_retries_only_failed_shards(self):
         self.home()
         self.failed_paths.add('/docs/search-index/part-00.json')
@@ -209,9 +216,17 @@ class SiteTests(unittest.TestCase):
         self.search('a')  # The UI deliberately requires at least two characters.
         self.search('alpha')
         self.page.wait_for_function("document.querySelector('.search-preview-frame')?.contentDocument.querySelector('#total')?.textContent==='/ 2'")
+        self.assertIn('searchpreview=1',self.page.locator('.search-preview-frame').get_attribute('src'))
+        self.assertIn('embed=1',self.page.locator('.search-preview-frame').get_attribute('src'))
+        self.assertTrue(self.page.evaluate("document.querySelector('.search-preview-frame').contentDocument.body.classList.contains('search-preview-mode')"))
+        self.assertFalse(self.page.evaluate("document.querySelector('.search-preview-frame').contentDocument.body.classList.contains('search-open')"))
+        self.assertNotEqual(self.page.evaluate("document.querySelector('.search-preview-frame').contentDocument.activeElement?.id"),'searchInput')
+        self.assertEqual(self.page.evaluate("getComputedStyle(document.querySelector('.search-preview-frame').contentDocument.querySelector('.toolbar')).display"),'none')
         self.page.evaluate("window.savedDocument=document.querySelector('.search-preview-frame').contentDocument")
         self.page.locator('.search-group-main').click()
         self.assertTrue(self.page.evaluate("savedDocument===document.querySelector('.search-preview-frame').contentDocument"))
+        self.assertFalse(self.page.evaluate("savedDocument.body.classList.contains('search-open')"))
+        self.assertNotEqual(self.page.evaluate("savedDocument.activeElement?.id"),'searchInput')
 
     def test_preview_fills_available_height_without_resetting_pdf(self):
         self.page.set_viewport_size({'width':1440,'height':900})
@@ -236,6 +251,39 @@ class SiteTests(unittest.TestCase):
         self.assertGreater(self.page.locator('.preview-frame-wrap').bounding_box()['height'],1000)
         self.page.evaluate('window.scrollTo(0,0)')
         self.page.wait_for_function("Math.abs(document.querySelector('.preview-panel').getBoundingClientRect().bottom-(innerHeight-8))<2")
+
+    def test_home_has_open_history_before_updates_and_no_stats(self):
+        self.home()
+        self.assertEqual(self.page.locator('.stats').count(),0)
+        self.page.evaluate("""path => {
+            localStorage.setItem('nsu-open-history-v1',JSON.stringify([{path,openedAt:Date.now()}]));
+            localStorage.setItem('nsu-pdf-page:'+path,'2');
+            renderHome();
+        }""",self.a)
+        self.assertEqual(self.page.locator('#openHistory .history-row').count(),1)
+        self.assertIn('стр. 2',self.page.locator('#openHistory .history-row').inner_text())
+        order=self.page.evaluate("""() => {
+            const history=document.querySelector('#openHistory');
+            const updates=document.querySelector('#recentUpdates');
+            return !!(history.compareDocumentPosition(updates)&Node.DOCUMENT_POSITION_FOLLOWING);
+        }""")
+        self.assertTrue(order)
+        self.page.evaluate("""() => {
+            for(let i=0;i<12;i++)recordOpenedPath('history-'+i+'.pdf');
+        }""")
+        self.assertEqual(self.page.evaluate("readOpenHistory().length"),8)
+        self.page.evaluate("""path => {
+            localStorage.setItem('nsu-open-history-v1',JSON.stringify([{path,openedAt:Date.now()}]));
+            localStorage.setItem('nsu-pdf-page:'+path,'2');
+            renderHome();
+        }""",self.a)
+        self.page.locator('#openHistory .history-row').click()
+        self.page.wait_for_function("""() => {
+            const f=document.querySelector('#pdfFullscreenFrame');
+            return document.querySelector('#pdfFullscreen').classList.contains('ready') &&
+                   f?.contentWindow?.location?.search?.includes('page=2');
+        }""")
+        self.assertIn('page=2',self.page.evaluate("document.querySelector('#pdfFullscreenFrame').contentWindow.location.search"))
 
     def test_new_query_supersedes_pending_search(self):
         self.home()
@@ -278,6 +326,124 @@ class SiteTests(unittest.TestCase):
         self.page.keyboard.press('Escape')
         self.assertEqual(self.page.locator('#toolsToggle').get_attribute('aria-expanded'),'false')
 
+    def test_phone_landscape_settings_stay_inside_viewport(self):
+        self.page.set_viewport_size({'width':844,'height':390})
+        self.pdf()
+        self.page.locator('#toolsToggle').click()
+        self.page.wait_for_function("document.body.classList.contains('tools-open')")
+        self.assertTrue(self.page.locator('#readerControls').evaluate("(el)=>el.parentElement===document.body"))
+        box=self.page.locator('#readerControls').bounding_box()
+        self.assertGreaterEqual(box['x'],0)
+        self.assertGreaterEqual(box['y'],0)
+        self.assertLessEqual(box['x']+box['width'],844)
+        self.assertLessEqual(box['y']+box['height'],390)
+        self.assertGreaterEqual(box['width'],440)
+        self.assertGreater(box['height'],330)
+        self.assertTrue(self.page.locator('#toolsClose').is_visible())
+        self.assertTrue(self.page.locator('#fit').is_visible())
+        self.assertTrue(self.page.locator('#viewMode').is_visible())
+        self.assertEqual(self.page.locator('#readerControls').evaluate("(el)=>getComputedStyle(el).position"),'fixed')
+
+    def test_portrait_pdf_uses_higher_raster_quality_than_landscape(self):
+        self.page.set_viewport_size({'width':390,'height':844})
+        self.pdf()
+        portrait=self.page.evaluate("canvasRenderRatio({width:360,height:510},{continuous:true})")
+        self.page.set_viewport_size({'width':844,'height':390})
+        self.page.wait_for_timeout(50)
+        landscape=self.page.evaluate("canvasRenderRatio({width:360,height:510},{continuous:true})")
+        self.assertGreater(portrait,landscape)
+
+    def test_mobile_pdf_search_highlights_in_continuous_mode(self):
+        self.page.set_viewport_size({'width':390,'height':844})
+        self.pdf()
+        self.page.wait_for_function("document.body.classList.contains('continuous-mode')")
+        self.page.evaluate("""() => {
+            getPageSearchData = async n => ({
+                text:'prefix alpha suffix words',
+                items:[{str:'prefix alpha suffix words',width:240,transform:[1,0,0,12,72,760]}]
+            });
+            searchInput.value='alpha';
+            resetSearch();
+            searchQuery='alpha';
+            searchPage=1;
+            pageNum=1;
+        }""")
+        self.page.evaluate("renderContinuous(1)")
+        self.page.wait_for_function("""() => {
+            const p=document.querySelector('.continuous-page[data-page="1"]');
+            return p && p.dataset.rendered==='1' && p.querySelectorAll('.search-mark').length>0;
+        }""")
+        self.assertGreater(self.page.locator('.continuous-page[data-page="1"] .search-mark').count(),0)
+        mark=self.page.locator('.continuous-page[data-page="1"] .search-mark').first.bounding_box()
+        page_box=self.page.locator('.continuous-page[data-page="1"]').bounding_box()
+        self.assertLess(mark['width'],page_box['width']*.45)
+        self.page.evaluate("closeSearch()")
+        self.assertEqual(self.page.locator('.continuous-page .search-mark').count(),0)
+
+    def enable_continuous_for_test(self):
+        self.page.evaluate("document.querySelector('#viewMode').click()")
+        self.page.wait_for_function("document.body.classList.contains('continuous-mode')")
+
+    def test_continuous_progress_survives_collapsed_viewer_geometry(self):
+        self.pdf()
+        self.enable_continuous_for_test()
+        self.page.evaluate("""() => {
+            const viewer=document.querySelector('#viewer');
+            const page=document.querySelector('.continuous-page[data-page="2"]');
+            viewer.scrollTop += page.getBoundingClientRect().top-viewer.getBoundingClientRect().top+40;
+            viewer.dispatchEvent(new Event('scroll'));
+        }""")
+        self.page.wait_for_function("""path =>
+            localStorage.getItem('nsu-pdf-page:'+path)==='2'
+        """,arg=self.a)
+        self.page.evaluate("""() => {
+            const viewer=document.querySelector('#viewer');
+            viewer.style.display='none';
+            window.nsuPersistReaderPosition();
+        }""")
+        self.assertEqual(self.page.evaluate("path=>localStorage.getItem('nsu-pdf-page:'+path)",self.a),'2')
+
+    def test_android_back_saves_continuous_page_even_without_iframe_pagehide(self):
+        self.home()
+        self.page.evaluate("""() => openPdfFullscreen(viewerUrl(FILES[0]),niceName(FILES[0]))""")
+        self.page.wait_for_function("""() => {
+            const f=document.querySelector('#pdfFullscreenFrame');
+            return document.querySelector('#pdfFullscreen').classList.contains('ready') &&
+                   f?.contentDocument?.querySelector('#total')?.textContent==='/ 2';
+        }""")
+        self.page.evaluate("""() => {
+            const w=document.querySelector('#pdfFullscreenFrame').contentWindow;
+            w.document.querySelector('#viewMode').click();
+        }""")
+        self.page.wait_for_function("""() =>
+            document.querySelector('#pdfFullscreenFrame').contentDocument.body.classList.contains('continuous-mode')
+        """)
+        self.page.evaluate("""() => {
+            const d=document.querySelector('#pdfFullscreenFrame').contentDocument;
+            const viewer=d.querySelector('#viewer');
+            const page=d.querySelector('.continuous-page[data-page="2"]');
+            viewer.scrollTop += page.getBoundingClientRect().top-viewer.getBoundingClientRect().top+40;
+            viewer.dispatchEvent(new Event('scroll'));
+        }""")
+        self.page.wait_for_function("""path =>
+            localStorage.getItem('nsu-pdf-page:'+path)==='2'
+        """,arg=self.a)
+        self.page.evaluate("window.nsuHandleAndroidBack()")
+        self.page.wait_for_function("!document.querySelector('#pdfFullscreen').classList.contains('open')")
+        self.assertEqual(self.page.evaluate("path=>localStorage.getItem('nsu-pdf-page:'+path)",self.a),'2')
+
+    def test_continuous_navigation_saves_page_immediately(self):
+        self.pdf()
+        self.enable_continuous_for_test()
+        self.page.evaluate("document.querySelector('#mNext').click()")
+        self.assertEqual(self.page.evaluate("path=>localStorage.getItem('nsu-pdf-page:'+path)",self.a),'2')
+        self.page.evaluate("""() => {
+            const input=document.querySelector('#page');
+            input.value='1';
+            input.dispatchEvent(new Event('change'));
+        }""")
+        self.assertEqual(self.page.evaluate("path=>localStorage.getItem('nsu-pdf-page:'+path)",self.a),'1')
+
     def test_mobile_zoom_continuous_mode_and_page_navigation(self):
         self.page.set_viewport_size({'width':390,'height':844})
         self.pdf()
@@ -307,6 +473,12 @@ class SiteTests(unittest.TestCase):
         self.assertLessEqual(controls['x']+controls['width'],320)
         self.assertLessEqual(controls['y']+controls['height'],self.page.locator('.mobile-nav').bounding_box()['y'])
         self.assertEqual(self.page.locator('#readerControls').evaluate('(el)=>el.scrollWidth<=el.clientWidth'),True)
+        zoom=self.page.locator('.zoom-controls').bounding_box()
+        self.assertGreater(zoom['width'],controls['width']-30)
+        for selector in ('#zoomOut','#zoomIn','#zoom','#fit'):
+            child=self.page.locator(selector).bounding_box()
+            self.assertGreaterEqual(child['x'],zoom['x']-1)
+            self.assertLessEqual(child['x']+child['width'],zoom['x']+zoom['width']+1)
         self.page.locator('#toolsClose').click()
         self.page.locator('#searchToggle').click()
         self.assertEqual(self.page.locator('#searchToggle').get_attribute('aria-expanded'),'true')
@@ -516,14 +688,10 @@ class SiteTests(unittest.TestCase):
         self.page.wait_for_function("document.querySelectorAll('.app-downloads li').length===0")
         self.assertEqual(self.page.evaluate("NSUApp.request('LIST_PDFS')"),[])
 
-    def test_pwa_install_fallback_and_invalid_pdf(self):
+    def test_pwa_has_no_install_cta_and_invalid_pdf(self):
         from urllib.parse import quote
         self.pwa_ready()
-        self.page.locator('#installApp').click()
-        self.assertTrue(self.page.locator('#appDialog').is_visible())
-        self.assertIn('Chrome',self.page.locator('#appDialog').inner_text())
-        self.page.keyboard.press('Escape')
-        self.page.locator('#appDialog').wait_for(state='detached')
+        self.assertEqual(self.page.locator('#installApp').count(),0)
         result=self.page.evaluate('''async args=>{try {await NSUApp.request('SAVE_PDF',args);return 'unexpected success';}
             catch(error){return error.message;}}''',{'url':self.base+'../'+quote(self.nb),
                 'viewer':self.base+'pdfjs/viewer.html','title':'Not a PDF'})

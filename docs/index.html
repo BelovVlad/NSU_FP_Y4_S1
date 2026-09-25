@@ -7,10 +7,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#080d12">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#080d12">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="NSU FP">
+<link rel="apple-touch-icon" href="assets/app-192.png?v=2">
+<link rel="manifest" href="manifest.webmanifest?v=7">
 <title>NSU FP · 4 курс</title>
 <style>
 :root{
@@ -33,9 +36,9 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
     radial-gradient(420px 270px at 25% 91%,rgba(121,67,38,.14),transparent 65%),
     linear-gradient(180deg,#090e13 0%,#0a1015 70%,#0b0f12 100%);
 }
-.brand{display:flex;align-items:center;gap:12px;padding:2px 8px 20px;border-bottom:1px solid var(--line2)}
-.brand-mark{width:42px;height:42px;display:grid;place-items:center;border:0;border-radius:10px;background:transparent;overflow:hidden;flex:0 0 42px}
-.brand-mark img{width:42px;height:42px;display:block;object-fit:cover;border-radius:10px}
+.brand{display:flex;align-items:center;gap:14px;padding:2px 6px 20px;border-bottom:1px solid var(--line2)}
+.brand-mark{width:60px;height:60px;display:grid;place-items:center;border:0;border-radius:12px;background:transparent;overflow:hidden;flex:0 0 60px}
+.brand-mark img{width:60px;height:60px;display:block;object-fit:cover;border-radius:12px}
 .brand-title{font-family:Georgia,"Times New Roman",serif;font-size:20px;font-weight:700;color:var(--cream);letter-spacing:.02em}
 .brand-sub{margin-top:1px;color:var(--muted);font-size:11px}
 .main-nav{padding:19px 0 13px}
@@ -168,6 +171,11 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .search-view{max-width:1180px;margin:14px auto 0}
 .search-title{margin:0 0 5px;font-family:Georgia,"Times New Roman",serif;color:var(--cream);font-size:28px}
 .search-note{margin-bottom:14px;color:#727d87;font-size:12px}
+.literature-tabs{display:flex;gap:6px;width:max-content;max-width:100%;margin:12px 0 14px;padding:4px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.literature-tab{height:36px;padding:0 14px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:650;white-space:nowrap}
+.literature-tab:hover{color:var(--text);background:rgba(255,255,255,.035)}
+.literature-tab.active{border-color:rgba(214,76,80,.28);background:var(--soft);color:#f5d7d2}
+@media(max-width:520px){.literature-tabs{width:100%}.literature-tab{flex:1;min-width:0;padding:0 8px}}
 .search-result{padding:13px 14px;border-bottom:1px solid var(--line2);cursor:pointer}
 .search-result:hover{background:#111921}
 .search-result-title{color:#ece7e1;font-size:13px;font-weight:700}
@@ -187,6 +195,10 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 .course-code{color:#f0dbca;font-weight:750;font-size:12px}.course-name{margin-top:4px;color:#6e7881;font-size:9.5px;line-height:1.35}
 .recent{padding:17px}.recent-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px 0;border-bottom:1px solid var(--line2);cursor:pointer}.recent-row:last-child{border-bottom:0}
 .recent-name{color:#dcd8d2;font-size:11px}.recent-meta,.recent-date{margin-top:2px;color:#69747d;font-size:9.5px}
+.history-actions{display:flex;align-items:center;gap:8px}
+.history-remove{width:27px;height:27px;display:grid;place-items:center;padding:0;border:1px solid transparent;border-radius:7px;background:transparent;color:#69747d;font-size:18px;line-height:1;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.history-remove:hover,.history-remove:focus-visible{background:#171f26;border-color:#3a444e;color:#e4d8ca;outline:none}
+.history-empty{padding:10px 0;color:#69747d;font-size:10.5px;line-height:1.45}
 .mobile-overlay{display:none}
 @media(max-width:1180px){
   .workspace{grid-template-columns:minmax(400px,1fr) minmax(340px,.8fr)}
@@ -658,27 +670,6 @@ body:not(.music-active) .action{
 
 /* Atmosphere mini-player */
 .music-row{display:flex;align-items:center;gap:9px;min-height:54px;padding:0 9px}
-.music-panel{
-  margin-top:7px;padding:10px 11px 11px;border:1px solid color-mix(in srgb,var(--line) 82%,var(--accent) 18%);
-  border-radius:10px;background:linear-gradient(180deg,color-mix(in srgb,var(--panel2) 88%,var(--accent) 12%),color-mix(in srgb,var(--panel) 95%,transparent));
-  box-shadow:inset 0 1px rgba(255,255,255,.025)
-}
-.music-panel:not([hidden]){animation:musicVolumeIn .18s ease-out}
-@keyframes musicVolumeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-.music-volume-head{display:grid;grid-template-columns:16px 1fr auto;align-items:center;gap:6px;margin-bottom:7px;color:var(--text2);font-size:9px;font-weight:700;letter-spacing:.02em}
-.music-volume-icon{display:grid;place-items:center;color:var(--accent);font-size:13px;transform:translateY(-1px)}
-.music-volume-value{color:var(--muted);font-variant-numeric:tabular-nums;font-weight:650}
-.music-volume{
-  width:100%;height:4px;display:block;margin:0;appearance:none;border-radius:999px;outline:0;cursor:pointer;
-  background:linear-gradient(90deg,var(--accent) 0 var(--music-volume,28%),color-mix(in srgb,var(--line) 76%,transparent) var(--music-volume,28%) 100%)
-}
-.music-volume::-webkit-slider-thumb{
-  appearance:none;width:12px;height:12px;border:2px solid var(--panel);border-radius:50%;background:var(--cream);
-  box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 70%,transparent)
-}
-.music-volume::-moz-range-thumb{
-  width:10px;height:10px;border:2px solid var(--panel);border-radius:50%;background:var(--cream)
-}
 .music-toggle.playing .music-pearl-shell{animation:pearlBreath 3.8s ease-in-out infinite}
 @keyframes pearlBreath{0%,100%{transform:scale(1);opacity:.94}50%{transform:scale(1.045);opacity:1}}
 
@@ -719,7 +710,6 @@ body.music-na19x::after{
   .music-toggle.playing .music-pearl-shell{filter:none!important}
 }
 @media(prefers-reduced-motion:reduce){
-  .music-panel:not([hidden]),
   .music-toggle.playing .music-pearl,
   .music-toggle.playing .music-pearl-shell,
   body.music-na19x .hero-art .hero-art-na19x{animation:none!important}
@@ -1027,10 +1017,70 @@ body.music-na19x .pdf-fullscreen-loader{
   .main{padding-left:10px;padding-right:10px}
 }
 
+/* iPhone / iOS PWA safe areas: keep controls below the status bar / Dynamic Island. */
+@media(max-width:720px){
+  .topbar{
+    height:calc(58px + env(safe-area-inset-top,0px));
+    min-height:calc(58px + env(safe-area-inset-top,0px));
+    padding-top:env(safe-area-inset-top,0px);
+    padding-left:max(10px,env(safe-area-inset-left,0px));
+    padding-right:max(10px,env(safe-area-inset-right,0px));
+  }
+  .main{
+    padding-bottom:max(28px,calc(12px + env(safe-area-inset-bottom,0px)));
+  }
+}
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .topbar{
+    height:calc(52px + env(safe-area-inset-top,0px));
+    min-height:calc(52px + env(safe-area-inset-top,0px));
+    padding-top:env(safe-area-inset-top,0px);
+  }
+  .sidebar{
+    width:calc(var(--sideW) + env(safe-area-inset-left,0px));
+    padding-left:max(16px,env(safe-area-inset-left,0px));
+  }
+  .main{
+    padding-bottom:max(20px,calc(8px + env(safe-area-inset-bottom,0px)));
+  }
+}
+
+/* Installed app edge-to-edge fill */
+html,body{
+  width:100%;
+  min-width:100%;
+  min-height:100%;
+  background:#080d12;
+}
+body{
+  min-height:100dvh;
+  overscroll-behavior:none;
+}
+.shell,.app{
+  min-height:100dvh;
+  background:var(--bg);
+}
+@media (display-mode: fullscreen){
+  html,body,.shell,.app{
+    width:100%;
+    min-width:100%;
+    min-height:100dvh;
+    background:var(--bg);
+  }
+  .topbar{
+    padding-left:max(10px,env(safe-area-inset-left,0px));
+    padding-right:max(10px,env(safe-area-inset-right,0px));
+  }
+  .sidebar{
+    padding-top:max(12px,env(safe-area-inset-top,0px));
+    padding-bottom:max(10px,env(safe-area-inset-bottom,0px));
+  }
+}
+
 </style>
 <link rel="stylesheet" href="knowledge.css?v=3">
 <link rel="stylesheet" href="app.css?v=6">
-<script defer src="app.js?v=4"></script>
+<script defer src="app.js?v=13"></script>
 </head>
 <body>
 <div id="overlay" class="mobile-overlay"></div>
@@ -1051,9 +1101,7 @@ body.music-na19x .pdf-fullscreen-loader{
     <div class="main-nav">
       <button class="nav-btn active" data-view="home"><span class="nav-ico" data-icon="home" aria-hidden="true"></span>Главная</button>
       <button class="nav-btn" data-view="subjects"><span class="nav-ico" data-icon="subjects" aria-hidden="true"></span>Предметы</button>
-      <button class="nav-btn" data-view="search"><span class="nav-ico" data-icon="search" aria-hidden="true"></span>Поиск</button>
       <button class="nav-btn" data-view="literature"><span class="nav-ico" data-icon="literature" aria-hidden="true"></span>Литература</button>
-      <button class="nav-btn" data-view="additional-literature"><span class="nav-ico" data-icon="additional_literature" aria-hidden="true"></span>Доп. литература</button>
       <button class="nav-btn" data-view="archive"><span class="nav-ico" data-icon="archive" aria-hidden="true"></span>Архив</button>
     </div>
 
@@ -1061,21 +1109,13 @@ body.music-na19x .pdf-fullscreen-loader{
     <nav id="subjectNav" class="subject-nav"></nav>
     <div class="music-control">
       <div class="music-row">
-        <button id="musicToggle" class="music-toggle" type="button" aria-pressed="false" aria-controls="musicPanel" aria-expanded="false" aria-label="Включить музыку" title="Включить музыку">
+        <button id="musicToggle" class="music-toggle" type="button" aria-pressed="false" aria-label="Включить музыку" title="Включить музыку">
           <span class="music-pearl-shell" aria-hidden="true">
             <img class="music-pearl music-pearl-play" src="assets/1.png" alt="">
             <img class="music-pearl music-pearl-pause" src="assets/2.png" alt="">
           </span>
         </button>
         <span class="music-copy"><span class="music-label">Атмосфера</span></span>
-      </div>
-      <div id="musicPanel" class="music-panel" hidden>
-        <div class="music-volume-head">
-          <span class="music-volume-icon" aria-hidden="true">◖</span>
-          <span>Громкость</span>
-          <span id="musicVolumeValue" class="music-volume-value">28%</span>
-        </div>
-        <input id="musicVolume" class="music-volume" type="range" min="0" max="100" value="28" step="1" aria-label="Громкость атмосферы">
       </div>
       <audio id="siteMusic" preload="none" loop></audio>
     </div>
@@ -1089,7 +1129,6 @@ body.music-na19x .pdf-fullscreen-loader{
         </span>
         <span>Приложение</span>
       </button>
-      <button id="installApp" type="button" hidden>Установить приложение</button>
       <button id="offlineFiles" type="button" hidden>Сохранённые PDF</button>
       <a class="repo-link" href="https://github.com/BelovVlad/NSU_FP_Y4_S1" target="_blank" rel="noopener"><span>GitHub</span><span data-icon="external" aria-hidden="true"></span></a>
     </div>
@@ -1166,8 +1205,8 @@ let FILES=[];
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 hydrateIcons();
 const initialSubject=hashSubject();
-const state={view:(ORDER.includes(initialSubject)?'subjects':'home'),subject:(ORDER.includes(initialSubject)?initialSubject:'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchBusy:false,sort:'date'};
-const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),musicPanel=$('#musicPanel'),musicVolume=$('#musicVolume'),musicVolumeValue=$('#musicVolumeValue'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame'),pdfFullscreenLoader=$('#pdfFullscreenLoader'),pdfFullscreenLoaderText=$('#pdfFullscreenLoaderText');
+const state={view:(ORDER.includes(initialSubject)?'subjects':'home'),subject:(ORDER.includes(initialSubject)?initialSubject:'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchBusy:false,sort:'date',literatureTab:'main'};
+const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame'),pdfFullscreenLoader=$('#pdfFullscreenLoader'),pdfFullscreenLoaderText=$('#pdfFullscreenLoaderText');
 let searchRun=0,searchTimer=0,searchWorker=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
 function syncSubjectHash(){if(state.view!=='subjects'||!ORDER.includes(state.subject))return;const h='#subject='+encodeURIComponent(state.subject);if(location.hash!==h)history.replaceState(null,'',h)}
@@ -1263,6 +1302,72 @@ function keywords(f){
   return [...new Set(source)].slice(0,4);
 }
 
+const OPEN_HISTORY_KEY='nsu-open-history-v1';
+function readOpenHistory(){
+  try{
+    const value=JSON.parse(localStorage.getItem(OPEN_HISTORY_KEY)||'[]');
+    return Array.isArray(value)?value.filter(item=>item&&typeof item.path==='string'):[];
+  }catch{return[]}
+}
+function recordOpenedPath(path){
+  path=String(path||'').trim();
+  if(!path)return;
+  const next=[{path,openedAt:Date.now()},...readOpenHistory().filter(item=>item.path!==path)].slice(0,8);
+  try{localStorage.setItem(OPEN_HISTORY_KEY,JSON.stringify(next))}catch{}
+}
+function removeOpenedPath(path){
+  path=String(path||'').trim();
+  if(!path)return;
+  const next=readOpenHistory().filter(item=>item.path!==path);
+  try{localStorage.setItem(OPEN_HISTORY_KEY,JSON.stringify(next))}catch{}
+}
+function recordOpenedFile(file){if(file?.path)recordOpenedPath(file.path)}
+function recordOpenedUrl(url){
+  try{
+    const parsed=new URL(url,location.href);
+    const path=parsed.searchParams.get('file');
+    if(path)recordOpenedPath(path);
+  }catch{}
+}
+function rememberedPdfPage(file){
+  if(!file||file.ext!=='.pdf')return 0;
+  try{
+    const page=Number(localStorage.getItem('nsu-pdf-page:'+file.path));
+    return Number.isInteger(page)&&page>0?page:0;
+  }catch{return 0}
+}
+function openedHistoryFiles(limit=8){
+  return readOpenHistory().map(item=>({item,file:fileByPath(item.path)})).filter(row=>row.file).slice(0,limit);
+}
+function applyPdfPosition(position){
+  const path=String(position?.file||'').trim();
+  const canonical=String(position?.canonicalFile||'').trim();
+  const page=Number(position?.page);
+  const savedAt=Number(position?.savedAt)||Date.now();
+  if(!path||!Number.isInteger(page)||page<1)return;
+  const paths=[...new Set([path,canonical].filter(Boolean))];
+  try{
+    const latest=Math.max(0,...paths.map(p=>Number(localStorage.getItem('nsu-pdf-page-ts:'+p))||0));
+    if(latest>savedAt)return;
+    for(const p of paths){
+      localStorage.setItem('nsu-pdf-page:'+p,String(page));
+      localStorage.setItem('nsu-pdf-page-ts:'+p,String(savedAt));
+    }
+  }catch{}
+  document.querySelectorAll('.history-row').forEach(row=>{
+    if(!paths.includes(row.dataset.historyPath))return;
+    const label=row.querySelector('.recent-date');
+    if(label)label.textContent='стр. '+page;
+  });
+}
+function persistOpenPdfPosition(){
+  try{
+    const position=pdfFullscreenFrame.contentWindow?.nsuPersistReaderPosition?.();
+    if(position)applyPdfPosition(position);
+    return position||null;
+  }catch{return null}
+}
+
 
 let activeMusicTrack=null;
 let musicAudioContext=null,musicSourceNode=null,musicAnalyser=null,musicAnalyserData=null,musicGlitchFrame=0;
@@ -1272,7 +1377,7 @@ function chooseMusicTrack(forceId=''){
   if(forceId)activeMusicTrack=MUSIC_TRACKS.find(t=>t.id===forceId)||MUSIC_TRACKS[0];
   else activeMusicTrack=Math.random()<0.10?MUSIC_TRACKS[1]:MUSIC_TRACKS[0];
   musicAudio.src=activeMusicTrack.src;
-  musicAudio.volume=Number(musicVolume.value)/100;
+  musicAudio.volume=1;
   return activeMusicTrack;
 }
 function currentPdfTheme(){
@@ -1294,11 +1399,9 @@ function setMusicTheme(on){
 function syncMusicUi(playing){
   musicToggle.classList.toggle('playing',playing);
   musicToggle.setAttribute('aria-pressed',playing?'true':'false');
-  musicToggle.setAttribute('aria-expanded',playing?'true':'false');
   const action=playing?'Приостановить музыку':'Включить музыку';
   musicToggle.setAttribute('aria-label',action);
   musicToggle.title=action;
-  musicPanel.hidden=!playing;
   setMusicTheme(playing);
   if(playing&&activeMusicTrack?.id==='na19x')startMusicGlitch();
   else stopMusicGlitch();
@@ -1430,6 +1533,7 @@ async function toggleMusic(){
   try{
     await ensureMusicAnalyser();
     if(musicAudioContext?.state==='suspended')await musicAudioContext.resume();
+    musicAudio.volume=1;
     await musicAudio.play();
   }catch(e){
     console.error('Music playback failed',e);
@@ -1437,64 +1541,85 @@ async function toggleMusic(){
   }
 }
 musicToggle.addEventListener('click',()=>{void toggleMusic()});
-musicVolume.addEventListener('input',()=>{
-  const value=Number(musicVolume.value);
-  musicAudio.volume=value/100;
-  musicVolumeValue.textContent=value+'%';
-  musicVolume.style.setProperty('--music-volume',value+'%');
-});
-musicVolume.style.setProperty('--music-volume',musicVolume.value+'%');
+musicAudio.volume=1;
 musicAudio.addEventListener('play',()=>syncMusicUi(true));
 musicAudio.addEventListener('pause',()=>syncMusicUi(false));
 musicAudio.addEventListener('error',()=>syncMusicUi(false));
 
+let pdfHistoryArmed=false;
+
+function hidePdfOverlay(){
+  persistOpenPdfPosition();
+  pdfFullscreen.classList.remove('open','ready');
+  pdfFullscreen.setAttribute('aria-hidden','true');
+  document.body.classList.remove('pdf-open');
+}
+
 async function openPdfFullscreen(url,title='PDF'){
   if(!url)return;
+  if(pdfFullscreen.classList.contains('open'))persistOpenPdfPosition();
+  recordOpenedUrl(url);
   const themed=new URL(url,location.href);
   const theme=currentPdfTheme();
   if(theme)themed.searchParams.set('theme',theme);else themed.searchParams.delete('theme');
   const isNotebook=themed.pathname.includes('/notebook/viewer.html');
   if(isNotebook){themed.searchParams.delete('embed');themed.searchParams.set('full','1')}
 
+  // This is deliberately an in-app fixed overlay, not the browser Fullscreen API.
+  // Android Back can therefore close the document instead of first exiting immersive mode.
+  if(!pdfFullscreen.classList.contains('open')){
+    const current=history.state&&typeof history.state==='object'?history.state:{};
+    history.pushState({...current,nsuPdfOverlay:true},'',location.href);
+    pdfHistoryArmed=true;
+  }
+
   pdfFullscreen.classList.remove('ready');
   pdfFullscreen.classList.add('open');
   pdfFullscreen.setAttribute('aria-hidden','false');
   document.body.classList.add('pdf-open');
-  pdfFullscreen.dataset.requestedFullscreen='1';
   if(pdfFullscreenLoaderText)pdfFullscreenLoaderText.textContent=isNotebook?'Открываю Notebook…':'Открываю PDF…';
 
-  pdfFullscreenFrame.src='about:blank';
-
-  let fullscreenPromise=null;
-  try{
-    if(document.fullscreenElement!==pdfFullscreen&&pdfFullscreen.requestFullscreen){
-      fullscreenPromise=pdfFullscreen.requestFullscreen();
+  requestAnimationFrame(()=>{
+    try{
+      // Replace the iframe document instead of navigating it. Otherwise
+      // Android WebView adds every opened PDF to the joint Back history.
+      pdfFullscreenFrame.contentWindow.location.replace(themed.href);
+    }catch{
+      pdfFullscreenFrame.src=themed.href;
     }
-  }catch{}
+  });
+}
 
-  requestAnimationFrame(()=>{pdfFullscreenFrame.src=themed.href});
-  try{if(fullscreenPromise)await fullscreenPromise}catch{}
+async function closePdfFullscreen(fromHistory=false){
+  if(!pdfFullscreen.classList.contains('open'))return;
+  const popOverlayState=!fromHistory&&pdfHistoryArmed&&history.state?.nsuPdfOverlay;
+  // Hide first. Even if Android is still draining an old iframe history entry,
+  // the user must never see the previous PDF.
+  pdfHistoryArmed=false;
+  hidePdfOverlay();
+  if(popOverlayState)history.back();
 }
-async function closePdfFullscreen(fromFullscreenChange=false){
-  pdfFullscreen.classList.remove('open','ready');
-  pdfFullscreen.setAttribute('aria-hidden','true');
-  document.body.classList.remove('pdf-open');
-  pdfFullscreen.dataset.requestedFullscreen='0';
-  pdfFullscreenFrame.src='about:blank';
-  if(!fromFullscreenChange&&document.fullscreenElement===pdfFullscreen){
-    try{await document.exitFullscreen()}catch{}
-  }
-}
-document.addEventListener('fullscreenchange',()=>{
-  if(!document.fullscreenElement&&pdfFullscreen.dataset.requestedFullscreen==='1'&&pdfFullscreen.classList.contains('open')){
-    void closePdfFullscreen(true);
-  }
+
+window.addEventListener('popstate',()=>{
+  if(!pdfFullscreen.classList.contains('open'))return;
+  pdfHistoryArmed=false;
+  hidePdfOverlay();
 });
+
+window.nsuHandleAndroidBack=()=>{
+  if(!pdfFullscreen.classList.contains('open'))return false;
+  const popOverlayState=pdfHistoryArmed&&history.state?.nsuPdfOverlay;
+  pdfHistoryArmed=false;
+  hidePdfOverlay();
+  if(popOverlayState)history.back();
+  return true;
+};
 document.addEventListener('click',e=>{
   const a=e.target.closest('a.preview-open-full,a.search-open,a.action.primary,a[href*="pdfjs/viewer.html"],a[href*="notebook/viewer.html"]');
   if(!a)return;
-  if(a.classList.contains('knowledge-card')||a.closest('.app-downloads'))return;
   const href=a.getAttribute('href')||'';
+  recordOpenedUrl(href);
+  if(a.classList.contains('knowledge-card')||a.closest('.app-downloads'))return;
   if(!href.includes('pdfjs/viewer.html')&&!href.includes('notebook/viewer.html'))return;
   e.preventDefault();
   e.stopImmediatePropagation();
@@ -1502,7 +1627,12 @@ document.addEventListener('click',e=>{
 },true);
 window.addEventListener('message',e=>{
   if(e.origin!==location.origin)return;
+  if(e.data?.type==='nsu-pdf-position'){
+    applyPdfPosition(e.data);
+    return;
+  }
   if(e.data?.type==='nsu-close-pdf'){
+    applyPdfPosition(e.data);
     void closePdfFullscreen();
     return;
   }
@@ -1514,6 +1644,11 @@ window.addEventListener('message',e=>{
     pdfFullscreen.classList.add('ready');
   }
 });
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&pdfFullscreen.classList.contains('open'))persistOpenPdfPosition();
+});
+window.addEventListener('pagehide',()=>{if(pdfFullscreen.classList.contains('open'))persistOpenPdfPosition()});
+window.addEventListener('beforeunload',()=>{if(pdfFullscreen.classList.contains('open'))persistOpenPdfPosition()});
 
 function setActiveNav(view){
   if(view!=='search'){
@@ -1836,12 +1971,14 @@ function renderSubject(){
     const item=(group?.items||[]).find(i=>i.id===r.dataset.entry);if(!item)return;
     state.selectedEntry=item;
     if(isPhoneLayout()&&previewFile?.ext==='.pdf'){openPdfFullscreen(viewerUrl(previewFile,item.page||0,item.title),item.title);return}
+    recordOpenedFile(previewFile);
     renderSubject();
   });
   $$('.file-row[data-path]').forEach(r=>r.onclick=()=>{
     const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;
     if(isPhoneLayout()&&f.ext==='.pdf'){openPdfFullscreen(viewerUrl(f),niceName(f));return}
     if(isPhoneLayout()&&f.ext==='.ipynb'){openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
+    recordOpenedFile(f);
     state.selected=f;state.selectedEntry=null;renderSubject();
   });
 }
@@ -1945,18 +2082,41 @@ window.addEventListener('message',event=>{
 
 
 function renderHome(){
-  const subjectCount=ORDER.filter(s=>FILES.some(f=>subjectOf(f)===s)).length;
   const recent=FILES.slice().sort((a,b)=>(new Date(updatedValue(b)||0))-(new Date(updatedValue(a)||0))).slice(0,7);
+  const opened=openedHistoryFiles(8);
+  const openedHtml=opened.length?opened.map(({file:f})=>{
+    const page=rememberedPdfPage(f);
+    const right=f.ext==='.pdf'?(page?'стр. '+page:'PDF'):'Notebook';
+    return '<div class="recent-row history-row" data-history-path="'+esc(f.path)+'"><div><div class="recent-name">'+esc(niceName(f))+'</div><div class="recent-meta">'+esc(subjectOf(f)+' · '+sectionOf(f))+'</div></div><div class="history-actions"><div class="recent-date">'+esc(right)+'</div><button class="history-remove" type="button" title="Убрать из истории" aria-label="Убрать '+esc(niceName(f))+' из истории">×</button></div></div>';
+  }).join(''):'<div class="history-empty">Здесь появятся последние открытые материалы.</div>';
   main.innerHTML='<div class="home-grid">'+
     '<section class="panel welcome"><h2>Материалы 4 курса</h2><p>Физический факультет НГУ · 1 семестр</p>'+
-      '<div class="stats"><div class="stat"><div class="stat-num">'+subjectCount+'</div><div class="stat-label">предметов</div></div><div class="stat"><div class="stat-num">'+countBySection('Лекции')+'</div><div class="stat-label">лекционных файлов</div></div><div class="stat"><div class="stat-num">'+countBySection('Семинары')+'</div><div class="stat-label">семинаров</div></div><div class="stat"><div class="stat-num">'+FILES.length+'</div><div class="stat-label">всего материалов</div></div></div>'+
       '<div class="course-grid">'+ORDER.filter(s=>FILES.some(f=>subjectOf(f)===s)).map(s=>'<div class="course-card" data-subject="'+esc(s)+'"><div class="course-code">'+esc(s)+'</div><div class="course-name">'+esc((META[s]||{}).name||s)+'</div></div>').join('')+'</div>'+
     '</section>'+
-    '<section class="panel recent"><h2 class="panel-title">Недавно обновлено</h2>'+recent.map(f=>{const m=fileMeta(f),b=isNewDate(m.created_at)?'<span class="new-badge">NEW</span>':'';return '<div class="recent-row" data-path="'+esc(f.path)+'"><div><div class="recent-name"><span class="file-name-line">'+esc(niceName(f))+b+'</span></div><div class="recent-meta">'+esc(subjectOf(f)+' · '+sectionOf(f))+'</div></div><div class="recent-date">'+esc(fmtDate(updatedValue(f)))+'</div></div>'}).join('')+'</section>'+
+    '<section id="openHistory" class="panel recent"><h2 class="panel-title">История открытия</h2>'+openedHtml+'</section>'+
+    '<section id="recentUpdates" class="panel recent"><h2 class="panel-title">Недавно обновлено</h2>'+recent.map(f=>{const m=fileMeta(f),b=isNewDate(m.created_at)?'<span class="new-badge">NEW</span>':'';return '<div class="recent-row updated-row" data-path="'+esc(f.path)+'"><div><div class="recent-name"><span class="file-name-line">'+esc(niceName(f))+b+'</span></div><div class="recent-meta">'+esc(subjectOf(f)+' · '+sectionOf(f))+'</div></div><div class="recent-date">'+esc(fmtDate(updatedValue(f)))+'</div></div>'}).join('')+'</section>'+
     '<section class="panel feedback-panel"><div class="feedback-head"><div class="feedback-copy"><div class="feedback-kicker">Обратная связь</div><h2 class="feedback-title">Идеи и замечания</h2><p class="feedback-desc">Есть что улучшить, нашли ошибку или не хватает материала? Напишите здесь — сообщения хранятся в GitHub Discussions.</p></div></div><div id="giscusMount" class="giscus-wrap"><div class="feedback-loading">Загружаю обсуждение…</div></div></section>'+
   '</div>';
   $$('.course-card').forEach(c=>c.onclick=()=>{state.view='subjects';state.subject=c.dataset.subject;state.section='';state.selected=null;state.selectedEntry=null;setActiveNav('subjects');renderSubjectNav();render()});
-  $$('.recent-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
+  $$('.history-row').forEach(r=>r.onclick=()=>{
+    const f=fileByPath(r.dataset.historyPath);if(!f)return;
+    if(f.ext==='.pdf'){void openPdfFullscreen(viewerUrl(f,rememberedPdfPage(f),niceName(f)),niceName(f));return}
+    if(f.ext==='.ipynb'){void openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
+  });
+  $$('.history-remove').forEach(button=>button.onclick=event=>{
+    event.preventDefault();
+    event.stopPropagation();
+    const row=button.closest('.history-row');
+    const path=row?.dataset.historyPath;
+    if(!path)return;
+    removeOpenedPath(path);
+    row.remove();
+    const panel=document.getElementById('openHistory');
+    if(panel&&!panel.querySelector('.history-row')){
+      panel.insertAdjacentHTML('beforeend','<div class="history-empty">Здесь появятся последние открытые материалы.</div>');
+    }
+  });
+  $$('.updated-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
   void mountFeedback();
 }
 
@@ -2031,7 +2191,7 @@ function searchPreviewHtml(q){
   const hit=g.hits[searchSelectedHit]||g.hits[0]||{page:0,snippet:''},f=g.f;
   const isPdf=f.ext==='.pdf',isNotebook=f.ext==='.ipynb';
   let openUrl=isPdf?viewerUrl(f,hit.page||0,niceName(f)):isNotebook?notebookUrl(f,hit.page||0,niceName(f),false):githubUrl(f);
-  let frameUrl=isPdf?openUrl:isNotebook?notebookUrl(f,hit.page||0,niceName(f),true):openUrl;
+  let frameUrl=isPdf?openUrl+'&embed=1&searchpreview=1':isNotebook?notebookUrl(f,hit.page||0,niceName(f),true):openUrl;
   if((isPdf||isNotebook)&&q){openUrl+='&find='+encodeURIComponent(q);frameUrl+='&find='+encodeURIComponent(q)}
   const frame=(isPdf||isNotebook)
     ?'<div class="search-preview-frame-wrap"><iframe class="search-preview-frame" src="'+esc(frameUrl)+'" loading="lazy" title="'+esc(niceName(f))+'"></iframe></div>'
@@ -2040,14 +2200,20 @@ function searchPreviewHtml(q){
   return '<div class="search-preview-head"><div><div class="search-preview-kicker">'+esc(subjectOf(f)+' · '+sectionOf(f)+loc)+'</div><h2 class="search-preview-title">'+esc(niceName(f))+'</h2></div><button class="search-preview-close" type="button">×</button></div><div class="search-preview-toolbar"><a class="search-open" href="'+esc(openUrl)+'">Открыть'+(hit.page?(isNotebook?' ячейку ':' стр. ')+hit.page:'')+'</a><div class="search-hit-nav"><button class="search-prev-hit" type="button">‹</button><span class="search-hit-position">'+(searchSelectedHit+1)+' / '+g.hits.length+'</span><button class="search-next-hit" type="button">›</button></div></div>'+frame+'<div class="search-preview-text">'+searchHi(hit.snippet||'',q)+'</div>';
 }
 
+function dismissSearchKeyboard(){
+  searchInput.blur();
+  const active=document.activeElement;
+  if(active&&active!==document.body&&typeof active.blur==='function')active.blur();
+}
 function bindSearchUi(q){
-  $$('.search-filter-chip').forEach(b=>b.onclick=()=>{if(b.dataset.searchFilter==='subject')searchFilterSubject=b.dataset.value;else searchFilterSection=b.dataset.value;searchSelectedGroup=0;searchSelectedHit=0;searchMobilePreview=false;renderSearchResults(q)});
-  $$('.search-group-main').forEach(b=>b.onclick=()=>{searchSelectedGroup=Number(b.dataset.searchGroupMain)||0;searchSelectedHit=0;searchMobilePreview=true;renderSearchResults(q)});
-  $$('.search-page-hit').forEach(b=>b.onclick=e=>{e.stopPropagation();searchSelectedGroup=Number(b.dataset.searchGroup)||0;searchSelectedHit=Number(b.dataset.searchHit)||0;searchMobilePreview=true;renderSearchResults(q)});
-  const prev=$('.search-prev-hit'),next=$('.search-next-hit'),close=$('.search-preview-close');
-  if(prev)prev.onclick=()=>{const g=searchGroups[searchSelectedGroup];if(!g)return;searchSelectedHit=(searchSelectedHit-1+g.hits.length)%g.hits.length;searchMobilePreview=true;renderSearchResults(q)};
-  if(next)next.onclick=()=>{const g=searchGroups[searchSelectedGroup];if(!g)return;searchSelectedHit=(searchSelectedHit+1)%g.hits.length;searchMobilePreview=true;renderSearchResults(q)};
-  if(close)close.onclick=()=>{searchMobilePreview=false;const p=$('#searchPreview');if(p)p.classList.remove('mobile-visible')};
+  $$('.search-filter-chip').forEach(b=>b.onclick=()=>{dismissSearchKeyboard();if(b.dataset.searchFilter==='subject')searchFilterSubject=b.dataset.value;else searchFilterSection=b.dataset.value;searchSelectedGroup=0;searchSelectedHit=0;searchMobilePreview=false;renderSearchResults(q)});
+  $$('.search-group-main').forEach(b=>b.onclick=()=>{dismissSearchKeyboard();searchSelectedGroup=Number(b.dataset.searchGroupMain)||0;searchSelectedHit=0;searchMobilePreview=true;renderSearchResults(q)});
+  $$('.search-page-hit').forEach(b=>b.onclick=e=>{e.stopPropagation();dismissSearchKeyboard();searchSelectedGroup=Number(b.dataset.searchGroup)||0;searchSelectedHit=Number(b.dataset.searchHit)||0;searchMobilePreview=true;renderSearchResults(q)});
+  const prev=$('.search-prev-hit'),next=$('.search-next-hit'),close=$('.search-preview-close'),open=$('.search-open');
+  if(prev)prev.onclick=()=>{dismissSearchKeyboard();const g=searchGroups[searchSelectedGroup];if(!g)return;searchSelectedHit=(searchSelectedHit-1+g.hits.length)%g.hits.length;searchMobilePreview=true;renderSearchResults(q)};
+  if(next)next.onclick=()=>{dismissSearchKeyboard();const g=searchGroups[searchSelectedGroup];if(!g)return;searchSelectedHit=(searchSelectedHit+1)%g.hits.length;searchMobilePreview=true;renderSearchResults(q)};
+  if(open)open.onclick=()=>dismissSearchKeyboard();
+  if(close)close.onclick=()=>{dismissSearchKeyboard();searchMobilePreview=false;const p=$('#searchPreview');if(p)p.classList.remove('mobile-visible')};
 }
 function renderSearchResults(q){
   searchGroups=searchGroupsAll.filter(g=>(searchFilterSubject==='all'||subjectOf(g.f)===searchFilterSubject)&&(searchFilterSection==='all'||sectionOf(g.f)===searchFilterSection));
@@ -2072,9 +2238,7 @@ async function runSearch(q){
   try{ensureSearchWorker().postMessage({type:'search',id:run,query:q})}
   catch{state.searchBusy=false;searchStatus('Не удалось запустить поиск.',true)}
 }
-function renderFiltered(title,predicate){
-  const list=FILES.filter(predicate);
-  main.innerHTML='<section class="search-view"><h1 class="search-title">'+esc(title)+'</h1><div class="search-note">'+list.length+' файл(ов)</div><div class="panel filtered-list"><div class="file-list">'+fileRows(list)+'</div></div></section>';
+function bindFilteredRows(){
   document.querySelectorAll('.file-row').forEach(r=>r.onclick=()=>{
     const f=FILES.find(x=>x.path===r.dataset.path);
     if(!f)return;
@@ -2091,13 +2255,40 @@ function renderFiltered(title,predicate){
     render();
   });
 }
+function renderFiltered(title,predicate){
+  const list=FILES.filter(predicate);
+  main.innerHTML='<section class="search-view"><h1 class="search-title">'+esc(title)+'</h1><div class="search-note">'+list.length+' файл(ов)</div><div class="panel filtered-list"><div class="file-list">'+fileRows(list)+'</div></div></section>';
+  bindFilteredRows();
+}
+function renderLiterature(){
+  const extra=state.literatureTab==='additional';
+  const list=FILES.filter(extra
+    ? f=>subjectOf(f)==='ДЛ'
+    : f=>subjectOf(f)!=='ДЛ'&&sectionOf(f)==='Литература');
+  main.innerHTML='<section class="search-view">'+
+    '<h1 class="search-title">Литература</h1>'+
+    '<div class="literature-tabs" role="tablist" aria-label="Разделы литературы">'+
+      '<button class="literature-tab '+(!extra?'active':'')+'" type="button" data-literature-tab="main" role="tab" aria-selected="'+(!extra)+'">Литература</button>'+
+      '<button class="literature-tab '+(extra?'active':'')+'" type="button" data-literature-tab="additional" role="tab" aria-selected="'+extra+'">Доп. литература</button>'+
+    '</div>'+
+    '<div class="search-note">'+list.length+' файл(ов)</div>'+
+    '<div class="panel filtered-list"><div class="file-list">'+fileRows(list)+'</div></div>'+
+  '</section>';
+  document.querySelectorAll('[data-literature-tab]').forEach(btn=>btn.onclick=()=>{
+    const next=btn.dataset.literatureTab;
+    if(next===state.literatureTab)return;
+    state.literatureTab=next;
+    renderLiterature();
+  });
+  bindFilteredRows();
+}
 
 function render(){
   if(state.view==='home')renderHome();
   else if(state.view==='subjects')renderSubject();
   else if(state.view==='search')runSearch(searchInput.value);
-  else if(state.view==='literature')renderFiltered('Литература',f=>sectionOf(f)==='Литература');
-  else if(state.view==='additional-literature')renderFiltered('Доп. литература',f=>subjectOf(f)==='ДЛ');
+  else if(state.view==='literature')renderLiterature();
+  else if(state.view==='additional-literature'){state.view='literature';state.literatureTab='additional';setActiveNav('literature');renderLiterature()}
   else if(state.view==='archive')renderFiltered('Все материалы',()=>true);
 }
 
