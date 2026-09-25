@@ -195,6 +195,9 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 .course-code{color:#f0dbca;font-weight:750;font-size:12px}.course-name{margin-top:4px;color:#6e7881;font-size:9.5px;line-height:1.35}
 .recent{padding:17px}.recent-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px 0;border-bottom:1px solid var(--line2);cursor:pointer}.recent-row:last-child{border-bottom:0}
 .recent-name{color:#dcd8d2;font-size:11px}.recent-meta,.recent-date{margin-top:2px;color:#69747d;font-size:9.5px}
+.history-actions{display:flex;align-items:center;gap:8px}
+.history-remove{width:27px;height:27px;display:grid;place-items:center;padding:0;border:1px solid transparent;border-radius:7px;background:transparent;color:#69747d;font-size:18px;line-height:1;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.history-remove:hover,.history-remove:focus-visible{background:#171f26;border-color:#3a444e;color:#e4d8ca;outline:none}
 .history-empty{padding:10px 0;color:#69747d;font-size:10.5px;line-height:1.45}
 .mobile-overlay{display:none}
 @media(max-width:1180px){
@@ -1312,6 +1315,12 @@ function recordOpenedPath(path){
   const next=[{path,openedAt:Date.now()},...readOpenHistory().filter(item=>item.path!==path)].slice(0,8);
   try{localStorage.setItem(OPEN_HISTORY_KEY,JSON.stringify(next))}catch{}
 }
+function removeOpenedPath(path){
+  path=String(path||'').trim();
+  if(!path)return;
+  const next=readOpenHistory().filter(item=>item.path!==path);
+  try{localStorage.setItem(OPEN_HISTORY_KEY,JSON.stringify(next))}catch{}
+}
 function recordOpenedFile(file){if(file?.path)recordOpenedPath(file.path)}
 function recordOpenedUrl(url){
   try{
@@ -2078,7 +2087,7 @@ function renderHome(){
   const openedHtml=opened.length?opened.map(({file:f})=>{
     const page=rememberedPdfPage(f);
     const right=f.ext==='.pdf'?(page?'стр. '+page:'PDF'):'Notebook';
-    return '<div class="recent-row history-row" data-history-path="'+esc(f.path)+'"><div><div class="recent-name">'+esc(niceName(f))+'</div><div class="recent-meta">'+esc(subjectOf(f)+' · '+sectionOf(f))+'</div></div><div class="recent-date">'+esc(right)+'</div></div>';
+    return '<div class="recent-row history-row" data-history-path="'+esc(f.path)+'"><div><div class="recent-name">'+esc(niceName(f))+'</div><div class="recent-meta">'+esc(subjectOf(f)+' · '+sectionOf(f))+'</div></div><div class="history-actions"><div class="recent-date">'+esc(right)+'</div><button class="history-remove" type="button" title="Убрать из истории" aria-label="Убрать '+esc(niceName(f))+' из истории">×</button></div></div>';
   }).join(''):'<div class="history-empty">Здесь появятся последние открытые материалы.</div>';
   main.innerHTML='<div class="home-grid">'+
     '<section class="panel welcome"><h2>Материалы 4 курса</h2><p>Физический факультет НГУ · 1 семестр</p>'+
@@ -2089,12 +2098,25 @@ function renderHome(){
     '<section class="panel feedback-panel"><div class="feedback-head"><div class="feedback-copy"><div class="feedback-kicker">Обратная связь</div><h2 class="feedback-title">Идеи и замечания</h2><p class="feedback-desc">Есть что улучшить, нашли ошибку или не хватает материала? Напишите здесь — сообщения хранятся в GitHub Discussions.</p></div></div><div id="giscusMount" class="giscus-wrap"><div class="feedback-loading">Загружаю обсуждение…</div></div></section>'+
   '</div>';
   $$('.course-card').forEach(c=>c.onclick=()=>{state.view='subjects';state.subject=c.dataset.subject;state.section='';state.selected=null;state.selectedEntry=null;setActiveNav('subjects');renderSubjectNav();render()});
-  $$('.history-row').forEach(r=>r.onclick=()=>{
+  $('.history-row').forEach(r=>r.onclick=()=>{
     const f=fileByPath(r.dataset.historyPath);if(!f)return;
     if(f.ext==='.pdf'){void openPdfFullscreen(viewerUrl(f,rememberedPdfPage(f),niceName(f)),niceName(f));return}
     if(f.ext==='.ipynb'){void openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
   });
-  $$('.updated-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
+  $('.history-remove').forEach(button=>button.onclick=event=>{
+    event.preventDefault();
+    event.stopPropagation();
+    const row=button.closest('.history-row');
+    const path=row?.dataset.historyPath;
+    if(!path)return;
+    removeOpenedPath(path);
+    row.remove();
+    const panel=document.getElementById('openHistory');
+    if(panel&&!panel.querySelector('.history-row')){
+      panel.insertAdjacentHTML('beforeend','<div class="history-empty">Здесь появятся последние открытые материалы.</div>');
+    }
+  });
+  $('.updated-row').forEach(r=>r.onclick=()=>{const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;state.view='subjects';state.subject=subjectOf(f);state.section=sectionOf(f);state.selected=f;setActiveNav('subjects');renderSubjectNav();render()});
   void mountFeedback();
 }
 
