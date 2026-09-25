@@ -27,6 +27,9 @@ button,input,a{font:inherit}
 .zoom-controls{padding-top:12px;border-top:1px solid var(--line)}
 .zoom-edit{width:56px;height:32px;display:flex;align-items:center;justify-content:center;gap:2px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--muted);font-size:10px}
 .zoom-input{width:34px;min-width:0;height:28px;padding:0;border:0;outline:0;background:transparent;color:var(--text);font-size:12px;text-align:right;appearance:textfield;-moz-appearance:textfield}
+.quality-controls{padding-top:10px;border-top:1px solid var(--line)}
+.quality-select{width:64px;height:32px;padding:0 5px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--text);font-size:10px;outline:0;cursor:pointer}
+.quality-select:focus{border-color:var(--accent)}
 .tone-switch{width:60px;height:30px;padding:2px;gap:0}
 .tone-btn{width:18px;height:24px;flex:1;border-radius:5px}.tone-icon{width:14px;height:14px}
 .expand-viewer{display:none}.embed-view .expand-viewer{display:inline-flex}
@@ -75,6 +78,9 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 .compact-view .control-pair{gap:6px}
 .compact-view .control-pair .btn.icon{width:44px;height:44px}
 .compact-view .zoom-edit{width:72px;height:44px;font-size:12px}.compact-view .zoom-input{width:42px;font-size:16px}
+.compact-view .quality-controls{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;padding:10px 0 0;border-top:1px solid var(--line)}
+.compact-view .quality-controls>.control-label{font-size:12px}
+.compact-view .quality-select{width:min(190px,55vw);height:44px;padding:0 12px;font-size:14px}
 .compact-view #fit{width:auto;min-width:92px;height:44px;flex-direction:row;padding:0 10px;border-color:var(--line);background:var(--panel)}
 .compact-view #fit .tool-caption{font-size:12px}
 .compact-view .reader-controls>.rail-button{width:100%;height:48px;flex-direction:row;gap:10px;padding:0 12px;border:1px solid var(--line);background:var(--panel)}
