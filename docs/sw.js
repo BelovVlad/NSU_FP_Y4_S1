@@ -1,5 +1,5 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v35';
+const SHELL_VERSION = 'v36';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
@@ -8,7 +8,7 @@ const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
 const CORE = ['index.html', 'app.js?v=13', 'app.css?v=6', 'knowledge.css?v=3', 'manifest.webmanifest?v=7',
   'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=18', 'notebook/outline.js?build=2',
-  'pdfjs/viewer.html', 'pdfjs/controls.css?v=10', 'assets/nsu-fp-emblem.webp',
+  'pdfjs/viewer.html', 'pdfjs/controls.css?v=11', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png?v=2', 'assets/app-512.png?v=2'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json'];
 const absolute = path => new URL(path, BASE).href;
