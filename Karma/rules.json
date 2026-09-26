@@ -1,0 +1,19 @@
+{
+  "timezone": "Asia/Novosibirsk",
+  "utcOffsetHours": 7,
+  "deadlineHour": 9,
+  "requireWholeSubject": false,
+  "reinforcementDays": 7,
+  "maximumDays": 14,
+  "workingWeekdays": [1, 2, 3, 4, 5, 6],
+  "series": [
+    {"id":"ovf-lectures","subject":"ОВФ","section":"Лекции","firstDate":"2026-09-01"},
+    {"id":"tdisf-lectures","subject":"ТДиСФ","section":"Лекции","firstDate":"2026-09-04"},
+    {"id":"tdisf-seminars","subject":"ТДиСФ","section":"Семинары","firstDate":"2026-09-04"},
+    {"id":"fksv-seminars","subject":"ФКСВ","section":"Семинары","firstDate":"2026-09-05"},
+    {"id":"fech-seminars","subject":"ФЭЧ","section":"Семинары","firstDate":"2026-09-03"},
+    {"id":"fech-lectures","subject":"ФЭЧ","section":"Лекции","firstDate":"2026-09-03"},
+    {"id":"fiham-lectures","subject":"ФиХАиМ","section":"Лекции","firstDate":"2026-09-01"},
+    {"id":"fiham-seminars","subject":"ФиХАиМ","section":"Семинары","firstDate":"2026-09-01"}
+  ]
+}

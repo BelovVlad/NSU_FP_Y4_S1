@@ -1,0 +1,167 @@
+{
+  "version": 1,
+  "rules": {
+    "timezone": "Asia/Novosibirsk",
+    "utcOffsetHours": 7,
+    "deadlineHour": 9,
+    "requireWholeSubject": false,
+    "reinforcementDays": 7,
+    "maximumDays": 14,
+    "workingWeekdays": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "series": [
+      {
+        "id": "ovf-lectures",
+        "subject": "ОВФ",
+        "section": "Лекции",
+        "firstDate": "2026-09-01"
+      },
+      {
+        "id": "tdisf-lectures",
+        "subject": "ТДиСФ",
+        "section": "Лекции",
+        "firstDate": "2026-09-04"
+      },
+      {
+        "id": "tdisf-seminars",
+        "subject": "ТДиСФ",
+        "section": "Семинары",
+        "firstDate": "2026-09-04"
+      },
+      {
+        "id": "fksv-seminars",
+        "subject": "ФКСВ",
+        "section": "Семинары",
+        "firstDate": "2026-09-05"
+      },
+      {
+        "id": "fech-seminars",
+        "subject": "ФЭЧ",
+        "section": "Семинары",
+        "firstDate": "2026-09-03"
+      },
+      {
+        "id": "fech-lectures",
+        "subject": "ФЭЧ",
+        "section": "Лекции",
+        "firstDate": "2026-09-03"
+      },
+      {
+        "id": "fiham-lectures",
+        "subject": "ФиХАиМ",
+        "section": "Лекции",
+        "firstDate": "2026-09-01"
+      },
+      {
+        "id": "fiham-seminars",
+        "subject": "ФиХАиМ",
+        "section": "Семинары",
+        "firstDate": "2026-09-01"
+      }
+    ]
+  },
+  "observedFrom": "2026-09-19T14:02:03+00:00",
+  "snapshots": [
+    {
+      "at": "2026-09-19T14:02:03+00:00",
+      "counts": {
+        "ovf-lectures": 3,
+        "tdisf-lectures": 2,
+        "tdisf-seminars": 2,
+        "fksv-seminars": 2,
+        "fech-seminars": 3,
+        "fech-lectures": 2,
+        "fiham-lectures": 2,
+        "fiham-seminars": 2
+      },
+      "commit": "7bfd995b99fd77fea7115215083ba9e233572334"
+    },
+    {
+      "at": "2026-09-21T14:02:29+00:00",
+      "counts": {
+        "ovf-lectures": 3,
+        "tdisf-lectures": 2,
+        "tdisf-seminars": 2,
+        "fksv-seminars": 2,
+        "fech-seminars": 3,
+        "fech-lectures": 2,
+        "fiham-lectures": 3,
+        "fiham-seminars": 2
+      },
+      "commit": "e6d5e87808201e845872a6468be49c3226b819dd"
+    },
+    {
+      "at": "2026-09-26T04:52:41+00:00",
+      "counts": {
+        "ovf-lectures": 4,
+        "tdisf-lectures": 2,
+        "tdisf-seminars": 2,
+        "fksv-seminars": 2,
+        "fech-seminars": 3,
+        "fech-lectures": 2,
+        "fiham-lectures": 3,
+        "fiham-seminars": 2
+      },
+      "commit": "19901b9e9e9fcb50b74dcb47ae62655881664913"
+    },
+    {
+      "at": "2026-09-26T06:04:23+00:00",
+      "counts": {
+        "ovf-lectures": 4,
+        "tdisf-lectures": 2,
+        "tdisf-seminars": 2,
+        "fksv-seminars": 2,
+        "fech-seminars": 3,
+        "fech-lectures": 2,
+        "fiham-lectures": 4,
+        "fiham-seminars": 2
+      },
+      "commit": "a4a33afc47d6da32063f5e84e3b767e0ea934a00"
+    },
+    {
+      "at": "2026-09-26T16:38:10+00:00",
+      "counts": {
+        "ovf-lectures": 4,
+        "tdisf-lectures": 4,
+        "tdisf-seminars": 2,
+        "fksv-seminars": 2,
+        "fech-seminars": 3,
+        "fech-lectures": 2,
+        "fiham-lectures": 4,
+        "fiham-seminars": 2
+      },
+      "commit": "7345837f2ba18a9911d6891ea0bf392a99537e5f"
+    },
+    {
+      "at": "2026-09-26T16:39:43.266050+00:00",
+      "counts": {
+        "ovf-lectures": 4,
+        "tdisf-lectures": 4,
+        "tdisf-seminars": 4,
+        "fksv-seminars": 4,
+        "fech-seminars": 3,
+        "fech-lectures": 2,
+        "fiham-lectures": 4,
+        "fiham-seminars": 4
+      },
+      "source": "index-build"
+    }
+  ],
+  "currentCounts": {
+    "ovf-lectures": 4,
+    "tdisf-lectures": 4,
+    "tdisf-seminars": 4,
+    "fksv-seminars": 4,
+    "fech-seminars": 3,
+    "fech-lectures": 2,
+    "fiham-lectures": 4,
+    "fiham-seminars": 4
+  },
+  "indexGeneratedAt": "2026-09-26T16:38:31.020710+00:00"
+}

@@ -705,6 +705,8 @@ def main() -> None:
     )
 
     build_structure(generated_at)
+    from build_karma_history import build as build_karma_history
+    build_karma_history()
 
     total_records = sum(s["records"] for s in manifest["shards"])
     total_locations = sum(s["locations"] for s in manifest["shards"])

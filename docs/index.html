@@ -2464,40 +2464,86 @@ else{state.view='home';setActiveNav('home')}
   trigger.style.cursor='pointer';
 
   let loading=null;
+  let soundContext=null,soundGain=null;
+  const effectBuffers=new Map();
+  function effectBuffer(name){
+    if(!effectBuffers.has(name))effectBuffers.set(name,
+      fetch(`../Karma/audio/${name}.wav`).then(r=>{if(!r.ok)throw new Error('Sound unavailable');return r.arrayBuffer()})
+        .then(data=>soundContext.decodeAudioData(data)).catch(()=>{effectBuffers.delete(name);return null}));
+    return effectBuffers.get(name);
+  }
+  window.preloadKarmaSounds=()=>soundContext?Promise.all(['karmaWheelLow','karmaFuzz','karmaFuzz2',
+    'karmaWheelC_1','karmaWheelC_2','karmaWheelC_3','karmaWheelC_4','capBell2','UIWood5','karmaRiseA','UIWoodHit'].map(effectBuffer)):Promise.resolve();
+  window.playSecretDashboardSound=(name,volume=.4,options={})=>{
+    let cancelled=false,source=null,gain=null,pitch=options.pitch||1;
+    if(!soundContext)return ()=>{};
+    if(!/^[A-Za-z0-9_]+$/.test(name))return ()=>{};
+    effectBuffer(name).then(buffer=>{
+      if(cancelled||!buffer||!document.getElementById('secretAcademicDashboard')?.classList.contains('is-open'))return;
+      source=soundContext.createBufferSource();source.buffer=buffer;
+      gain=soundContext.createGain();gain.gain.value=volume;
+      source.loop=!!options.loop;source.playbackRate.value=pitch;
+      source.connect(gain);gain.connect(soundGain);source.onended=()=>{source.disconnect();gain.disconnect()};source.start();
+    }).catch(()=>{});
+    const stop=()=>{cancelled=true;if(source)source.stop()};
+    stop.set=(newVolume,newPitch=1)=>{volume=newVolume;pitch=newPitch;if(gain)gain.gain.setTargetAtTime(volume,soundContext.currentTime,.025);if(source)source.playbackRate.setTargetAtTime(pitch,soundContext.currentTime,.025)};
+    return stop;
+  };
+  function prepareKarmaAudio(){
+    const AudioCtx=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtx)return;
+    try{
+      if(!soundContext){
+        soundContext=new AudioCtx();
+        soundGain=soundContext.createGain();
+        soundGain.gain.value=1;
+        soundGain.connect(soundContext.destination);
+      }
+      // Unlock audio during the tap, before the dashboard script loads.
+      if(soundContext.state==='suspended')soundContext.resume().catch(()=>{});
+    }catch{ /* Audio must not prevent opening the dashboard. */ }
+  }
+  function openSecretDashboard(){
+    window.openSecretAcademicDashboard();
+  }
   function loadSecretDashboard(){
-    if(window.openSecretAcademicDashboard){
-      window.openSecretAcademicDashboard();
+    if(loading||document.getElementById('secretAcademicDashboard')?.classList.contains('is-open'))return loading;
+    prepareKarmaAudio();
+    if(window.openSecretAcademicDashboard&&window.KarmaEngine&&window.KarmaView&&window.KarmaAnimation){
+      openSecretDashboard();
       return;
     }
-    if(loading)return loading;
 
     loading=new Promise((resolve,reject)=>{
       if(!document.querySelector('link[data-secret-dashboard]')){
         const css=document.createElement('link');
         css.rel='stylesheet';
-        css.href='secret-dashboard.css';
+        css.href='secret-dashboard.css?v=4';
         css.dataset.secretDashboard='1';
         document.head.appendChild(css);
+        const karmaCss=document.createElement('link');
+        karmaCss.rel='stylesheet';karmaCss.href='../Karma/karma.css?v=2';
+        document.head.appendChild(karmaCss);
       }
 
-      const script=document.createElement('script');
-      script.src='secret-dashboard.js?v=2';
-      script.async=true;
-      script.dataset.secretDashboard='1';
-      script.onload=()=>{
+      const scripts=['../Karma/karma-engine.js?v=2','../Karma/karma-animation.js?v=1','../Karma/karma-view.js?v=6','secret-dashboard.js?v=7'];
+      Promise.all(scripts.map(src=>new Promise((loaded,failed)=>{
+        const script=document.createElement('script');
+        script.src=src;script.async=true;script.dataset.secretDashboard='1';
+        script.onload=loaded;script.onerror=()=>{script.remove();failed(new Error('Secret dashboard failed to load'))};
+        document.body.appendChild(script);
+      }))).then(()=>{
         loading=null;
         if(window.openSecretAcademicDashboard){
-          window.openSecretAcademicDashboard();
+          openSecretDashboard();
           resolve();
         }else{
           reject(new Error('Secret dashboard did not initialize'));
         }
-      };
-      script.onerror=()=>{
+      }).catch(error=>{
         loading=null;
-        reject(new Error('Secret dashboard failed to load'));
-      };
-      document.body.appendChild(script);
+        reject(error);
+      });
     }).catch(error=>{
       console.error('[secret-dashboard-loader]',error);
       const message=document.createElement('div');
