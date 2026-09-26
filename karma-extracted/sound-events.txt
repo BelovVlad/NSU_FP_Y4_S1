@@ -1,0 +1,56 @@
+base:566: MENU_Switch_Page_Out : UIMetalHit/vol=0.3
+base:570: MENU_Sleep_Screen_LOOP : SleepScreenLoop/vol=0.4
+base:571: //MENU_Enter_Sleep_Screen : UIArp/vol=0.3
+base:572: MENU_Enter_Death_Screen : NewRegion/vol=0.5
+base:580: MENU_Karma_Ladder_Movement_LOOP : karmaWheelLow/vol=0.5
+base:581: MENU_Karma_Ladder_Deselect : karmaFuzz/vol=0.4
+base:582: MENU_Karma_Ladder_Start_Moving : karmaWheelC/vol=0.4
+base:583: MENU_Karma_Ladder_Hit_Upper_Cap : capBell2/vol=0.3
+base:584: MENU_Karma_Ladder_Hit_Lower_Cap : campBell2/vol=0.3
+base:585: MENU_Karma_Ladder_Reinforce_Save_Grab : UIWood5/vol=0.5
+base:586: MENU_Karma_Ladder_Reinforce_Save_Pull : UIWood5/vol=0.5
+base:587: MENU_Karma_Ladder_Reinforcement_Dissipate_A : karmaFuzz2/vol=0.6
+base:588: MENU_Karma_Ladder_Reinforcement_Dissipate_B : UIWood/vol=0.5
+base:589: MENU_Karma_Ladder_Increase_Bump/PLAYALL : karmaRiseA/vol=0.4, UIWoodHit/vol=0.4
+base:590: MENU_Karma_Ladder_Upper_Cap_Bump/PLAYALL : karmaRiseA/vol=0.4, UIWoodHit/vol=0.4
+base:592: MENU_Endgame_Meters_Power_On : karmaFuzz2/vol=0.4
+base:593: MENU_Endgame_Float_Meter_Start_Animation_Up : karmaMeterRiseB/vol=0.35
+base:594: MENU_Endgame_Float_Meter_Start_Animation_Down : karmaMeterFallB/vol=0.35
+base:595: MENU_Endgame_Notch_Meter_Start_Animation : KarmaMeterRiseB/vol=0.35
+base:598: MENU_Continue_From_Sleep_Death_Screen : UIImpact3/vol=0.5
+base:599: MENU_Passage_Button : UIArp/vol=0.4
+base:605: HUD_Karma_Reinforce_Flicker : karmaFuzz2/vol=0.4
+base:606: //HUD_Karma_Reinforce_Small_Circle
+base:607: //HUD_Karma_Reinforce_Contract
+base:608: HUD_Karma_Reinforce_Bump : UIWood5/vol=0.5
+base:849: MENU_Karma_Ladder_Start_Moving_Saint : karmaWheelB/vol=0.6
+base:878: Cap_Bump_Vengeance : CapBumpVengeance/vol=0.25
+base:879: Sleep_Blizzard_Loop : SleepBlizzardLoop/vol=0.15
+mergedmods:466: MENU_Switch_Page_Out : UIMetalHit/vol=0.3
+mergedmods:470: MENU_Sleep_Screen_LOOP : SleepScreenLoop/vol=0.4
+mergedmods:471: //MENU_Enter_Sleep_Screen : UIArp/vol=0.3
+mergedmods:472: MENU_Enter_Death_Screen : NewRegion/vol=0.5
+mergedmods:478: MENU_Karma_Ladder_Movement_LOOP : karmaWheelLow/vol=0.5
+mergedmods:479: MENU_Karma_Ladder_Deselect : karmaFuzz/vol=0.4
+mergedmods:480: MENU_Karma_Ladder_Start_Moving : karmaWheelC/vol=0.4
+mergedmods:481: MENU_Karma_Ladder_Hit_Upper_Cap : capBell2/vol=0.3
+mergedmods:482: MENU_Karma_Ladder_Hit_Lower_Cap : campBell2/vol=0.3
+mergedmods:483: MENU_Karma_Ladder_Reinforce_Save_Grab : UIWood5/vol=0.5
+mergedmods:484: MENU_Karma_Ladder_Reinforce_Save_Pull : UIWood5/vol=0.5
+mergedmods:485: MENU_Karma_Ladder_Reinforcement_Dissipate_A : karmaFuzz2/vol=0.6
+mergedmods:486: MENU_Karma_Ladder_Reinforcement_Dissipate_B : UIWood/vol=0.5
+mergedmods:487: MENU_Karma_Ladder_Increase_Bump/PLAYALL : karmaRiseA/vol=0.4, UIWoodHit/vol=0.4
+mergedmods:488: MENU_Karma_Ladder_Upper_Cap_Bump/PLAYALL : karmaRiseA/vol=0.4, UIWoodHit/vol=0.4
+mergedmods:489: MENU_Endgame_Meters_Power_On : karmaFuzz2/vol=0.4
+mergedmods:490: MENU_Endgame_Float_Meter_Start_Animation_Up : karmaMeterRiseB/vol=0.35
+mergedmods:491: MENU_Endgame_Float_Meter_Start_Animation_Down : karmaMeterFallB/vol=0.35
+mergedmods:492: MENU_Endgame_Notch_Meter_Start_Animation : KarmaMeterRiseB/vol=0.35
+mergedmods:494: MENU_Continue_From_Sleep_Death_Screen : UIImpact3/vol=0.5
+mergedmods:495: MENU_Passage_Button : UIArp/vol=0.4
+mergedmods:499: HUD_Karma_Reinforce_Flicker : karmaFuzz2/vol=0.4
+mergedmods:500: //HUD_Karma_Reinforce_Small_Circle
+mergedmods:501: //HUD_Karma_Reinforce_Contract
+mergedmods:502: HUD_Karma_Reinforce_Bump : UIWood5/vol=0.5
+mergedmods:697: MENU_Karma_Ladder_Start_Moving_Saint : karmaWheelB/vol=0.6
+mergedmods:726: Cap_Bump_Vengeance : CapBumpVengeance/vol=0.25
+mergedmods:727: Sleep_Blizzard_Loop : SleepBlizzardLoop/vol=0.15

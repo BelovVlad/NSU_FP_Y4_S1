@@ -1,0 +1,72 @@
+[
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\illustrations\\bigkarma.png",
+    "output": "reference/bigkarma.png",
+    "sha256": "4e7b911d593261c545432de38e0d8ed6da60953b328b98ceb428a75b79fa2faf"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\palettes\\noise.png",
+    "output": "textures/noise.png",
+    "sha256": "00d098cff8c4b32de7e9b582809292e44f931aaff4b94876ad7df01dc391dac4"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\palettes\\noise2.png",
+    "output": "textures/noise2.png",
+    "sha256": "b358cb9147703f4d2081f2f6c652a671a9c05c942a3f1d8a5fd973ee8ce8bca0"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\shaders\\FlatLight.shader",
+    "output": "shaders/FlatLight.shader",
+    "sha256": "05ecac8ded1652ace20bb9ac06b2c1c31c08eccd72f7ff2452c7b536a4b6ff36"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\shaders\\_ShaderFix.cginc",
+    "output": "shaders/_ShaderFix.cginc",
+    "sha256": "cb805703a1238631343dc0a3ee8d34ca5c6c279f2e95ac84548e40bf64fb6526"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\shaders\\_Functions.cginc",
+    "output": "shaders/_Functions.cginc",
+    "sha256": "dfdd254a415610038aac7ad6200b52da86a248d28c90bfab87e198c0b8eb5b32"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\shaders\\_RippleClip.cginc",
+    "output": "shaders/_RippleClip.cginc",
+    "sha256": "6a619cb83fa1c5b7785b4f61f8b93939b209f75cf7663c0679aed91561ad893a"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\shaders\\Basic.shader",
+    "output": "shaders/Basic.shader",
+    "sha256": "db416ab530cb0028508a6f2513928bb603f57dc538d97b5e341bae6d2855640e"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\shaders\\LocalBloom.shader",
+    "output": "shaders/LocalBloom.shader",
+    "sha256": "ce04f1ea37daef06da87047c74ae4ece7caafa595114ef7b96be24ef40ed299b"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\shaders\\VectorCircle.shader",
+    "output": "shaders/VectorCircle.shader",
+    "sha256": "a2b8cacf8e205805bbdcf69baa19f7ddbfdf511f66e8d4a3b57d3c5120093507"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\shaders\\VectorCircleFadable.shader",
+    "output": "shaders/VectorCircleFadable.shader",
+    "sha256": "5200a95e8a912ba616a2114b66884e9dfe694890b5c4b27d4af17539e323f3d8"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\soundeffects\\sounds.txt",
+    "output": "reference/sounds-base.txt",
+    "sha256": "49f05b7b1617781072f4140a3549ceb9b99bed1b2474d9e5acfd801d92ce7f06"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\mergedmods\\soundeffects\\sounds.txt",
+    "output": "reference/sounds-mergedmods.txt",
+    "sha256": "5a1c9ccc65674128adcdfabf2fb2b3dd8a55c39a61768de806e2ed070aae77a2"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\Managed\\Assembly-CSharp.dll",
+    "output": "reference/Assembly-CSharp.dll",
+    "sha256": "b6be1d4e18ce219d21091b51564cb6a11c1e4106b41de903eb8e58849cb16fdb"
+  }
+]

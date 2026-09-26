@@ -1,0 +1,18 @@
+{
+  "unconfigured_or_disabled_events": [
+    "HUD_Karma_Reinforce_Contract",
+    "HUD_Karma_Reinforce_Small_Circle",
+    "MENU_Death_Screen_LOOP",
+    "MENU_Enter_Sleep_Screen",
+    "MENU_Karma_Ladder_Increase_Bump_Charge",
+    "MENU_Karma_Ladder_Reinforce_Save_Secure",
+    "MENU_Karma_Ladder_Reselect"
+  ],
+  "samples_not_found_as_loose_files": [
+    "UIWood",
+    "campBell2"
+  ],
+  "external_shader_includes": [
+    "UnityCG.cginc"
+  ]
+}

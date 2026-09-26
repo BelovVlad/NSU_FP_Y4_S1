@@ -1,0 +1,170 @@
+[
+  {
+    "path": "audio/loadedsoundeffects/capBell2.wav",
+    "name": "capBell2",
+    "duration_seconds": 2.966281179138322,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/CapBumpVengeance.wav",
+    "name": "CapBumpVengeance",
+    "duration_seconds": 3.9654195011337867,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaFuzz.wav",
+    "name": "karmaFuzz",
+    "duration_seconds": 3.6,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaFuzz2.wav",
+    "name": "karmaFuzz2",
+    "duration_seconds": 3.6239002267573697,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/KarmaMeterFallB.wav",
+    "name": "KarmaMeterFallB",
+    "duration_seconds": 3.0,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/KarmaMeterRiseB.wav",
+    "name": "KarmaMeterRiseB",
+    "duration_seconds": 3.0,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaRiseA.wav",
+    "name": "karmaRiseA",
+    "duration_seconds": 3.6,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaWheelB_1.wav",
+    "name": "karmaWheelB_1",
+    "duration_seconds": 6.6,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaWheelB_2.wav",
+    "name": "karmaWheelB_2",
+    "duration_seconds": 6.6,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaWheelB_3.wav",
+    "name": "karmaWheelB_3",
+    "duration_seconds": 6.6,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaWheelB_4.wav",
+    "name": "karmaWheelB_4",
+    "duration_seconds": 6.6,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaWheelC_1.wav",
+    "name": "karmaWheelC_1",
+    "duration_seconds": 6.0,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaWheelC_2.wav",
+    "name": "karmaWheelC_2",
+    "duration_seconds": 6.0,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaWheelC_3.wav",
+    "name": "karmaWheelC_3",
+    "duration_seconds": 6.0,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaWheelC_4.wav",
+    "name": "karmaWheelC_4",
+    "duration_seconds": 6.0,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/karmaWheelLow.wav",
+    "name": "karmaWheelLow",
+    "duration_seconds": 4.8119727891156465,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/NewRegion.wav",
+    "name": "NewRegion",
+    "duration_seconds": 8.459047619047618,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/SleepBlizzardLoop.wav",
+    "name": "SleepBlizzardLoop",
+    "duration_seconds": 41.25961451247166,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/SleepScreenLOOP.wav",
+    "name": "SleepScreenLOOP",
+    "duration_seconds": 36.76156462585034,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/UIArp.wav",
+    "name": "UIArp",
+    "duration_seconds": 4.285714285714286,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/UIImpact3.wav",
+    "name": "UIImpact3",
+    "duration_seconds": 2.4012698412698414,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/UIMetalHit.wav",
+    "name": "UIMetalHit",
+    "duration_seconds": 2.5714285714285716,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/UIWood5.wav",
+    "name": "UIWood5",
+    "duration_seconds": 2.5714285714285716,
+    "sample_rate": 44100,
+    "channels": 2
+  },
+  {
+    "path": "audio/loadedsoundeffects/UIWoodHit.wav",
+    "name": "UIWoodHit",
+    "duration_seconds": 4.285714285714286,
+    "sample_rate": 44100,
+    "channels": 2
+  }
+]
