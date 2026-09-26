@@ -7,7 +7,6 @@
 
   const TRACKED_SERIES = [
     {subject:'ОВФ', section:'Лекции', label:'Лекции', weekday:2, start:'12:40', end:'14:15', firstDate:'2026-09-01'},
-    {subject:'ОВФ', section:'Семинары', label:'Семинары', weekday:6, start:'09:00', end:'10:35', firstDate:'2026-09-05', fallback:'ovf-files'},
     {subject:'ТДиСФ', section:'Лекции', label:'Лекции', weekday:5, start:'10:50', end:'12:25', firstDate:'2026-09-04'},
     {subject:'ТДиСФ', section:'Семинары', label:'Семинары', weekday:5, start:'12:40', end:'14:15', firstDate:'2026-09-04'},
     {subject:'ФКСВ', section:'Семинары', label:'Семинары', weekday:6, start:'12:40', end:'14:15', firstDate:'2026-09-05'},
@@ -165,11 +164,11 @@
   }
 
   function occurrenceState(series,now){
-    let due=0;
+    const dates=[];
     for(let d=series.firstDate;d<=now.date;d=addDays(d,7)){
-      if(d<now.date||(d===now.date&&now.minutes>=minutes(series.end)))due++;
+      if(d<now.date||(d===now.date&&now.minutes>=minutes(series.end)))dates.push(d);
     }
-    return {due};
+    return {due:dates.length,dates};
   }
   function nextOccurrence(series,now){
     let d=series.firstDate;
@@ -180,10 +179,13 @@
   function buildStats(data){
     const now=nskNow();
     const series=TRACKED_SERIES.map(s=>{
-      const due=occurrenceState(s,now).due;
+      const occurrence=occurrenceState(s,now);
+      const due=occurrence.due;
       const actual=actualForSeries(s,data);
       const covered=Math.min(actual,due);
-      return {...s,due,actual,covered,missing:Math.max(due-actual,0),ahead:Math.max(actual-due,0),next:nextOccurrence(s,now)};
+      const missing=Math.max(due-actual,0);
+      const missingDates=missing?occurrence.dates.slice(covered):[];
+      return {...s,due,actual,covered,missing,missingDates,ahead:Math.max(actual-due,0),next:nextOccurrence(s,now)};
     });
     const expected=series.reduce((a,x)=>a+x.due,0);
     const covered=series.reduce((a,x)=>a+x.covered,0);
@@ -241,7 +243,7 @@
         </article>`).join('')}</div>
       <div style="height:12px"></div>
       <div class="secret-academic-card-note" style="text-align:left;margin-bottom:7px">Что сейчас не закрыто</div>
-      <div class="secret-debt-list">${debts.length?debts.map(d=>`<div class="secret-debt"><i class="secret-debt-dot"></i><div><div class="secret-debt-name">${esc(d.subject)} · ${esc(d.label)}</div><div class="secret-debt-sub">по расписанию должно быть ${d.due}, в индексе ${d.actual}</div></div><div class="secret-debt-count">−${d.missing}</div></div>`).join(''):'<div class="secret-empty">По расписанию всё закрыто.</div>'}</div>`;
+      <div class="secret-debt-list">${debts.length?debts.map(d=>`<div class="secret-debt"><i class="secret-debt-dot"></i><div><div class="secret-debt-name">${esc(d.subject)} · ${esc(d.label)}</div><div class="secret-debt-sub">нужно восполнить за ${d.missingDates.map(formatDateRu).join(', ')} · по расписанию должно быть ${d.due}, в индексе ${d.actual}</div></div><div class="secret-debt-count">−${d.missing}</div></div>`).join(''):'<div class="secret-empty">По расписанию всё закрыто.</div>'}</div>`;
   }
 
   function isTrackedLesson(lesson){
