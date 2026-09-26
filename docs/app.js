@@ -321,13 +321,122 @@
     });
     return registration;
   }) : Promise.reject(new Error('Офлайн-режим требует HTTPS и поддерживаемого браузера.'));
-  // Avoid an unhandled rejection on browsers that cannot install the app.
   ready.catch(()=>{});
   window.NSUApp={ready,request};
   updateInstallButton();
 
-  // A reader can be the first page visited: retain libraries loaded before worker activation.
   const warm=()=>ready.then(()=>request('WARM',{urls:[location.href,...performance.getEntriesByType('resource').map(entry=>entry.name)]})).catch(()=>{});
   window.NSUApp.warm=warm;
   if(document.readyState==='complete')warm();else window.addEventListener('load',warm,{once:true});
+})();
+
+;(() => {
+  'use strict';
+
+  // Subject links: any <subject>/link.md creates a "Ссылки" tab.
+  if(typeof state!=='undefined'&&typeof sectionsFor==='function'&&typeof renderSubject==='function'){
+    const linkState=new Map(),linkCache=new Map(),linkPending=new Map();
+    const order=['Лекции','Семинары','Лабораторные','Задачи','Литература','Ссылки','Практика','Теория'];
+    const encodePath=path=>String(path).split('/').map(encodeURIComponent).join('/');
+    const urlFor=subject=>'https://raw.githubusercontent.com/BelovVlad/NSU_FP_Y4_S1/main/'+encodePath(subject+'/link.md')+'?t='+Date.now();
+    async function fetchLinks(subject,refresh=false){
+      if(!refresh&&linkCache.has(subject))return linkCache.get(subject);
+      if(!refresh&&linkPending.has(subject))return linkPending.get(subject);
+      const pending=(async()=>{
+        const response=await fetch(urlFor(subject),{cache:'no-store'});
+        if(!response.ok){if(response.status===404)linkState.set(subject,false);throw new Error('HTTP '+response.status)}
+        const markdown=await response.text();linkState.set(subject,true);linkCache.set(subject,markdown);return markdown;
+      })().finally(()=>linkPending.delete(subject));
+      linkPending.set(subject,pending);return pending;
+    }
+    async function probe(subject){
+      if(linkState.has(subject))return linkState.get(subject);
+      try{await fetchLinks(subject);return true}catch{if(!linkState.has(subject))linkState.set(subject,false);return false}
+    }
+    const baseSectionsFor=sectionsFor;
+    sectionsFor=function(subject){
+      const set=baseSectionsFor(subject).filter(section=>section!=='Ссылки');
+      if(linkState.get(subject)===true&&!set.includes('Ссылки'))set.push('Ссылки');
+      return set.sort((a,b)=>(order.indexOf(a)<0?99:order.indexOf(a))-(order.indexOf(b)<0?99:order.indexOf(b))||a.localeCompare(b,'ru'));
+    };
+    loadSubjectLinks=async function(refresh=false){
+      const target=document.getElementById('subjectLinksContent');if(!target)return;
+      const subject=state.subject;
+      try{
+        const markdown=await fetchLinks(subject,refresh);
+        if(target.isConnected&&state.subject===subject)target.innerHTML=renderLinksMarkdown(markdown);
+      }catch(error){
+        console.error('[links]',error);
+        if(target.isConnected&&state.subject===subject){
+          target.innerHTML='<div class="links-error">Не удалось прочитать '+subject+'/link.md. <button type="button" id="retrySubjectLinks" class="feedback-retry">Повторить</button></div>';
+          const retry=document.getElementById('retrySubjectLinks');if(retry)retry.onclick=()=>{target.innerHTML='<div class="links-loading">Загружаю ссылки…</div>';void loadSubjectLinks(true)};
+        }
+      }
+    };
+    const baseRenderSubject=renderSubject;
+    renderSubject=function(){
+      const subject=state.subject;
+      if(subject!=='База'&&!linkState.has(subject))void probe(subject).then(found=>{if(found&&state.view==='subjects'&&state.subject===subject)renderSubject()});
+      if(state.section==='Ссылки'){
+        if(linkState.get(subject)===true){renderSubjectLinks();return}
+        if(linkState.has(subject))state.section='';
+      }
+      return baseRenderSubject();
+    };
+    if(state.view==='subjects'&&state.subject!=='База'){
+      const subject=state.subject;void probe(subject).then(found=>{if(found&&state.view==='subjects'&&state.subject===subject)renderSubject()});
+    }
+  }
+
+  // PDF continuous mode: render link annotations on every page in the strip.
+  if(typeof renderContinuousPage==='function'&&typeof getPageAnnotations==='function'&&typeof destinationPage==='function'){
+    async function jumpToPdfDestination(dest){
+      const n=await destinationPage(dest);if(!n)return;
+      pageNum=n;
+      if(continuousMode&&continuousRoot){
+        const target=continuousRoot.querySelector('[data-page="'+n+'"]');
+        if(target){
+          queueContinuousPage(target,n);
+          savePage(n);updateControls();updateOutlineActive();
+          target.scrollIntoView({block:'start',behavior:'smooth'});
+          return;
+        }
+      }
+      await renderPage();
+    }
+    followInternalLink=jumpToPdfDestination;
+
+    async function renderContinuousLinks(el,n){
+      if(!pdf||!el?.isConnected||el.dataset.rendered!=='1')return;
+      const page=await getCachedPage(n);
+      if(!el.isConnected||el.dataset.rendered!=='1')return;
+      const baseViewport=page.getViewport({scale:1});
+      const cssWidth=parseFloat(el.style.width)||el.getBoundingClientRect().width;
+      if(!(cssWidth>0)||!(baseViewport.width>0))return;
+      const viewport=page.getViewport({scale:cssWidth/baseViewport.width});
+      let layer=el.querySelector(':scope > .annotation-layer');
+      if(!layer){layer=document.createElement('div');layer.className='annotation-layer';el.appendChild(layer)}
+      layer.replaceChildren();layer.style.width=viewport.width+'px';layer.style.height=viewport.height+'px';
+      let annotations=[];try{annotations=await getPageAnnotations(page)}catch{return}
+      if(!layer.isConnected||el.dataset.rendered!=='1')return;
+      for(const a of annotations){
+        if(a.subtype!=='Link'||!Array.isArray(a.rect))continue;
+        const rect=viewport.convertToViewportRectangle(a.rect),left=Math.min(rect[0],rect[2]),top=Math.min(rect[1],rect[3]),width=Math.abs(rect[0]-rect[2]),height=Math.abs(rect[1]-rect[3]);
+        if(width<1||height<1)continue;
+        const link=document.createElement('a');link.className='pdf-link';link.style.left=left+'px';link.style.top=top+'px';link.style.width=width+'px';link.style.height=height+'px';link.setAttribute('aria-label','Перейти по ссылке');
+        if(a.url){link.href=a.url;link.target='_blank';link.rel='noopener noreferrer';link.title=a.url}
+        else if(a.dest){link.href='#';link.title='Перейти к разделу';link.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();void jumpToPdfDestination(a.dest)})}
+        else if(a.action){link.href='#';link.title='Перейти';link.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();followNamedAction(a.action)})}
+        else continue;
+        layer.appendChild(link);
+      }
+    }
+    const baseRenderContinuousPage=renderContinuousPage;
+    renderContinuousPage=async function(el,n,force=false){
+      const result=await baseRenderContinuousPage(el,n,force);
+      await renderContinuousLinks(el,n);
+      return result;
+    };
+    queueMicrotask(()=>document.querySelectorAll('.continuous-page[data-rendered="1"]').forEach(el=>void renderContinuousLinks(el,Number(el.dataset.page))));
+  }
 })();
