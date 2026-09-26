@@ -1,0 +1,217 @@
+% !TeX root = part3.tex
+\documentclass[../final.tex]{subfiles}
+\begin{document}
+
+% Конспект: 1.jpg, 2.jpg (дата на фотографии — 16.09).
+% Условие: /Задачи/Семинар_3.pdf на https://disk.yandex.ru/d/o4IQOWgLr_1y-g
+% На листке с условиями указана дата 18.09.26.
+\practice{3}{16.09.2026}{Идеальный ферми-газ при низкой температуре}
+
+\rtheory{Распределение Ферми и разложение Зоммерфельда}
+
+Как и в предыдущих семинарах, полагаем $k_B=1$: температура $T$
+измеряется в единицах энергии. Рассматриваем
+\rassumption{слабо нагретый вырожденный газ}, для которого
+$0<T\ll\mu$. Среднее число заполнения одночастичного состояния равно
+\[
+f(\varepsilon)=\frac{1}{e^{(\varepsilon-\mu)/T}+1}.
+\]
+Для электронов спиновое вырождение равно двум. Поэтому в
+квазиклассическом приближении число частиц и энергия имеют вид
+\[
+N=2\int\frac{d^3p\,d^3r}{(2\pi\hbar)^3}\,f(\varepsilon),\qquad
+    E=2\int\frac{d^3p\,d^3r}{(2\pi\hbar)^3}\,
+    \varepsilon f(\varepsilon).
+\]
+Если $D(\varepsilon)$ --- плотность одночастичных состояний с учётом
+спина, то эти выражения сводятся к интегралам
+\[
+N=\int_0^\infty D(\varepsilon)f(\varepsilon)\,d\varepsilon,
+    \qquad
+    E=\int_0^\infty\varepsilon D(\varepsilon)f(\varepsilon)\,d\varepsilon.
+\]
+
+\subsection*{Поправка к интегралу при малой температуре}
+
+В интеграле $I=\int_0^\infty\varphi(\varepsilon)f(\varepsilon)\,d\varepsilon$
+с гладкой функцией $\varphi$ отделим вклад заполненной при $T=0$
+области $0<\varepsilon<\mu$:
+\begin{align*}
+    I={}&\int_0^\mu\varphi(\varepsilon)\,d\varepsilon
+    -\int_0^\mu\frac{\varphi(\varepsilon)\,d\varepsilon}
+    {e^{(\mu-\varepsilon)/T}+1}
+    +\int_\mu^\infty\frac{\varphi(\varepsilon)\,d\varepsilon}
+    {e^{(\varepsilon-\mu)/T}+1}.
+\end{align*}
+Во втором и третьем интегралах положим соответственно
+$x=(\mu-\varepsilon)/T$ и $x=(\varepsilon-\mu)/T$.
+При $\mu/T\gg1$ верхний предел $\mu/T$ можно заменить бесконечностью
+с экспоненциально малой погрешностью:
+\[
+I\simeq\int_0^\mu\varphi(\varepsilon)\,d\varepsilon
+    +T\int_0^\infty
+    \frac{\varphi(\mu+Tx)-\varphi(\mu-Tx)}{e^x+1}\,dx.
+\]
+Разность в числителе равна $2Tx\varphi'(\mu)+O(T^3)$.
+Используя $\int_0^\infty x\,dx/(e^x+1)=\pi^2/12$, получаем
+\[
+I=\int_0^\mu\varphi(\varepsilon)\,d\varepsilon
+    +\frac{\pi^2T^2}{6}\varphi'(\mu)+O(T^4).
+\]
+\rconcept{Разложение Зоммерфельда} позволяет вычислить ведущие
+температурные поправки без точного интегрирования распределения Ферми.
+
+\task[1]{Теплоёмкость электронов в гармонической ловушке}
+
+\condition
+Найти теплоёмкость идеального газа электронов в поле трёхмерного
+изотропного гармонического осциллятора
+\[
+U(r)=\frac{m\omega^2r^2}{2}.
+\]
+Число электронов $N$ и частота $\omega$ фиксированы. Рассматривается
+область низких температур $T\ll\varepsilon_F$ и квазиклассический
+предел большого числа заполненных уровней.
+
+\begin{rbox}[left=16pt,right=16pt,top=12pt,bottom=10pt]{[]}
+\centering
+\begin{tikzpicture}[>=Latex,every node/.style={text=rtext}]
+    \draw[->] (-3.1,0)--(3.25,0) node[right] {$x$};
+    \draw[->] (0,-0.15)--(0,3.4) node[above] {$U(x)$};
+    \draw[rc3,thick,domain=-2.65:2.65,samples=70]
+        plot (\x,{0.43*\x*\x});
+    \draw[rconceptcolor,dashed] (-2.8,2.05)--(2.85,2.05)
+        node[right] {$\varepsilon_F$};
+    \draw[densely dotted] (-2.18,0)--(-2.18,2.05);
+    \draw[densely dotted] (2.18,0)--(2.18,2.05);
+    \node[below] at (-2.18,0) {$-r_F$};
+    \node[below] at (2.18,0) {$r_F$};
+    \node[below left] at (0,0) {$0$};
+\end{tikzpicture}
+\captionof{figure}{Сечение гармонической ловушки.
+При $T=0$ электронное облако ограничено радиусом
+$r_F=\sqrt{2\varepsilon_F/(m\omega^2)}$.}
+\end{rbox}
+
+\solution
+Одночастичная энергия, отсчитанная от минимума потенциала, равна
+\[
+\varepsilon=\frac{p^2}{2m}+\frac{m\omega^2r^2}{2}.
+\]
+Дискретностью уровней пренебрегаем; для гладкого температурного
+разложения достаточно условия $\hbar\omega\ll T\ll\varepsilon_F$.
+
+\subsection*{Плотность состояний}
+
+После интегрирования по углам в пространствах импульсов и координат
+число частиц принимает вид
+\[
+N=\frac{4}{\pi\hbar^3}
+    \int_0^\infty r^2\,dr\int_0^\infty
+    \frac{p^2\,dp}{e^{(\varepsilon-\mu)/T}+1}.
+\]
+При фиксированном $r$ заменим $p$ на $\varepsilon$:
+\[
+p=\sqrt{2m(\varepsilon-U(r))},\qquad
+    \left(\frac{\partial p}{\partial\varepsilon}\right)_r
+    =\sqrt{\frac m2}\,[\varepsilon-U(r)]^{-1/2}.
+\]
+Отсюда
+\[
+p^2\,dp=\sqrt{2}\,m^{3/2}
+    \sqrt{\varepsilon-U(r)}\,d\varepsilon.
+\]
+Поменяем порядок интегрирования. При заданной энергии
+$0\le r\le r_0(\varepsilon)=\sqrt{2\varepsilon/(m\omega^2)}$, поэтому
+\[
+D(\varepsilon)=\frac{4\sqrt2\,m^{3/2}}{\pi\hbar^3}
+    \int_0^{r_0}r^2\sqrt{\varepsilon-\frac{m\omega^2r^2}{2}}\,dr.
+\]
+Подстановка $t=m\omega^2r^2/(2\varepsilon)$ даёт
+\begin{align*}
+    \int_0^{r_0}r^2\sqrt{\varepsilon-\frac{m\omega^2r^2}{2}}\,dr
+    &=\frac{\sqrt2\,\varepsilon^2}{m^{3/2}\omega^3}
+    \int_0^1t^{1/2}(1-t)^{1/2}\,dt,\\
+    \int_0^1t^{1/2}(1-t)^{1/2}\,dt
+    &=B\left(\frac32,\frac32\right)=\frac\pi8.
+\end{align*}
+Следовательно,
+\[
+D(\varepsilon)=\frac{\varepsilon^2}{(\hbar\omega)^3}.
+\]
+Масса сократилась; множитель спинового вырождения уже включён.
+
+\subsection*{Химический потенциал при фиксированном числе частиц}
+
+Применим разложение Зоммерфельда к $\varphi(\varepsilon)=\varepsilon^2$:
+\[
+N=\frac{1}{(\hbar\omega)^3}
+    \left(\frac{\mu^3}{3}+\frac{\pi^2T^2\mu}{3}\right).
+\]
+Здесь и далее в этом равенстве опущены экспоненциально малые члены.
+При нулевой температуре $\mu_0=\varepsilon_F$ и
+\[
+N=\frac{\varepsilon_F^3}{3(\hbar\omega)^3},\qquad
+    \varepsilon_F=\hbar\omega(3N)^{1/3}.
+\]
+Положим $\mu=\varepsilon_F+\delta\mu$, где $\delta\mu=O(T^2)$.
+Сохраняя члены второго порядка по температуре, получаем
+\[
+0=\varepsilon_F^2\delta\mu
+    +\frac{\pi^2T^2\varepsilon_F}{3},
+\]
+то есть
+\[
+\mu(T)=\varepsilon_F-\frac{\pi^2T^2}{3\varepsilon_F}
+    +O\left(\frac{T^4}{\varepsilon_F^3}\right).
+\]
+\rassumption{При вычислении теплоёмкости необходимо учитывать
+температурную зависимость $\mu$}: именно она обеспечивает $N=\mathrm{const}$.
+
+\subsection*{Энергия и теплоёмкость}
+
+Полная энергия включает кинетическую и потенциальную части:
+\begin{align*}
+    E&=\frac{1}{(\hbar\omega)^3}
+    \int_0^\infty\frac{\varepsilon^3\,d\varepsilon}
+    {e^{(\varepsilon-\mu)/T}+1}\\
+    &=\frac{1}{(\hbar\omega)^3}
+    \left(\frac{\mu^4}{4}+\frac{\pi^2T^2\mu^2}{2}+O(T^4)\right).
+\end{align*}
+Подставляя найденную поправку к химическому потенциалу, находим
+\begin{align*}
+    E&=\frac{1}{(\hbar\omega)^3}
+    \left(\frac{\varepsilon_F^4}{4}
+    +\varepsilon_F^3\delta\mu
+    +\frac{\pi^2T^2\varepsilon_F^2}{2}+O(T^4)\right)\\
+    &=\frac{1}{(\hbar\omega)^3}
+    \left(\frac{\varepsilon_F^4}{4}
+    +\frac{\pi^2T^2\varepsilon_F^2}{6}+O(T^4)\right)\\
+    &=\frac34N\varepsilon_F
+    +\frac{\pi^2}{2}\frac{NT^2}{\varepsilon_F}
+    +O\left(\frac{NT^4}{\varepsilon_F^3}\right).
+\end{align*}
+Для ловушки роль фиксированных внешних параметров играет частота
+$\omega$. Обозначая теплоёмкость, как в конспекте, через $C_V$, получаем
+\[
+C_V\equiv\left(\frac{\partial E}{\partial T}\right)_{N,\omega}
+    =\pi^2\frac{NT}{\varepsilon_F}
+    +O\left(\frac{NT^3}{\varepsilon_F^3}\right).
+\]
+
+\answer
+\[
+C_V=\pi^2N\frac{T}{\varepsilon_F},\qquad
+    \varepsilon_F=\hbar\omega(3N)^{1/3},\qquad T\ll\varepsilon_F.
+\]
+Если температура $T_{\mathrm K}$ выражена в кельвинах, то
+\[
+C_V=\pi^2Nk_B\frac{k_BT_{\mathrm K}}{\varepsilon_F}.
+\]
+
+Линейная зависимость от температуры связана с тем, что возбуждаются
+лишь электроны в узком слое ширины порядка $T$ около энергии Ферми.
+В классическом пределе $T\gg\varepsilon_F$ теорема о равнораспределении
+даёт $E=3NT$ и $C_V=3N$ (или $3Nk_B$ в обычных единицах).
+
+\end{document}

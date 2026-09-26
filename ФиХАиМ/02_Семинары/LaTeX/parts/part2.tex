@@ -14,6 +14,391 @@
 % Задача 1. Классическое время падения электрона на ядро
 % ============================================================
 
+% ============================================================
+% Задача 2. Рассеяние alpha-частиц на свинцовой фольге
+% ============================================================
+
+\task[2]{Рассеяние \texorpdfstring{$\alpha$}{alpha}-частиц на свинцовой фольге}
+
+
+% ------------------------------------------------------------
+% Условие
+% ------------------------------------------------------------
+
+\condition
+Найти вероятность того, что $\alpha$-частица с кинетической энергией
+%
+\begin{equation*}
+    E=3\,\text{МэВ}
+\end{equation*}
+%
+при прохождении свинцовой фольги толщиной
+%
+\begin{equation*}
+    d=1.5\,\text{мкм}
+\end{equation*}
+%
+испытает рассеяние в интервале углов
+%
+\begin{equation*}
+    59^\circ\leqslant\theta\leqslant61^\circ.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Решение
+% ------------------------------------------------------------
+
+\begin{rbox}[left=12pt,right=12pt,top=12pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[>=Latex,draw=rtext,every node/.style={text=rtext},font=\small]
+        \fill[rconceptcolor,opacity=0.25] (-0.12,-0.9) rectangle (0.12,2.9);
+        \draw (-0.12,-0.9) rectangle (0.12,2.9);
+        \node[above] at (0,2.9) {Pb};
+        \draw[->,thick] (-3.5,0) -- (-0.2,0)
+            node[midway,above] {$\alpha,\ E=3\,\text{МэВ}$};
+        \draw[dashed,->] (0,0) -- (4.1,0) node[right] {ось пучка};
+        \fill[rresultcolor,opacity=0.3] (0,0) -- (59:3.65)
+            arc[start angle=59,end angle=61,radius=3.65] -- cycle;
+        \draw[->,thick,rresultcolor] (0,0) -- (59:3.65);
+        \draw[->,thick,rresultcolor] (0,0) -- (61:3.65);
+        \draw[->] (1.1,0) arc[start angle=0,end angle=60,radius=1.1];
+        \node at (1.45,0.65) {$\theta$};
+        \node[right,align=left] at (2.1,2.8)
+            {$\theta_1=59^\circ$\\$\theta_2=61^\circ$};
+        \draw[<->] (-0.12,-0.55) -- (0.12,-0.55);
+        \node[below] at (0,-1) {$d=1.5\,\text{мкм}$};
+    \end{tikzpicture}
+    \captionof{figure}{Рассеяние на тонкой свинцовой фольге.
+    Показано сечение углового слоя; при вращении вокруг оси пучка
+    он охватывает весь азимут $0\leqslant\varphi<2\pi$.
+    Толщина фольги изображена условно.}
+    \label{fig:pb-scattering}
+\end{rbox}
+
+\solution
+
+Рассматриваем кулоновское рассеяние $\alpha$-частицы на ядре свинца.
+Электронами атома при таких углах рассеяния можно пренебречь:
+масса электрона мала, а большие углы возникают при малых прицельных
+параметрах, когда основную роль играет поле ядра.
+
+Работаем в \rassumption{приближении тонкой фольги}: вероятность
+однократного рассеяния мала, поэтому многократным рассеянием
+в первом приближении пренебрегаем.
+
+
+% ------------------------------------------------------------
+% Поверхностная плотность ядер
+% ------------------------------------------------------------
+
+\subsection*{Поверхностная плотность ядер свинца}
+
+Вероятность рассеяния определяется произведением сечения на число
+рассеивающих центров, приходящихся на единицу площади фольги.
+Объёмная концентрация атомов свинца равна
+%
+\begin{equation*}
+    n
+    =
+    \frac{\rho_{\mathrm{Pb}}}{M_{\mathrm{Pb}}}N_A,
+\end{equation*}
+%
+поэтому поверхностная плотность ядер
+%
+\begin{equation*}
+    N_s
+    =
+    nd
+    =
+    \frac{\rho_{\mathrm{Pb}}d}{M_{\mathrm{Pb}}}N_A.
+\end{equation*}
+
+Используем
+%
+\begin{equation*}
+    \rho_{\mathrm{Pb}}
+    \approx
+    11.34\,\frac{\text{г}}{\text{см}^3},
+    \qquad
+    M_{\mathrm{Pb}}
+    \approx
+    207.2\,\frac{\text{г}}{\text{моль}},
+\end{equation*}
+%
+а толщину переводим в сантиметры:
+%
+\begin{equation*}
+    d
+    =
+    1.5\cdot10^{-4}\,\text{см}.
+\end{equation*}
+
+Тогда
+%
+\begin{align*}
+    N_s
+    &=
+    \frac{
+        11.34\cdot1.5\cdot10^{-4}
+    }{207.2}
+    \cdot
+    6.022\cdot10^{23}
+    \\
+    &\approx
+    4.94\cdot10^{18}\,\text{см}^{-2}.
+\end{align*}
+
+
+% ------------------------------------------------------------
+% Формула Резерфорда
+% ------------------------------------------------------------
+
+\subsection*{Дифференциальное сечение Резерфорда}
+
+Для частицы заряда $Z_1e$, рассеивающейся на ядре заряда $Z_2e$,
+дифференциальное сечение Резерфорда имеет вид
+%
+\begin{equation*}
+    \frac{d\sigma}{d\Omega}
+    =
+    \left(
+        \frac{Z_1Z_2e^2}
+             {16\pi\varepsilon_0E}
+    \right)^2
+    \frac{1}{\sin^4\frac{\theta}{2}}.
+\end{equation*}
+
+Для $\alpha$-частицы
+%
+\begin{equation*}
+    Z_1=2,
+\end{equation*}
+%
+а для свинца
+%
+\begin{equation*}
+    Z_2=82.
+\end{equation*}
+
+Удобно воспользоваться соотношением
+%
+\begin{equation*}
+    \frac{e^2}{4\pi\varepsilon_0}
+    \approx
+    1.440\,\text{МэВ}\cdot\text{фм}.
+\end{equation*}
+
+Тогда введём обозначение
+%
+\begin{equation*}
+    A
+    =
+    \left(
+        \frac{Z_1Z_2}{4E}
+        \frac{e^2}{4\pi\varepsilon_0}
+    \right)^2,
+\end{equation*}
+%
+так что
+%
+\begin{equation*}
+    \frac{d\sigma}{d\Omega}
+    =
+    \frac{A}{\sin^4\frac{\theta}{2}}.
+\end{equation*}
+
+Численно
+%
+\begin{align*}
+    A
+    &=
+    \left(
+        \frac{2\cdot82\cdot1.440}
+             {4\cdot3}
+    \right)^2
+    \text{фм}^2
+    \\
+    &\approx
+    3.87\cdot10^2\,\text{фм}^2.
+\end{align*}
+
+
+% ------------------------------------------------------------
+% Интегрирование по углам
+% ------------------------------------------------------------
+
+\subsection*{Сечение рассеяния в интервале \texorpdfstring{$59^\circ$--$61^\circ$}{59--61 degrees}}
+
+Из-за осевой симметрии рассеяния интегрирование по азимутальному
+углу даёт множитель $2\pi$:
+%
+\begin{equation*}
+    d\Omega
+    =
+    2\pi\sin\theta\,d\theta.
+\end{equation*}
+
+Поэтому
+%
+\begin{equation*}
+    \sigma_{59^\circ-61^\circ}
+    =
+    2\pi A
+    \int_{\theta_1}^{\theta_2}
+    \frac{\sin\theta\,d\theta}
+         {\sin^4\frac{\theta}{2}},
+\end{equation*}
+%
+где
+%
+\begin{equation*}
+    \theta_1=59^\circ,
+    \qquad
+    \theta_2=61^\circ.
+\end{equation*}
+
+Вычислим интеграл явно. Используем
+%
+\begin{equation*}
+    \sin\theta
+    =
+    2\sin\frac{\theta}{2}
+     \cos\frac{\theta}{2}.
+\end{equation*}
+
+Тогда
+%
+\begin{equation*}
+    \frac{\sin\theta}
+         {\sin^4\frac{\theta}{2}}
+    =
+    2\frac{\cos\frac{\theta}{2}}
+            {\sin^3\frac{\theta}{2}}.
+\end{equation*}
+
+Положим
+%
+\begin{equation*}
+    u
+    =
+    \sin\frac{\theta}{2},
+    \qquad
+    du
+    =
+    \frac12\cos\frac{\theta}{2}\,d\theta.
+\end{equation*}
+
+Следовательно,
+%
+\begin{equation*}
+    \int
+    \frac{\sin\theta\,d\theta}
+         {\sin^4\frac{\theta}{2}}
+    =
+    4\int\frac{du}{u^3}
+    =
+    -\frac{2}{u^2}
+    =
+    -\frac{2}{\sin^2\frac{\theta}{2}}.
+\end{equation*}
+
+Таким образом,
+%
+\begin{equation*}
+    \sigma_{59^\circ-61^\circ}
+    =
+    4\pi A
+    \left(
+        \frac{1}{\sin^2\frac{\theta_1}{2}}
+        -
+        \frac{1}{\sin^2\frac{\theta_2}{2}}
+    \right).
+\end{equation*}
+
+Подставляя числа,
+%
+\begin{align*}
+    \sigma_{59^\circ-61^\circ}
+    &\approx
+    4\pi\cdot387
+    \left(
+        \frac{1}{\sin^2 29.5^\circ}
+        -
+        \frac{1}{\sin^2 30.5^\circ}
+    \right)
+    \\
+    &\approx
+    1.18\cdot10^3\,\text{фм}^2.
+\end{align*}
+
+Так как
+%
+\begin{equation*}
+    1\,\text{фм}^2
+    =
+    10^{-26}\,\text{см}^2,
+\end{equation*}
+%
+получаем
+%
+\begin{equation*}
+    \sigma_{59^\circ-61^\circ}
+    \approx
+    1.18\cdot10^{-23}\,\text{см}^2.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Вероятность
+% ------------------------------------------------------------
+
+\subsection*{Вероятность рассеяния}
+
+Для тонкой фольги
+%
+\begin{equation*}
+    P
+    \approx
+    N_s\sigma_{59^\circ-61^\circ}.
+\end{equation*}
+
+Отсюда
+%
+\begin{align*}
+    P
+    &\approx
+    4.94\cdot10^{18}
+    \cdot
+    1.18\cdot10^{-23}
+    \\
+    &\approx
+    5.8\cdot10^{-5}.
+\end{align*}
+
+Полученное значение действительно много меньше единицы, поэтому
+использованное приближение однократного рассеяния самосогласованно.
+
+
+% ------------------------------------------------------------
+% Ответ
+% ------------------------------------------------------------
+
+\answer
+
+Искомая вероятность составляет
+%
+\begin{equation*}
+    P
+    \approx
+    5.8\cdot10^{-5}
+    \approx
+    5.8\cdot10^{-3}\,\%.
+\end{equation*}
+
+То есть в заданный угловой интервал рассеивается примерно
+\rresult{одна $\alpha$-частица из $1.7\cdot10^4$}.
+
 \task[3]{Классическое время падения электрона на ядро}
 
 

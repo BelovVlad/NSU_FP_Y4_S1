@@ -1,0 +1,1576 @@
+% !TeX root = part3.tex
+
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+
+% ============================================================
+% Семинар 3
+% ============================================================
+
+\practice{3}{19.09.2026}{Колебания решётки}
+
+
+% ============================================================
+% Задача 1
+% ============================================================
+
+\task[1]{Линейная цепочка с двумя атомами в элементарной ячейке}
+
+\condition
+
+Рассмотреть бесконечную одномерную цепочку,
+состоящую из чередующихся атомов масс $m$ и $M$,
+соединённых одинаковыми пружинами жёсткости $\alpha$.
+
+Расстояние между соседними атомами равно $a$,
+поэтому период элементарной ячейки, содержащей два атома,
+равен $2a$.
+
+Обозначим смещения атомов в $n$-й элементарной ячейке через
+%
+\begin{equation*}
+    u_n(t),
+    \qquad
+    v_n(t).
+\end{equation*}
+%
+Необходимо определить собственные колебания цепочки,
+получить закон дисперсии $\omega(k)$,
+выделить акустическую и оптическую ветви
+и исследовать их поведение в центре и на границе
+первой зоны Бриллюэна.
+
+
+% ------------------------------------------------------------
+% РИСУНОК 1
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % Продолжение цепочки
+        \node at (-6.0,0) {$\ldots$};
+        \node at ( 6.0,0) {$\ldots$};
+
+        % Пружины
+        \foreach \x in {-5,-3,-1,1,3}{
+            \draw[
+                draw=rtext,
+                line width=0.8pt
+            ]
+            plot[
+                domain=0:1,
+                samples=70,
+                variable=\t
+            ]
+            (
+                {\x+0.30+1.40*\t},
+                {0.11*sin(1440*\t)}
+            );
+        }
+
+        % Атомы m
+        \foreach \x in {-5,-1,3}{
+            \filldraw[
+                fill=rc3,
+                draw=rtext,
+                line width=0.9pt
+            ]
+            (\x,0) circle (0.28);
+
+            \node[above=5pt] at (\x,0) {$m$};
+        }
+
+        % Атомы M
+        \foreach \x in {-3,1,5}{
+            \filldraw[
+                fill=rbgsecondary,
+                draw=rtext,
+                line width=0.9pt
+            ]
+            (\x,0) circle (0.28);
+
+            \node[above=5pt] at (\x,0) {$M$};
+        }
+
+        % Индексы центральных ячеек
+        \node[below=5pt] at (-5,0) {$u_{n-1}$};
+        \node[below=5pt] at (-3,0) {$v_{n-1}$};
+
+        \node[below=5pt] at (-1,0) {$u_n$};
+        \node[below=5pt] at ( 1,0) {$v_n$};
+
+        \node[below=5pt] at ( 3,0) {$u_{n+1}$};
+        \node[below=5pt] at ( 5,0) {$v_{n+1}$};
+
+        % Жёсткости
+        \foreach \x in {-4,-2,0,2,4}{
+            \node[above] at (\x,0.18) {$\alpha$};
+        }
+
+        % Период элементарной ячейки
+        \draw[
+            <->,
+            draw=rtext,
+            line width=0.8pt
+        ]
+        (-1,-1.0)
+        --
+        (3,-1.0)
+        node[midway,below] {$2a$};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Двухатомная одномерная цепочка.
+        Атомы масс $m$ и $M$ чередуются,
+        соседние атомы соединены пружинами жёсткости $\alpha$.
+        Период элементарной ячейки равен $2a$.
+    }
+
+    \label{fig:diatomic_chain}
+\end{rbox}
+
+
+\solution
+
+\subsection*{Уравнения движения}
+
+Рассмотрим атом массы $m$,
+смещение которого в $n$-й элементарной ячейке равно $u_n$.
+
+С правой стороны он связан с атомом,
+имеющим смещение $v_n$,
+а с левой стороны --- с атомом $v_{n-1}$.
+
+Поэтому
+%
+\begin{equation*}
+    m\ddot u_n
+    =
+    \alpha(v_n-u_n)
+    -
+    \alpha(u_n-v_{n-1}).
+\end{equation*}
+%
+
+Для атома массы $M$ со смещением $v_n$
+аналогично получаем
+%
+\begin{equation*}
+    M\ddot v_n
+    =
+    \alpha(u_{n+1}-v_n)
+    -
+    \alpha(v_n-u_n).
+\end{equation*}
+%
+
+Таким образом,
+%
+\begin{align*}
+    m\ddot u_n
+    &=
+    \alpha
+    \left(
+        v_n+v_{n-1}-2u_n
+    \right),
+    \\
+    M\ddot v_n
+    &=
+    \alpha
+    \left(
+        u_{n+1}+u_n-2v_n
+    \right).
+\end{align*}
+
+
+% ------------------------------------------------------------
+% Нормальная мода
+% ------------------------------------------------------------
+
+\subsection*{Нормальная мода}
+
+Поскольку период элементарной ячейки равен $2a$,
+ищем решение в виде
+%
+\begin{equation*}
+    u_n
+    =
+    U_0
+    e^{-i\omega t+ik\,2an},
+\end{equation*}
+%
+\begin{equation*}
+    v_n
+    =
+    V_0
+    e^{-i\omega t+ik\,2an}.
+\end{equation*}
+%
+
+Для соседних ячеек
+%
+\begin{equation*}
+    v_{n-1}
+    =
+    v_n e^{-2ika},
+    \qquad
+    u_{n+1}
+    =
+    u_n e^{2ika}.
+\end{equation*}
+%
+
+Кроме того,
+%
+\begin{equation*}
+    \ddot u_n=-\omega^2u_n,
+    \qquad
+    \ddot v_n=-\omega^2v_n.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Первое уравнение
+% ------------------------------------------------------------
+
+\subsection*{Уравнение для амплитуды $U_0$}
+
+Подставим нормальную моду в первое уравнение движения:
+%
+\begin{equation*}
+    -m\omega^2
+    U_0e^{-i\omega t+ik\,2an}
+    =
+    \alpha
+    V_0e^{-i\omega t+ik\,2an}
+    -
+    \alpha
+    U_0e^{-i\omega t+ik\,2an}
+\end{equation*}
+%
+\begin{equation*}
+    \hspace{3cm}
+    -
+    \alpha
+    \left(
+        U_0e^{-i\omega t+ik\,2an}
+        -
+        V_0e^{-i\omega t+ik\,2a(n-1)}
+    \right).
+\end{equation*}
+%
+
+Сокращая общий множитель
+%
+\begin{equation*}
+    e^{-i\omega t+ik\,2an},
+\end{equation*}
+%
+получаем
+%
+\begin{equation*}
+    -m\omega^2U_0
+    =
+    \alpha V_0
+    -
+    \alpha U_0
+    -
+    \alpha
+    \left(
+        U_0-V_0e^{-2ika}
+    \right).
+\end{equation*}
+%
+
+Следовательно,
+%
+\begin{equation*}
+    \left(
+        m\omega^2-2\alpha
+    \right)U_0
+    +
+    \alpha
+    \left(
+        1+e^{-2ika}
+    \right)V_0
+    =
+    0.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Второе уравнение
+% ------------------------------------------------------------
+
+\subsection*{Уравнение для амплитуды $V_0$}
+
+Для второго атома
+%
+\begin{equation*}
+    -M\omega^2V_0
+    =
+    \alpha
+    \left(
+        U_0e^{2ika}-V_0
+    \right)
+    -
+    \alpha
+    \left(
+        V_0-U_0
+    \right).
+\end{equation*}
+%
+
+Отсюда
+%
+\begin{equation*}
+    \alpha
+    \left(
+        1+e^{2ika}
+    \right)U_0
+    +
+    \left(
+        M\omega^2-2\alpha
+    \right)V_0
+    =
+    0.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Матричная форма
+% ------------------------------------------------------------
+
+\subsection*{Матричная форма}
+
+Полученную систему можно записать в виде
+%
+\begin{equation*}
+    \begin{pmatrix}
+        m\omega^2-2\alpha
+        &
+        \alpha(1+e^{-2ika})
+        \\[2mm]
+        \alpha(1+e^{2ika})
+        &
+        M\omega^2-2\alpha
+    \end{pmatrix}
+    \begin{pmatrix}
+        U_0
+        \\
+        V_0
+    \end{pmatrix}
+    =
+    0.
+\end{equation*}
+%
+
+Нетривиальное решение существует,
+если определитель матрицы равен нулю:
+%
+\begin{equation*}
+    \left(
+        m\omega^2-2\alpha
+    \right)
+    \left(
+        M\omega^2-2\alpha
+    \right)
+    -
+    \alpha^2
+    \left(
+        1+e^{-2ika}
+    \right)
+    \left(
+        1+e^{2ika}
+    \right)
+    =
+    0.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Дисперсионное уравнение
+% ------------------------------------------------------------
+
+\subsection*{Дисперсионное уравнение}
+
+Раскрываем первое произведение:
+%
+\begin{equation*}
+    mM\omega^4
+    -
+    2\alpha(m+M)\omega^2
+    +
+    4\alpha^2.
+\end{equation*}
+%
+
+Для второго произведения имеем
+%
+\begin{align*}
+    \left(
+        1+e^{-2ika}
+    \right)
+    \left(
+        1+e^{2ika}
+    \right)
+    &=
+    2
+    +
+    e^{2ika}
+    +
+    e^{-2ika}
+    \\
+    &=
+    2
+    +
+    2\cos 2ka.
+\end{align*}
+%
+
+Поэтому условие на определитель принимает вид
+%
+\begin{equation*}
+    mM\omega^4
+    -
+    2\alpha(m+M)\omega^2
+    +
+    4\alpha^2
+    -
+    2\alpha^2
+    \left(
+        1+\cos 2ka
+    \right)
+    =
+    0.
+\end{equation*}
+%
+
+Используем
+%
+\begin{equation*}
+    1+\cos2ka
+    =
+    2\cos^2ka.
+\end{equation*}
+%
+
+Тогда
+%
+\begin{equation*}
+    4\alpha^2
+    -
+    4\alpha^2\cos^2ka
+    =
+    4\alpha^2\sin^2ka.
+\end{equation*}
+%
+
+Окончательно получаем
+%
+\begin{equation*}
+    mM\omega^4
+    -
+    2\alpha(m+M)\omega^2
+    +
+    4\alpha^2\sin^2ka
+    =
+    0.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Две ветви
+% ------------------------------------------------------------
+
+\subsection*{Акустическая и оптическая ветви}
+
+Полученное уравнение является квадратным
+относительно $\omega^2$.
+
+Отсюда
+%
+\begin{equation*}
+    \omega_{\pm}^{\,2}(k)
+    =
+    \frac{
+        \alpha(m+M)
+        \pm
+        \sqrt{
+            \alpha^2(m+M)^2
+            -
+            4mM\alpha^2\sin^2ka
+        }
+    }{
+        mM
+    }.
+\end{equation*}
+%
+
+Или, вынося общий множитель,
+%
+\begin{equation*}
+    \omega_{\pm}^{\,2}(k)
+    =
+    \frac{\alpha(m+M)}{mM}
+    \left[
+        1
+        \pm
+        \sqrt{
+            1
+            -
+            \frac{4mM}{(m+M)^2}
+            \sin^2ka
+        }
+    \right].
+\end{equation*}
+%
+
+Ветвь со знаком минус является
+\rconcept{акустической ветвью},
+%
+\begin{equation*}
+    \omega_-^{\,2}(k)
+    =
+    \frac{\alpha(m+M)}{mM}
+    \left[
+        1
+        -
+        \sqrt{
+            1
+            -
+            \frac{4mM}{(m+M)^2}
+            \sin^2ka
+        }
+    \right],
+\end{equation*}
+%
+а ветвь со знаком плюс ---
+\rconcept{оптической ветвью},
+%
+\begin{equation*}
+    \omega_+^{\,2}(k)
+    =
+    \frac{\alpha(m+M)}{mM}
+    \left[
+        1
+        +
+        \sqrt{
+            1
+            -
+            \frac{4mM}{(m+M)^2}
+            \sin^2ka
+        }
+    \right].
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Одинаковые массы
+% ------------------------------------------------------------
+
+\subsection*{Предел одинаковых масс}
+
+Если
+%
+\begin{equation*}
+    m=M,
+\end{equation*}
+%
+то
+%
+\begin{equation*}
+    \frac{4mM}{(m+M)^2}=1.
+\end{equation*}
+%
+
+Поэтому
+%
+\begin{equation*}
+    \omega_\pm^{\,2}
+    =
+    \frac{2\alpha}{m}
+    \left(
+        1
+        \pm
+        \sqrt{
+            1-\sin^2ka
+        }
+    \right).
+\end{equation*}
+%
+
+В первой зоне Бриллюэна
+%
+\begin{equation*}
+    -\frac{\pi}{2a}
+    \leq
+    k
+    \leq
+    \frac{\pi}{2a},
+\end{equation*}
+%
+поэтому $\cos ka\geq0$ и
+%
+\begin{equation*}
+    \sqrt{1-\sin^2ka}
+    =
+    \cos ka.
+\end{equation*}
+%
+
+Следовательно,
+%
+\begin{equation*}
+    \omega_\pm^{\,2}
+    =
+    \frac{2\alpha}{m}
+    \left(
+        1\pm\cos ka
+    \right).
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% k -> 0
+% ------------------------------------------------------------
+
+\subsection*{Длинноволновый предел}
+
+Рассмотрим
+%
+\begin{equation*}
+    k\to0.
+\end{equation*}
+%
+
+Для оптической ветви
+%
+\begin{equation*}
+    \sin ka\to0,
+\end{equation*}
+%
+поэтому
+%
+\begin{equation*}
+    \omega_+^{\,2}(0)
+    =
+    \frac{2\alpha(m+M)}{mM}.
+\end{equation*}
+%
+
+Для акустической ветви
+%
+\begin{equation*}
+    \omega_-^{\,2}(0)=0.
+\end{equation*}
+%
+
+Чтобы получить её поведение при малых $k$,
+используем разложение
+%
+\begin{equation*}
+    \sqrt{1-x}
+    \simeq
+    1-\frac{x}{2},
+    \qquad
+    x\ll1.
+\end{equation*}
+%
+
+Здесь
+%
+\begin{equation*}
+    x
+    =
+    \frac{4mM}{(m+M)^2}
+    \sin^2ka.
+\end{equation*}
+%
+
+Тогда
+%
+\begin{align*}
+    \omega_-^{\,2}
+    &\simeq
+    \frac{\alpha(m+M)}{mM}
+    \frac{2mM}{(m+M)^2}
+    \sin^2ka
+    \\
+    &=
+    \frac{2\alpha}{m+M}
+    \sin^2ka.
+\end{align*}
+%
+
+При $ka\ll1$
+%
+\begin{equation*}
+    \sin ka\simeq ka,
+\end{equation*}
+%
+и поэтому
+%
+\begin{equation*}
+    \omega_-^{\,2}
+    \simeq
+    \frac{2\alpha a^2}{m+M}
+    k^2.
+\end{equation*}
+%
+
+То есть
+%
+\begin{equation*}
+    \omega_-(k)\propto |k|.
+\end{equation*}
+%
+
+Именно линейное поведение при малых $k$
+характерно для акустической ветви.
+
+
+% ------------------------------------------------------------
+% Граница зоны
+% ------------------------------------------------------------
+
+\subsection*{Граница первой зоны Бриллюэна}
+
+Поскольку период элементарной ячейки равен $2a$,
+границы первой зоны Бриллюэна имеют вид
+%
+\begin{equation*}
+    k
+    =
+    \pm\frac{\pi}{2a}.
+\end{equation*}
+%
+
+При
+%
+\begin{equation*}
+    k=\frac{\pi}{2a}
+\end{equation*}
+%
+имеем
+%
+\begin{equation*}
+    \sin^2ka=1.
+\end{equation*}
+%
+
+Поэтому
+%
+\begin{equation*}
+    \omega_\pm^{\,2}
+    =
+    \frac{\alpha(m+M)}{mM}
+    \left[
+        1
+        \pm
+        \sqrt{
+            1-\frac{4mM}{(m+M)^2}
+        }
+    \right].
+\end{equation*}
+%
+
+Под корнем
+%
+\begin{equation*}
+    1-\frac{4mM}{(m+M)^2}
+    =
+    \frac{(M-m)^2}{(M+m)^2}.
+\end{equation*}
+%
+
+Далее, как на схеме в конспекте,
+считаем
+\rassumption{$M>m$}.
+Тогда
+%
+\begin{equation*}
+    \sqrt{
+        1-\frac{4mM}{(m+M)^2}
+    }
+    =
+    \frac{M-m}{M+m}.
+\end{equation*}
+%
+
+Для верхней ветви
+%
+\begin{align*}
+    \omega_+^{\,2}
+    &=
+    \frac{\alpha(m+M)}{mM}
+    \left(
+        1+\frac{M-m}{M+m}
+    \right)
+    \\
+    &=
+    \frac{\alpha(m+M)}{mM}
+    \frac{2M}{M+m}
+    \\
+    &=
+    \frac{2\alpha}{m}.
+\end{align*}
+%
+
+Для нижней ветви
+%
+\begin{align*}
+    \omega_-^{\,2}
+    &=
+    \frac{\alpha(m+M)}{mM}
+    \left(
+        1-\frac{M-m}{M+m}
+    \right)
+    \\
+    &=
+    \frac{\alpha(m+M)}{mM}
+    \frac{2m}{M+m}
+    \\
+    &=
+    \frac{2\alpha}{M}.
+\end{align*}
+%
+
+Таким образом, на границе зоны
+%
+\begin{equation*}
+    \omega_-
+    =
+    \sqrt{\frac{2\alpha}{M}},
+    \qquad
+    \omega_+
+    =
+    \sqrt{\frac{2\alpha}{m}}.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% РИСУНОК 2
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=12pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        x=1.1cm,
+        y=1.0cm,
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % Оси
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (-4.2,0)
+        --
+        (4.4,0)
+        node[right] {$k$};
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,-0.15)
+        --
+        (0,5.2)
+        node[above] {$\omega$};
+
+        % Границы зоны
+        \draw[
+            dashed,
+            draw=rtext,
+            opacity=0.55
+        ]
+        (-3.5,0)
+        --
+        (-3.5,4.7);
+
+        \draw[
+            dashed,
+            draw=rtext,
+            opacity=0.55
+        ]
+        (3.5,0)
+        --
+        (3.5,4.7);
+
+        \node[below=5pt] at (-3.5,0)
+            {$-\dfrac{\pi}{2a}$};
+
+        \node[below=5pt] at (3.5,0)
+            {$\dfrac{\pi}{2a}$};
+
+        % Запрещённая область
+        \fill[
+            red3,
+            opacity=0.10
+        ]
+        (-3.5,2.15)
+        rectangle
+        (3.5,3.15);
+
+        \node[
+            text=red3
+        ]
+        at (0,2.65)
+        {\small запрещённая зона};
+
+        % Акустическая ветвь
+        \draw[
+            draw=rc3,
+            line width=1.3pt
+        ]
+        (-3.5,2.15)
+        .. controls (-2.1,1.05) and (-0.9,0.20) ..
+        (0,0)
+        .. controls (0.9,0.20) and (2.1,1.05) ..
+        (3.5,2.15);
+
+        % Оптическая ветвь
+        \draw[
+            draw=p3,
+            line width=1.3pt
+        ]
+        (-3.5,3.15)
+        .. controls (-2.2,3.65) and (-1.0,4.15) ..
+        (0,4.30)
+        .. controls (1.0,4.15) and (2.2,3.65) ..
+        (3.5,3.15);
+
+        % Подписи граничных частот
+        \draw[
+            dashed,
+            draw=rc3,
+            opacity=0.7
+        ]
+        (0,2.15)
+        --
+        (4.0,2.15);
+
+        \draw[
+            dashed,
+            draw=p3,
+            opacity=0.7
+        ]
+        (0,3.15)
+        --
+        (4.0,3.15);
+
+        \node[
+            right,
+            text=rc3
+        ]
+        at (3.55,2.15)
+        {$\sqrt{\dfrac{2\alpha}{M}}$};
+
+        \node[
+            right,
+            text=p3
+        ]
+        at (3.55,3.15)
+        {$\sqrt{\dfrac{2\alpha}{m}}$};
+
+        % Подписи ветвей
+        \node[
+            text=rc3
+        ]
+        at (-1.85,0.65)
+        {\small акустическая};
+
+        \node[
+            text=p3
+        ]
+        at (-1.6,4.05)
+        {\small оптическая};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Схематический фононный спектр двухатомной цепочки
+        при $M>m$.
+        Между акустической и оптической ветвями
+        возникает запрещённый интервал частот.
+    }
+
+    \label{fig:diatomic_dispersion}
+\end{rbox}
+
+
+Между граничными частотами
+%
+\begin{equation*}
+    \sqrt{\frac{2\alpha}{M}}
+    <
+    \omega
+    <
+    \sqrt{\frac{2\alpha}{m}}
+\end{equation*}
+%
+нет нормальных колебаний идеальной цепочки.
+
+Этот интервал представляет собой
+\rconcept{запрещённую зону фононного спектра}.
+
+
+\answer
+
+Дисперсионное соотношение двухатомной цепочки имеет вид
+%
+\begin{equation*}
+    \omega_{\pm}^{\,2}(k)
+    =
+    \frac{\alpha(m+M)}{mM}
+    \left[
+        1
+        \pm
+        \sqrt{
+            1
+            -
+            \frac{4mM}{(m+M)^2}
+            \sin^2ka
+        }
+    \right].
+\end{equation*}
+%
+
+Нижняя ветвь является акустической,
+верхняя --- оптической.
+
+При $M>m$ на границе первой зоны Бриллюэна
+%
+\begin{equation*}
+    \omega_-
+    =
+    \sqrt{\frac{2\alpha}{M}},
+    \qquad
+    \omega_+
+    =
+    \sqrt{\frac{2\alpha}{m}},
+\end{equation*}
+%
+а между этими частотами находится запрещённая зона.
+
+
+% ============================================================
+% Задача 2
+% ============================================================
+
+\task[2]{Дефект решётки: пружина другой жёсткости}
+
+\condition
+
+Рассмотреть двухатомную одномерную цепочку
+из предыдущей задачи.
+
+Все соседние атомы соединены пружинами жёсткости $\alpha$,
+кроме одной связи между атомами $u_0$ и $v_0$.
+Жёсткость этой дефектной пружины равна
+%
+\begin{equation*}
+    \alpha_0\neq\alpha.
+\end{equation*}
+%
+
+Исследовать возможность существования
+локализованного колебательного состояния.
+
+Показать, что частота связанного состояния,
+если такое состояние существует,
+находится в запрещённой зоне фононного спектра.
+
+
+% ------------------------------------------------------------
+% РИСУНОК 3
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        \node at (-6.0,0) {$\ldots$};
+        \node at ( 6.0,0) {$\ldots$};
+
+        % Четыре обычные связи; концы пружин лежат на границах атомов.
+        \foreach \x in {-5,-3,1,3}{
+            \draw[
+                draw=rtext,
+                line width=0.8pt
+            ]
+            ({\x+0.28},0)--({\x+0.40},0)
+            --
+            plot[
+                domain=0:1,
+                samples=70,
+                variable=\t
+            ]
+            (
+                {\x+0.40+1.20*\t},
+                {0.11*sin(1440*\t)}
+            )
+            --({\x+1.72},0);
+
+            \node at ({\x+1},0.60) {$\alpha$};
+        }
+
+        % Единственная дефектная связь: от u_0 при x=-1 до v_0 при x=1.
+        \draw[
+            draw=red4,
+            line width=1.2pt
+        ]
+        (-0.72,0)--(-0.60,0)
+        --
+        plot[
+            domain=0:1,
+            samples=70,
+            variable=\t
+        ]
+        (
+            {-0.60+1.20*\t},
+            {0.11*sin(1440*\t)}
+        )
+        --(0.72,0);
+
+        \node[text=red4] at (0,0.60) {$\alpha_0$};
+
+        % Атомы m
+        \foreach \x in {-5,-1,3}{
+            \filldraw[
+                fill=rc3,
+                draw=rtext,
+                line width=0.9pt
+            ]
+            (\x,0) circle (0.28);
+
+            \node at (\x,0.60) {$m$};
+        }
+
+        % Атомы M
+        \foreach \x in {-3,1,5}{
+            \filldraw[
+                fill=rbgsecondary,
+                draw=rtext,
+                line width=0.9pt
+            ]
+            (\x,0) circle (0.28);
+
+            \node at (\x,0.60) {$M$};
+        }
+
+        % Индексы
+        \node at (-5,-0.55) {$u_{-1}$};
+        \node at (-3,-0.55) {$v_{-1}$};
+
+        \node at (-1,-0.55) {$u_0$};
+        \node at ( 1,-0.55) {$v_0$};
+
+        \node at ( 3,-0.55) {$u_1$};
+        \node at ( 5,-0.55) {$v_1$};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Двухатомная цепочка с дефектом связи.
+        Розовая пружина между $u_0$ и $v_0$ имеет жёсткость
+        $\alpha_0\neq\alpha$; остальные связи имеют жёсткость $\alpha$.
+    }
+
+    \label{fig:defect_spring_diatomic}
+\end{rbox}
+
+
+\solution
+
+\subsection*{Уравнения движения в области дефекта}
+
+Для центральной ячейки $n=0$
+уравнение для атома $u_0$ имеет вид
+%
+\begin{equation*}
+    -m\omega^2u_0
+    =
+    \alpha_0(v_0-u_0)
+    -
+    \alpha(u_0-v_{-1}).
+\end{equation*}
+%
+
+Для атома $v_0$
+%
+\begin{equation*}
+    -M\omega^2v_0
+    =
+    \alpha(u_1-v_0)
+    -
+    \alpha_0(v_0-u_0).
+\end{equation*}
+%
+
+Для всех ячеек вдали от дефекта,
+$n\neq0$,
+сохраняются уравнения идеальной цепочки:
+%
+\begin{equation*}
+    -m\omega^2u_n
+    =
+    \alpha(v_n-u_n)
+    -
+    \alpha(u_n-v_{n-1}),
+\end{equation*}
+%
+\begin{equation*}
+    -M\omega^2v_n
+    =
+    \alpha(u_{n+1}-v_n)
+    -
+    \alpha(v_n-u_n).
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Локализованное решение
+% ------------------------------------------------------------
+
+\subsection*{Локализованное решение}
+
+Ищем состояние,
+амплитуда которого экспоненциально убывает
+при удалении от дефекта:
+%
+\begin{equation*}
+    u_n
+    =
+    u_0
+    e^{-2\chi a|n|}
+    (-1)^n,
+\end{equation*}
+%
+\begin{equation*}
+    v_n
+    =
+    v_0
+    e^{-2\chi a|n|}
+    (-1)^n.
+\end{equation*}
+%
+
+Здесь
+%
+\begin{equation*}
+    \chi>0
+\end{equation*}
+%
+--- декремент пространственного затухания.
+
+Множитель $(-1)^n$ описывает изменение фазы
+на $\pi$ при переходе между соседними элементарными ячейками.
+
+Для ближайших к дефекту атомов получаем
+%
+\begin{equation*}
+    v_{-1}
+    =
+    -v_0e^{-2\chi a},
+\end{equation*}
+%
+\begin{equation*}
+    u_1
+    =
+    -u_0e^{-2\chi a}.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Центральная ячейка
+% ------------------------------------------------------------
+
+\subsection*{Система уравнений для центральной ячейки}
+
+Подставляем найденные выражения в уравнения при $n=0$:
+%
+\begin{equation*}
+    -m\omega^2u_0
+    =
+    \alpha_0(v_0-u_0)
+    -
+    \alpha
+    \left(
+        u_0+v_0e^{-2\chi a}
+    \right),
+\end{equation*}
+%
+\begin{equation*}
+    -M\omega^2v_0
+    =
+    \alpha
+    \left(
+        -u_0e^{-2\chi a}-v_0
+    \right)
+    -
+    \alpha_0(v_0-u_0).
+\end{equation*}
+%
+
+Переносим все слагаемые в левую часть:
+%
+\begin{equation*}
+    \begin{pmatrix}
+        m\omega^2-(\alpha_0+\alpha)
+        &
+        \alpha_0-\alpha e^{-2\chi a}
+        \\[2mm]
+        \alpha_0-\alpha e^{-2\chi a}
+        &
+        M\omega^2-(\alpha_0+\alpha)
+    \end{pmatrix}
+    \begin{pmatrix}
+        u_0
+        \\
+        v_0
+    \end{pmatrix}
+    =
+    0.
+\end{equation*}
+%
+
+Нетривиальное решение требует
+%
+\begin{equation*}
+    mM\omega^4
+    +
+    (\alpha_0+\alpha)^2
+    -
+    \omega^2(m+M)(\alpha_0+\alpha)
+    -
+    \left(
+        \alpha_0-\alpha e^{-2\chi a}
+    \right)^2
+    =
+    0.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Уравнения вдали от дефекта
+% ------------------------------------------------------------
+
+\subsection*{Уравнения вдали от дефекта}
+
+Вне центральной ячейки пружины имеют обычную жёсткость $\alpha$.
+
+После подстановки затухающего решения
+система в рукописном конспекте записана в форме
+%
+\begin{equation*}
+    \begin{pmatrix}
+        m\omega^2-2\alpha
+        &
+        \alpha(1-e^{-2\chi a})
+        \\[2mm]
+        \alpha(1-e^{2\chi a})
+        &
+        M\omega^2-2\alpha
+    \end{pmatrix}
+    \begin{pmatrix}
+        u_n
+        \\
+        v_n
+    \end{pmatrix}
+    =
+    0.
+\end{equation*}
+%
+
+Для определения частоты нам нужен только определитель,
+поэтому перестановка показателей
+$e^{2\chi a}$ и $e^{-2\chi a}$
+между внедиагональными элементами
+на дальнейший результат не влияет.
+
+Условие существования ненулевого решения:
+%
+\begin{equation*}
+    \left(
+        m\omega^2-2\alpha
+    \right)
+    \left(
+        M\omega^2-2\alpha
+    \right)
+    -
+    \alpha^2
+    \left(
+        1-e^{-2\chi a}
+    \right)
+    \left(
+        1-e^{2\chi a}
+    \right)
+    =
+    0.
+\end{equation*}
+%
+
+Раскрываем скобки:
+%
+\begin{equation*}
+    mM\omega^4
+    -
+    2\alpha(m+M)\omega^2
+    +
+    4\alpha^2
+    -
+    \alpha^2
+    \left(
+        2-e^{2\chi a}-e^{-2\chi a}
+    \right)
+    =
+    0.
+\end{equation*}
+%
+
+Используем
+%
+\begin{equation*}
+    e^{2\chi a}+e^{-2\chi a}
+    =
+    2\cosh(2\chi a).
+\end{equation*}
+%
+
+Тогда постоянная часть равна
+%
+\begin{align*}
+    4\alpha^2
+    -
+    \alpha^2
+    \left[
+        2-2\cosh(2\chi a)
+    \right]
+    &=
+    2\alpha^2
+    \left[
+        1+\cosh(2\chi a)
+    \right]
+    \\
+    &=
+    4\alpha^2
+    \cosh^2(\chi a).
+\end{align*}
+%
+
+Следовательно,
+%
+\begin{equation*}
+    mM\omega^4
+    -
+    2\alpha(m+M)\omega^2
+    +
+    4\alpha^2
+    \cosh^2(\chi a)
+    =
+    0.
+\end{equation*}
+%
+
+После деления на $mM$ получаем
+%
+\begin{equation*}
+    \omega^4
+    -
+    \frac{2\alpha(m+M)}{mM}
+    \omega^2
+    +
+    \frac{4\alpha^2}{mM}
+    \cosh^2(\chi a)
+    =
+    0.
+\end{equation*}
+
+% ------------------------------------------------------------
+% Дискриминант
+% ------------------------------------------------------------
+
+\subsection*{Дискриминант}
+
+Рассматриваем полученное выражение
+как квадратное уравнение относительно
+%
+\begin{equation*}
+    x=\omega^2.
+\end{equation*}
+%
+
+Тогда
+%
+\begin{equation*}
+    x^2
+    -
+    \frac{2\alpha(m+M)}{mM}x
+    +
+    \frac{4\alpha^2}{mM}
+    \cosh^2(\chi a)
+    =
+    0,
+\end{equation*}
+%
+а его дискриминант равен
+%
+\begin{equation*}
+    D
+    =
+    \left[
+        \frac{2\alpha(m+M)}{mM}
+    \right]^2
+    -
+    4
+    \frac{4\alpha^2}{mM}
+    \cosh^2(\chi a).
+\end{equation*}
+
+
+\remark[Окончание записи.]
+На этом месте присланная запись семинара обрывается.
+Дальнейший вывод условия существования связанного состояния
+и завершение доказательства его положения
+в запрещённой зоне в исходных листах отсутствуют.
+
+
+\end{document}

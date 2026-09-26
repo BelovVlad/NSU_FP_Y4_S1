@@ -1,0 +1,420 @@
+% !TeX root = part3.tex
+\documentclass[../final.tex]{subfiles}
+\begin{document}
+\ifSubfilesClassLoaded{\setcounter{chapter}{1}\setcounter{section}{9}}{}
+
+% Источник: фотографии 1.jpg, 2.jpg, 3.jpg; на первой указан день 16.09.
+\Needspace{5\baselineskip}
+\subsection{Высокие температуры и закон Кюри}
+Продолжим рассмотрение спинового магнетизма в больцмановском пределе,
+к которому перешли в конце предыдущей части. Сохраняем обозначения:
+$\beta=e\hbar/(2mc)$, $A=(2m)^{3/2}/(2\pi^2\hbar^3)$,
+$M$ --- полный магнитный момент, $\chi=\partial M/\partial H$;
+работаем в СГС при $k_B=1$.
+При $T\gg\varepsilon_F$ газ невырожден, $z=e^{\mu/T}\ll1$, поэтому
+\begin{align*}
+ N&=AV\int_0^\infty\frac{\sqrt\varepsilon\,d\varepsilon}
+ {e^{(\varepsilon-\mu)/T}+1}
+ \simeq AVe^{\mu/T}\int_0^\infty\sqrt\varepsilon\,e^{-\varepsilon/T}d\varepsilon\\
+ &=AVe^{\mu/T}T^{3/2}\Gamma\left(\frac32\right),
+ \qquad \Gamma\left(\frac32\right)=\frac{\sqrt\pi}{2}.
+\end{align*}
+Множитель 2 за спин уже включён в $A$; повторно ставить его перед интегралом
+не нужно. Следовательно,
+\begin{equation*}
+ \left(\frac{\partial N}{\partial\mu}\right)_{T,V}=\frac NT,
+ \qquad M_{\mathrm P}=\frac{N\beta^2H}{T},
+ \qquad \chi_{\mathrm P}=\frac{N\beta^2}{T}.
+\end{equation*}
+Это \rconcept{закон Кюри}. Линейная зависимость момента от поля требует
+также $\beta H\ll T$.
+
+\Needspace{7\baselineskip}
+\section{Орбитальное движение и уровни Ландау}
+\Needspace{5\baselineskip}
+\subsection{Сведение к гармоническому осциллятору}
+Магнитное поле меняет не только спиновую энергию, но и орбитальное движение.
+Выберем $\mathbf H=H\mathbf e_z$ и калибровку
+\begin{equation*}
+ A_x=-Hy,\qquad A_y=A_z=0,\qquad \operatorname{rot}\mathbf A=H\mathbf e_z.
+\end{equation*}
+Для электрона с зарядом $-e$ гамильтониан без спина равен
+\begin{align*}
+ \widehat{\mathcal H}
+ &=\frac1{2m}\left(\widehat{\mathbf p}+\frac ec\mathbf A\right)^2
+ =\frac{(\widehat p_x-eHy/c)^2+\widehat p_y^2+\widehat p_z^2}{2m},\\
+ \psi(x,y,z)&=e^{i(p_xx+p_zz)/\hbar}\varphi_n(y-y_0),\qquad
+ y_0=\frac{cp_x}{eH}.
+\end{align*}
+Здесь $p_x$ и $p_z$ сохраняются. Уравнение для $\varphi_n$ --- уравнение
+одномерного осциллятора с центром $y_0$:
+\begin{equation*}
+ \left[-\frac{\hbar^2}{2m}\frac{d^2}{dy^2}
+ +\frac{m\omega_c^2}{2}(y-y_0)^2\right]\varphi_n
+ =\left(\varepsilon-\frac{p_z^2}{2m}\right)\varphi_n,
+ \qquad\omega_c=\frac{eH}{mc}.
+\end{equation*}
+Поэтому спектр имеет вид
+\begin{equation*}
+ \varepsilon_{n,p_z}=\hbar\omega_c\left(n+\frac12\right)+\frac{p_z^2}{2m},
+ \qquad n=0,1,2,\ldots,\qquad \hbar\omega_c=2\beta H.
+\end{equation*}
+Волновая функция поперечного движения пропорциональна
+\begin{equation*}
+ \varphi_n(y-y_0)\propto
+ e^{-(y-y_0)^2/(2a_H^2)}\mathsf H_n\left(\frac{y-y_0}{a_H}\right),
+ \qquad a_H=\sqrt{\frac{\hbar}{m\omega_c}}=\sqrt{\frac{\hbar c}{eH}},
+\end{equation*}
+где $\mathsf H_n$ --- полином Эрмита. С учётом спина к энергии добавляется
+$\pm\beta H$. При вычислении чисто орбитального отклика этот сдвиг временно
+отключаем, сохраняя кратность 2 за две спиновые ориентации.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,scale=1.25,line width=0.8pt,font=\small,x={(1cm,0cm)},y={(0.5cm,0.45cm)},z={(0cm,1cm)}]
+ % Плоскость xy показана в перспективе; вертикальное направление --- z.
+ \fill[p3,opacity=0.08] (0,0,0)--(5.7,0,0)--(5.7,3.1,0)--(0,3.1,0)--cycle;
+ \draw (0,0,0)--(5.7,0,0)--(5.7,3.1,0)--(0,3.1,0)--cycle;
+ \draw[->] (0,0,0)--(6.3,0,0) node[right] {$x$};
+ \draw[->] (0,0,0)--(0,4,0) node[above] {$y$};
+ \node[below] at (5.7,0,0) {$L_x$};
+ \node[left] at (0,2.3,0) {$L_y$};
+ \draw[p3,thick,domain=0:360,samples=90]
+  plot ({2.8+0.95*cos(\x)},{1.65+0.95*sin(\x)},0);
+ \draw[p3,->,thick,domain=0:70,samples=25]
+  plot ({2.8+0.95*cos(\x)},{1.65+0.95*sin(\x)},0);
+ \fill[red3] (2.8,1.65,0) circle (2pt);
+ \draw[dashed] (0,1.65,0) node[left] {$y_0$}--(2.8,1.65,0);
+ \draw[->,red3,very thick] (2.8,1.65,0)--(2.8,1.65,2.6)
+  node[above] {$\mathbf H\parallel z$};
+ \draw[->,red3,thick] (4.4,2.8,0)--(2.9,2.8,0)
+  node[midway,above] {$\mathbf A$};
+ \node[below] at (2.85,-0.9,0) {Поперечная плоскость $xy$};
+\end{tikzpicture}
+\captionof{figure}{Циклотронное движение в плоскости $xy$, показанной в перспективе.
+ Поле $\mathbf H$ направлено вверх вдоль $z$, движение вдоль него свободное.
+ $\mathbf A$ направлен против $x$ согласно $A_x=-Hy$.
+ Центр орбиты $y_0=cp_x/(eH)$ меняется с $p_x$, а энергия уровня остаётся той же.}
+\end{rbox}
+
+\Needspace{5\baselineskip}
+\subsection{Вырождение уровня и квант потока}
+Пусть площадь поперечного сечения $S=L_xL_y$. Для центров внутри образца
+\begin{equation*}
+ 0<y_0<L_y\quad\Longrightarrow\quad 0<p_x<\frac{eHL_y}{c}.
+\end{equation*}
+Шаг квантования $p_x$ равен $2\pi\hbar/L_x$. Число состояний на одном
+уровне при фиксированном спине и $p_z$ равно
+\begin{equation*}
+ G=\frac{L_x}{2\pi\hbar}\int_0^{eHL_y/c}dp_x
+ =\frac{eHS}{2\pi\hbar c}=\frac{HS}{\Phi_0},
+ \qquad \Phi_0=\frac{2\pi\hbar c}{e}.
+\end{equation*}
+$\Phi_0$ --- квант магнитного потока для частицы с зарядом $e$.
+Отдельного непрерывного интеграла по $p_y$ уже нет: движение по $y$
+учтено номером осциллятора $n$.
+Вдоль поля $dG_z=L_z\,dp_z/(2\pi\hbar)$, поэтому с учётом двух спинов
+\begin{equation*}
+ d\mathcal G=2G\frac{L_z\,dp_z}{2\pi\hbar}
+ =\frac{2VeH}{c}\frac{dp_z}{(2\pi\hbar)^2}.
+\end{equation*}
+Краевые поправки к подсчёту состояний здесь опущены.
+
+\Needspace{7\baselineskip}
+\section{Диамагнетизм Ландау в слабом поле}
+\Needspace{5\baselineskip}
+\subsection{Большой потенциал и формула Эйлера--Маклорена}
+Для орбитального спектра
+\begin{equation*}
+ \Omega=-\frac{2VeHT}{c(2\pi\hbar)^2}
+ \sum_{n=0}^\infty\int_{-\infty}^{\infty}
+ \ln\left[1+e^{(\mu-2\beta H(n+1/2)-p_z^2/(2m))/T}\right]dp_z.
+\end{equation*}
+Введём шаг $b=2\beta H$ и вспомогательную функцию
+\begin{equation*}
+ F(x)=-\frac{2VeT}{2\beta c(2\pi\hbar)^2}
+ \int_{-\infty}^{\infty}\ln\left[1+e^{(x-p_z^2/(2m))/T}\right]dp_z.
+\end{equation*}
+Тогда $\Omega=b\sum_{n=0}^\infty F(\mu-b(n+1/2))$.
+Для достаточно гладкой убывающей функции формула Эйлера--Маклорена даёт
+\begin{equation*}
+ \sum_{n=0}^\infty f(n)
+ =\int_0^\infty f(x)dx+\frac12f(0)-\frac1{12}f'(0)
+ +\frac1{720}f'''(0)+\cdots.
+\end{equation*}
+При суммировании по серединам интервалов
+\begin{equation*}
+ \sum_{n=0}^\infty f\left(n+\frac12\right)
+ =\int_0^\infty f(x)dx+\frac1{24}f'(0)+\cdots.
+\end{equation*}
+Коэффициент $1/24$ можно получить непосредственно: применить первую формулу
+к $f(x+1/2)$ и разложить
+\begin{align*}
+ \int_0^{1/2}f(x)dx&=\frac12f(0)+\frac18f'(0)+\cdots,\\
+ \frac12f\left(\frac12\right)&=\frac12f(0)+\frac14f'(0)+\cdots,\\
+ -\frac1{12}f'\left(\frac12\right)&=-\frac1{12}f'(0)+\cdots.
+\end{align*}
+Члены с $f(0)$ сокращаются, а $-1/8+1/4-1/12=1/24$.
+
+\Needspace{5\baselineskip}
+\subsection{Магнитный момент и восприимчивость}
+Для $f(x)=F(\mu-bx)$ имеем $f'(0)=-bF'(\mu)$, так что
+\begin{align*}
+ \Omega&=\int_0^\infty F(\mu-u)du-\frac{b^2}{24}F'(\mu)+\cdots,\\
+ \Omega_0(\mu)&=\int_{-\infty}^{\mu}F(t)dt,
+ \qquad F(\mu)=\frac{\partial\Omega_0}{\partial\mu}=-N.
+\end{align*}
+Следовательно,
+\begin{equation*}
+ \Omega=\Omega_0+\frac{\beta^2H^2}{6}
+ \left(\frac{\partial N}{\partial\mu}\right)_{T,V}+\cdots,
+\end{equation*}
+и
+\begin{equation*}
+ M_{\mathrm L}=-\frac{\beta^2H}{3}\left(\frac{\partial N}{\partial\mu}\right)_{T,V},
+ \qquad \chi_{\mathrm L}=-\frac13\chi_{\mathrm P}<0.
+\end{equation*}
+Это \rconcept{диамагнетизм Ландау}: орбитальный момент направлен против поля.
+Для свободных электронов с $g=2$ сумма двух вкладов равна
+\begin{equation*}
+ \chi_{\mathrm{tot}}=\chi_{\mathrm P}+\chi_{\mathrm L}
+ =\frac23\chi_{\mathrm P},\qquad
+ \chi_{\mathrm{tot}}(0)=\frac{N\beta^2}{\varepsilon_F}.
+\end{equation*}
+Разложение описывает \rassumption{гладкую слабополевую часть} отклика.
+Условие $\hbar\omega_c\ll T$ сглаживает отдельные уровни; при $T\to0$
+к гладкому результату могут добавляться магнитные осцилляции.
+
+\Needspace{7\baselineskip}
+\section{Сильное поле: двумерный газ без спина}
+\Needspace{5\baselineskip}
+\subsection{Заполнение уровней Ландау}
+В тонком слое движение по $z$ квантуется. Рассматриваем только нижнюю
+поперечную подзону и отсчитываем энергию от её дна. Площадь слоя обозначим
+$S$ (на фотографии она обозначена $A$). Спиновую степень свободы исключаем.
+Тогда
+\begin{equation*}
+ \varepsilon_n=2\beta H\left(n+\frac12\right),\qquad
+ G(H)=\frac{SH}{\Phi_0}=\zeta H,\qquad \zeta=\frac{S}{\Phi_0}.
+\end{equation*}
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,x={(1.25cm,0cm)},y={(0.5cm,0.5cm)},z={(0cm,1cm)},font=\small,line width=0.8pt]
+ \fill[p3,opacity=0.10] (0,0,0)--(5,0,0)--(5,2.5,0)--(0,2.5,0)--cycle;
+ \draw[p3] (0,0,0)--(5,0,0)--(5,2.5,0)--(0,2.5,0)--cycle;
+ \draw (0,0,0)--(0,0,-0.35)--(5,0,-0.35)--(5,2.5,-0.35)--(5,2.5,0);
+ \draw (5,0,0)--(5,0,-0.35);
+ \draw[->,p3,thick,domain=0:305,samples=75]
+  plot ({2.5+0.65*cos(\x)},{1.25+0.65*sin(\x)},0);
+ \draw[->,red3,very thick] (2.5,1.25,0)--(2.5,1.25,2.15) node[above] {$\mathbf H$};
+ \node[p3] at (0.9,1.1,0) {$S$};
+ \draw (5.15,2.5,0)--(5.55,2.5,0);
+ \draw (5.15,2.5,-0.35)--(5.55,2.5,-0.35);
+ \draw[<->] (5.4,2.5,-0.35)--(5.4,2.5,0);
+ \node[right] at (5.6,2.5,-0.175) {$d$};
+\end{tikzpicture}
+\captionof{figure}{Тонкий слой площади $S$ в перпендикулярном поле.
+ Частицы совершают циклотронное движение в плоскости слоя;
+ возбуждения движения по толщине $d$ не учитываются.
+ Для видимости толщина на схеме увеличена.}
+\end{rbox}
+
+При $T=0$ частицы занимают самые низкие доступные состояния.
+Пусть уровни $0,1,\ldots,\ell$ заполнены полностью. В поле $H_\ell$
+они вмещают все $N$ электронов:
+\begin{equation*}
+ N=(\ell+1)\zeta H_\ell,\qquad
+ H_\ell=\frac{N}{(\ell+1)\zeta}.
+\end{equation*}
+Соседние точки полного заполнения равноотстоят по обратному полю:
+\begin{equation*}
+ \frac1{H_{\ell+1}}-\frac1{H_\ell}=\frac\zeta N.
+\end{equation*}
+По мере усиления поля ёмкость каждого уровня растёт, поэтому число занятых
+уровней уменьшается. При $H>H_0=N/\zeta$ частично занят только $n=0$.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,x=2.0cm,y=1.25cm,font=\small,line width=0.8pt]
+ \draw[->] (0,0)--(4.6,0) node[right] {$H/H_0$};
+ \draw[->] (0,0)--(0,3.1) node[above] {Число состояний};
+ \draw[dashed] (0,2.5) node[left] {$N$}--(4.25,2.5);
+ \foreach \k in {1,2,3,4} {
+  \draw[p3,thick] (0,0)--({4/\k},2.5);
+  \draw[dotted] ({4/\k},0)--({4/\k},2.5);
+ }
+ \node[below] at (4,0) {$1$}; \node[below] at (2,0) {$1/2$};
+ \node[below] at (1.333,0) {$1/3$};
+ \node[p3,rotate=26] at (3,1.6) {$G=\zeta H$};
+ \node at (2.8,2.85) {$kG=N$};
+ % Пример при H/H_0=0.42: два уровня заполнены, третий частично.
+ \draw[p3,very thick] (1.68,0)--(1.68,2.1);
+ \draw[red3,very thick] (1.68,2.1)--(1.68,2.5);
+ \draw[->,red3] (2.55,2.26)--(1.75,2.3);
+ \node[right,red3] at (2.55,2.26) {$N-2G$};
+\end{tikzpicture}
+\captionof{figure}{Ёмкость $k$ уровней равна $kG=k\zeta H$. Пересечения с линией $N$
+ задают поля полного заполнения. На выделенной вертикали два уровня
+ заполнены полностью (голубой отрезок $2G$), третий --- частично
+ (розовый отрезок $N-2G$).}
+\end{rbox}
+
+\Needspace{5\baselineskip}
+\subsection{Энергия и осцилляции магнитного момента}
+В интервале $H_{\ell+1}<H<H_\ell$ уровни $0,\ldots,\ell$ заполнены,
+а на уровне $\ell+1$ находится $N-\zeta H(\ell+1)$ электронов. Энергия равна
+\begin{align*}
+ E&=E_1+E_2,\\
+ E_1&=2\beta H\,\zeta H\sum_{n=0}^{\ell}\left(n+\frac12\right)
+ =\beta\zeta H^2(\ell+1)^2,\\
+ E_2&=2\beta H\left(\ell+\frac32\right)
+ \bigl[N-\zeta H(\ell+1)\bigr],\\
+ E&=2\beta NH\left(\ell+\frac32\right)
+ -\beta\zeta H^2(\ell+1)(\ell+2).
+\end{align*}
+В точках полного заполнения $E_2=0$ и
+\begin{equation*}
+ E(H_\ell)=\frac{\beta N^2}{\zeta}\equiv E_*.
+\end{equation*}
+Между этими точками энергия идёт по вогнутым параболическим дугам выше $E_*$.
+При фиксированном $N$ и $T=0$ магнитный момент вычисляется из энергии:
+\begin{equation*}
+ M=-\left(\frac{\partial E}{\partial H}\right)_{N,S}
+ =-2\beta N\left(\ell+\frac32\right)
+ +2\beta\zeta H(\ell+1)(\ell+2).
+\end{equation*}
+\rnote{Внутри каждого интервала $M$ линейно возрастает с $H$.}
+При переходе через $H_\ell$ он скачком меняется от $+N\beta$ к $-N\beta$.
+В самих точках скачка обычная производная энергии не определена.
+При $H>H_0$ частично заполнен лишь нижний уровень, поэтому
+\begin{equation*}
+ E=N\varepsilon_0=N\beta H,\qquad M=-N\beta.
+\end{equation*}
+Графики относятся к идеальному двумерному газу без спина при
+$T=0$ и \rassumption{фиксированном числе частиц $N$}.
+Наклон и направление скачков согласованы с $M=-\partial E/\partial H$;
+при фиксированном химическом потенциале форма осцилляций другая.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,x=10cm,y=1cm,font=\small,line width=0.8pt]
+ \draw[->] (0,0)--(1.13,0) node[right] {$H/H_0$};
+ \draw[->] (0,0)--(0,1.55) node[above] {$\Delta E/E_*$};
+ \node[left] at (0,0) {$0$};
+ \draw (0,1)--(0.012,1) node[left,pos=0] {$1/8$};
+ \foreach \k in {1,...,7} {
+  \draw[red3,thick,domain=1/(\k+1):1/\k,samples=45]
+   plot (\x,{8*((2*\k+1)*\x-\k*(\k+1)*\x*\x-1)});
+ }
+ \draw[red3,thick] (1,0)--(1.1,0.8);
+ \node[red3] at (0.065,0.16) {$\cdots$};
+ \foreach \x/\lab in {0.333/{1/3},0.5/{1/2},1/{1}} {
+  \fill[red3] (\x,0) circle (1.7pt);
+  \node[below] at (\x,0) {$\lab$};
+ }
+ \begin{scope}[yshift=-3.6cm]
+  \draw[->] (0,0)--(1.13,0) node[right] {$H/H_0$};
+  \draw[->] (0,-1.25)--(0,1.5) node[above] {$M/(N\beta)$};
+  \draw[dotted] (0,1)--(1.04,1); \draw[dotted] (0,-1)--(1.04,-1);
+  \node[left] at (0,1) {$+1$}; \node[left] at (0,-1) {$-1$};
+  \foreach \k in {1,...,7} {
+   \draw[p3,thick] ({1/(\k+1)},-1)--({1/\k},1);
+   \draw[red3,dashed] ({1/\k},1)--({1/\k},-1);
+  }
+  \draw[p3,thick] (1,-1)--(1.1,-1);
+  \node[p3] at (0.065,0) {$\cdots$};
+  \foreach \x/\lab in {0.333/{1/3},0.5/{1/2},1/{1}} {
+   \node[below] at (\x,-1.35) {$\lab$};
+  }
+ \end{scope}
+\end{tikzpicture}
+\captionof{figure}{Сверху --- отклонение энергии $\Delta E=E-E_*$ от её значения
+ в точках полного заполнения; снизу --- $M=-\partial E/\partial H$.
+ Энергия непрерывна; штриховые вертикали отмечают скачки момента,
+ а не его значения в точках излома энергии. При $H>H_0$ энергия растёт
+ линейно, а $M=-N\beta$. Многоточие обозначает следующие осцилляции при
+ $H\to0$; точки полного заполнения равноотстоят по $1/H$.}
+\end{rbox}
+
+Если ввести фактор заполнения $\nu=N/(\zeta H)$, то $k=\lfloor\nu\rfloor$
+уровней заполнены полностью и $\nu-k$ --- доля заполнения следующего.
+При нецелом $\nu$ химический потенциал при $T=0$ совпадает с энергией
+частично заполненного уровня:
+\begin{equation*}
+ \mu=2\beta H\left(k+\frac12\right),\qquad
+ \frac{\mu}{2\beta H_0}=\frac{k+1/2}{\nu}.
+\end{equation*}
+Поэтому график $\mu(1/H)$ состоит из убывающих участков со скачками
+вверх при целых $\nu$: движение вправо здесь соответствует уменьшению $H$.
+В точке полного заполнения $\mu$ можно выбрать в промежутке
+между последним занятым и первым пустым уровнем,
+\begin{equation*}
+ \varepsilon_{k-1}\leq\mu\leq\varepsilon_k,
+ \qquad \nu=k\in\mathbb N.
+\end{equation*}
+Интервал относится к строго нулевой температуре; при $T>0$ условие
+фиксированного $N$ определяет единственное $\mu$.
+Именно такую перестройку
+верхнего занятого уровня изображает дополнительный эскиз под графиком ёмкости
+в тетради. Конечная температура размывает скачки; для их наблюдения
+нужно $T\ll\hbar\omega_c$ и достаточно малое уширение уровней.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,x=1.65cm,y=2.4cm,line width=0.8pt,font=\small]
+ \draw[->] (0,0)--(6.5,0) node[right] {$\nu=H_0/H$};
+ \draw[->] (0,0)--(0,1.8) node[above] {$\mu/(2\beta H_0)$};
+ \draw[dotted] (0,1)--(6.2,1);
+ \node[left] at (0,1) {$1$};
+ \foreach \k in {1,...,5} {
+  \draw[p3,thick,domain=\k+0.01:\k+0.99,samples=50]
+   plot (\x,{(\k+0.5)/\x});
+  \draw[red3,dashed] (\k,{(\k-0.5)/\k})--(\k,{(\k+0.5)/\k});
+  \draw (\k,0.03)--(\k,-0.03) node[below] {$\k$};
+ }
+ \draw[p3,thick,domain=0.32:0.99,samples=50] plot (\x,{0.5/\x});
+\end{tikzpicture}
+\captionof{figure}{Химический потенциал совпадает с энергией частично занятого уровня.
+ При целых $\nu=H_0/H$ все занятые уровни заполнены полностью;
+ штриховые отрезки показывают допустимый при $T=0$ интервал $\mu$ в щели,
+ а не непрерывную ветвь функции. При движении вправо ($H$ уменьшается)
+ происходит скачок вверх. Эти точки равноотстоят по $1/H$.}
+\end{rbox}
+
+\Needspace{7\baselineskip}
+\section{Теорема Бора--ван Лёвен}
+В классической статистике равновесный орбитальный магнитный момент газа
+заряженных частиц равен нулю. Для гамильтониана
+\begin{equation*}
+ \mathcal H(\mathbf r,\mathbf p)
+ =\frac{[\mathbf p+e\mathbf A(\mathbf r)/c]^2}{2m}+U(\mathbf r)
+\end{equation*}
+одночастичная статистическая сумма имеет вид
+\begin{equation*}
+ Z_1=\int\frac{d^3r\,d^3p}{(2\pi\hbar)^3}
+ \exp\left[-\frac{[\mathbf p+e\mathbf A(\mathbf r)/c]^2}{2mT}
+ -\frac{U(\mathbf r)}T\right].
+\end{equation*}
+При каждом фиксированном $\mathbf r$ сделаем замену
+$\mathbf\pi=\mathbf p+e\mathbf A(\mathbf r)/c$.
+Якобиан равен единице, пределы интеграла по импульсу остаются бесконечными:
+\begin{equation*}
+ Z_1=\int\frac{d^3r\,d^3\pi}{(2\pi\hbar)^3}
+ e^{-\pi^2/(2mT)-U(\mathbf r)/T}.
+\end{equation*}
+Зависимость от $H$ исчезла. Поэтому $F=-T\ln Z$ не зависит от поля и
+$M=-(\partial F/\partial H)_{T,V,N}=0$.
+Доказательство распространяется на классические взаимодействующие частицы,
+если взаимодействие зависит только от координат.
+
+\rresult{Орбитальный магнетизм Ландау имеет квантовую природу.}
+Дискретный спектр не устраняется классическим сдвигом переменной интегрирования.
+Спиновый магнетизм также не противоречит теореме: собственный магнитный момент
+электрона не входит в использованный классический гамильтониан.
+
+\end{document}

@@ -1,0 +1,714 @@
+% !TeX root = part4.tex
+\documentclass[../final.tex]{subfiles}
+\begin{document}
+\ifSubfilesClassLoaded{\setcounter{chapter}{1}\setcounter{section}{13}}{}
+
+% Источники: 11.jpg, 22.jpg, 33.jpg; photo_2026-09-26_22-08-59.jpg.
+% Дата в тетради: 25.09.
+\chapter{Зонная теория твёрдых тел}
+\rsubtitle{Плотность состояний, электроны и дырки}
+
+\Needspace{7\baselineskip}
+\section{Плотность состояний и заполнение уровней}
+\Needspace{5\baselineskip}
+\subsection{Свободный ферми-газ}
+Начнём с модели, изученной в предыдущих лекциях. Температуру измеряем
+в энергетических единицах: $T=k_BT_{\mathrm{K}}$. Среднее число электронов
+в одночастичном состоянии энергии $\varepsilon$ равно
+\begin{equation*}
+ f(\varepsilon)=\frac{1}{e^{(\varepsilon-\mu)/T}+1}.
+\end{equation*}
+\rconcept{Плотность состояний} $D(\varepsilon)$ определяется так, что
+$D(\varepsilon)d\varepsilon$ --- число одночастичных состояний во всём
+образце в интервале $(\varepsilon,\varepsilon+d\varepsilon)$.
+Обозначение $\rho(\varepsilon)$ в тетради имеет тот же смысл.
+Число частиц получается после умножения числа доступных состояний
+на вероятность их заполнения:
+\begin{equation*}
+ N=\int D(\varepsilon)f(\varepsilon)\,d\varepsilon.
+\end{equation*}
+Для трёхмерного свободного газа со спектром $\varepsilon=p^2/(2m)$
+и кратностью внутреннего вырождения $g$
+\begin{align*}
+ N&=g\int\frac{d^3r\,d^3p}{(2\pi\hbar)^3}
+ \frac1{e^{(p^2/(2m)-\mu)/T}+1}
+ =VA_g\int_0^\infty\sqrt\varepsilon f(\varepsilon)d\varepsilon,\\
+ D(\varepsilon)&=VA_g\sqrt\varepsilon,\qquad
+ A_g=\frac{g(2m)^{3/2}}{4\pi^2\hbar^3}.
+\end{align*}
+Для электрона $g=2$, поэтому $A_g=(2m)^{3/2}/(2\pi^2\hbar^3)$.
+Это согласуется с обозначением $A$ в предыдущих частях.
+\rnote{Спиновую кратность учитываем один раз:} либо в коэффициенте $A_g$,
+либо отдельным множителем перед интегралом.
+
+При $T=0$ распределение представляет собой ступеньку:
+\begin{equation*}
+ f(\varepsilon)=\Theta(\varepsilon_F-\varepsilon),\qquad
+ N=\int_0^{\varepsilon_F}D(\varepsilon)d\varepsilon
+ =\frac23VA_g\varepsilon_F^{3/2}.
+\end{equation*}
+При $T>0$ состояния в энергетическом слое порядка $T$ около $\mu$
+заполняются частично. Важно различать три графика: $D$ показывает
+\emph{доступные} состояния, $f$ --- долю заполнения одного состояния,
+а $Df$ --- распределение \emph{занятых} состояний по энергии.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm,font=\small,line width=0.8pt]
+ \foreach \dx/\title in {0/{$T=0$},6.2/{$T>0$}} {
+  \begin{scope}[xshift=\dx cm]
+   \pgfmathsetmacro{\muplot}{ifthenelse(\dx==0,2.3,2.266861)}
+   \node at (2.2,2.65) {\title};
+   \draw[->] (0,0)--(4.8,0) node[right] {$\varepsilon$};
+   \draw[->] (0,0)--(0,2.25) node[above] {$f$};
+   \node[left] at (0,1.8) {$1$};
+   \draw[dotted] (\muplot,0)--(\muplot,2.05);
+   \node[below] at (\muplot,0) {$\mu$};
+   \begin{scope}[yshift=-3.5cm]
+    \draw[->] (0,0)--(4.8,0) node[right] {$\varepsilon$};
+    \draw[->] (0,0)--(0,2.35) node[above] {$D,\ Df$};
+    \draw[red3,dashed,thick,domain=0:4.4,samples=65] plot (\x,{sqrt(\x)});
+    \draw[dotted] (\muplot,0)--(\muplot,2.05);
+    \node[below] at (\muplot,0) {$\mu$};
+   \end{scope}
+  \end{scope}
+ }
+ \draw[p3,thick] (0,1.8)--(2.3,1.8)--(2.3,0)--(4.4,0);
+ \draw[p3,thick,domain=0:4.4,samples=75] plot ({6.2+\x},{1.8/(1+exp((\x-2.266861)/0.3))});
+ \begin{scope}[yshift=-3.5cm]
+  \fill[p3,opacity=0.18] (0,0)--plot[domain=0:2.3,samples=50] (\x,{sqrt(\x)})--(2.3,0)--cycle;
+  \draw[p3,thick,domain=0:2.3,samples=50] plot (\x,{sqrt(\x)});
+  \draw[p3,thick] (2.3,1.517)--(2.3,0);
+  \begin{scope}[xshift=6.2cm]
+   \fill[p3,opacity=0.18] (0,0)--plot[domain=0:4.4,samples=80]
+    (\x,{sqrt(\x)/(1+exp((\x-2.266861)/0.3))})--(4.4,0)--cycle;
+   \draw[p3,thick,domain=0:4.4,samples=80]
+    plot (\x,{sqrt(\x)/(1+exp((\x-2.266861)/0.3))});
+  \end{scope}
+ \end{scope}
+\end{tikzpicture}
+\captionof{figure}{Распределение Ферми--Дирака (верхний ряд) и заполнение состояний
+ (нижний ряд). Розовая штриховая линия --- $D$, голубая --- $Df$.
+ При нагревании появляются электроны выше $\mu$ и свободные состояния ниже него.
+ Площадь под $Df$ сохраняется при фиксированном $N$.}
+\end{rbox}
+
+\Needspace{5\baselineskip}
+\subsection{Невырожденный предел}
+При $T\gg\varepsilon_F$ имеем $e^{\mu/T}\ll1$ и
+\begin{equation*}
+ f(\varepsilon)\simeq e^{\mu/T}e^{-\varepsilon/T}\ll1,\qquad
+ D(\varepsilon)f(\varepsilon)
+ \simeq VA_g e^{\mu/T}\sqrt\varepsilon e^{-\varepsilon/T}.
+\end{equation*}
+Уменьшение вероятности заполнения компенсируется расширением занятого
+интервала энергий: при заданном $N$ площадь под $Df$ сохраняется.
+Энергия Ферми здесь служит масштабом, определённым концентрацией, но уже
+не является резкой границей заполнения.
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,font=\small,line width=0.8pt]
+ \draw[->] (0,0)--(5,0) node[right] {$\varepsilon/T$};
+ \draw[->] (0,0)--(0,2.1) node[above] {$f$};
+ \draw[p3,thick,domain=0:4.6,samples=70] plot (\x,{1.6*exp(-\x)});
+ \node[p3] at (2.5,1.3) {$z\,e^{-\varepsilon/T}$};
+ \node[left] at (0,1.6) {$z\ll1$};
+ \begin{scope}[xshift=6.2cm]
+  \draw[->] (0,0)--(5,0) node[right] {$\varepsilon/T$};
+  \draw[->] (0,0)--(0,2.1) node[above] {$D,\ Df$};
+  \draw[red3,dashed,thick,domain=0:4.6,samples=90]
+   plot (\x,{0.85*sqrt(\x)});
+  \fill[p3,opacity=0.18] (0,0)--plot[domain=0:4.6,samples=90]
+   (\x,{0.17*sqrt(\x)*exp(-\x)})--(4.6,0)--cycle;
+  \draw[p3,thick,domain=0:4.6,samples=90] plot (\x,{0.17*sqrt(\x)*exp(-\x)});
+  \node[red3] at (3.5,1.3) {$D$};
+  \draw[->,p3] (1.7,0.7)--(0.65,0.09);
+  \node[p3,above] at (1.7,0.7) {$Df\ll D$};
+ \end{scope}
+\end{tikzpicture}
+\captionof{figure}{Больцмановский предел: $f\ll1$, поэтому занята малая доля доступных состояний.
+ Розовая штриховая линия --- $D\propto\sqrt\varepsilon$,
+ голубая область --- $Df\propto\sqrt\varepsilon e^{-\varepsilon/T}$.
+ Максимум распределения частиц находится при $\varepsilon=T/2$.}
+\end{rbox}
+
+\clearpage
+\Needspace{7\baselineskip}
+\section{Разрешённые и запрещённые зоны}
+\Needspace{5\baselineskip}
+\subsection{Электрон в периодическом потенциале}
+В кристалле электрон движется в периодическом поле ионов:
+$U(\mathbf r+\mathbf a)=U(\mathbf r)$ для вектора трансляции решётки
+$\mathbf a$. Вместо свободного спектра возникают
+\rconcept{разрешённые энергетические зоны}, разделённые интервалами,
+в которых объёмных одночастичных состояний нет. Такие интервалы называются
+\rconcept{запрещёнными зонами}; в них $D(\varepsilon)=0$.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,font=\small,line width=0.8pt]
+ \draw[->] (0,0)--(11.3,0) node[right] {$x$};
+ \draw[->] (0,0)--(0,2.25) node[above] {$U(x)$};
+ \draw[p3,thick] (0.1,1.8)--(0.7,1.8)--(0.7,0.4)--(2,0.4)--(2,1.8)
+ --(3.4,1.8)--(3.4,0.4)--(4.7,0.4)--(4.7,1.8)--(6.1,1.8)
+ --(6.1,0.4)--(7.4,0.4)--(7.4,1.8)--(8.8,1.8)--(8.8,0.4)
+ --(10.1,0.4)--(10.1,1.8)--(10.8,1.8);
+ \draw[red3] (0.7,0.7)--(2,0.7); \draw[red3] (0.7,1)--(2,1);
+ \draw[red3] (0.7,1.3)--(2,1.3);
+ \draw[<->] (0.7,2.05)--(3.4,2.05) node[midway,above] {$a$};
+ \begin{scope}[yshift=-3.6cm]
+  \draw[->] (0,0)--(11.3,0) node[right] {$\varepsilon$};
+  \draw[->] (0,0)--(0,2.25) node[above] {$D(\varepsilon)$};
+  \draw[p3,thick] (0.4,0) .. controls (0.65,1) and (1.4,1.2) .. (1.7,0)
+   (2.3,0) .. controls (2.6,1.7) and (3.2,1.3) .. (3.6,1.5)
+   .. controls (4.1,1.8) and (4.6,1) .. (4.7,0)
+   (5.8,0) .. controls (6.4,2.7) and (8.5,2.6) .. (9.4,0);
+  \draw[<->,red3] (4.75,0.45)--(5.75,0.45);
+  \node[red3,above,align=center] at (5.25,0.5) {запрещённая\\зона};
+ \end{scope}
+\end{tikzpicture}
+\captionof{figure}{Периодический потенциал кристалла (сверху) и разрешённые энергетические
+ зоны в плотности состояний (снизу). Между зонами $D=0$.
+ Эти графики имеют разные горизонтальные оси: координату $x$ и энергию $\varepsilon$.}
+\end{rbox}
+
+\Needspace{5\baselineskip}
+\subsection{Диэлектрик, полупроводник и металл}
+Самая верхняя заполненная при $T=0$ зона называется
+\rconcept{валентной зоной}. Следующая разрешённая зона, в которую можно
+возбудить электрон, --- \rconcept{зона проводимости}.
+Обозначим их края $E_v$ и $E_c$; ширина щели равна $E_g=E_c-E_v$.
+
+Если при $T=0$ валентная зона заполнена полностью, зона проводимости пуста,
+а химический потенциал находится в щели, система в простой зонной модели
+не проводит ток. При $T>0$ часть электронов возбуждается через щель,
+оставляя в валентной зоне дырки. Для большой щели этот процесс
+экспоненциально подавлен, а для достаточно узкой даёт заметную
+собственную проводимость.
+
+В металле уровень Ферми пересекает разрешённую зону: рядом с занятыми
+состояниями есть свободные состояния с близкой энергией. Поле может
+изменить их заполнение без возбуждения через конечную щель.
+Металлическое состояние возможно также при перекрытии зон.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=1cm,y=1cm,line width=0.8pt]
+ \foreach \dx/\dy/\ttl in {0/0/{Полупроводник, $T=0$},6.2/0/{Полупроводник, $T>0$},0/-4/{Металл, $T=0$},6.2/-4/{Металл, $T>0$}} {
+  \begin{scope}[shift={(\dx,\dy)}]
+   \node at (2.2,3.05) {\ttl};
+   \draw[->] (0,0)--(4.85,0) node[right] {$\varepsilon$};
+   \draw[->] (0,0)--(0,2.15) node[above] {$D,\ Df$};
+  \end{scope}
+ }
+ % Плотность состояний одинакова в двух верхних панелях.
+ \foreach \dx in {0,6.2} {
+  \begin{scope}[xshift=\dx cm]
+   \draw[red3,dashed,thick,domain=0.2:1.9,samples=80]
+    plot (\x,{2*sqrt(max(0,(\x-0.2)*(1.9-\x)))});
+   \draw[red3,dashed,thick,domain=2.8:4.5,samples=80]
+    plot (\x,{2*sqrt(max(0,(\x-2.8)*(4.5-\x)))});
+   \draw[dotted] (2.35,0)--(2.35,2) node[above] {$\mu$};
+   \node[below] at (1.9,0) {$E_v$}; \node[below] at (2.8,0) {$E_c$};
+  \end{scope}
+ }
+ \fill[p3,opacity=0.22] (0.2,0)--plot[domain=0.2:1.9,samples=80]
+  (\x,{2*sqrt(max(0,(\x-0.2)*(1.9-\x)))})--cycle;
+ \draw[p3,thick,domain=0.2:1.9,samples=80]
+  plot (\x,{2*sqrt(max(0,(\x-0.2)*(1.9-\x)))});
+ \begin{scope}[xshift=6.2cm]
+  % Дырки: незаполненная часть валентной зоны между D и Df.
+  \fill[red3,opacity=0.55]
+   plot[domain=0.2:1.9,samples=80]
+    (\x,{2*sqrt(max(0,(\x-0.2)*(1.9-\x)))})
+   --plot[domain=1.9:0.2,samples=80]
+    (\x,{2*sqrt(max(0,(\x-0.2)*(1.9-\x)))/(1+exp((\x-2.35)/0.24))})--cycle;
+  \fill[p3,opacity=0.22] (0.2,0)--plot[domain=0.2:1.9,samples=80]
+   (\x,{2*sqrt(max(0,(\x-0.2)*(1.9-\x)))/(1+exp((\x-2.35)/0.24))})--cycle;
+  \draw[p3,thick,domain=0.2:1.9,samples=80]
+   plot (\x,{2*sqrt(max(0,(\x-0.2)*(1.9-\x)))/(1+exp((\x-2.35)/0.24))});
+  \fill[p3,opacity=0.6] (2.8,0)--plot[domain=2.8:4.5,samples=80]
+   (\x,{2*sqrt(max(0,(\x-2.8)*(4.5-\x)))/(1+exp((\x-2.35)/0.24))})--cycle;
+  \draw[p3,thick,domain=2.8:4.5,samples=80]
+   plot (\x,{2*sqrt(max(0,(\x-2.8)*(4.5-\x)))/(1+exp((\x-2.35)/0.24))});
+  \draw[->,p3] (3.35,0.8)--(3.07,0.03);
+  \node[above,p3] at (3.35,0.8) {$e^-$};
+  \draw[->,red3] (2.25,1.3)--(1.8,0.76);
+  \node[above,red3] at (2.25,1.3) {дырки};
+ \end{scope}
+ % Металл: уровень Ферми пересекает разрешённую зону.
+ \foreach \dx in {0,6.2} {
+  \begin{scope}[shift={(\dx,-4)}]
+   \draw[red3,dashed,thick,domain=0.2:4.5,samples=100]
+    plot (\x,{0.85*sqrt(max(0,(\x-0.2)*(4.5-\x)))});
+   \draw[dotted] (2.1,0)--(2.1,2.1) node[above] {$\mu$};
+  \end{scope}
+ }
+ \begin{scope}[yshift=-4cm]
+  \fill[p3,opacity=0.22] (0.2,0)--plot[domain=0.2:2.1,samples=80]
+   (\x,{0.85*sqrt(max(0,(\x-0.2)*(4.5-\x)))})--(2.1,0)--cycle;
+  \draw[p3,thick,domain=0.2:2.1,samples=80]
+   plot (\x,{0.85*sqrt(max(0,(\x-0.2)*(4.5-\x)))});
+  \draw[p3,thick] (2.1,1.8165)--(2.1,0);
+  \begin{scope}[xshift=6.2cm]
+   \fill[p3,opacity=0.22] (0.2,0)--plot[domain=0.2:4.5,samples=100]
+    (\x,{0.85*sqrt(max(0,(\x-0.2)*(4.5-\x)))*exp((2.1-\x)/0.24)/(1+exp((2.1-\x)/0.24))})--cycle;
+   \draw[p3,thick,domain=0.2:4.5,samples=100]
+    plot (\x,{0.85*sqrt(max(0,(\x-0.2)*(4.5-\x)))*exp((2.1-\x)/0.24)/(1+exp((2.1-\x)/0.24))});
+  \end{scope}
+ \end{scope}
+ % Увеличение именно малых плотностей носителей, а не всей зоны.
+ % Одинаковый множитель 15 сохраняет сравнимость двух кривых.
+ \begin{scope}[yshift=-7.5cm]
+  \node at (2.2,2.35) {Увеличение: дырки у $E_v$};
+  \draw[->] (0,0)--(4.85,0) node[right] {$\varepsilon$};
+  \draw[->] (0,0)--(0,1.65) node[above] {$15D_h$};
+  \fill[red3,opacity=0.4] (0,0)
+   --plot[domain=0:4,samples=100]
+    (\x,{30*sqrt(max(0,(0.9+0.2*\x)*(0.8-0.2*\x)))*exp((-1.25+0.2*\x)/0.24)/(1+exp((-1.25+0.2*\x)/0.24))})--cycle;
+  \draw[red3,thick,domain=0:4,samples=100]
+   plot (\x,{30*sqrt(max(0,(0.9+0.2*\x)*(0.8-0.2*\x)))*exp((-1.25+0.2*\x)/0.24)/(1+exp((-1.25+0.2*\x)/0.24))});
+  \draw (4,0)--(4,-0.08) node[below] {$E_v$};
+  \node[red3] at (2.15,1.65) {$D_h=D(1-f)$};
+  \begin{scope}[xshift=6.2cm]
+   \node at (2.2,2.35) {Увеличение: электроны у $E_c$};
+   \draw[->] (0,0)--(4.85,0) node[right] {$\varepsilon$};
+   \draw[->] (0,0)--(0,1.65) node[above] {$15D_e$};
+   \fill[p3,opacity=0.4] (0,0)
+    --plot[domain=0:4,samples=100]
+     (\x,{30*sqrt(max(0,(0.2*\x)*(1.7-0.2*\x)))/(1+exp((0.45+0.2*\x)/0.24))})--cycle;
+   \draw[p3,thick,domain=0:4,samples=100]
+    plot (\x,{30*sqrt(max(0,(0.2*\x)*(1.7-0.2*\x)))/(1+exp((0.45+0.2*\x)/0.24))});
+   \draw (0,0)--(0,-0.08) node[below] {$E_c$};
+   \node[p3] at (2.55,1.65) {$D_e=Df$};
+  \end{scope}
+ \end{scope}
+\end{tikzpicture}
+\captionof{figure}{Заполнение зон: розовая штриховая линия --- $D$, голубая область --- $Df$.
+ Розовая область между $D$ и $Df$ в валентной зоне соответствует дыркам.
+ Внизу отдельно показаны плотности дырок и электронов при $T>0$:
+ обе увеличены в 15 раз по вертикали, а интервалы энергий у краёв зон растянуты.
+ У металла размывается граница заполнения внутри одной зоны.}
+\end{rbox}
+
+В конспекте приведены ориентиры: для алмаза $E_g\approx5.2$~эВ,
+для $\mathrm{Al_2O_3}$ --- около $7$~эВ; комнатная температура соответствует
+$T\approx1/40$~эВ. Эти числа иллюстрируют большой разрыв между тепловой
+энергией и шириной щели.
+\rnote{Граница $E_g\sim3$~эВ условна.} Это учебное сравнение широких
+и узких щелей, а не универсальный критерий: существуют широкозонные
+полупроводники. Значения щели зависят от материала, структуры и температуры.
+
+\Needspace{5\baselineskip}
+\subsection{Полуметаллы: малое перекрытие зон}
+На дополнительной фотографии сравниваются металл и
+\rconcept{полуметалл}. В обычном металле уровень Ферми проходит внутри
+разрешённой зоны и концентрация носителей велика. В полуметалле дно
+зоны проводимости лежит немного ниже потолка валентной зоны:
+\begin{equation*}
+ E_c<E_v,\qquad \delta=E_v-E_c>0,\qquad E_c<E_F<E_v.
+\end{equation*}
+Здесь $E_F=\mu(T=0)$, а $\delta$ --- ширина перекрытия.
+Часть электронов занимает нижние состояния зоны проводимости,
+оставляя дырки у потолка валентной зоны. Поэтому
+\rresult{электроны и дырки существуют уже при $T=0$}.
+При малом перекрытии заняты только небольшие участки зон:
+концентрация носителей существенно меньше, чем в обычном металле.
+Перекрытие относится к энергиям; экстремумы двух зон могут находиться
+в разных точках пространства квазиимпульсов.
+
+В области перекрытия вклады обеих зон в плотность состояний суммируются:
+$D(\varepsilon)=D_v(\varepsilon)+D_c(\varepsilon)$.
+При $T=0$ плотности электронов проводимости и дырок по энергии равны
+$D_c\Theta(E_F-\varepsilon)$ и $D_v\Theta(\varepsilon-E_F)$ соответственно.
+Их интегралы дают $N_e$ и $N_h$. Для нейтрального полуметалла без примесей
+в рассматриваемой двухзонной модели $N_e=N_h$.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=1cm,y=1cm,line width=0.8pt]
+ \draw[->] (0,0)--(10.8,0) node[right] {$\varepsilon$};
+ \draw[->] (0,0)--(0,2.65) node[above] {$D_v,\ D_c$};
+ % Розовая область: незанятые состояния валентной зоны выше E_F.
+ \fill[red3,opacity=0.4] (5,0)
+  --plot[domain=5:5.6,samples=60]
+   (\x,{0.85*sqrt(max(0,(\x-0.4)*(5.6-\x)))})--cycle;
+ % Голубая область: электроны проводимости ниже E_F.
+ \fill[p3,opacity=0.4] (4.4,0)
+  --plot[domain=4.4:5,samples=60]
+   (\x,{0.85*sqrt(max(0,(\x-4.4)*(9.6-\x)))})--(5,0)--cycle;
+ \draw[red3,thick,domain=0.4:5.6,samples=110]
+  plot (\x,{0.85*sqrt(max(0,(\x-0.4)*(5.6-\x)))});
+ \draw[p3,thick,domain=4.4:9.6,samples=110]
+  plot (\x,{0.85*sqrt(max(0,(\x-4.4)*(9.6-\x)))});
+ \node[red3] at (2.3,1.2) {$D_v$};
+ \node[p3] at (8,1.2) {$D_c$};
+ \draw[->,p3] (3.7,0.75)--(4.7,0.45);
+ \node[above,p3] at (3.7,0.75) {$e^-$};
+ \draw[->,red3] (6.3,0.8)--(5.35,0.5);
+ \node[above,red3] at (6.3,0.8) {дырки};
+ \draw[dotted] (5,2.6)--(5,-3.8) node[below] {$E_F$};
+ \draw[dashed] (4.4,0)--(4.4,-3.15);
+ \draw[dashed] (5.6,0)--(5.6,-3.15);
+ \draw[<->] (4.4,-0.65)--(5.6,-0.65)
+  node[midway,above] {$\delta$};
+ % Снизу те же интервалы энергий показаны полосами разрешённых зон.
+ \node at (2.5,-1.1) {Валентная зона};
+ \fill[rtext,opacity=0.09] (0.4,-1.95) rectangle (5,-1.4);
+ \fill[red3,opacity=0.4] (5,-1.95) rectangle (5.6,-1.4);
+ \draw[red3] (0.4,-1.95) rectangle (5.6,-1.4);
+ \node at (7.5,-2.35) {Зона проводимости};
+ \fill[p3,opacity=0.4] (4.4,-3.15) rectangle (5,-2.6);
+ \draw[p3] (4.4,-3.15) rectangle (9.6,-2.6);
+ \draw[->] (0,-3.5)--(10.8,-3.5) node[right] {$\varepsilon$};
+ \draw (4.4,-3.43)--(4.4,-3.57) node[below] {$E_c$};
+ \draw (5.6,-3.43)--(5.6,-3.57) node[below] {$E_v$};
+\end{tikzpicture}
+\captionof{figure}{Полуметалл при $T=0$: сверху --- вклады двух зон в плотность
+ состояний, снизу --- их интервалы энергий на той же горизонтальной шкале.
+ Голубые области обозначают электроны проводимости при $E_c<\varepsilon<E_F$,
+ розовые --- дырки при $E_F<\varepsilon<E_v$.
+ Светлая часть валентной полосы заполнена электронами.
+ Перекрытие увеличено для наглядности; формы $D_v$ и $D_c$ схематичны.}
+\end{rbox}
+
+На доске приведены следующие концентрации носителей $N/V$
+в полуметаллах:
+\begin{center}
+\begin{tabular}{ll}
+\rconcept{Материал} & \rconcept{Концентрация, см$^{-3}$}\\[3pt]
+Мышьяк (As) & $2.2\cdot10^{20}$\\
+Сурьма (Sb) & $5.5\cdot10^{19}$\\
+Висмут (Bi) & $2.9\cdot10^{17}$\\
+Графит & $2.7\cdot10^{18}$
+\end{tabular}
+\end{center}
+Это число подвижных носителей на единицу объёма, а не концентрация
+всех электронов кристалла. Значения перенесены с фотографии;
+температура для этой таблицы на доске не указана.
+
+\Needspace{7\baselineskip}
+\section{Примесные полупроводники}
+\Needspace{5\baselineskip}
+\subsection{Доноры и проводимость n-типа}
+При замещении атома Si пятивалентным атомом P или As появляется электрон,
+слабо связанный с примесью. \rconcept{Донорный уровень} $E_D$ расположен
+в щели немного ниже дна зоны проводимости. Энергия ионизации донора
+\begin{equation*}
+ \varepsilon_D=E_c-E_D
+\end{equation*}
+намного меньше $E_g$. Нагрев переводит электрон с донора в зону
+проводимости, а примесный центр остаётся положительно заряженным.
+Основные подвижные носители в таком образце --- электроны;
+это полупроводник \rconcept{n-типа}.
+
+\Needspace{5\baselineskip}
+\subsection{Акцепторы и проводимость p-типа}
+Трёхвалентные примеси B или Al в Si создают
+\rconcept{акцепторный уровень} $E_A$ чуть выше потолка валентной зоны.
+Акцептор захватывает электрон из валентной зоны и становится отрицательно
+заряженным, а в валентной зоне остаётся подвижная дырка. Энергия процесса
+\begin{equation*}
+ \varepsilon_A=E_A-E_v.
+\end{equation*}
+Если основными носителями являются дырки, полупроводник имеет
+\rconcept{p-тип} проводимости.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,font=\small,line width=0.8pt,x=1.1cm,y=1.1cm]
+ \foreach \dx/\ttl in {0/{Донор: n-тип},6.2/{Акцептор: p-тип}} {
+  \begin{scope}[xshift=\dx cm]
+   \node at (2.25,2.7) {\ttl};
+   \draw[->] (0,0)--(5.05,0) node[right] {$\varepsilon$};
+   \draw[->] (0,0)--(0,2.35) node[above] {$D(\varepsilon)$};
+   \fill[p3,opacity=0.2] (0.2,0)--plot[domain=0.2:1.9,samples=70]
+    (\x,{1.25*sqrt(max(0,1.9-\x))})--cycle;
+   \draw[p3,thick,domain=0.2:1.9,samples=70]
+    plot (\x,{1.25*sqrt(max(0,1.9-\x))});
+   \draw[p3,thick,domain=2.8:4.8,samples=70]
+    plot (\x,{1.2*sqrt(max(0,\x-2.8))});
+   \node[below] at (1.9,0) {$E_v$};
+   \node[below] at (2.8,0) {$E_c$};
+   \node at (1.05,2.08) {$T=0$};
+  \end{scope}
+ }
+ % Донорные состояния заняты при T=0; акцепторные свободны.
+ \fill[red3,opacity=0.22] (2.34,0)--plot[domain=2.34:2.66,samples=60]
+  (\x,{1.65*exp(-((\x-2.5)/0.072)^2)})--cycle;
+ \draw[red3,thick,domain=2.34:2.66,samples=60]
+  plot (\x,{1.65*exp(-((\x-2.5)/0.072)^2)});
+ \node[red3,above] at (2.5,1.65) {$E_D$};
+ \draw[->,red3,bend left=30] (2.51,0.75) to (3.25,0.8);
+ 
+ 
+ \begin{scope}[xshift=6.2cm]
+  \draw[red3,thick,domain=2.04:2.36,samples=60]
+   plot (\x,{1.65*exp(-((\x-2.2)/0.072)^2)});
+  \node[red3,above] at (2.2,1.65) {$E_A$};
+  \draw[->,red3,bend left=30] (1.35,0.75) to (2.19,0.75);
+  
+  
+ \end{scope}
+\end{tikzpicture}
+\captionof{figure}{Донорные и акцепторные состояния внутри запрещённой зоны.
+ При $T=0$ донорные состояния заполнены, акцепторные пусты.
+ Стрелки показывают переходы электронов при нагревании:
+ донор $\to$ зона проводимости и валентная зона $\to$ акцептор.
+ Во втором случае остаётся подвижная дырка.}
+\end{rbox}
+
+В пределе $T=0$ и для изолированных некомпенсированных мелких примесей
+доноры заняты электронами, а акцепторные состояния свободны от электронов.
+При нагревании возникает примесная проводимость. Схема отдельных уровней
+применима при достаточно малой концентрации примесей; появление узкой
+примесной зоны на эскизе не следует путать с широкой зоной проводимости.
+
+Для Si в тетради приведены следующие энергии ионизации (в эВ):
+\begin{center}
+\begin{tabular}{lll}
+\rconcept{Тип} & \rconcept{Примесь} & \rconcept{Энергия ионизации}\\[3pt]
+Донор & P  & $\varepsilon_D\approx0.045$\\
+Донор & As & $\varepsilon_D\approx0.049$\\
+Акцептор & B  & $\varepsilon_A\approx0.043$\\
+Акцептор & Al & $\varepsilon_A\approx0.057$
+\end{tabular}
+\end{center}
+Они существенно меньше приведённой в лекции оценки щели чистого кремния
+$E_g\approx1.2$~эВ. Близость энергии ионизации к тепловому масштабу объясняет,
+почему примеси способны резко увеличить число носителей.
+Для примесного образца равенство электронов и дырок вообще не выполняется:
+нужно учитывать заряды примесных центров в условии нейтральности.
+
+\Needspace{7\baselineskip}
+\section{Электроны и дырки вблизи краёв зон}
+\Needspace{5\baselineskip}
+\subsection{Эффективная масса}
+Выберем нуль энергии на вершине валентной зоны, $E_v=0$, так что $E_c=E_g$.
+В изотропном параболическом приближении
+\begin{equation*}
+ \varepsilon_v(\mathbf p)=-\frac{p^2}{2m_h^*},\qquad
+ \varepsilon_c(\mathbf p)=E_g+\frac{p^2}{2m_e^*}.
+\end{equation*}
+Здесь $\mathbf p$ --- квазиимпульс, отсчитанный от соответствующего экстремума;
+$m_e^*$ и $m_h^*$ --- положительные эффективные массы электрона и дырки.
+Они определяются кривизной спектра, а не обязаны совпадать с массой
+свободного электрона $m_0$. В общем случае эффективная масса --- тензор:
+\begin{equation*}
+ (m^{*-1})_{ij}=\frac{\partial^2\varepsilon}{\partial p_i\partial p_j}.
+\end{equation*}
+Электронный спектр у вершины валентной зоны имеет отрицательную кривизну.
+Вместо почти полностью заполненной зоны удобнее описывать редкие
+незаполненные состояния --- \rconcept{дырки} с зарядом $+e$, энергией
+$\varepsilon_h=-\varepsilon_v$ и положительной массой $m_h^*$.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=1.3cm,y=1.15cm,line width=0.8pt]
+ \draw[->] (-3.15,0)--(5.1,0) node[right] {$\varepsilon$};
+ \draw[->] (-3.15,0)--(-3.15,2.8) node[above] {$D(\varepsilon)$};
+ \draw[p3,thick,domain=-2.85:0,samples=90] plot (\x,{1.3*sqrt(max(0,-\x))});
+ \draw[red3,thick,domain=2:4.65,samples=90] plot (\x,{1.3*sqrt(max(0,\x-2))});
+ \node[p3] at (-1.6,2.55) {валентная зона};
+ \node[red3] at (3.45,2.55) {зона проводимости};
+ \node[below] at (0,0) {$E_v=0$}; \node[below] at (2,0) {$E_c=E_g$};
+ \draw[<->] (0,-0.65)--(2,-0.65) node[midway,below] {$E_g$};
+ \node at (1,0.5) {$D=0$};
+ \draw[p3,thick] (-0.45,0.87) circle (2.7pt);
+ \fill[red3] (2.45,0.87) circle (2.7pt);
+ \draw[->,dashed] (-0.4,1) .. controls (0.55,2.5) and (1.45,2.5) .. (2.4,1);
+ \node[above] at (1,2.17) {возбуждение};
+ \draw[->,p3] (-1.35,0.35)--(-0.55,0.78);
+ \node[p3,left] at (-1.35,0.35) {$h^+$};
+ \draw[->,red3] (3.35,0.35)--(2.55,0.78);
+ \node[red3,right] at (3.35,0.35) {$e^-$};
+\end{tikzpicture}
+\captionof{figure}{Края зон в представлении плотности состояний.
+ $D_v\propto\sqrt{-\varepsilon}$, $D_c\propto\sqrt{\varepsilon-E_g}$;
+ коэффициенты зависят от эффективных масс. Переход через щель создаёт
+ электрон проводимости $e^-$ и дырку $h^+$.}
+\end{rbox}
+
+\Needspace{5\baselineskip}
+\subsection{Число носителей и условие нейтральности}
+Полное число электронов записывается как сумма по обеим зонам:
+\begin{equation*}
+ N=\sum_{i\in v}f(\varepsilon_{vi})+\sum_{j\in c}f(\varepsilon_{cj}).
+\end{equation*}
+В собственном полупроводнике при $T=0$ валентная зона заполнена, поэтому
+$N=N_v^{(0)}=\sum_{i\in v}1$. Из сохранения числа электронов следует
+\begin{equation*}
+ N_h=\sum_{i\in v}[1-f(\varepsilon_{vi})]
+ =\sum_{j\in c}f(\varepsilon_{cj})=N_e.
+\end{equation*}
+Один переход создаёт один электрон и одну дырку. Здесь $N_e$ --- число
+электронов \emph{в зоне проводимости}, а не полное число электронов образца.
+Распределение дырок также имеет ферми-дираковский вид:
+\begin{equation*}
+ 1-f(\varepsilon_v)
+ =\frac1{e^{(\mu-\varepsilon_v)/T}+1}
+ =\frac1{e^{(\varepsilon_h-\mu_h)/T}+1},
+ \qquad \varepsilon_h=-\varepsilon_v,\qquad \mu_h=-\mu.
+\end{equation*}
+
+\Needspace{7\baselineskip}
+\section{Собственный полупроводник в больцмановском приближении}
+\Needspace{5\baselineskip}
+\subsection{Химический потенциал}
+Пусть в каждой зоне учтены два спиновых состояния и по одному изотропному
+экстремуму. Введём коэффициенты плотности состояний
+\begin{equation*}
+ A_e=\frac{(2m_e^*)^{3/2}}{2\pi^2\hbar^3},\qquad
+ A_h=\frac{(2m_h^*)^{3/2}}{2\pi^2\hbar^3}.
+\end{equation*}
+Кинетическую энергию относительно края соответствующей зоны обозначим
+$\epsilon\geq0$. Тогда
+\begin{align*}
+ N_h&=VA_h\int_0^\infty\frac{\sqrt\epsilon\,d\epsilon}
+ {e^{(\epsilon+\mu)/T}+1},\\
+ N_e&=VA_e\int_0^\infty\frac{\sqrt\epsilon\,d\epsilon}
+ {e^{(\epsilon+E_g-\mu)/T}+1}.
+\end{align*}
+Если $\mu\gg T$ и $E_g-\mu\gg T$, обе подсистемы невырождены:
+\begin{align*}
+ N_h&\simeq VA_h e^{-\mu/T}T^{3/2}\Gamma\left(\frac32\right),\\
+ N_e&\simeq VA_e e^{(\mu-E_g)/T}T^{3/2}\Gamma\left(\frac32\right).
+\end{align*}
+Приравнивая $N_h=N_e$, получаем
+\begin{equation*}
+ (m_h^*)^{3/2}e^{-\mu/T}=(m_e^*)^{3/2}e^{(\mu-E_g)/T},
+ \qquad
+ e^{2\mu/T}=e^{E_g/T}\left(\frac{m_h^*}{m_e^*}\right)^{3/2}.
+\end{equation*}
+Следовательно,
+\begin{equation*}
+ \mu=\frac{E_g}{2}+\frac{3T}{4}\ln\frac{m_h^*}{m_e^*}.
+\end{equation*}
+При равных массах химический потенциал лежит посередине щели.
+Если масса дырки больше, состояний у края валентной зоны больше;
+для сохранения нейтральности $\mu$ смещается вверх, увеличивая $N_e$
+и уменьшая $N_h$.
+
+При $T\to0$ этот результат задаёт предел $\mu\to E_g/2$.
+\rnote{При строго нулевой температуре} любое значение $\mu$ внутри щели
+даёт одинаковое заполнение зон. Поэтому середина щели --- предел
+конечнотемпературного решения, а не единственный возможный выбор при $T=0$.
+
+\Needspace{5\baselineskip}
+\subsection{Концентрация собственных носителей}
+Подстановка $\mu$ даёт одинаковые концентрации электронов и дырок:
+\begin{align*}
+ n_i=\frac{N_e}{V}=\frac{N_h}{V}
+ &=A_h\left(\frac{m_e^*}{m_h^*}\right)^{3/4}
+ T^{3/2}\Gamma\left(\frac32\right)e^{-E_g/(2T)}\\
+ &=2\left(\frac{T}{2\pi\hbar^2}\right)^{3/2}
+ (m_e^*m_h^*)^{3/4}e^{-E_g/(2T)}.
+\end{align*}
+Таким образом, \rresult{число собственных носителей экспоненциально растёт
+при нагревании}. Множитель $e^{-E_g/(2T)}$ возникает после одновременного
+учёта электронов, дырок и условия нейтральности; его нельзя заменить
+на $e^{-E_g/T}$ в формуле для одной концентрации.
+
+Удобная запись через эффективные плотности состояний имеет вид
+\begin{align*}
+ N_c(T)&=2\left(\frac{m_e^*T}{2\pi\hbar^2}\right)^{3/2},\qquad
+ N_v(T)=2\left(\frac{m_h^*T}{2\pi\hbar^2}\right)^{3/2},\\
+ n&=N_c e^{(\mu-E_g)/T},\qquad p=N_v e^{-\mu/T},\\
+ np&=N_cN_v e^{-E_g/T},\qquad n_i=\sqrt{N_cN_v}\,e^{-E_g/(2T)}.
+\end{align*}
+$N_c$ и $N_v$ здесь --- концентрации состояний, а не полные числа частиц.
+Если есть несколько долин или несколько дырочных ветвей, их вклады
+нужно сложить в $N_c$ и $N_v$. Тогда общее выражение для собственного
+химического потенциала равно
+\begin{equation*}
+ \mu=\frac{E_g}{2}+\frac T2\ln\frac{N_v}{N_c}.
+\end{equation*}
+
+В тетради для сравнения указаны порядки величин: у металлов концентрация
+электронов может быть порядка $10^{23}$~см$^{-3}$, а у собственного
+полупроводника --- порядка $10^{13}$~см$^{-3}$.
+Второе число не является универсальным: по полученной формуле оно сильно
+зависит от $E_g$ и температуры. При оценке в кельвинах всюду следует
+заменять $T$ на $k_BT_{\mathrm K}$.
+
+\Needspace{5\baselineskip}
+\subsection{Численные примеры из лекции}
+В конспекте и на доске приведены ориентировочные параметры Ge и GaAs:
+\begin{center}
+\begin{tabular}{lll}
+\rconcept{Материал} & \rconcept{Щель в записи} & \rconcept{Эффективные массы в единицах $m_0$}\\[3pt]
+Ge & $E_g\simeq0.66$~эВ & $m_h^*:0.30,\ 0.04;\quad m_e^*:1.59,\ 0.082$\\
+GaAs & $E_g\simeq1.52$~эВ & $m_e^*:0.07;\quad m_h^*:0.68,\ 0.07$
+\end{tabular}
+\end{center}
+Эти значения перенесены как примеры из конспекта. Две электронные массы
+Ge относятся к анизотропии долины, а две дырочные --- к различным ветвям
+валентной зоны. Их нельзя произвольно подставлять вместо единственной
+изотропной массы в формулу для $n_i$: нужна масса плотности состояний
+с учётом числа долин и ветвей.
+Температуры в записи не указаны; приведённые щели Ge и GaAs не следует
+считать данными при одной и той же температуре. Числа служат иллюстрацией,
+а для количественного расчёта необходим согласованный набор параметров.
+
+\Needspace{7\baselineskip}
+\section{Плотность состояний двумерного газа в магнитном поле}
+В конце лекции возвращаемся к двумерной модели без спина из предыдущей
+части. Для площади $S$ и поля, перпендикулярного плоскости,
+\begin{equation*}
+ \varepsilon_n=\hbar\omega_c\left(n+\frac12\right),\qquad
+ G=\frac{SH}{\Phi_0}=\zeta H,\qquad
+ \Phi_0=\frac{2\pi\hbar c}{e}.
+\end{equation*}
+Так как каждый уровень содержит $G$ состояний, плотность состояний
+идеальной системы представляет собой сумму дельта-пиков:
+\begin{equation*}
+ D(\varepsilon)=G\sum_{n=0}^\infty\delta(\varepsilon-\varepsilon_n),
+ \qquad
+ N=\int D(\varepsilon)f(\varepsilon)d\varepsilon
+ =G\sum_{n=0}^\infty f(\varepsilon_n).
+\end{equation*}
+Площадь каждого пика равна $G$. При $T=0$ интегрирование до энергии Ферми
+считает заполненные уровни. Если последний уровень заполнен частично,
+для его доли $\eta\in[0,1]$ нужно писать отдельно
+\begin{equation*}
+ N=G(k+\eta),
+\end{equation*}
+где $k$ --- число полностью заполненных уровней. Значение ступеньки
+в единственной точке не может само по себе описать произвольное частичное
+заполнение макроскопически вырожденного уровня.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=1.35cm,line width=0.8pt]
+ \draw[->] (0,0)--(8.7,0) node[right] {$\varepsilon$};
+ \draw[->] (0,0)--(0,2.8) node[above] {$D(\varepsilon)$};
+ \foreach \n in {0,1} {
+  \fill[p3,opacity=0.22] ({\n+0.27},0)--plot[domain=-0.38:0.38,samples=50]
+   ({\n+0.65+\x},{2.2*exp(-\x*\x/0.012)})--cycle;
+ }
+ \foreach \n in {0,...,6} {
+  \draw[p3,thick,domain=-0.38:0.38,samples=50]
+   plot ({\n+0.65+\x},{2.2*exp(-\x*\x/0.012)});
+  \node[below] at ({\n+0.65},0) {$\varepsilon_{\n}$};
+ }
+ \draw[p3,thick,domain=-0.38:0.38,samples=50]
+  plot ({8+\x},{2.2*exp(-\x*\x/0.012)});
+ \node at (7.3,0.8) {$\cdots$}; \node[below] at (8,0) {$\varepsilon_n$};
+ \draw[red3,dashed] (2.15,0)--(2.15,2.65) node[above] {$\mu$};
+ \draw[<->] (3.65,2.5)--(4.65,2.5) node[midway,above] {$\hbar\omega_c$};
+\end{tikzpicture}
+\captionof{figure}{Плотность состояний двумерного газа: каждый пик --- уровень Ландау
+ с числом состояний $G=SH/\Phi_0$. При $T=0$ заняты уровни ниже $\mu$;
+ здесь $N=2G$. В идеальной модели пики являются дельта-функциями,
+ конечная ширина на рисунке нужна для видимости.}
+\end{rbox}
+
+\end{document}

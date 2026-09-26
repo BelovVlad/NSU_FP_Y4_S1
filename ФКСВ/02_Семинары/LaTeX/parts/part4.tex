@@ -1,0 +1,1281 @@
+% !TeX root = part4.tex
+
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+
+% ============================================================
+% Семинар 4
+% ============================================================
+
+\practice{4}{26.09.2026}{Колебания решётки. Продолжение}
+
+
+% ============================================================
+% Продолжение задачи о дефектной пружине
+% ============================================================
+
+\rtheory{Продолжение задачи о дефектной пружине}
+
+Продолжим исследование локализованного колебательного состояния
+в двухатомной цепочке с чередующимися массами $m$ и $M$.
+
+Вдали от дефекта все пружины имеют жёсткость $\alpha$,
+а одна из связей имеет жёсткость $\alpha_0$.
+
+Для локализованного состояния амплитуда колебаний
+экспоненциально убывает при удалении от дефекта,
+поэтому вводим декремент затухания
+%
+\begin{equation*}
+    \chi>0.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Уравнение для локализованной моды
+% ------------------------------------------------------------
+
+\subsection*{Уравнение для локализованной моды}
+
+Из предыдущего семинара для области вдали от дефекта
+было получено уравнение
+%
+\begin{equation*}
+    \omega^4
+    -
+    \frac{2\alpha(m+M)}{mM}\omega^2
+    +
+    \frac{4\alpha^2}{mM}
+    \cosh^2(\chi a)
+    =
+    0.
+\end{equation*}
+%
+
+Будем рассматривать состояние,
+локализованное слабо, то есть
+%
+\begin{equation*}
+    \chi a\ll1.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Разложение cosh
+% ------------------------------------------------------------
+
+\subsection*{Разложение при малом $\chi a$}
+
+Напомним,
+%
+\begin{equation*}
+    \cosh x
+    =
+    \frac{e^x+e^{-x}}{2}.
+\end{equation*}
+%
+
+При малом $x$
+%
+\begin{equation*}
+    e^x
+    =
+    1+x+\frac{x^2}{2}+\ldots,
+\end{equation*}
+%
+\begin{equation*}
+    e^{-x}
+    =
+    1-x+\frac{x^2}{2}+\ldots.
+\end{equation*}
+%
+
+Поэтому
+%
+\begin{equation*}
+    \cosh x
+    \simeq
+    1+\frac{x^2}{2}.
+\end{equation*}
+%
+
+Возводя в квадрат,
+%
+\begin{align*}
+    \cosh^2x
+    &\simeq
+    \left(
+        1+\frac{x^2}{2}
+    \right)^2
+    \\
+    &=
+    1+x^2+\frac{x^4}{4}.
+\end{align*}
+%
+
+В рассматриваемом приближении член порядка $x^4$
+отбрасываем, поэтому
+%
+\begin{equation*}
+    \cosh^2x
+    \simeq
+    1+x^2.
+\end{equation*}
+%
+
+Следовательно,
+%
+\begin{equation*}
+    \cosh^2(\chi a)
+    \simeq
+    1+(\chi a)^2.
+\end{equation*}
+%
+
+Уравнение для частоты принимает вид
+%
+\begin{equation*}
+    \omega^4
+    -
+    \frac{2\alpha(m+M)}{mM}\omega^2
+    +
+    \frac{4\alpha^2}{mM}
+    \left[
+        1+(\chi a)^2
+    \right]
+    =
+    0.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Дискриминант
+% ------------------------------------------------------------
+
+\subsection*{Дискриминант}
+
+Рассматриваем это уравнение как квадратное
+относительно
+%
+\begin{equation*}
+    x=\omega^2.
+\end{equation*}
+%
+
+Тогда
+%
+\begin{equation*}
+    x^2
+    -
+    \frac{2\alpha(m+M)}{mM}x
+    +
+    \frac{4\alpha^2}{mM}
+    \left[
+        1+(\chi a)^2
+    \right]
+    =
+    0.
+\end{equation*}
+%
+
+Дискриминант равен
+%
+\begin{equation*}
+    D
+    =
+    \left[
+        \frac{2\alpha(m+M)}{mM}
+    \right]^2
+    -
+    \frac{16\alpha^2}{mM}
+    \left[
+        1+(\chi a)^2
+    \right].
+\end{equation*}
+%
+
+Удобно рассмотреть величину $D/4$:
+%
+\begin{equation*}
+    \frac{D}{4}
+    =
+    \alpha^2
+    \frac{(m+M)^2}{(mM)^2}
+    -
+    \frac{4\alpha^2}{mM}
+    \left[
+        1+(\chi a)^2
+    \right].
+\end{equation*}
+%
+
+Разделим постоянную часть и поправку:
+%
+\begin{equation*}
+    \frac{D}{4}
+    =
+    \alpha^2
+    \left[
+        \frac{(m+M)^2}{(mM)^2}
+        -
+        \frac{4}{mM}
+    \right]
+    -
+    \frac{4\alpha^2}{mM}
+    (\chi a)^2.
+\end{equation*}
+%
+
+Приводим первые два слагаемых к общему знаменателю:
+%
+\begin{align*}
+    \frac{(m+M)^2}{(mM)^2}
+    -
+    \frac{4}{mM}
+    &=
+    \frac{
+        (m+M)^2-4mM
+    }{
+        (mM)^2
+    }
+    \\
+    &=
+    \frac{
+        m^2-2mM+M^2
+    }{
+        (mM)^2
+    }
+    \\
+    &=
+    \frac{
+        (M-m)^2
+    }{
+        (mM)^2
+    }.
+\end{align*}
+%
+
+Следовательно,
+%
+\begin{equation*}
+    \frac{D}{4}
+    =
+    \alpha^2
+    \frac{(M-m)^2}{(mM)^2}
+    -
+    \frac{4\alpha^2}{mM}
+    (\chi a)^2.
+\end{equation*}
+%
+
+Выносим первый множитель:
+%
+\begin{equation*}
+    \frac{D}{4}
+    =
+    \alpha^2
+    \frac{(M-m)^2}{(mM)^2}
+    \left[
+        1
+        -
+        \frac{4mM}{(M-m)^2}
+        (\chi a)^2
+    \right].
+\end{equation*}
+%
+
+Поэтому
+%
+\begin{equation*}
+    \frac{\sqrt D}{2}
+    =
+    \alpha
+    \frac{|M-m|}{mM}
+    \sqrt{
+        1
+        -
+        \frac{4mM}{(M-m)^2}
+        (\chi a)^2
+    }.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Частоты
+% ------------------------------------------------------------
+
+\subsection*{Частоты локализованного состояния}
+
+Корни квадратного уравнения имеют вид
+%
+\begin{equation*}
+    \omega_\pm^2
+    =
+    \alpha
+    \frac{m+M}{mM}
+    \pm
+    \alpha
+    \frac{|M-m|}{mM}
+    \sqrt{
+        1
+        -
+        \frac{4mM}{(M-m)^2}
+        (\chi a)^2
+    }.
+\end{equation*}
+%
+
+Поскольку
+%
+\begin{equation*}
+    \chi a\ll1,
+\end{equation*}
+%
+используем разложение
+%
+\begin{equation*}
+    \sqrt{1-x}
+    \simeq
+    1-\frac{x}{2}.
+\end{equation*}
+%
+
+Получаем
+%
+\begin{equation*}
+    \omega_\pm^2
+    \simeq
+    \alpha
+    \frac{m+M}{mM}
+    \pm
+    \alpha
+    \frac{|M-m|}{mM}
+    \left[
+        1
+        -
+        \frac{2mM}{(M-m)^2}
+        (\chi a)^2
+    \right].
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% M > m
+% ------------------------------------------------------------
+
+\subsection*{Случай $M>m$}
+
+Далее будем считать
+%
+\begin{equation*}
+    M>m.
+\end{equation*}
+%
+
+Тогда
+%
+\begin{equation*}
+    |M-m|
+    =
+    M-m.
+\end{equation*}
+%
+
+Для верхнего корня имеем
+%
+\begin{align*}
+    \omega_+^2
+    &\simeq
+    \alpha
+    \frac{m+M}{mM}
+    +
+    \alpha
+    \frac{M-m}{mM}
+    -
+    \frac{2\alpha}{M-m}
+    (\chi a)^2
+    \\
+    &=
+    \frac{
+        \alpha(m+M+M-m)
+    }{
+        mM
+    }
+    -
+    \frac{2\alpha}{M-m}
+    (\chi a)^2
+    \\
+    &=
+    \frac{2\alpha}{m}
+    -
+    \frac{2\alpha}{M-m}
+    (\chi a)^2.
+\end{align*}
+%
+
+Таким образом,
+%
+\begin{equation*}
+    \omega_+^2
+    \simeq
+    \frac{2\alpha}{m}
+    -
+    \frac{2\alpha}{M-m}
+    (\chi a)^2.
+\end{equation*}
+%
+
+Для нижнего корня
+%
+\begin{align*}
+    \omega_-^2
+    &\simeq
+    \alpha
+    \frac{m+M}{mM}
+    -
+    \alpha
+    \frac{M-m}{mM}
+    +
+    \frac{2\alpha}{M-m}
+    (\chi a)^2
+    \\
+    &=
+    \frac{
+        \alpha(m+M-M+m)
+    }{
+        mM
+    }
+    +
+    \frac{2\alpha}{M-m}
+    (\chi a)^2
+    \\
+    &=
+    \frac{2\alpha}{M}
+    +
+    \frac{2\alpha}{M-m}
+    (\chi a)^2.
+\end{align*}
+%
+
+Следовательно,
+%
+\begin{equation*}
+    \omega_-^2
+    \simeq
+    \frac{2\alpha}{M}
+    +
+    \frac{2\alpha}{M-m}
+    (\chi a)^2.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+% Щель
+% ------------------------------------------------------------
+
+\subsection*{Смещение частот в запрещённую зону}
+
+Обозначим края запрещённой зоны идеальной цепочки:
+%
+\begin{equation*}
+    \omega_1^2
+    =
+    \frac{2\alpha}{M},
+    \qquad
+    \omega_2^2
+    =
+    \frac{2\alpha}{m}.
+\end{equation*}
+%
+
+Тогда полученные частоты можно записать как
+%
+\begin{equation*}
+    \omega_-^2
+    =
+    \omega_1^2
+    +
+    \Delta\omega^2,
+\end{equation*}
+%
+\begin{equation*}
+    \omega_+^2
+    =
+    \omega_2^2
+    -
+    \Delta\omega^2,
+\end{equation*}
+%
+где
+%
+\begin{equation*}
+    \Delta\omega^2
+    =
+    \frac{2\alpha}{M-m}
+    (\chi a)^2.
+\end{equation*}
+%
+
+Таким образом, обе частоты смещаются
+от краёв разрешённых ветвей
+\rconcept{внутрь запрещённой зоны}.
+
+
+% ------------------------------------------------------------
+% РИСУНОК
+% ------------------------------------------------------------
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=12pt]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        x=1.1cm,
+        y=1.0cm,
+        >=Latex,
+        every node/.style={text=rtext}
+    ]
+
+        % Оси
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (-4.2,0)
+        --
+        (4.3,0)
+        node[right] {$k$};
+
+        \draw[
+            ->,
+            draw=rtext,
+            line width=0.9pt
+        ]
+        (0,-0.15)
+        --
+        (0,5.0)
+        node[above] {$\omega$};
+
+        % Границы зоны Бриллюэна
+        \draw[
+            dashed,
+            draw=rtext,
+            opacity=0.55
+        ]
+        (-3.5,0)
+        --
+        (-3.5,4.5);
+
+        \draw[
+            dashed,
+            draw=rtext,
+            opacity=0.55
+        ]
+        (3.5,0)
+        --
+        (3.5,4.5);
+
+        \node[below=5pt] at (-3.5,0)
+            {$-\dfrac{\pi}{2a}$};
+
+        \node[below=5pt] at (3.5,0)
+            {$\dfrac{\pi}{2a}$};
+
+        % Акустическая ветвь
+        \draw[
+            draw=rc3,
+            line width=1.3pt
+        ]
+        (-3.5,2.0)
+        .. controls (-2.2,1.0) and (-0.8,0.15) ..
+        (0,0)
+        .. controls (0.8,0.15) and (2.2,1.0) ..
+        (3.5,2.0);
+
+        % Оптическая ветвь
+        \draw[
+            draw=p3,
+            line width=1.3pt
+        ]
+        (-3.5,3.3)
+        .. controls (-2.1,3.75) and (-0.8,4.15) ..
+        (0,4.25)
+        .. controls (0.8,4.15) and (2.1,3.75) ..
+        (3.5,3.3);
+
+        % Уровни локализованных состояний
+        \draw[
+            draw=red3,
+            line width=1.1pt
+        ]
+        (-1.0,2.35)
+        --
+        (1.0,2.35);
+
+        \draw[
+            draw=red3,
+            line width=1.1pt
+        ]
+        (-1.0,3.00)
+        --
+        (1.0,3.00);
+
+        \node[
+            right,
+            text=red3
+        ]
+        at (1.05,2.35)
+        {$\omega_-^2$};
+
+        \node[
+            right,
+            text=red3
+        ]
+        at (1.05,3.00)
+        {$\omega_+^2$};
+
+        % Границы щели
+        \draw[
+            dashed,
+            draw=rc3,
+            opacity=0.65
+        ]
+        (0,2.0)
+        --
+        (3.9,2.0);
+
+        \draw[
+            dashed,
+            draw=p3,
+            opacity=0.65
+        ]
+        (0,3.3)
+        --
+        (3.9,3.3);
+
+        \node[
+            right,
+            text=rc3
+        ]
+        at (3.55,2.0)
+        {$\omega_1^2$};
+
+        \node[
+            right,
+            text=p3
+        ]
+        at (3.55,3.3)
+        {$\omega_2^2$};
+
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Локализованные состояния в запрещённой зоне.
+        Частота $\omega_-^2$ отщепляется вверх
+        от акустической ветви,
+        а $\omega_+^2$ --- вниз от оптической.
+    }
+
+    \label{fig:defect_gap_states}
+\end{rbox}
+
+
+% ============================================================
+% Слабый дефект
+% ============================================================
+
+\subsection*{Слабое изменение жёсткости}
+
+Вернёмся к дефектной пружине.
+
+Для центральной области имеем условие
+%
+\begin{equation*}
+    mM\omega^4
+    -
+    (\alpha_0+\alpha)(m+M)\omega^2
+    +
+    (\alpha_0+\alpha)^2
+    -
+    \left(
+        \alpha_0-\alpha e^{-2\chi a}
+    \right)^2
+    =
+    0.
+\end{equation*}
+%
+
+Вдали от дефекта выполняется
+%
+\begin{equation*}
+    mM\omega^4
+    -
+    2\alpha(m+M)\omega^2
+    +
+    2\alpha^2
+    \left[
+        1+\cosh(2\chi a)
+    \right]
+    =
+    0.
+\end{equation*}
+%
+
+Рассмотрим слабый дефект:
+%
+\begin{equation*}
+    \alpha_0
+    =
+    \alpha+\gamma,
+    \qquad
+    |\gamma|\ll\alpha.
+\end{equation*}
+%
+
+Здесь
+%
+\begin{equation*}
+    \gamma
+    =
+    \alpha_0-\alpha
+\end{equation*}
+%
+--- малое изменение жёсткости дефектной пружины.
+
+
+% ------------------------------------------------------------
+% Вычитание уравнений
+% ------------------------------------------------------------
+
+\subsection*{Вычитание двух уравнений}
+
+Подставим
+%
+\begin{equation*}
+    \alpha_0
+    =
+    \alpha+\gamma
+\end{equation*}
+%
+в уравнение центральной ячейки.
+
+Тогда
+%
+\begin{equation*}
+    \alpha_0+\alpha
+    =
+    2\alpha+\gamma,
+\end{equation*}
+%
+а
+%
+\begin{equation*}
+    \alpha_0-\alpha e^{-2\chi a}
+    =
+    \alpha+\gamma-\alpha e^{-2\chi a}.
+\end{equation*}
+%
+
+Вычтем уравнение для идеальной области
+из уравнения около дефекта.
+
+Члены $mM\omega^4$ сокращаются, и остаётся
+%
+\begin{align*}
+    &
+    -\gamma(m+M)\omega^2
+    +
+    (2\alpha+\gamma)^2
+    \\
+    &\qquad
+    -
+    \left(
+        \alpha+\gamma-\alpha e^{-2\chi a}
+    \right)^2
+    -
+    2\alpha^2
+    \left[
+        1+\cosh(2\chi a)
+    \right]
+    =
+    0.
+\end{align*}
+
+
+% ------------------------------------------------------------
+% Разложения
+% ------------------------------------------------------------
+
+\subsection*{Разложение по малым параметрам}
+
+Используем
+%
+\begin{equation*}
+    e^{-2\chi a}
+    \simeq
+    1
+    -
+    2\chi a
+    +
+    2(\chi a)^2,
+\end{equation*}
+%
+а также
+%
+\begin{equation*}
+    \cosh(2\chi a)
+    \simeq
+    1
+    +
+    2(\chi a)^2.
+\end{equation*}
+%
+
+Кроме того,
+%
+\begin{equation*}
+    (2\alpha+\gamma)^2
+    =
+    4\alpha^2
+    +
+    4\alpha\gamma
+    +
+    \gamma^2.
+\end{equation*}
+%
+
+Рассмотрим выражение
+%
+\begin{equation*}
+    \alpha+\gamma-\alpha e^{-2\chi a}.
+\end{equation*}
+%
+
+После подстановки разложения экспоненты
+%
+\begin{align*}
+    \alpha+\gamma-\alpha e^{-2\chi a}
+    &\simeq
+    \alpha+\gamma
+    -
+    \alpha
+    \left[
+        1-2\chi a+2(\chi a)^2
+    \right]
+    \\
+    &=
+    \gamma
+    +
+    2\alpha\chi a
+    -
+    2\alpha(\chi a)^2.
+\end{align*}
+%
+
+В низшем порядке по малым параметрам
+%
+\begin{equation*}
+    \left(
+        \alpha+\gamma-\alpha e^{-2\chi a}
+    \right)^2
+    \simeq
+    4\alpha^2(\chi a)^2.
+\end{equation*}
+%
+
+Также
+%
+\begin{align*}
+    2\alpha^2
+    \left[
+        1+\cosh(2\chi a)
+    \right]
+    &\simeq
+    2\alpha^2
+    \left[
+        2+2(\chi a)^2
+    \right]
+    \\
+    &=
+    4\alpha^2
+    +
+    4\alpha^2(\chi a)^2.
+\end{align*}
+%
+
+Отбрасывая члены более высокого порядка,
+в частности $\gamma^2$,
+получаем
+%
+\begin{align*}
+    &
+    -\gamma(m+M)\omega^2
+    +
+    4\alpha^2
+    +
+    4\alpha\gamma
+    \\
+    &\qquad
+    -
+    4\alpha^2(\chi a)^2
+    -
+    4\alpha^2
+    -
+    4\alpha^2(\chi a)^2
+    =
+    0.
+\end{align*}
+%
+
+После сокращения
+%
+\begin{equation*}
+    -\gamma(m+M)\omega^2
+    +
+    4\alpha\gamma
+    -
+    8\alpha^2(\chi a)^2
+    =
+    0.
+\end{equation*}
+%
+
+Следовательно,
+%
+\begin{equation*}
+    8\alpha^2(\chi a)^2
+    =
+    \gamma
+    \left[
+        4\alpha
+        -
+        (m+M)\omega^2
+    \right].
+\end{equation*}
+
+
+\remark[Замечание к рукописной записи.]
+На листе рядом с этим преобразованием стоит пометка
+«Ошибка?».
+
+При последовательном разложении двух последних слагаемых
+по малому параметру $\chi a$
+коэффициент перед $\alpha^2(\chi a)^2$
+получается равным $8$.
+
+
+% ============================================================
+% Верхний край щели
+% ============================================================
+
+\subsection*{Состояние около верхнего края запрещённой зоны}
+
+Для состояния,
+отщепляющегося от оптической ветви,
+можно в правой части использовать
+нулевое приближение
+%
+\begin{equation*}
+    \omega^2
+    \simeq
+    \omega_2^2
+    =
+    \frac{2\alpha}{m}.
+\end{equation*}
+%
+
+Тогда
+%
+\begin{equation*}
+    8\alpha^2(\chi a)^2
+    =
+    \gamma
+    \left[
+        4\alpha
+        -
+        (m+M)
+        \frac{2\alpha}{m}
+    \right].
+\end{equation*}
+%
+
+Выносим $2\alpha$:
+%
+\begin{equation*}
+    8\alpha^2(\chi a)^2
+    =
+    2\alpha\gamma
+    \left[
+        2
+        -
+        \frac{m+M}{m}
+    \right].
+\end{equation*}
+%
+
+В скобках
+%
+\begin{align*}
+    2-\frac{m+M}{m}
+    &=
+    \frac{2m-m-M}{m}
+    \\
+    &=
+    \frac{m-M}{m}.
+\end{align*}
+%
+
+Поэтому
+%
+\begin{equation*}
+    8\alpha^2(\chi a)^2
+    =
+    2\alpha\gamma
+    \frac{m-M}{m}.
+\end{equation*}
+%
+
+Сокращая на $2\alpha$,
+получаем
+%
+\begin{equation*}
+    4\alpha(\chi a)^2
+    =
+    \gamma
+    \frac{m-M}{m}.
+\end{equation*}
+%
+
+Отсюда
+%
+\begin{equation*}
+    (\chi a)^2
+    =
+    \frac{\gamma}{4\alpha}
+    \frac{m-M}{m}.
+\end{equation*}
+%
+
+Следовательно,
+%
+\begin{equation*}
+    \chi
+    =
+    \frac{1}{2a}
+    \sqrt{
+        \frac{\gamma}{\alpha}
+        \frac{m-M}{m}
+    }.
+\end{equation*}
+%
+
+При $M>m$ имеем
+%
+\begin{equation*}
+    m-M<0.
+\end{equation*}
+%
+
+Для действительного положительного декремента $\chi$
+необходимо
+%
+\begin{equation*}
+    \gamma<0.
+\end{equation*}
+%
+
+То есть
+%
+\begin{equation*}
+    \alpha_0<\alpha.
+\end{equation*}
+%
+
+Следовательно, ослабление дефектной связи
+создаёт локализованное состояние,
+которое отщепляется
+\rresult{вниз от оптической ветви в запрещённую зону}.
+
+
+% ============================================================
+% Нижний край щели
+% ============================================================
+
+\subsection*{Состояние около нижнего края запрещённой зоны}
+
+Для состояния,
+отщепляющегося от акустической ветви,
+берём
+%
+\begin{equation*}
+    \omega^2
+    \simeq
+    \omega_1^2
+    =
+    \frac{2\alpha}{M}.
+\end{equation*}
+%
+
+Тогда
+%
+\begin{equation*}
+    8\alpha^2(\chi a)^2
+    =
+    \gamma
+    \left[
+        4\alpha
+        -
+        (m+M)
+        \frac{2\alpha}{M}
+    \right].
+\end{equation*}
+%
+
+Выносим $2\alpha$:
+%
+\begin{equation*}
+    8\alpha^2(\chi a)^2
+    =
+    2\alpha\gamma
+    \left[
+        2
+        -
+        \frac{m+M}{M}
+    \right].
+\end{equation*}
+%
+
+При этом
+%
+\begin{align*}
+    2-\frac{m+M}{M}
+    &=
+    \frac{2M-m-M}{M}
+    \\
+    &=
+    \frac{M-m}{M}.
+\end{align*}
+%
+
+Следовательно,
+%
+\begin{equation*}
+    8\alpha^2(\chi a)^2
+    =
+    2\alpha\gamma
+    \frac{M-m}{M}.
+\end{equation*}
+%
+
+Отсюда
+%
+\begin{equation*}
+    (\chi a)^2
+    =
+    \frac{\gamma}{4\alpha}
+    \frac{M-m}{M},
+\end{equation*}
+%
+и
+%
+\begin{equation*}
+    \chi
+    =
+    \frac{1}{2a}
+    \sqrt{
+        \frac{\gamma}{\alpha}
+        \frac{M-m}{M}
+    }.
+\end{equation*}
+%
+
+При $M>m$ действительное значение $\chi$
+требует
+%
+\begin{equation*}
+    \gamma>0,
+\end{equation*}
+%
+то есть
+%
+\begin{equation*}
+    \alpha_0>\alpha.
+\end{equation*}
+%
+
+Следовательно, увеличение жёсткости дефектной пружины
+создаёт локализованное состояние,
+которое отщепляется
+\rresult{вверх от акустической ветви в запрещённую зону}.
+
+
+% ============================================================
+% Итог
+% ============================================================
+
+\subsection*{Физический результат}
+
+При
+%
+\begin{equation*}
+    M>m
+\end{equation*}
+%
+запрещённая зона идеальной двухатомной цепочки
+ограничена частотами
+%
+\begin{equation*}
+    \omega_1^2
+    =
+    \frac{2\alpha}{M},
+    \qquad
+    \omega_2^2
+    =
+    \frac{2\alpha}{m}.
+\end{equation*}
+%
+
+Дефект одной связи создаёт локализованное состояние
+внутри этой зоны.
+
+Для
+%
+\begin{equation*}
+    \alpha_0<\alpha
+\end{equation*}
+%
+локализованное состояние отщепляется
+от оптической ветви вниз.
+
+Для
+%
+\begin{equation*}
+    \alpha_0>\alpha
+\end{equation*}
+%
+локализованное состояние отщепляется
+от акустической ветви вверх.
+
+При этом
+%
+\begin{equation*}
+    u_n,\;v_n
+    \propto
+    e^{-2\chi a|n|},
+\end{equation*}
+%
+поэтому величина $\chi$ характеризует
+степень пространственной локализации состояния:
+чем больше $\chi$, тем быстрее затухает амплитуда
+при удалении от дефекта.
+
+
+\end{document}

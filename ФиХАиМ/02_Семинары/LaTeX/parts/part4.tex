@@ -1,0 +1,469 @@
+% !TeX root = part4.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+\practice{4}{22.09.2026}{Водородоподобные атомные системы.
+Закон Мозли. Рентгеновские спектры}
+
+% Источники: фотографии 11.jpg и 22.jpg, предоставленные пользователем.
+% Условия восстановлены по записям решения; отсутствующие числа не дополнены.
+\begingroup
+\renewcommand{\thesection}{2.\arabic{section}}
+
+\rtheory{Обозначения и модель внешнего электрона}
+
+Рассматриваем атом или ион с одним внешним электроном над замкнутым
+остовом. Если заряд ядра равен $Ze$, а полное число электронов равно $N$,
+то заряд остова, видимый издалека, составляет
+\[
+    Z_{\alpha}=Z-(N-1)=Z-N+1.
+\]
+Для нейтрального щелочного атома $Z_{\alpha}=1$.
+Проникновение электрона внутрь остова и поляризация остова приводят
+к отклонению уровней от чисто кулоновского спектра.
+
+Чтобы не смешивать энергию, частоту и волновое число, используем
+\[
+    R_E=13.606\,\text{эВ},\qquad
+    R_\infty=1.09737\cdot10^5\,\text{см}^{-1},\qquad
+    R_E=hcR_\infty,
+\]
+\[
+    \widetilde\nu=\frac1\lambda,\qquad
+    \nu=c\widetilde\nu,\qquad E_\gamma=hc\widetilde\nu.
+\]
+Массовой поправкой к постоянной Ридберга здесь пренебрегаем.
+В формулах потенциала используем \rassumption{СГС}; в СИ вместо $e^2$
+следует писать $e^2/(4\pi\varepsilon_0)$.
+
+\task[1]{Поправка к кулоновскому потенциалу и квантовый дефект}
+
+\condition
+Для внешнего электрона рассматривается модельный гамильтониан
+\[
+    \hat H=\frac{\hat{\mathbf p}^{\,2}}{2m_e}
+       -\frac{Z_{\alpha}e^2}{r}
+       -\frac{C_1Z_{\alpha}e^2}{r^2}.
+\]
+Найти связь коэффициента $C_1$ с квантовым дефектом $\Delta_l$
+в формуле энергии
+\[
+    E_{nl}=-\frac{Z_{\alpha}^2R_E}{(n-\Delta_l)^2}.
+\]
+
+\begin{rbox}[unbreakable,left=12pt,right=12pt,top=12pt,bottom=10pt]{[]}
+\centering
+\begin{tikzpicture}[>=Latex,draw=rtext,every node/.style={text=rtext},font=\small]
+    \fill[rconceptcolor,opacity=0.18] (0,0) circle (0.9);
+    \draw (0,0) circle (0.9);
+    \fill[rconceptcolor] (0,0) circle (3pt);
+    \node[below=5pt] at (0,0) {$+Ze$};
+    \node[above] at (0,1) {остов: $N-1$ электронов};
+    \draw[dashed] (0,0) ellipse (2.5 and 1.5);
+    \fill[rresultcolor] (2.5,0) circle (3pt);
+    \node[right] at (2.5,0) {$e^-$};
+    \draw[->] (0,0) -- (2.4,0) node[midway,above] {$r$};
+    \node at (0,-2) {$Z_{\alpha}=Z-N+1$};
+\end{tikzpicture}
+\captionof{figure}{Внешний электрон в поле атомного остова.
+Пунктир обозначает характерный размер электронной оболочки.}
+\end{rbox}
+
+\solution
+\subsection*{Поправка к энергии в первом порядке}
+
+Для водородоподобной волновой функции
+\[
+    \left\langle\frac1{r^2}\right\rangle_{nl}
+    =\frac{Z_{\alpha}^2}{a_0^2n^3(l+\tfrac12)},\qquad
+    a_0=\frac{\hbar^2}{m_e e^2}.
+\]
+Следовательно, возмущение $\hat V=-C_1Z_{\alpha}e^2/r^2$ даёт
+\[
+    \delta E_{nl}^{(1)}
+    =-\frac{C_1Z_{\alpha}^3e^2}{a_0^2n^3(l+\tfrac12)}.
+\]
+При малом квантовом дефекте разложение энергии имеет вид
+\begin{align*}
+    E_{nl}
+    &=-\frac{Z_{\alpha}^2R_E}{n^2}
+      \left(1-\frac{\Delta_l}{n}\right)^{-2}\\
+    &\simeq-\frac{Z_{\alpha}^2R_E}{n^2}
+      -\frac{2Z_{\alpha}^2R_E\Delta_l}{n^3}.
+\end{align*}
+Сравнивая поправки и используя $2R_E=e^2/a_0$, получаем
+\[
+    \Delta_l\simeq\frac{C_1Z_{\alpha}}{a_0(l+\tfrac12)}
+    =\frac{m_eC_1Z_{\alpha}e^2}{\hbar^2(l+\tfrac12)}.
+\]
+
+\answer
+\[
+    \rboxed{C_1\simeq\frac{a_0(l+\tfrac12)}{Z_{\alpha}}\Delta_l}.
+\]
+Коэффициент $C_1$ имеет размерность длины. При $C_1>0$ добавочное
+притяжение понижает энергию и соответствует положительному дефекту.
+
+\task[2]{Квантовый дефект уровня 5s натрия}
+
+\condition
+По записи семинара известны предел серии переходов на уровень $3p$
+и волновое число линии $5s\to3p$:
+\[
+    \widetilde\nu_\infty=24\,500\,\text{см}^{-1},\qquad
+    \widetilde\nu_{5s\to3p}=16\,200\,\text{см}^{-1}.
+\]
+Найти квантовый дефект $\Delta_{5s}$ и оценить коэффициент $C_1$
+в модели предыдущей задачи.
+
+\begin{rbox}[unbreakable,left=12pt,right=12pt,top=12pt,bottom=10pt]{[]}
+\centering
+\begin{tikzpicture}[>=Latex,draw=rtext,every node/.style={text=rtext},font=\small]
+    \draw[->] (-0.8,-0.3) -- (-0.8,3.7) node[above] {$E$};
+    \draw[dashed] (0,3.2) -- (6.8,3.2) node[right] {$E=0$};
+    \draw[thick] (0,2.2) -- (3,2.2) node[left,pos=0] {$5s$};
+    \draw[thick] (0,1.4) -- (3,1.4) node[left,pos=0] {$4s$};
+    \draw[thick,rresultcolor] (0,0) -- (6.8,0) node[right] {$3p$};
+    \draw[->,thick,rresultcolor] (1.6,2.2) -- (1.6,0)
+        node[midway,right] {$hc\widetilde\nu_{5s\to3p}$};
+    \draw[->,thick,rconceptcolor] (5.7,3.2) -- (5.7,0)
+        node[midway,right] {$hc\widetilde\nu_\infty$};
+    \draw[<->] (3.6,2.2) -- (3.6,3.2)
+        node[midway,right] {$|E_{5s}|$};
+\end{tikzpicture}
+\captionof{figure}{Линия $5s\to3p$ и предел серии имеют общий нижний
+уровень. Разность их волновых чисел определяет энергию связи уровня $5s$.
+Расстояния между уровнями условные.}
+\end{rbox}
+
+\solution
+Для нейтрального натрия $Z_{\alpha}=1$. Энергии отсчитываем от
+предела ионизации, поэтому они отрицательны:
+\[
+    E_{5s}=-\frac{R_E}{(5-\Delta_{5s})^2},\qquad
+    E_{3p}=-\frac{R_E}{(3-\Delta_{3p})^2}.
+\]
+Волновое число испускаемого фотона равно
+\[
+    \widetilde\nu_{5s\to3p}
+    =R_\infty\left[\frac1{(3-\Delta_{3p})^2}
+                    -\frac1{(5-\Delta_{5s})^2}\right].
+\]
+При $n\to\infty$ верхний уровень приближается к нулю:
+\[
+    \widetilde\nu_\infty
+    =\frac{R_\infty}{(3-\Delta_{3p})^2}.
+\]
+Вычитание исключает неизвестный дефект нижнего уровня:
+\[
+    \widetilde\nu_\infty-\widetilde\nu_{5s\to3p}
+       =\frac{R_\infty}{(5-\Delta_{5s})^2}.
+\]
+Берём положительный корень, поскольку эффективное главное квантовое
+число $5-\Delta_{5s}>0$:
+\begin{align*}
+    \Delta_{5s}
+    &=5-\sqrt{\frac{R_\infty}
+          {\widetilde\nu_\infty-\widetilde\nu_{5s\to3p}}}\\
+    &=5-\sqrt{\frac{109\,737}{24\,500-16\,200}}
+      \approx1.364.
+\end{align*}
+Для $s$-состояния $l=0$, и формула первого порядка даёт
+\[
+    C_1\simeq\frac{a_0}{2}\Delta_{5s}
+       =\frac{0.529}{2}\cdot1.364\,\text{\AA}
+       \approx0.361\,\text{\AA}.
+\]
+
+\answer
+\[
+    \rboxed{\Delta_{5s}\approx1.36,\qquad
+            C_1\simeq0.36\,\text{\AA}}.
+\]
+Квантовый дефект найден непосредственно из спектральных данных.
+Значение $C_1$ --- формальная оценка по формуле первого порядка:
+при таком дефекте она не является точным решением модели потенциала
+с сингулярным членом $-C_1Z_{\alpha}e^2/r^2$.
+
+\task[3]{Дублет перехода 7s в 6p}
+
+\condition
+Уровень $6p$ расщепляется на компоненты $6p_{1/2}$ и $6p_{3/2}$.
+Связать расстояние между двумя линиями перехода $7s\to6p$
+с тонким расщеплением нижнего уровня.
+На фотографии записана водородоподобная формула поправки
+\[
+    \delta E_{nj}
+    =E_n^{(0)}\frac{\alpha^2Z_{\alpha}^2}{n}
+      \left(\frac1{j+\tfrac12}-\frac3{4n}\right),\qquad
+    E_n^{(0)}=-\frac{R_EZ_{\alpha}^2}{n^2}.
+\]
+
+\solution
+
+\begin{rbox}[unbreakable,left=12pt,right=12pt,top=12pt,bottom=10pt]{[]}
+\centering
+\begin{tikzpicture}[>=Latex,draw=rtext,every node/.style={text=rtext},font=\small]
+    \draw[thick] (0,3) -- (5,3) node[right] {$7s_{1/2}$};
+    \draw[thick,rconceptcolor] (0,1.1) -- (5,1.1) node[right] {$6p_{3/2}$};
+    \draw[thick,rresultcolor] (0,0) -- (5,0) node[right] {$6p_{1/2}$};
+    \draw[->,thick,rconceptcolor] (1.3,3) -- (1.3,1.1)
+        node[midway,left] {$\nu_1$};
+    \draw[->,thick,rresultcolor] (3,3) -- (3,0)
+        node[midway,left] {$\nu_2$};
+    \draw[<->] (4.5,0.05) -- (4.5,1.05)
+        node[midway,right] {$\Delta E_{6p}$};
+\end{tikzpicture}
+\captionof{figure}{Два перехода из общего верхнего уровня.
+Более низкому конечному уровню соответствует большая частота:
+$\nu_2>\nu_1$. Масштаб расщепления увеличен.}
+\end{rbox}
+\subsection*{Комбинационная разность частот}
+Обозначим энергии нижних компонент через $E_{1/2}$ и $E_{3/2}$.
+Тогда
+\[
+    h\nu_1=E_{7s}-E_{3/2},\qquad
+    h\nu_2=E_{7s}-E_{1/2}.
+\]
+Энергия верхнего уровня при вычитании сокращается:
+\[
+    h(\nu_2-\nu_1)=E_{3/2}-E_{1/2}=\Delta E_{6p}.
+\]
+Поэтому для наблюдаемых длин волн
+\[
+    \Delta E_{6p}=hc\left|\frac1{\lambda_2}-\frac1{\lambda_1}\right|.
+\]
+Если линии близки, то $\Delta\widetilde\nu\simeq|\Delta\lambda|/\lambda^2$.
+
+\subsection*{Водородоподобная оценка}
+В формуле поправки член $3/(4n)$ не зависит от $j$ и также сокращается.
+Для $p$-уровня $j=1/2,3/2$, поэтому
+\begin{align*}
+    \Delta E_{np}
+    &=E_n^{(0)}\frac{\alpha^2Z_{\alpha}^2}{n}
+       \left(\frac12-1\right)\\
+    &=\frac{R_E\alpha^2Z_{\alpha}^4}{2n^3}.
+\end{align*}
+При $n=6$ получаем
+\[
+    \Delta E_{6p}=\frac{R_E\alpha^2Z_{\alpha}^4}{432},\qquad
+    \Delta\widetilde\nu
+       =\frac{R_\infty\alpha^2Z_{\alpha}^4}{432}.
+\]
+
+\answer
+\[
+    \rboxed{|\nu_2-\nu_1|=\frac{\Delta E_{6p}}h},\qquad
+    \rboxed{\Delta\widetilde\nu
+       =\left|\frac1{\lambda_2}-\frac1{\lambda_1}\right|}.
+\]
+В водородоподобном приближении
+\[
+    \Delta E_{6p}\approx1.68\cdot10^{-6}Z_{\alpha}^4\,\text{эВ},\qquad
+    \Delta\widetilde\nu\approx0.0135Z_{\alpha}^4\,\text{см}^{-1}.
+\]
+
+\task[4]{Тонкая структура дублета и слабый эффект Зеемана}
+
+\condition
+Две линии переходов $3p_{1/2,3/2}\to3s_{1/2}$ определяют тонкое
+расщепление $3p$-уровня. На фотографии записано
+\[
+    \Delta E_{\text{тс}}
+      =hc\left|\frac1{\lambda_1}-\frac1{\lambda_2}\right|
+      =3.3\cdot10^{-4}\,\text{эВ}.
+\]
+Оценить магнитное поле, при котором зеемановское расщепление
+составляет $0.1\Delta E_{\text{тс}}$.
+
+\begin{rbox}[unbreakable,left=12pt,right=12pt,top=12pt,bottom=10pt]{[]}
+\centering
+\begin{tikzpicture}[>=Latex,draw=rtext,every node/.style={text=rtext},font=\small]
+    \draw[thick] (0,2.1) -- (1.4,2.1) node[pos=0,left] {$3p$};
+    \draw (1.4,2.1) -- (2.4,2.8);
+    \draw (1.4,2.1) -- (2.4,1.4);
+    \draw[thick,rconceptcolor] (2.4,2.8) -- (5.4,2.8)
+        node[right] {$3p_{3/2}$};
+    \draw[thick,rresultcolor] (2.4,1.4) -- (5.4,1.4)
+        node[right] {$3p_{1/2}$};
+    \draw[thick] (0,0) -- (5.4,0) node[right] {$3s_{1/2}$};
+    \draw[->,thick,rresultcolor] (3,1.4) -- (3,0)
+        node[midway,left] {$\lambda_1$};
+    \draw[->,thick,rconceptcolor] (4.8,2.8) -- (4.8,0)
+        node[pos=0.75,right] {$\lambda_2$};
+    \draw[<->] (3.9,1.45) -- (3.9,2.75)
+        node[midway,left] {$\Delta E_{\text{тс}}$};
+\end{tikzpicture}
+\captionof{figure}{Тонкое расщепление $3p$ и спектральный дублет
+при $B=0$. Во внешнем слабом поле каждый уровень дополнительно
+расщепляется на $2J+1$ магнитных подуровней.}
+\end{rbox}
+
+\solution
+\subsection*{Сдвиг магнитного подуровня}
+В слабом поле сохраняется связь $\mathbf J=\mathbf L+\mathbf S$.
+Пренебрегая аномалией спинового магнитного момента, получаем
+\[
+    \delta E_{JM_J}=g_J\mu_BBM_J,
+\]
+где
+\[
+    g_J=1+\frac{J(J+1)-L(L+1)+S(S+1)}{2J(J+1)},\qquad
+    \mu_B=5.788\cdot10^{-5}\,\frac{\text{эВ}}{\text{Тл}}.
+\]
+Для одного $p$-электрона $L=1$, $S=1/2$. Отсюда
+\[
+    g_{1/2}=1+\frac{\tfrac34-2+\tfrac34}{2\cdot\tfrac34}
+       =\frac23,
+\]
+\[
+    g_{3/2}=1+\frac{\tfrac{15}4-2+\tfrac34}{2\cdot\tfrac{15}4}
+       =\frac43.
+\]
+Для уровня $3s_{1/2}$ фактор Ланде равен $2$.
+
+\subsection*{Оценка поля и смысл расщепления}
+Под $\Delta E_Z$ примем \rassumption{расстояние между соседними
+магнитными подуровнями одного уровня}, то есть $\Delta M_J=1$:
+\[
+    \Delta E_Z=g_J\mu_BB=0.1\Delta E_{\text{тс}},\qquad
+    B=\frac{0.1\Delta E_{\text{тс}}}{g_J\mu_B}.
+\]
+Для двух компонент $3p$ это даёт
+\begin{align*}
+    B_{3p_{1/2}}
+       &=\frac{3.3\cdot10^{-5}}{(2/3)\,5.788\cdot10^{-5}}
+         \approx0.86\,\text{Тл},\\
+    B_{3p_{3/2}}
+       &=\frac{3.3\cdot10^{-5}}{(4/3)\,5.788\cdot10^{-5}}
+         \approx0.43\,\text{Тл}.
+\end{align*}
+Если условие должно выполняться как верхняя граница для обеих
+компонент $3p$, выбираем меньшее поле.
+
+\answer
+При принятом определении зеемановского интервала
+\[
+    \rboxed{B\lesssim0.43\,\text{Тл}}
+\]
+обеспечивает $\Delta E_Z\leqslant0.1\Delta E_{\text{тс}}$
+для обеих компонент $3p$.
+
+Если под расщеплением понимается полный размах мультиплета,
+следует использовать $2Jg_J\mu_BB$. Если речь идёт о расстоянии между
+спектральными компонентами, нужно учитывать оба уровня перехода:
+\[
+    \delta\nu=\frac{\mu_BB}{h}
+       (g_uM_u-g_lM_l),\qquad \Delta M=0,\pm1.
+\]
+Эти определения приводят к другим численным критериям поля.
+
+\clearpage
+
+\task[5]{Экранирование и главное квантовое число внешнего электрона}
+
+\condition
+В модели с постоянной экранирования $Q$ энергия связи внешнего
+электрона записывается как
+\[
+    T=\frac{R_E(Z-Q)^2}{n^2}.
+\]
+Для Li и Be на фотографии приведены
+\[
+    T_{\mathrm{Li}}=5.39\,\text{эВ},\qquad
+    T_{\mathrm{Be}}=17\,\text{эВ}.
+\]
+Считая $n$ и $Q$ одинаковыми для сравниваемых систем, найти $n$.
+
+\solution
+
+\begin{rbox}[unbreakable,left=12pt,right=12pt,top=12pt,bottom=10pt]{[]}
+\centering
+\begin{tikzpicture}[>=Latex,draw=rtext,every node/.style={text=rtext},font=\small]
+    \draw[->] (0,0) -- (7,0) node[right] {$Z$};
+    \draw[->] (0,0) -- (0,3.4) node[above] {$\sqrt T$};
+    \draw[thick,rresultcolor] (1.4,0) -- (6.2,3.2);
+    \fill[rconceptcolor] (3.8,1.6) circle (2.5pt);
+    \fill[rconceptcolor] (5.4,2.667) circle (2.5pt);
+    \draw[dashed] (3.8,0) -- (3.8,1.6);
+    \draw[dashed] (5.4,0) -- (5.4,2.667);
+    \node[below] at (1.4,0) {$Q$};
+    \node[below] at (3.8,0) {$3$};
+    \node[below] at (5.4,0) {$4$};
+    \node[above left] at (3.8,1.6) {Li};
+    \node[above left] at (5.4,2.667) {Be};
+    \node[align=left] at (2,3) {наклон $\sqrt{R_E}/n$};
+\end{tikzpicture}
+\captionof{figure}{Линейная зависимость $\sqrt T$ от $Z$
+в модели постоянного экранирования. Схема показывает способ
+определить $n$ из наклона прямой, а $Q$ --- из её пересечения с осью.}
+\end{rbox}
+\subsection*{Связь с законом Мозли}
+Для перехода между водородоподобными уровнями
+\[
+    h\nu=R_E(Z-Q)^2
+          \left(\frac1{n_1^2}-\frac1{n_2^2}\right),\qquad n_2>n_1.
+\]
+В скобках стоит разность обратных квадратов; дополнительного
+квадрата у всей скобки нет. Если $Q$ для данной серии постоянно,
+\[
+    \sqrt\nu=C(Z-Q),\qquad
+    C=\sqrt{\frac{R_E}{h}
+         \left(\frac1{n_1^2}-\frac1{n_2^2}\right)}.
+\]
+Это форма \rconcept{закона Мозли}: корень из частоты линейно зависит
+от эффективного заряда. Для энергии связи аналогично
+\[
+    \sqrt T=\frac{\sqrt{R_E}}{n}(Z-Q).
+\]
+
+
+
+\subsection*{Исключение постоянной экранирования}
+Подставим $Z_{\mathrm{Li}}=3$ и $Z_{\mathrm{Be}}=4$:
+\[
+    \begin{cases}
+        \sqrt{5.39}=\dfrac{\sqrt{13.606}}n(3-Q),\\[0.6em]
+        \sqrt{17}=\dfrac{\sqrt{13.606}}n(4-Q).
+    \end{cases}
+\]
+Числа под корнями выражены в одной единице энергии --- эВ.
+Вычитая первое уравнение из второго, получаем
+\[
+    \sqrt{17}-\sqrt{5.39}=\frac{\sqrt{13.606}}n.
+\]
+Следовательно,
+\[
+    n=\frac{\sqrt{13.606}}{\sqrt{17}-\sqrt{5.39}}
+      \approx2.05.
+\]
+Ближайшее допустимое целое главное квантовое число равно $2$.
+Отклонение от целого отражает приближённость модели и исходных данных.
+Если рассматривать оба уравнения как непрерывную подгонку, то
+\[
+    Q=3-n\sqrt{\frac{5.39}{13.606}}\approx1.71.
+\]
+При строгом выборе $n=2$ отдельные оценки дают
+$Q_{\mathrm{Li}}\approx1.74$ и $Q_{\mathrm{Be}}\approx1.76$,
+то есть общее экранирование описывается величиной около $1.75$.
+
+\answer
+\[
+    \rboxed{n\approx2.05\ \Rightarrow\ n=2}.
+\]
+Внешний электрон относится ко второй оболочке.
+
+\endgroup
+
+\subsection*{Источники и сверка обозначений}
+Основной материал --- фотографии конспекта 11.jpg и 22.jpg
+(семинар 22.09). Формулировки условий восстановлены по ходу решения.
+Определение квантового дефекта и формула слабого эффекта Зеемана
+сверены по справочнику NIST:
+\href{https://www.nist.gov/pml/atomic-spectroscopy-compendium-basic-ideas-notation-data-and-formulas/atomic-spectroscopy-term}
+{Term Series, Quantum Defects} и
+\href{https://www.nist.gov/pml/atomic-spectroscopy-compendium-basic-ideas-notation-data-and-formulas/atomic-spectroscopy-zeeman}
+{Zeeman Effect}.
+
+\end{document}
