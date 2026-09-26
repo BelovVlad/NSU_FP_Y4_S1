@@ -16,11 +16,13 @@
       host.innerHTML=`<div class="karma-header"><h3>Карма</h3></div>
         <div class="karma-body"><div class="karma-display" role="img"><canvas width="360" height="360" aria-hidden="true"></canvas></div>
         <div class="karma-details"><p class="karma-status" role="status">Проверяю историю конспектов…</p><div class="karma-tracks"></div><div class="karma-series"></div>
-        <details class="karma-rules"><summary>Как считается карма</summary><p>Начальная карма — 1. По одному очку за каждое из восьми направлений. Очки предмета засчитываются, только когда закрыты все его отслеживаемые разделы: лекции и семинары. Счётчик предмета объединяет конспекты по этим разделам.</p><p>После занятия есть время до 09:00 следующего дня. Все восемь направлений дают уровень 9. Две недели без просрочек на этом уровне открывают уровень 10.</p><p>Семь суток на одном уровне дают кармацвет. При просрочке он удержит уровень на один рабочий день (пн–сб), до 09:00 следующего дня. Если долг остаётся, защита исчезнет. Просрочка прерывает путь к уровню 10 даже под защитой. Полосы прогресса учитывают полные сутки.</p><p class="karma-history-note"></p></details></div></div>`;
+        <details class="karma-rules"><summary>Как считается карма</summary><p>Начальная карма — 1. По одному очку за каждое из восьми направлений. Лекции и семинары дают очки независимо: если в разделе есть конспекты и закрыты все наступившие сроки, он приносит одно очко. Счётчик предмета объединяет конспекты по этим разделам.</p><p>После занятия есть время до 09:00 следующего дня. Все восемь направлений дают уровень 9. Две недели без просрочек на этом уровне открывают уровень 10.</p><p>Семь суток на одном уровне дают кармацвет. При просрочке он удержит уровень на один рабочий день (пн–сб), до 09:00 следующего дня. Если долг остаётся, защита исчезнет. Просрочка прерывает путь к уровню 10 даже под защитой. Полосы прогресса учитывают полные сутки.</p><p class="karma-history-note"></p></details></div></div>`;
       this.canvas=host.querySelector('canvas');
     }
     error(){
-      this.host.querySelector('.karma-status').textContent='История кармы временно недоступна. Попробуйте обновить данные.';
+      const status=this.host.querySelector('.karma-status');
+      status.hidden=false;
+      status.textContent='История кармы временно недоступна. Попробуйте обновить данные.';
     }
     render(result,now=Date.now(),fresh=false){
       const h=this.host;
@@ -28,10 +30,12 @@
       const displayLevel=result.level+1;
       h.dataset.level=displayLevel;
       h.querySelector('.karma-display').setAttribute('aria-label',`Карма ${displayLevel} из 10${result.shield?' · закреплена':''}`);
-      h.querySelector('.karma-status').textContent=result.protectedUntil
-        ?`Кармацвет удерживает уровень ${displayLevel} до ${date(result.protectedUntil)}. Сейчас закрыто ${result.raw} из 8 направлений.`
+      const status=h.querySelector('.karma-status');
+      status.textContent=result.protectedUntil
+        ?`Кармацвет удерживает уровень ${displayLevel} до ${date(result.protectedUntil)}.`
         :result.level===9?'Высшая карма. Все направления закрыты в срок две недели подряд.'
-        :`${result.raw} из 8 направлений закрыто.${result.shield?' Карма закреплена кармацветом.':''}`;
+        :result.shield?'Карма закреплена кармацветом.':'';
+      status.hidden=!status.textContent;
       const flowerDays=result.shield?7:completedDays(result.stableSince,7,now);
       const maximumDays=completedDays(result.fullSince,14,now);
       h.querySelector('.karma-tracks').innerHTML=`<div><span>Кармацвет${result.shield?' · закреплено':result.protectedUntil?' · защита действует':''}</span><b>${flowerDays} / 7 дней</b><i><em style="width:${flowerDays/7*100}%"></em></i></div>

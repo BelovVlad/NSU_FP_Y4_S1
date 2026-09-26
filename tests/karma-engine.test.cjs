@@ -13,14 +13,22 @@ test('zero start; one point per covered direction, not per uploaded file',()=>{
   const c=counts(0);c[rules.series[0].id]=7;
   assert.equal(calculate(history(snapshot('2026-09-07T09:00:00',c)),at('2026-09-07T20:00:00')).level,1);
 });
-test('FIHAM lectures 4/4 earn no points while seminars are 2/4',()=>{
+test('FIHAM lectures 4/4 earn one point while seminars are 2/4',()=>{
   const c=counts(0);c['fiham-lectures']=4;c['fiham-seminars']=2;
   const r=calculate(history(snapshot('2026-09-29T09:00:00',c)),at('2026-09-29T09:00:00'));
-  assert.equal(r.raw,0);
+  assert.equal(r.raw,1);
   const lectures=r.rows.find(row=>row.id==='fiham-lectures');
-  assert.equal(lectures.sectionComplete,true);assert.equal(lectures.complete,false);assert.equal(lectures.blockedBySubject,true);
+  assert.equal(lectures.sectionComplete,true);assert.equal(lectures.complete,true);assert.equal(lectures.blockedBySubject,false);
   c['fiham-seminars']=4;
   assert.equal(calculate(history(snapshot('2026-09-29T09:00:00',c)),at('2026-09-29T09:00:00')).raw,2);
+});
+test('each tracked section earns its own point despite missing sibling notes',()=>{
+  for(const series of rules.series){
+    const c=counts(0);c[series.id]=4;
+    const r=calculate(history(snapshot('2026-09-29T09:00:00',c)),at('2026-09-29T09:00:00'));
+    assert.equal(r.raw,1,series.id);
+    assert.deepEqual(r.rows.filter(row=>row.complete).map(row=>row.id),[series.id]);
+  }
 });
 test('no loss at lesson end or 08:59; loss exactly at next 09:00',()=>{
   const h=history(snapshot('2026-09-13T12:00:00',1));

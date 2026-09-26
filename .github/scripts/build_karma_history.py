@@ -1,47 +1,49 @@
-#!/usr/bin/env python3
-from __future__ import annotations
-import json, subprocess
+"""Record published index counts, never infer upload times from file mtimes."""
+import json
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[2]
-STRUCTURE=ROOT/'docs/search-index/structure.json'; RULES=ROOT/'Karma/rules.json'; OUTPUT=ROOT/'docs/search-index/karma-history.json'
-START=datetime.fromisoformat('2026-09-19T00:00:00+07:00')
-def git(*args): return subprocess.check_output(['git',*args],cwd=ROOT,text=True,encoding='utf-8').strip()
-def counts(data,rules):
-    groups=data.get('groups',[]) if isinstance(data,dict) else []
-    out={}
-    for s in rules['series']:
-        g=next((g for g in groups if g.get('subject')==s['subject'] and g.get('section')==s['section']),None)
-        out[s['id']]=len((g or {}).get('items') or [])
-    return out
-def at(commit):
-    try:return json.loads(git('show',f'{commit}:docs/search-index/structure.json'))
-    except Exception:return None
-def main():
-    rules=json.loads(RULES.read_text('utf-8')); current=counts(json.loads(STRUCTURE.read_text('utf-8')),rules)
-    try: lines=git('log','--first-parent','--format=%H%x09%cI','--','docs/search-index/structure.json').splitlines()
-    except Exception: lines=[]
-    rows=[]
-    for line in reversed(lines):
-        if '\t' not in line: continue
-        sha,stamp=line.split('\t',1)
-        try: rows.append((sha,datetime.fromisoformat(stamp)))
-        except ValueError: pass
-    snapshots=[]; baseline=None; last=None
-    for sha,stamp in rows:
-        data=at(sha)
-        if data is None: continue
-        value=counts(data,rules)
-        if stamp<=START: baseline=value; continue
-        if baseline is not None and not snapshots:
-            snapshots.append({'at':START.isoformat(),'counts':baseline}); last=baseline
-        if stamp>=START and value!=last:
-            snapshots.append({'at':stamp.isoformat(),'counts':value}); last=value
-    if not snapshots and baseline is not None:
-        snapshots.append({'at':START.isoformat(),'counts':baseline}); last=baseline
-    now=datetime.now(timezone.utc)
-    if not snapshots: snapshots=[{'at':now.isoformat(),'counts':current}]
-    elif current!=last: snapshots.append({'at':now.isoformat(),'counts':current})
-    OUTPUT.write_text(json.dumps({'version':1,'generatedAt':now.isoformat(),'rules':rules,'currentCounts':current,'snapshots':snapshots},ensure_ascii=False,separators=(',',':'))+'\n','utf-8')
-    print(f'karma history: {len(snapshots)} snapshots')
-if __name__=='__main__': main()
+
+ROOT = Path(__file__).resolve().parents[2]
+INDEX = 'docs/search-index/structure.json'
+
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=ROOT).decode('utf-8')
+
+
+def counts(payload, series):
+    groups = {(g['subject'], g['section']): len(g['items']) for g in payload.get('groups', [])}
+    return {s['id']: groups.get((s['subject'], s['section']), 0) for s in series}
+
+
+def build():
+    rules = json.loads((ROOT / 'Karma/rules.json').read_text('utf-8'))
+    rows = []
+    # First-parent avoids treating unpublished side-branch versions as site updates.
+    for line in git('log', '--first-parent', '--reverse', '--format=%H %cI', '--', INDEX).splitlines():
+        commit, timestamp = line.split(' ', 1)
+        payload = json.loads(git('show', f'{commit}:{INDEX}'))
+        rows.append({'at': datetime.fromisoformat(timestamp).astimezone(timezone.utc).isoformat(),
+                     'counts': counts(payload, rules['series']), 'commit': commit})
+    current = json.loads((ROOT / INDEX).read_text('utf-8'))
+    current_counts = counts(current, rules['series'])
+    rows.sort(key=lambda r: r['at'])
+    # A newly built, not-yet-committed index is published by the same CI job.
+    if not rows or rows[-1]['counts'] != current_counts:
+        rows.append({'at': datetime.now(timezone.utc).isoformat(), 'counts': current_counts,
+                     'source': 'index-build'})
+    compact = []
+    for row in rows:
+        if not compact or row['counts'] != compact[-1]['counts']:
+            compact.append(row)
+    output = {'version': 1, 'rules': rules, 'observedFrom': compact[0]['at'],
+              'snapshots': compact, 'currentCounts': current_counts,
+              'indexGeneratedAt': current.get('generated_at')}
+    path = ROOT / 'docs/search-index/karma-history.json'
+    path.write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n', 'utf-8')
+    print(f'Karma history: {len(compact)} changes since {compact[0]["at"]}')
+
+
+if __name__ == '__main__':
+    build()

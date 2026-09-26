@@ -2,7 +2,7 @@
   "timezone": "Asia/Novosibirsk",
   "utcOffsetHours": 7,
   "deadlineHour": 9,
-  "requireWholeSubject": true,
+  "requireWholeSubject": false,
   "reinforcementDays": 7,
   "maximumDays": 14,
   "workingWeekdays": [1, 2, 3, 4, 5, 6],
