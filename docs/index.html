@@ -1932,19 +1932,72 @@ function renderKnowledge(){
   });
   update();syncSubjectHash();
 }
+function safeLinksHref(value){
+  try{
+    const url=new URL(String(value||'').trim());
+    return /^https?:$/.test(url.protocol)?url.href:'';
+  }catch{return''}
+}
+function renderLinksMarkdown(source){
+  const inline=text=>esc(text).replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,(match,label,href)=>{
+    const safe=safeLinksHref(href);
+    return safe?'<a class="links-open-button" href="'+esc(safe)+'" target="_blank" rel="noopener noreferrer">'+label+' ↗</a>':esc(match);
+  });
+  const lines=String(source||'').replace(/\r/g,'').split('\n');
+  let html='',listOpen=false;
+  const closeList=()=>{if(listOpen){html+='</ul>';listOpen=false}};
+  for(const raw of lines){
+    const line=raw.trim();
+    if(!line){closeList();continue}
+    const heading=/^(#{1,3})\s+(.+)$/.exec(line);
+    if(heading){
+      closeList();
+      const level=heading[1].length;
+      html+='<h'+level+'>'+inline(heading[2])+'</h'+level+'>';
+      continue;
+    }
+    const item=/^[-*]\s+(.+)$/.exec(line);
+    if(item){
+      if(!listOpen){html+='<ul>';listOpen=true}
+      html+='<li>'+inline(item[1])+'</li>';
+      continue;
+    }
+    closeList();
+    html+='<p>'+inline(line)+'</p>';
+  }
+  closeList();
+  return html||'<div class="links-error">Файл link.md пуст.</div>';
+}
+async function loadSubjectLinks(){
+  const target=document.getElementById('subjectLinksContent');
+  if(!target)return;
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),10000);
+  try{
+    const rawPath=encPath('ТДиСФ/link.md');
+    const url='https://raw.githubusercontent.com/'+OWNER+'/'+REPO+'/'+BRANCH+'/'+rawPath+'?t='+Date.now();
+    const response=await fetch(url,{cache:'no-store',signal:controller.signal});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    const markdown=await response.text();
+    if(target.isConnected)target.innerHTML=renderLinksMarkdown(markdown);
+  }catch(error){
+    console.error('[links]',error);
+    if(target.isConnected){
+      target.innerHTML='<div class="links-error">Не удалось прочитать ТДиСФ/link.md. <button type="button" id="retrySubjectLinks" class="feedback-retry">Повторить</button></div>';
+      const retry=document.getElementById('retrySubjectLinks');
+      if(retry)retry.onclick=()=>{target.innerHTML='<div class="links-loading">Загружаю ссылки…</div>';void loadSubjectLinks()};
+    }
+  }finally{
+    clearTimeout(timeout);
+  }
+}
 function renderSubjectLinks(){
-  const diskUrl='https://disk.yandex.ru/d/o4IQOWgLr_1y';
   main.innerHTML=hero(state.subject)+
     '<div id="subjectTabs">'+tabs(state.subject)+'</div>'+
-    '<section class="panel links-panel">'+
-      '<div class="links-content">'+
-        '<h1>Яндекс Диск</h1>'+
-        '<p>Хранилище с литературой, презентациями и семинарами.</p>'+
-        '<p><a class="links-open-button" href="'+esc(diskUrl)+'" target="_blank" rel="noopener noreferrer">Открыть Яндекс Диск ↗</a></p>'+
-      '</div>'+
-    '</section>';
+    '<section class="panel links-panel"><div id="subjectLinksContent" class="links-content"><div class="links-loading">Загружаю ссылки…</div></div></section>';
   syncSubjectHash();
   $$('.tab').forEach(b=>b.onclick=()=>{state.section=b.dataset.section;state.selected=null;state.selectedEntry=null;renderSubject()});
+  void loadSubjectLinks();
 }
 function renderSubject(){
   if(state.subject==='База'){

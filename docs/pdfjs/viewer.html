@@ -70,7 +70,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
 .view-mode-btn.active{border-color:var(--accent);background:var(--accent-soft)}
 
 </style>
-<link rel="stylesheet" href="controls.css?v=10">
+<link rel="stylesheet" href="controls.css?v=11">
 <link rel="stylesheet" href="../app.css?v=6">
 <script defer src="../app.js?v=13"></script>
 </head>
@@ -113,6 +113,14 @@ body.continuous-mode .canvas-wrap{display:none!important}
       <div class="control-pair"><button id="zoomOut" class="btn icon" type="button" title="Уменьшить" aria-label="Уменьшить"><span data-viewer-icon="minus"></span></button><button id="zoomIn" class="btn icon" type="button" title="Увеличить" aria-label="Увеличить"><span data-viewer-icon="plus"></span></button></div>
       <label class="zoom-edit" title="Масштаб от 35 до 400%"><input id="zoom" class="zoom-input" type="number" min="35" max="400" step="1" value="100" inputmode="numeric" aria-label="Масштаб в процентах"><span>%</span></label>
       <button id="fit" class="btn rail-button" type="button" title="По ширине страницы" aria-label="По ширине страницы"><span data-viewer-icon="fit"></span><span class="tool-caption">По ширине</span></button>
+    </div>
+    <div class="control-group quality-controls">
+      <label class="control-label" for="renderQuality">Качество</label>
+      <select id="renderQuality" class="quality-select" aria-label="Качество отрисовки PDF">
+        <option value="normal">Обычное</option>
+        <option value="high">Высокое</option>
+        <option value="max" selected>Максимальное</option>
+      </select>
     </div>
     <button id="viewMode" class="btn rail-button view-mode-btn" type="button" title="Непрерывная прокрутка страниц" aria-label="Непрерывная прокрутка страниц" aria-pressed="false"><span data-viewer-icon="pages"></span><span class="tool-caption">Лента</span></button>
     <div class="tone-switch" id="toneSwitch" role="group" aria-label="Цветовой режим PDF" hidden>
@@ -247,7 +255,7 @@ window.addEventListener('message',e=>{
   applyViewerTheme(e.data.theme||'');
 });
 const $=id=>document.getElementById(id);
-const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText'),mPrev=$('mPrev'),mNext=$('mNext'),mPageInfo=$('mPageInfo'),pageJump=$('pageJump'),pageJumpForm=$('pageJumpForm'),pageJumpInput=$('pageJumpInput'),pageJumpTotal=$('pageJumpTotal'),pageJumpClose=$('pageJumpClose'),searchToggle=$('searchToggle'),searchPanel=$('searchPanel'),searchInput=$('searchInput'),searchPrev=$('searchPrev'),searchNext=$('searchNext'),searchStatus=$('searchStatus'),searchClose=$('searchClose'),highlightLayer=$('highlightLayer'),annotationLayer=$('annotationLayer'),outlineToggle=$('outlineToggle'),outlinePanel=$('outlinePanel'),outlineTree=$('outlineTree'),outlineClose=$('outlineClose'),outlineBackdrop=$('outlineBackdrop'),toneSwitch=$('toneSwitch'),textLayer=$('textLayer'),viewMode=$('viewMode'),expandViewer=$('expandViewer');
+const back=$('back'),direct=$('direct'),title=$('title'),canvas=$('canvas'),ctx=canvas.getContext('2d',{alpha:false}),pageInput=$('page'),total=$('total'),prev=$('prev'),next=$('next'),zoomOut=$('zoomOut'),zoomIn=$('zoomIn'),zoomLabel=$('zoom'),fit=$('fit'),viewer=$('viewer'),stage=$('stage'),loading=$('loading'),loadingText=$('loadingText'),mPrev=$('mPrev'),mNext=$('mNext'),mPageInfo=$('mPageInfo'),pageJump=$('pageJump'),pageJumpForm=$('pageJumpForm'),pageJumpInput=$('pageJumpInput'),pageJumpTotal=$('pageJumpTotal'),pageJumpClose=$('pageJumpClose'),searchToggle=$('searchToggle'),searchPanel=$('searchPanel'),searchInput=$('searchInput'),searchPrev=$('searchPrev'),searchNext=$('searchNext'),searchStatus=$('searchStatus'),searchClose=$('searchClose'),highlightLayer=$('highlightLayer'),annotationLayer=$('annotationLayer'),outlineToggle=$('outlineToggle'),outlinePanel=$('outlinePanel'),outlineTree=$('outlineTree'),outlineClose=$('outlineClose'),outlineBackdrop=$('outlineBackdrop'),toneSwitch=$('toneSwitch'),textLayer=$('textLayer'),viewMode=$('viewMode'),expandViewer=$('expandViewer'),renderQuality=$('renderQuality');
 const toneButtons=[...toneSwitch.querySelectorAll('[data-tone]')];
 const canvasWrap=canvas.parentElement;
 const toolsToggle=$('toolsToggle'),toolsClose=$('toolsClose'),toolsBackdrop=$('toolsBackdrop'),readerControls=$('readerControls');
@@ -760,25 +768,51 @@ function fittedScale(base){
   const available=Math.max(120,viewer.clientWidth-parseFloat(padding.paddingLeft)-parseFloat(padding.paddingRight));
   return Math.min(2.4,available/(base.width*CSS_UNITS));
 }
+const RENDER_QUALITY_KEY='nsu-pdf-render-quality-v1';
+function rememberedRenderQuality(){
+  try{
+    const value=localStorage.getItem(RENDER_QUALITY_KEY);
+    return ['normal','high','max'].includes(value)?value:'max';
+  }catch{return'max'}
+}
+let renderQualityMode=rememberedRenderQuality();
+renderQuality.value=renderQualityMode;
+
 function canvasRenderRatio(viewport,{continuous=false}={}){
   const mobile=compactQuery.matches;
   const portrait=portraitPhoneQuery.matches&&!searchPreviewParam;
   const dpr=Math.max(1,window.devicePixelRatio||1);
-  // Portrait phones show a whole A4 page at a very small CSS width, so glyphs
-  // need substantially more raster samples than the physical DPR alone gives.
-  // Keep landscape unchanged: that mode is far more sensitive to zoom/rotation jank.
-  const qualityBoost=portrait?(fitWidth?1.65:1.35):(fitWidth?(mobile?1.25:1.16):1.04);
-  let ratio=Math.min(portrait?5.0:(mobile?3.8:3.6),dpr*qualityBoost);
+  // Base supersampling already compensates for a whole A4 page shown at a small
+  // CSS width. The quality profile then controls true raster resolution rather
+  // than stretching the same canvas.
+  const baseBoost=portrait?(fitWidth?1.65:1.35):(fitWidth?(mobile?1.25:1.16):1.04);
+  const profile=renderQualityMode==='normal'
+    ? {factor:.82,cap:.68,ceiling:.82}
+    : renderQualityMode==='high'
+      ? {factor:1,cap:1,ceiling:1}
+      : {factor:1.5,cap:1.9,ceiling:1.55};
+  const baseCeiling=portrait?5.0:(mobile?3.8:3.6);
+  let ratio=Math.min(baseCeiling*profile.ceiling,dpr*baseBoost*profile.factor);
   const cssPixels=Math.max(1,viewport.width*viewport.height);
   let maxPixels;
   if(continuous){
-    maxPixels=portrait?18000000:(mobile?12000000:22000000);
+    maxPixels=(portrait?18000000:(mobile?12000000:22000000))*profile.cap;
   }else{
-    maxPixels=portrait?24000000:(mobile?16000000:28000000);
+    maxPixels=(portrait?24000000:(mobile?16000000:28000000))*profile.cap;
   }
   if(cssPixels*ratio*ratio>maxPixels)ratio=Math.max(.8,Math.sqrt(maxPixels/cssPixels));
   return ratio;
 }
+
+renderQuality.addEventListener('change',async()=>{
+  renderQualityMode=['normal','high','max'].includes(renderQuality.value)?renderQuality.value:'max';
+  try{localStorage.setItem(RENDER_QUALITY_KEY,renderQualityMode)}catch{}
+  if(!pdf)return;
+  const anchor=continuousMode?continuousCenterAnchor():null;
+  showLoading('Перерисовываю в выбранном качестве…');
+  if(continuousMode)await renderContinuous(pageNum,anchor);
+  else await renderPage();
+});
 async function renderPage(options={}){
   if(!pdf)return;
   if(continuousMode){await renderContinuous(pageNum);return}
