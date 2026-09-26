@@ -1,0 +1,698 @@
+[
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 1,
+    "type": "Texture2D",
+    "name": "cityPalette"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 2,
+    "type": "Texture2D",
+    "name": "uiSprites"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 3,
+    "type": "Texture2D",
+    "name": "textGradient"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 4,
+    "type": "Texture2D",
+    "name": "palette1"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 5,
+    "type": "Texture2D",
+    "name": "sootmark"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 6,
+    "type": "Texture2D",
+    "name": "displayFontAtlasChi"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 7,
+    "type": "Texture2D",
+    "name": "rainworldmsc"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 8,
+    "type": "Texture2D",
+    "name": "rainWorld"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 9,
+    "type": "Texture2D",
+    "name": "cloudsTexture"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 10,
+    "type": "Texture2D",
+    "name": "bootLabel1"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 11,
+    "type": "Texture2D",
+    "name": "displayFontAtlasJap"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 12,
+    "type": "Texture2D",
+    "name": "fontAtlas"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 13,
+    "type": "Texture2D",
+    "name": "waterSprites"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 14,
+    "type": "Texture2D",
+    "name": "fontAtlasChi"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 15,
+    "type": "Texture2D",
+    "name": "Rainbow"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 16,
+    "type": "Texture2D",
+    "name": "bootLabel2"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 17,
+    "type": "Texture2D",
+    "name": "redsJourney"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 18,
+    "type": "Texture2D",
+    "name": "maze"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 19,
+    "type": "Texture2D",
+    "name": "displayFontAtlasKor"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 20,
+    "type": "Texture2D",
+    "name": "displayFontAtlasRus"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 21,
+    "type": "Texture2D",
+    "name": "fontAtlasJap"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 22,
+    "type": "Texture2D",
+    "name": "apartments"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 23,
+    "type": "Texture2D",
+    "name": "glyphs"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 24,
+    "type": "Texture2D",
+    "name": "shelterGate - Copy"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 25,
+    "type": "Texture2D",
+    "name": "outpostSkulls"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 26,
+    "type": "Texture2D",
+    "name": "fontAtlasTha"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 27,
+    "type": "Texture2D",
+    "name": "fontAtlasKor"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 28,
+    "type": "Texture2D",
+    "name": "regionGate"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 29,
+    "type": "Texture2D",
+    "name": "uispritesmsc"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 30,
+    "type": "Texture2D",
+    "name": "sleep"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 31,
+    "type": "Texture2D",
+    "name": "noise2"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 32,
+    "type": "Texture2D",
+    "name": "shelterGate"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 33,
+    "type": "Texture2D",
+    "name": "corruption"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 34,
+    "type": "Texture2D",
+    "name": "fontAtlasRus"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 35,
+    "type": "Texture2D",
+    "name": "adjustableFan"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 36,
+    "type": "Texture2D",
+    "name": "displayFontAtlasTha"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 37,
+    "type": "Texture2D",
+    "name": "sootmark2"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 38,
+    "type": "Texture2D",
+    "name": "noise"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 39,
+    "type": "Texture2D",
+    "name": "LightMask0"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 348,
+    "type": "TextAsset",
+    "name": "sleep"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 349,
+    "type": "TextAsset",
+    "name": "waterSprites"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 350,
+    "type": "TextAsset",
+    "name": "Sounds"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 351,
+    "type": "TextAsset",
+    "name": "fontAtlasChi"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 352,
+    "type": "TextAsset",
+    "name": "DisplayFontKorFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 353,
+    "type": "TextAsset",
+    "name": "DisplayFontChiFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 354,
+    "type": "TextAsset",
+    "name": "font"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 355,
+    "type": "TextAsset",
+    "name": "outpostSkulls"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 356,
+    "type": "TextAsset",
+    "name": "fontKor"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 357,
+    "type": "TextAsset",
+    "name": "displayFontAtlasJap"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 358,
+    "type": "TextAsset",
+    "name": "displayFontAtlasKorFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 359,
+    "type": "TextAsset",
+    "name": "fontJapFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 360,
+    "type": "TextAsset",
+    "name": "fontAtlasKor"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 361,
+    "type": "TextAsset",
+    "name": "BillingMode"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 362,
+    "type": "TextAsset",
+    "name": "fontChi"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 363,
+    "type": "TextAsset",
+    "name": "DisplayFontTha"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 364,
+    "type": "TextAsset",
+    "name": "fontJap"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 365,
+    "type": "TextAsset",
+    "name": "displayFontAtlasKor"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 366,
+    "type": "TextAsset",
+    "name": "DisplayFontKor"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 367,
+    "type": "TextAsset",
+    "name": "ps4Glyphs"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 368,
+    "type": "TextAsset",
+    "name": "fontChiFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 369,
+    "type": "TextAsset",
+    "name": "rainWorld"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 370,
+    "type": "TextAsset",
+    "name": "fontAtlasRus"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 371,
+    "type": "TextAsset",
+    "name": "DisplayFontRus"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 372,
+    "type": "TextAsset",
+    "name": "fontAtlasJap"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 373,
+    "type": "TextAsset",
+    "name": "fontAtlasChiFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 374,
+    "type": "TextAsset",
+    "name": "uiSprites"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 375,
+    "type": "TextAsset",
+    "name": "displayFontAtlasRus"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 376,
+    "type": "TextAsset",
+    "name": "fontAtlasTha"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 377,
+    "type": "TextAsset",
+    "name": "DisplayFontJapFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 378,
+    "type": "TextAsset",
+    "name": "fontKorFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 379,
+    "type": "TextAsset",
+    "name": "regionGate"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 380,
+    "type": "TextAsset",
+    "name": "fontTha"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 381,
+    "type": "TextAsset",
+    "name": "rainworldmsc"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 382,
+    "type": "TextAsset",
+    "name": "uispritesmsc"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 383,
+    "type": "TextAsset",
+    "name": "DisplayFontChi"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 384,
+    "type": "TextAsset",
+    "name": "DisplayFontJap"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 385,
+    "type": "TextAsset",
+    "name": "fontAtlasJapFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 386,
+    "type": "TextAsset",
+    "name": "displayFontAtlasTha"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 387,
+    "type": "TextAsset",
+    "name": "DisplayFont"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 388,
+    "type": "TextAsset",
+    "name": "fontAtlasKorFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 389,
+    "type": "TextAsset",
+    "name": "shelterGate"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 390,
+    "type": "TextAsset",
+    "name": "adjustableFan"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 391,
+    "type": "TextAsset",
+    "name": "fontAtlas"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 392,
+    "type": "TextAsset",
+    "name": "fontRus"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 393,
+    "type": "TextAsset",
+    "name": "displayFontAtlasChiFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 394,
+    "type": "TextAsset",
+    "name": "displayFontAtlasChi"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 395,
+    "type": "TextAsset",
+    "name": "displayFontAtlasJapFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 934,
+    "type": "Sprite",
+    "name": "cityPalette"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 935,
+    "type": "Sprite",
+    "name": "uiSprites"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 936,
+    "type": "Sprite",
+    "name": "palette1"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 937,
+    "type": "Sprite",
+    "name": "displayFontAtlasChi"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 938,
+    "type": "Sprite",
+    "name": "rainworldmsc"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 939,
+    "type": "Sprite",
+    "name": "rainWorld"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 940,
+    "type": "Sprite",
+    "name": "bootLabel1"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 941,
+    "type": "Sprite",
+    "name": "displayFontAtlasJap"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 942,
+    "type": "Sprite",
+    "name": "fontAtlas"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 943,
+    "type": "Sprite",
+    "name": "waterSprites"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 944,
+    "type": "Sprite",
+    "name": "fontAtlasChi"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 945,
+    "type": "Sprite",
+    "name": "bootLabel2"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 946,
+    "type": "Sprite",
+    "name": "displayFontAtlasKor"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 947,
+    "type": "Sprite",
+    "name": "displayFontAtlasRus"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 948,
+    "type": "Sprite",
+    "name": "fontAtlasJap"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 949,
+    "type": "Sprite",
+    "name": "apartments"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 950,
+    "type": "Sprite",
+    "name": "glyphs"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 951,
+    "type": "Sprite",
+    "name": "outpostSkulls"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 952,
+    "type": "Sprite",
+    "name": "fontAtlasKor"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 953,
+    "type": "Sprite",
+    "name": "uispritesmsc"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 954,
+    "type": "Sprite",
+    "name": "sleep"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 955,
+    "type": "Sprite",
+    "name": "fontAtlasRus"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "path_id": 956,
+    "type": "Sprite",
+    "name": "adjustableFan"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\aa\\StandaloneWindows64\\15d3b2a3733799fd658e02e1b5299899.bundle",
+    "path_id": 4062692848558656244,
+    "type": "Texture2D",
+    "name": "fontAtlasKorFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\aa\\StandaloneWindows64\\85841e4e08b60a9e0088e211ff250ca2.bundle",
+    "path_id": 5302851363973432324,
+    "type": "Texture2D",
+    "name": "fontAtlasJapFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\aa\\StandaloneWindows64\\ac5777fac4c9c3223fb93a3715ebe2f8.bundle",
+    "path_id": -8364114759609328808,
+    "type": "Texture2D",
+    "name": "fontAtlasChiFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\aa\\StandaloneWindows64\\cf14d74dd3cfd1fe66a8cac772a64c0a.bundle",
+    "path_id": 427509690074070254,
+    "type": "Texture2D",
+    "name": "displayFontAtlasKorFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\aa\\StandaloneWindows64\\d599310988605d8ed6f73de895ad662b.bundle",
+    "path_id": -3616474539545603433,
+    "type": "Texture2D",
+    "name": "displayFontAtlasChiFull"
+  },
+  {
+    "file": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\aa\\StandaloneWindows64\\da94ae88367e946effbd7d0fa83cede1.bundle",
+    "path_id": 2006012135238894024,
+    "type": "Texture2D",
+    "name": "displayFontAtlasJapFull"
+  }
+]

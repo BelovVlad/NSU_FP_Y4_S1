@@ -1,0 +1,1070 @@
+[
+  {
+    "event": "MENU_Switch_Page_Out",
+    "layer": "base",
+    "line": 566,
+    "raw": "MENU_Switch_Page_Out : UIMetalHit/vol=0.3",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIMetalHit",
+        "options": [
+          "vol=0.3"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIMetalHit.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Sleep_Screen_LOOP",
+    "layer": "base",
+    "line": 570,
+    "raw": "MENU_Sleep_Screen_LOOP : SleepScreenLoop/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "SleepScreenLoop",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/SleepScreenLOOP.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Enter_Sleep_Screen",
+    "layer": "base",
+    "line": 571,
+    "raw": "//MENU_Enter_Sleep_Screen : UIArp/vol=0.3",
+    "enabled": false,
+    "samples": [
+      {
+        "sample": "UIArp",
+        "options": [
+          "vol=0.3"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIArp.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Enter_Death_Screen",
+    "layer": "base",
+    "line": 572,
+    "raw": "MENU_Enter_Death_Screen : NewRegion/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "NewRegion",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/NewRegion.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Movement_LOOP",
+    "layer": "base",
+    "line": 580,
+    "raw": "MENU_Karma_Ladder_Movement_LOOP : karmaWheelLow/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaWheelLow",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaWheelLow.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Deselect",
+    "layer": "base",
+    "line": 581,
+    "raw": "MENU_Karma_Ladder_Deselect : karmaFuzz/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaFuzz",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaFuzz.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Start_Moving",
+    "layer": "base",
+    "line": 582,
+    "raw": "MENU_Karma_Ladder_Start_Moving : karmaWheelC/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaWheelC",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaWheelC_1.wav",
+          "audio/loadedsoundeffects/karmaWheelC_2.wav",
+          "audio/loadedsoundeffects/karmaWheelC_3.wav",
+          "audio/loadedsoundeffects/karmaWheelC_4.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Hit_Upper_Cap",
+    "layer": "base",
+    "line": 583,
+    "raw": "MENU_Karma_Ladder_Hit_Upper_Cap : capBell2/vol=0.3",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "capBell2",
+        "options": [
+          "vol=0.3"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/capBell2.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Hit_Lower_Cap",
+    "layer": "base",
+    "line": 584,
+    "raw": "MENU_Karma_Ladder_Hit_Lower_Cap : campBell2/vol=0.3",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "campBell2",
+        "options": [
+          "vol=0.3"
+        ],
+        "files": []
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Reinforce_Save_Grab",
+    "layer": "base",
+    "line": 585,
+    "raw": "MENU_Karma_Ladder_Reinforce_Save_Grab : UIWood5/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIWood5",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIWood5.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Reinforce_Save_Pull",
+    "layer": "base",
+    "line": 586,
+    "raw": "MENU_Karma_Ladder_Reinforce_Save_Pull : UIWood5/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIWood5",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIWood5.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Reinforcement_Dissipate_A",
+    "layer": "base",
+    "line": 587,
+    "raw": "MENU_Karma_Ladder_Reinforcement_Dissipate_A : karmaFuzz2/vol=0.6",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaFuzz2",
+        "options": [
+          "vol=0.6"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaFuzz2.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Reinforcement_Dissipate_B",
+    "layer": "base",
+    "line": 588,
+    "raw": "MENU_Karma_Ladder_Reinforcement_Dissipate_B : UIWood/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIWood",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": []
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Increase_Bump",
+    "layer": "base",
+    "line": 589,
+    "raw": "MENU_Karma_Ladder_Increase_Bump/PLAYALL : karmaRiseA/vol=0.4, UIWoodHit/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaRiseA",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaRiseA.wav"
+        ]
+      },
+      {
+        "sample": "UIWoodHit",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIWoodHit.wav"
+        ]
+      }
+    ],
+    "event_options": [
+      "PLAYALL"
+    ]
+  },
+  {
+    "event": "MENU_Karma_Ladder_Upper_Cap_Bump",
+    "layer": "base",
+    "line": 590,
+    "raw": "MENU_Karma_Ladder_Upper_Cap_Bump/PLAYALL : karmaRiseA/vol=0.4, UIWoodHit/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaRiseA",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaRiseA.wav"
+        ]
+      },
+      {
+        "sample": "UIWoodHit",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIWoodHit.wav"
+        ]
+      }
+    ],
+    "event_options": [
+      "PLAYALL"
+    ]
+  },
+  {
+    "event": "MENU_Endgame_Meters_Power_On",
+    "layer": "base",
+    "line": 592,
+    "raw": "MENU_Endgame_Meters_Power_On : karmaFuzz2/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaFuzz2",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaFuzz2.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Endgame_Float_Meter_Start_Animation_Up",
+    "layer": "base",
+    "line": 593,
+    "raw": "MENU_Endgame_Float_Meter_Start_Animation_Up : karmaMeterRiseB/vol=0.35",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaMeterRiseB",
+        "options": [
+          "vol=0.35"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/KarmaMeterRiseB.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Endgame_Float_Meter_Start_Animation_Down",
+    "layer": "base",
+    "line": 594,
+    "raw": "MENU_Endgame_Float_Meter_Start_Animation_Down : karmaMeterFallB/vol=0.35",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaMeterFallB",
+        "options": [
+          "vol=0.35"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/KarmaMeterFallB.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Endgame_Notch_Meter_Start_Animation",
+    "layer": "base",
+    "line": 595,
+    "raw": "MENU_Endgame_Notch_Meter_Start_Animation : KarmaMeterRiseB/vol=0.35",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "KarmaMeterRiseB",
+        "options": [
+          "vol=0.35"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/KarmaMeterRiseB.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Continue_From_Sleep_Death_Screen",
+    "layer": "base",
+    "line": 598,
+    "raw": "MENU_Continue_From_Sleep_Death_Screen : UIImpact3/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIImpact3",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIImpact3.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Passage_Button",
+    "layer": "base",
+    "line": 599,
+    "raw": "MENU_Passage_Button : UIArp/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIArp",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIArp.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "HUD_Karma_Reinforce_Flicker",
+    "layer": "base",
+    "line": 605,
+    "raw": "HUD_Karma_Reinforce_Flicker : karmaFuzz2/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaFuzz2",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaFuzz2.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "HUD_Karma_Reinforce_Small_Circle",
+    "layer": "base",
+    "line": 606,
+    "raw": "//HUD_Karma_Reinforce_Small_Circle",
+    "enabled": false,
+    "samples": []
+  },
+  {
+    "event": "HUD_Karma_Reinforce_Contract",
+    "layer": "base",
+    "line": 607,
+    "raw": "//HUD_Karma_Reinforce_Contract",
+    "enabled": false,
+    "samples": []
+  },
+  {
+    "event": "HUD_Karma_Reinforce_Bump",
+    "layer": "base",
+    "line": 608,
+    "raw": "HUD_Karma_Reinforce_Bump : UIWood5/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIWood5",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIWood5.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Start_Moving_Saint",
+    "layer": "base",
+    "line": 849,
+    "raw": "MENU_Karma_Ladder_Start_Moving_Saint : karmaWheelB/vol=0.6",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaWheelB",
+        "options": [
+          "vol=0.6"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaWheelB_1.wav",
+          "audio/loadedsoundeffects/karmaWheelB_2.wav",
+          "audio/loadedsoundeffects/karmaWheelB_3.wav",
+          "audio/loadedsoundeffects/karmaWheelB_4.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "Cap_Bump_Vengeance",
+    "layer": "base",
+    "line": 878,
+    "raw": "Cap_Bump_Vengeance : CapBumpVengeance/vol=0.25",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "CapBumpVengeance",
+        "options": [
+          "vol=0.25"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/CapBumpVengeance.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "Sleep_Blizzard_Loop",
+    "layer": "base",
+    "line": 879,
+    "raw": "Sleep_Blizzard_Loop : SleepBlizzardLoop/vol=0.15",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "SleepBlizzardLoop",
+        "options": [
+          "vol=0.15"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/SleepBlizzardLoop.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Switch_Page_Out",
+    "layer": "mergedmods",
+    "line": 466,
+    "raw": "MENU_Switch_Page_Out : UIMetalHit/vol=0.3",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIMetalHit",
+        "options": [
+          "vol=0.3"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIMetalHit.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Sleep_Screen_LOOP",
+    "layer": "mergedmods",
+    "line": 470,
+    "raw": "MENU_Sleep_Screen_LOOP : SleepScreenLoop/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "SleepScreenLoop",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/SleepScreenLOOP.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Enter_Sleep_Screen",
+    "layer": "mergedmods",
+    "line": 471,
+    "raw": "//MENU_Enter_Sleep_Screen : UIArp/vol=0.3",
+    "enabled": false,
+    "samples": [
+      {
+        "sample": "UIArp",
+        "options": [
+          "vol=0.3"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIArp.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Enter_Death_Screen",
+    "layer": "mergedmods",
+    "line": 472,
+    "raw": "MENU_Enter_Death_Screen : NewRegion/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "NewRegion",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/NewRegion.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Movement_LOOP",
+    "layer": "mergedmods",
+    "line": 478,
+    "raw": "MENU_Karma_Ladder_Movement_LOOP : karmaWheelLow/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaWheelLow",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaWheelLow.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Deselect",
+    "layer": "mergedmods",
+    "line": 479,
+    "raw": "MENU_Karma_Ladder_Deselect : karmaFuzz/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaFuzz",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaFuzz.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Start_Moving",
+    "layer": "mergedmods",
+    "line": 480,
+    "raw": "MENU_Karma_Ladder_Start_Moving : karmaWheelC/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaWheelC",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaWheelC_1.wav",
+          "audio/loadedsoundeffects/karmaWheelC_2.wav",
+          "audio/loadedsoundeffects/karmaWheelC_3.wav",
+          "audio/loadedsoundeffects/karmaWheelC_4.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Hit_Upper_Cap",
+    "layer": "mergedmods",
+    "line": 481,
+    "raw": "MENU_Karma_Ladder_Hit_Upper_Cap : capBell2/vol=0.3",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "capBell2",
+        "options": [
+          "vol=0.3"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/capBell2.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Hit_Lower_Cap",
+    "layer": "mergedmods",
+    "line": 482,
+    "raw": "MENU_Karma_Ladder_Hit_Lower_Cap : campBell2/vol=0.3",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "campBell2",
+        "options": [
+          "vol=0.3"
+        ],
+        "files": []
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Reinforce_Save_Grab",
+    "layer": "mergedmods",
+    "line": 483,
+    "raw": "MENU_Karma_Ladder_Reinforce_Save_Grab : UIWood5/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIWood5",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIWood5.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Reinforce_Save_Pull",
+    "layer": "mergedmods",
+    "line": 484,
+    "raw": "MENU_Karma_Ladder_Reinforce_Save_Pull : UIWood5/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIWood5",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIWood5.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Reinforcement_Dissipate_A",
+    "layer": "mergedmods",
+    "line": 485,
+    "raw": "MENU_Karma_Ladder_Reinforcement_Dissipate_A : karmaFuzz2/vol=0.6",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaFuzz2",
+        "options": [
+          "vol=0.6"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaFuzz2.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Reinforcement_Dissipate_B",
+    "layer": "mergedmods",
+    "line": 486,
+    "raw": "MENU_Karma_Ladder_Reinforcement_Dissipate_B : UIWood/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIWood",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": []
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Increase_Bump",
+    "layer": "mergedmods",
+    "line": 487,
+    "raw": "MENU_Karma_Ladder_Increase_Bump/PLAYALL : karmaRiseA/vol=0.4, UIWoodHit/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaRiseA",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaRiseA.wav"
+        ]
+      },
+      {
+        "sample": "UIWoodHit",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIWoodHit.wav"
+        ]
+      }
+    ],
+    "event_options": [
+      "PLAYALL"
+    ]
+  },
+  {
+    "event": "MENU_Karma_Ladder_Upper_Cap_Bump",
+    "layer": "mergedmods",
+    "line": 488,
+    "raw": "MENU_Karma_Ladder_Upper_Cap_Bump/PLAYALL : karmaRiseA/vol=0.4, UIWoodHit/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaRiseA",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaRiseA.wav"
+        ]
+      },
+      {
+        "sample": "UIWoodHit",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIWoodHit.wav"
+        ]
+      }
+    ],
+    "event_options": [
+      "PLAYALL"
+    ]
+  },
+  {
+    "event": "MENU_Endgame_Meters_Power_On",
+    "layer": "mergedmods",
+    "line": 489,
+    "raw": "MENU_Endgame_Meters_Power_On : karmaFuzz2/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaFuzz2",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaFuzz2.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Endgame_Float_Meter_Start_Animation_Up",
+    "layer": "mergedmods",
+    "line": 490,
+    "raw": "MENU_Endgame_Float_Meter_Start_Animation_Up : karmaMeterRiseB/vol=0.35",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaMeterRiseB",
+        "options": [
+          "vol=0.35"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/KarmaMeterRiseB.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Endgame_Float_Meter_Start_Animation_Down",
+    "layer": "mergedmods",
+    "line": 491,
+    "raw": "MENU_Endgame_Float_Meter_Start_Animation_Down : karmaMeterFallB/vol=0.35",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaMeterFallB",
+        "options": [
+          "vol=0.35"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/KarmaMeterFallB.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Endgame_Notch_Meter_Start_Animation",
+    "layer": "mergedmods",
+    "line": 492,
+    "raw": "MENU_Endgame_Notch_Meter_Start_Animation : KarmaMeterRiseB/vol=0.35",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "KarmaMeterRiseB",
+        "options": [
+          "vol=0.35"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/KarmaMeterRiseB.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Continue_From_Sleep_Death_Screen",
+    "layer": "mergedmods",
+    "line": 494,
+    "raw": "MENU_Continue_From_Sleep_Death_Screen : UIImpact3/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIImpact3",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIImpact3.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Passage_Button",
+    "layer": "mergedmods",
+    "line": 495,
+    "raw": "MENU_Passage_Button : UIArp/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIArp",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIArp.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "HUD_Karma_Reinforce_Flicker",
+    "layer": "mergedmods",
+    "line": 499,
+    "raw": "HUD_Karma_Reinforce_Flicker : karmaFuzz2/vol=0.4",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaFuzz2",
+        "options": [
+          "vol=0.4"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaFuzz2.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "HUD_Karma_Reinforce_Small_Circle",
+    "layer": "mergedmods",
+    "line": 500,
+    "raw": "//HUD_Karma_Reinforce_Small_Circle",
+    "enabled": false,
+    "samples": []
+  },
+  {
+    "event": "HUD_Karma_Reinforce_Contract",
+    "layer": "mergedmods",
+    "line": 501,
+    "raw": "//HUD_Karma_Reinforce_Contract",
+    "enabled": false,
+    "samples": []
+  },
+  {
+    "event": "HUD_Karma_Reinforce_Bump",
+    "layer": "mergedmods",
+    "line": 502,
+    "raw": "HUD_Karma_Reinforce_Bump : UIWood5/vol=0.5",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "UIWood5",
+        "options": [
+          "vol=0.5"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/UIWood5.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "MENU_Karma_Ladder_Start_Moving_Saint",
+    "layer": "mergedmods",
+    "line": 697,
+    "raw": "MENU_Karma_Ladder_Start_Moving_Saint : karmaWheelB/vol=0.6",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "karmaWheelB",
+        "options": [
+          "vol=0.6"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/karmaWheelB_1.wav",
+          "audio/loadedsoundeffects/karmaWheelB_2.wav",
+          "audio/loadedsoundeffects/karmaWheelB_3.wav",
+          "audio/loadedsoundeffects/karmaWheelB_4.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "Cap_Bump_Vengeance",
+    "layer": "mergedmods",
+    "line": 726,
+    "raw": "Cap_Bump_Vengeance : CapBumpVengeance/vol=0.25",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "CapBumpVengeance",
+        "options": [
+          "vol=0.25"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/CapBumpVengeance.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  },
+  {
+    "event": "Sleep_Blizzard_Loop",
+    "layer": "mergedmods",
+    "line": 727,
+    "raw": "Sleep_Blizzard_Loop : SleepBlizzardLoop/vol=0.15",
+    "enabled": true,
+    "samples": [
+      {
+        "sample": "SleepBlizzardLoop",
+        "options": [
+          "vol=0.15"
+        ],
+        "files": [
+          "audio/loadedsoundeffects/SleepBlizzardLoop.wav"
+        ]
+      }
+    ],
+    "event_options": []
+  }
+]

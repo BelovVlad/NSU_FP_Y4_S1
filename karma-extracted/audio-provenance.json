@@ -1,0 +1,194 @@
+[
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -1940995691289643935,
+    "clip": "UIMetalHit",
+    "output": "audio/loadedsoundeffects/UIMetalHit.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\UIMetalHit.wav",
+    "sha256": "c8fd5107b88b0f62dc64cf18a8adcd7158e12db14c385c36621c123ebcf2240f"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -9214764907433960356,
+    "clip": "SleepScreenLOOP",
+    "output": "audio/loadedsoundeffects/SleepScreenLOOP.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\SleepScreenLOOP.wav",
+    "sha256": "2c70398faaffa6758a3a40b2caecd454b45a59cd89d2cbd06c72073a3cfab0ab"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -6435918343058941568,
+    "clip": "UIArp",
+    "output": "audio/loadedsoundeffects/UIArp.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\UIArp.wav",
+    "sha256": "6b7f31be878c9ba3a48f6e867e089a22b2726e9b1ed0c6a3c3d7c031efe19b66"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -4749577990024075194,
+    "clip": "NewRegion",
+    "output": "audio/loadedsoundeffects/NewRegion.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\NewRegion.wav",
+    "sha256": "cca6205cc9e549f4cb4b806861ccd7b9b2a3a1fb463958b4fffdd5ae78fecd66"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": 4778700737846835083,
+    "clip": "karmaWheelLow",
+    "output": "audio/loadedsoundeffects/karmaWheelLow.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaWheelLow.wav",
+    "sha256": "3aa74fcb4d14052a3deeb0ae94e69e0f2f79ac292f4d5e1481160b4850eaff62"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -954706919967137308,
+    "clip": "karmaFuzz",
+    "output": "audio/loadedsoundeffects/karmaFuzz.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaFuzz.wav",
+    "sha256": "79550de0621ed4e11165501193774c0e33d7c9fe98b3cc9495612f34423597c3"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -3372634578150783318,
+    "clip": "karmaWheelC_1",
+    "output": "audio/loadedsoundeffects/karmaWheelC_1.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaWheelC_1.wav",
+    "sha256": "19f81fea77caa49428b2f924375de5047e6542b28ea0bdcdbe76c9e14af78304"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": 3470096923070812578,
+    "clip": "karmaWheelC_2",
+    "output": "audio/loadedsoundeffects/karmaWheelC_2.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaWheelC_2.wav",
+    "sha256": "acf379afb49eca881f4a989aaccf4e718e91538dd4aadc22ffe6ea96bf9a3a73"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": 6828441157201808197,
+    "clip": "karmaWheelC_3",
+    "output": "audio/loadedsoundeffects/karmaWheelC_3.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaWheelC_3.wav",
+    "sha256": "f187438bcac73b2e0b9640fa15c434eaaad2ef2c92642e702accb607fcbe221b"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": 8947949651995840688,
+    "clip": "karmaWheelC_4",
+    "output": "audio/loadedsoundeffects/karmaWheelC_4.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaWheelC_4.wav",
+    "sha256": "dcc52725939a32151fb41e43ea85af7babd3da3e7f93d38165bd045c82845de2"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": 1229690624139793715,
+    "clip": "capBell2",
+    "output": "audio/loadedsoundeffects/capBell2.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\capBell2.wav",
+    "sha256": "ac74029a3061c990336d9f9beb91d88116f9bb9883ffbdfd290ecc72e13fcbaa"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -6732511250117261178,
+    "clip": "UIWood5",
+    "output": "audio/loadedsoundeffects/UIWood5.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\UIWood5.wav",
+    "sha256": "3f539ef1f14cbff0869430cbca6a1121fd113ec392506442a104cba966f516b7"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": 2255156587218077743,
+    "clip": "karmaFuzz2",
+    "output": "audio/loadedsoundeffects/karmaFuzz2.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaFuzz2.wav",
+    "sha256": "571cd9823f2a720a7c45bad5f0f7be70715e281bb8ad25da9b45471e5dd468b1"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -5203319719658348900,
+    "clip": "karmaRiseA",
+    "output": "audio/loadedsoundeffects/karmaRiseA.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaRiseA.wav",
+    "sha256": "38ada46a29ee372b27937efec900747e53e7089e13b1666524967144da507db3"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -1921142644061361490,
+    "clip": "UIWoodHit",
+    "output": "audio/loadedsoundeffects/UIWoodHit.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\UIWoodHit.wav",
+    "sha256": "c2f15b92411b168dcc681f2ba90df776927b6b2bbf1ad6f841cf69e5138e1f86"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": 2030998843802254457,
+    "clip": "KarmaMeterRiseB",
+    "output": "audio/loadedsoundeffects/KarmaMeterRiseB.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\KarmaMeterRiseB.wav",
+    "sha256": "fd34cc172c4e08a5e267c5e75f383f82868af851238df0fd8f4a17cb1a526990"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": 8352237492764861550,
+    "clip": "KarmaMeterFallB",
+    "output": "audio/loadedsoundeffects/KarmaMeterFallB.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\KarmaMeterFallB.wav",
+    "sha256": "309f1bc23dbe55a8bca8aa0c4e5eba66c17b9f79b48e08068413d4bf2d2dffc5"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -4475098643482392277,
+    "clip": "UIImpact3",
+    "output": "audio/loadedsoundeffects/UIImpact3.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\UIImpact3.wav",
+    "sha256": "dabc20ac2c9e4f57ce33bef1fdeac6665c0977cc6d16e9d00d1a0f7b47a0f601"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -8654267173137244439,
+    "clip": "karmaWheelB_1",
+    "output": "audio/loadedsoundeffects/karmaWheelB_1.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaWheelB_1.wav",
+    "sha256": "558593ea355d5b83b9aa2aec268148830867dd2955f59a26697f7443c6a811aa"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": 5507980978859010700,
+    "clip": "karmaWheelB_2",
+    "output": "audio/loadedsoundeffects/karmaWheelB_2.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaWheelB_2.wav",
+    "sha256": "9d610200b21f3f2afa2f0a196658be03308a37a043e25ae52ff22204b4e9c723"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -8074215355231927611,
+    "clip": "karmaWheelB_3",
+    "output": "audio/loadedsoundeffects/karmaWheelB_3.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaWheelB_3.wav",
+    "sha256": "ff1cdae0693057536ea91b307d5c5c47194df54f8f859fabed7734512e395813"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": 1561061751448461131,
+    "clip": "karmaWheelB_4",
+    "output": "audio/loadedsoundeffects/karmaWheelB_4.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\karmaWheelB_4.wav",
+    "sha256": "7c2997d4342789cb9588af9977b7c8c31b377754beca09b8b8d3fec5bcbd4cc5"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": -6348660880735369184,
+    "clip": "CapBumpVengeance",
+    "output": "audio/loadedsoundeffects/CapBumpVengeance.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\CapBumpVengeance.wav",
+    "sha256": "0ce938babd3445fbaa531a17ff531555801f91cc4ba44fdc08734423bb4a712f"
+  },
+  {
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\AssetBundles\\loadedsoundeffects",
+    "path_id": 951565481742121411,
+    "clip": "SleepBlizzardLoop",
+    "output": "audio/loadedsoundeffects/SleepBlizzardLoop.wav",
+    "placeholder": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\StreamingAssets\\loadedsoundeffects\\SleepBlizzardLoop.wav",
+    "sha256": "56030f34b4871df0316bae093b806479cc1e46caeed35bd78926cd0f83722e46"
+  }
+]

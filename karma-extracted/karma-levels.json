@@ -1,0 +1,132 @@
+[
+  {
+    "level": 1,
+    "game_index": 0,
+    "game_cap": 9,
+    "large": {
+      "sprite": "karma0",
+      "path": "sprites/uiSprites/karma0.png"
+    },
+    "small": {
+      "sprite": "smallKarma0",
+      "path": "sprites/uiSprites/smallKarma0.png"
+    }
+  },
+  {
+    "level": 2,
+    "game_index": 1,
+    "game_cap": 9,
+    "large": {
+      "sprite": "karma1",
+      "path": "sprites/uiSprites/karma1.png"
+    },
+    "small": {
+      "sprite": "smallKarma1",
+      "path": "sprites/uiSprites/smallKarma1.png"
+    }
+  },
+  {
+    "level": 3,
+    "game_index": 2,
+    "game_cap": 9,
+    "large": {
+      "sprite": "karma2",
+      "path": "sprites/uiSprites/karma2.png"
+    },
+    "small": {
+      "sprite": "smallKarma2",
+      "path": "sprites/uiSprites/smallKarma2.png"
+    }
+  },
+  {
+    "level": 4,
+    "game_index": 3,
+    "game_cap": 9,
+    "large": {
+      "sprite": "karma3",
+      "path": "sprites/uiSprites/karma3.png"
+    },
+    "small": {
+      "sprite": "smallKarma3",
+      "path": "sprites/uiSprites/smallKarma3.png"
+    }
+  },
+  {
+    "level": 5,
+    "game_index": 4,
+    "game_cap": 9,
+    "large": {
+      "sprite": "karma4",
+      "path": "sprites/uiSprites/karma4.png"
+    },
+    "small": {
+      "sprite": "smallKarma4",
+      "path": "sprites/uiSprites/smallKarma4.png"
+    }
+  },
+  {
+    "level": 6,
+    "game_index": 5,
+    "game_cap": 9,
+    "large": {
+      "sprite": "karma5-9",
+      "path": "sprites/uiSprites/karma5-9.png"
+    },
+    "small": {
+      "sprite": "smallKarma5-9",
+      "path": "sprites/uiSprites/smallKarma5-9.png"
+    }
+  },
+  {
+    "level": 7,
+    "game_index": 6,
+    "game_cap": 9,
+    "large": {
+      "sprite": "karma6-9",
+      "path": "sprites/uiSprites/karma6-9.png"
+    },
+    "small": {
+      "sprite": "smallKarma6-9",
+      "path": "sprites/uiSprites/smallKarma6-9.png"
+    }
+  },
+  {
+    "level": 8,
+    "game_index": 7,
+    "game_cap": 9,
+    "large": {
+      "sprite": "karma7-9",
+      "path": "sprites/uiSprites/karma7-9.png"
+    },
+    "small": {
+      "sprite": "smallKarma7-9",
+      "path": "sprites/uiSprites/smallKarma7-9.png"
+    }
+  },
+  {
+    "level": 9,
+    "game_index": 8,
+    "game_cap": 9,
+    "large": {
+      "sprite": "karma8-9",
+      "path": "sprites/uiSprites/karma8-9.png"
+    },
+    "small": {
+      "sprite": "smallKarma8-9",
+      "path": "sprites/uiSprites/smallKarma8-9.png"
+    }
+  },
+  {
+    "level": 10,
+    "game_index": 9,
+    "game_cap": 9,
+    "large": {
+      "sprite": "karma9-9",
+      "path": "sprites/uiSprites/karma9-9.png"
+    },
+    "small": {
+      "sprite": "smallKarma9-9",
+      "path": "sprites/uiSprites/smallKarma9-9.png"
+    }
+  }
+]

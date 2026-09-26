@@ -1,0 +1,32 @@
+[
+  {
+    "name": "rainWorld",
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "texture_path_id": 8,
+    "metadata_path_id": 369,
+    "size": [
+      464,
+      512
+    ]
+  },
+  {
+    "name": "uiSprites",
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "texture_path_id": 2,
+    "metadata_path_id": 374,
+    "size": [
+      522,
+      511
+    ]
+  },
+  {
+    "name": "uispritesmsc",
+    "source": "C:\\Users\\bjise\\Downloads\\site\\RWLD_copy\\RainWorld_Data\\resources.assets",
+    "texture_path_id": 29,
+    "metadata_path_id": 382,
+    "size": [
+      864,
+      122
+    ]
+  }
+]

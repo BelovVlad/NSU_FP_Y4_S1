@@ -1,0 +1,29 @@
+{
+  "source_copies_hash_verified": 14,
+  "source_files_still_match": true,
+  "top_level_types": 20,
+  "sprites": 60,
+  "level_cap_size_combinations_verified": 90,
+  "level_aliases_verified": 20,
+  "png_files_verified": 87,
+  "wav_files_decoded": 24,
+  "runtime_animation_tested": false,
+  "unresolved": {
+    "unconfigured_or_disabled_events": [
+      "HUD_Karma_Reinforce_Contract",
+      "HUD_Karma_Reinforce_Small_Circle",
+      "MENU_Death_Screen_LOOP",
+      "MENU_Enter_Sleep_Screen",
+      "MENU_Karma_Ladder_Increase_Bump_Charge",
+      "MENU_Karma_Ladder_Reinforce_Save_Secure",
+      "MENU_Karma_Ladder_Reselect"
+    ],
+    "samples_not_found_as_loose_files": [
+      "UIWood",
+      "campBell2"
+    ],
+    "external_shader_includes": [
+      "UnityCG.cginc"
+    ]
+  }
+}
