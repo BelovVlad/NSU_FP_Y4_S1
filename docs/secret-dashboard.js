@@ -3,7 +3,6 @@
 
   const DASH_ID = 'secretAcademicDashboard';
   const TZ = 'Asia/Novosibirsk';
-  const TRACKED_SUBJECTS = ['ОВФ', 'ТДиСФ', 'ФКСВ', 'ФЭЧ', 'ФиХАиМ'];
 
   const TRACKED_SERIES = [
     {subject:'ОВФ', section:'Лекции', label:'Лекции', weekday:2, start:'12:40', end:'14:15', firstDate:'2026-09-01'},
@@ -44,6 +43,7 @@
 
   const DAY_NAMES = ['', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
   const state = { busy:false, scheduleFilter:'all', lastData:null };
+  let karmaView=null,karmaTimer=null,karmaFresh=false;
 
   function esc(value) {
     return String(value ?? '')
@@ -90,6 +90,7 @@
           </header>
           <div class="secret-academic-alert" id="secretAcademicAlert"></div>
           <div class="secret-academic-grid">
+            <section class="karma-card" id="secretAcademicKarma" aria-label="Карма"></section>
             <section class="secret-academic-card">
               <div class="secret-academic-card-head"><h3 class="secret-academic-card-title">Статистика</h3><div class="secret-academic-card-note">лекции и семинары</div></div>
               <div class="secret-academic-card-body" id="secretAcademicSummary"><div class="secret-academic-loading"><i class="secret-academic-spinner"></i>Ожидаю открытия…</div></div>
@@ -118,6 +119,7 @@
         </div>
       </section>`;
     document.body.appendChild(root);
+    karmaView=new window.KarmaView(root.querySelector('#secretAcademicKarma'));
     root.querySelectorAll('[data-secret-close]').forEach(el=>el.addEventListener('click',closeDashboard));
     root.querySelector('#secretAcademicRefresh').addEventListener('click',()=>refreshDashboard());
     root.querySelector('#secretScheduleTabs').addEventListener('click',e=>{
@@ -131,25 +133,34 @@
 
   function openDashboard(){
     const root=createDashboard();
+    if(root.classList.contains('is-open'))return false;
     root.classList.add('is-open');
     root.setAttribute('aria-hidden','false');
     document.body.style.overflow='hidden';
+    karmaFresh=true;
+    clearInterval(karmaTimer);
+    karmaTimer=setInterval(()=>{
+      if(document.visibilityState==='visible')refreshDashboard();
+    },30000);
     renderSchedule();
     refreshDashboard();
+    return true;
   }
   function closeDashboard(){
     const root=document.getElementById(DASH_ID); if(!root)return;
     root.classList.remove('is-open'); root.setAttribute('aria-hidden','true'); document.body.style.overflow='';
+    clearInterval(karmaTimer);karmaView?.stop();
   }
 
   async function fetchDashboardData(){
-    const [structureRes,filesRes]=await Promise.all([
+    const [structureRes,filesRes,history]=await Promise.all([
       fetch('search-index/structure.json',{cache:'no-cache'}),
-      fetch('search-index/files.json',{cache:'no-cache'})
+      fetch('search-index/files.json',{cache:'no-cache'}),
+      fetch('search-index/karma-history.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).catch(()=>null)
     ]);
     if(!structureRes.ok)throw new Error(`structure.json: ${structureRes.status}`);
     if(!filesRes.ok)throw new Error(`files.json: ${filesRes.status}`);
-    return {structure:await structureRes.json(),files:await filesRes.json()};
+    return {structure:await structureRes.json(),files:await filesRes.json(),history};
   }
 
   function actualForSeries(series,data){
@@ -228,20 +239,8 @@
 
   function renderSubjects(stats){
     const node=document.querySelector('#secretAcademicSubjects');
-    const bySubject=TRACKED_SUBJECTS.map(subject=>{
-      const rows=stats.series.filter(s=>s.subject===subject);
-      const due=rows.reduce((a,x)=>a+x.due,0),covered=rows.reduce((a,x)=>a+x.covered,0),missing=rows.reduce((a,x)=>a+x.missing,0);
-      return {subject,rows,due,covered,missing,pct:due?Math.min(100,Math.round(covered/due*100)):100};
-    });
     const debts=stats.series.filter(s=>s.missing>0);
     node.innerHTML=`
-      <div class="secret-subject-list">${bySubject.map(s=>`
-        <article class="secret-subject">
-          <div class="secret-subject-top"><div class="secret-subject-name">${esc(s.subject)}</div>${s.missing?badge(`−${s.missing}`,'miss'):badge('в срок','ok')}</div>
-          <div class="secret-subject-progress"><i style="width:${s.pct}%"></i></div>
-          <div class="secret-subject-lines">${s.rows.map(r=>`<div class="secret-subject-line"><strong>${esc(r.label)}</strong><span class="counts">${r.covered}/${r.due}${r.ahead?` · +${r.ahead} вперёд`:''}</span></div>`).join('')}</div>
-        </article>`).join('')}</div>
-      <div style="height:12px"></div>
       <div class="secret-academic-card-note" style="text-align:left;margin-bottom:7px">Что сейчас не закрыто</div>
       <div class="secret-debt-list">${debts.length?debts.map(d=>`<div class="secret-debt"><i class="secret-debt-dot"></i><div><div class="secret-debt-name">${esc(d.subject)} · ${esc(d.label)}</div><div class="secret-debt-sub">нужно восполнить за ${d.missingDates.map(formatDateRu).join(', ')} · по расписанию должно быть ${d.due}, в индексе ${d.actual}</div></div><div class="secret-debt-count">−${d.missing}</div></div>`).join(''):'<div class="secret-empty">По расписанию всё закрыто.</div>'}</div>`;
   }
@@ -279,8 +278,16 @@
       const data=await fetchDashboardData(); state.lastData=data;
       const stats=buildStats(data);
       renderSummary(stats); renderToday(stats); renderSubjects(stats); renderSchedule();
+      if(root.classList.contains('is-open')){
+        try{
+          if(!data.history||data.history.rules.series.some(s=>actualForSeries(s,data)!==data.history.currentCounts[s.id]))throw new Error('Karma index mismatch');
+          karmaView.render(window.KarmaEngine.calculate(data.history),Date.now(),karmaFresh);
+          karmaFresh=false;
+        }catch{karmaView.error()}
+      }
       checked.textContent=`Проверено: ${formatChecked()}`;
     }catch(error){
+      karmaView?.error();
       console.error('[secret-dashboard]',error);
       alert.textContent='Не удалось обновить статистику. Расписание доступно, но индекс материалов сейчас не загрузился.';
       alert.classList.add('show'); checked.textContent='Ошибка проверки индекса';
@@ -293,5 +300,9 @@
   }
 
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById(DASH_ID)?.classList.contains('is-open'))closeDashboard()});
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'&&document.getElementById(DASH_ID)?.classList.contains('is-open'))refreshDashboard();
+    else if(document.visibilityState==='hidden'){karmaView?.stop();karmaFresh=true}
+  });
   window.openSecretAcademicDashboard=openDashboard;
 })();

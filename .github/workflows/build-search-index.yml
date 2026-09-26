@@ -9,6 +9,8 @@ on:
       - '**/*.ipynb'
       - '**/*.tex'
       - '.github/scripts/build_search_index.py'
+      - '.github/scripts/build_karma_history.py'
+      - 'Karma/rules.json'
       - '.github/workflows/build-search-index.yml'
   workflow_dispatch:
 

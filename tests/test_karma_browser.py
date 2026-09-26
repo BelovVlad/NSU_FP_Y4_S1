@@ -56,7 +56,7 @@ class KarmaBrowserTests(unittest.TestCase):
         page.goto(self.url)
         self.assertFalse(any('/Karma/' in url for url in requests))
         page.locator('#secretAcademicTrigger').dblclick()
-        page.wait_for_function("document.querySelector('#secretAcademicKarma')?.dataset.level==='2'")
+        page.wait_for_function("document.querySelector('#secretAcademicKarma')?.dataset.level==='3'")
         page.wait_for_timeout(2300)
         self.assertEqual(page.locator('.karma-subject').count(),5)
         self.assertEqual(page.locator('.karma-subject.complete').count(),1)
@@ -69,7 +69,18 @@ class KarmaBrowserTests(unittest.TestCase):
         self.assertIn('Лекции + Семинары',fiham.inner_text())
         self.assertNotIn('долг по предмету',page.locator('.karma-series').inner_text())
         self.assertNotIn('долг',fiham.get_attribute('title'))
-        self.assertEqual(page.locator('.karma-display').get_attribute('aria-label'),'Карма 2 из 10')
+        self.assertEqual(page.locator('.karma-display').get_attribute('aria-label'),'Карма 3 из 10')
+        self.assertEqual(page.locator('.karma-status').text_content(),'')
+        self.assertTrue(page.locator('.karma-status').is_hidden())
+        for subject,total in [('ТДиСФ','4 / 8'),('ФЭЧ','5 / 8'),('ФиХАиМ','6 / 8')]:
+            row=page.locator('.karma-subject').filter(has_text=subject)
+            self.assertEqual(row.locator('small').inner_text(),'Лекции + Семинары')
+            self.assertEqual(row.locator('b').inner_text(),total)
+        self.assertEqual(page.locator('.secret-subject-list,.secret-subject').count(),0)
+        debts=page.locator('#secretAcademicSubjects')
+        self.assertIn('Что сейчас не закрыто',debts.inner_text())
+        self.assertEqual(debts.locator('.secret-debt').count(),6)
+        self.assertEqual(debts.locator('.secret-debt').filter(has_text='ФиХАиМ').locator('.secret-debt-name').inner_text(),'ФиХАиМ · Семинары')
         flower=page.locator('.karma-tracks > div').nth(0)
         self.assertEqual(flower.locator('b').inner_text(),'1 / 7 дней')
         self.assertAlmostEqual(flower.locator('em').evaluate('(el)=>parseFloat(el.style.width)'),100/7,places=4)
@@ -103,6 +114,23 @@ class KarmaBrowserTests(unittest.TestCase):
         output=ROOT/'build/karma';output.mkdir(parents=True,exist_ok=True)
         page.screenshot(path=str(output/'mobile.png'))
 
+    def test_published_files_render_karma_without_mocked_history(self):
+        context=self.browser.new_context(service_workers='block')
+        self.addCleanup(context.close)
+        page=context.new_page()
+        page.route('https://**/*',lambda route:route.abort())
+        errors,failed=[],[]
+        page.on('pageerror',lambda error:errors.append(str(error)))
+        page.on('response',lambda response:failed.append(response.url) if response.status>=400 and
+                ('/Karma/' in response.url or 'karma-history.json' in response.url) else None)
+        page.goto(self.url)
+        page.locator('#secretAcademicTrigger').dblclick()
+        page.wait_for_function("document.querySelector('#secretAcademicKarma')?.dataset.level")
+        page.wait_for_function("Array.from(document.querySelector('.karma-display canvas').getContext('2d').getImageData(0,0,360,360).data).some(x=>x>0)")
+        self.assertEqual(page.locator('.karma-subject').count(),5)
+        self.assertFalse(failed,failed)
+        self.assertFalse(errors,errors)
+
     def test_unavailable_history_does_not_break_statistics(self):
         page = self.page()
         page.route('**/karma-history.json',lambda route:route.fulfill(status=503,body='offline'))
@@ -115,7 +143,7 @@ class KarmaBrowserTests(unittest.TestCase):
         page=self.page()
         page.goto(self.url)
         page.locator('#secretAcademicTrigger').dblclick()
-        page.wait_for_function("document.querySelector('#secretAcademicKarma')?.dataset.level==='2'")
+        page.wait_for_function("document.querySelector('#secretAcademicKarma')?.dataset.level==='3'")
         states=page.evaluate("""async () => {
           const {rules}=await (await fetch('search-index/karma-history.json')).json();
           const host=document.createElement('div');
@@ -157,7 +185,7 @@ class KarmaBrowserTests(unittest.TestCase):
     def test_increase_sound_phases_and_loop_cleanup(self):
         page=self.page()
         errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
-        page.add_init_script("localStorage.setItem('nsu-editor-karma-visual-v1',JSON.stringify({level:0,shield:false,protectedUntil:null}))")
+        page.add_init_script("localStorage.setItem('nsu-editor-karma-visual-v1',JSON.stringify({level:1,shield:false,protectedUntil:null}))")
         page.goto(self.url)
         page.evaluate("""() => {
           window.__sounds=[];
