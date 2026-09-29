@@ -35,6 +35,29 @@ test('no loss at lesson end or 08:59; loss exactly at next 09:00',()=>{
   for(const t of ['2026-09-14T18:00:00','2026-09-15T08:59:59'])assert.equal(calculate(h,at(t)).level,8);
   assert.equal(calculate(h,at('2026-09-15T09:00:00')).level,0);
 });
+test('after each lesson a missing note waits until 09:00 without changing karma',()=>{
+  const h=history(snapshot('2026-09-13T12:00:00',1));
+  for(const series of rules.series){
+    const [hours,minutes]=series.end.split(':').map(Number);
+    const before=at('2026-09-14T00:00:00')+(hours*60+minutes-1)*60000;
+    const after=before+60000;
+    const beforeRow=calculate(h,before).rows.find(row=>row.id===series.id);
+    const afterResult=calculate(h,after);
+    const afterRow=afterResult.rows.find(row=>row.id===series.id);
+    assert.equal(beforeRow.waiting,false,series.id);
+    assert.equal(afterRow.waiting,true,series.id);
+    assert.equal(afterRow.waitingUntil,at('2026-09-15T09:00:00'),series.id);
+    assert.equal(afterResult.level,8,series.id);
+  }
+});
+test('waiting disappears after an early upload and at the deadline',()=>{
+  const early=history(snapshot('2026-09-13T12:00:00',2));
+  assert.equal(calculate(early,at('2026-09-14T18:00:00')).rows.some(row=>row.waiting),false);
+  const missing=history(snapshot('2026-09-13T12:00:00',1));
+  const atDeadline=calculate(missing,at('2026-09-15T09:00:00'));
+  assert.equal(atDeadline.rows.some(row=>row.waiting),false);
+  assert.equal(atDeadline.rows.some(row=>row.complete),false);
+});
 test('on-time upload at deadline wins tie and keeps level',()=>{
   const h=history(snapshot('2026-09-13T12:00:00',1),snapshot('2026-09-15T09:00:00',2));
   assert.equal(calculate(h,at('2026-09-15T09:00:00')).level,8);

@@ -1,12 +1,15 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v43';
+const SHELL_VERSION = 'v56';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
-const CORE = ['index.html', 'app.js?v=13', 'app.css?v=6', 'knowledge.css?v=3', 'manifest.webmanifest?v=7',
+const CORE = ['index.html', 'app.js?v=14', 'app.css?v=6', 'knowledge.css?v=3', 'manifest.webmanifest?v=7',
+  '../Overseer/overseer.js?v=13', '../Overseer/overseer.css?v=2',
+  '../Overseer/assets/Circle20.png', '../Overseer/assets/GuidancePebbles.png',
+  '../Overseer/assets/miscDangerSymbol.png', '../Overseer/assets/keyArrowA.png', '../Overseer/assets/keyXA.png', '../Overseer/assets/noise.png',
   'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=18', 'notebook/outline.js?build=2',
   'pdfjs/viewer.html', 'pdfjs/controls.css?v=11', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png?v=2', 'assets/app-512.png?v=2'];
@@ -75,8 +78,10 @@ async function material(request) {
 }
 async function resource(request, event) {
   const url = new URL(request.url), key = keyFor(url);
-  const shell = url.origin === BASE.origin && url.pathname.startsWith(BASE.pathname) &&
-    !url.pathname.startsWith(absolute('search-index/').replace(BASE.origin,''));
+  const componentPath = new URL('../Overseer/', BASE).pathname;
+  const shell = url.origin === BASE.origin &&
+    (url.pathname.startsWith(componentPath) || url.pathname.startsWith(BASE.pathname) &&
+    !url.pathname.startsWith(absolute('search-index/').replace(BASE.origin,'')));
   const cache = await caches.open(shell ? SHELL : DATA);
   const cached = await cache.match(key);
   const html = request.mode === 'navigate' || /\.html$/i.test(url.pathname) || url.href === BASE.href;

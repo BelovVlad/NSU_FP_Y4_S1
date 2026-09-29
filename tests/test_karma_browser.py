@@ -182,6 +182,31 @@ class KarmaBrowserTests(unittest.TestCase):
         self.assertEqual(states['top']['maximum'],'14 / 14 дней')
         self.assertEqual(states['surplus'],{'count':'6 / 8','complete':False})
 
+    def test_waiting_label_replaces_checkmark_only_until_deadline(self):
+        page=self.page()
+        page.goto(self.url)
+        page.locator('#secretAcademicTrigger').dblclick()
+        page.wait_for_function("document.querySelector('#secretAcademicKarma')?.dataset.level")
+        states=page.evaluate("""async () => {
+          const {rules}=await (await fetch('search-index/karma-history.json')).json();
+          const counts=Object.fromEntries(rules.series.map(s=>[s.id,4]));
+          const history={rules,snapshots:[{at:'2026-09-28T00:00:00+07:00',counts}]};
+          const host=document.createElement('div'),view=new KarmaView(host);
+          const read=iso=>{
+            const now=Date.parse(iso),result=KarmaEngine.calculate(history,now);
+            view.render(result,now);
+            const row=[...host.querySelectorAll('.karma-subject')].find(el=>el.textContent.includes('ОВФ'));
+            return {complete:row.classList.contains('complete'),waiting:row.classList.contains('waiting'),
+              label:row.querySelector('.karma-subject-waiting')?.textContent||'',level:result.level};
+          };
+          const states={afterLesson:read('2026-09-29T15:00:00+07:00'),
+            deadline:read('2026-09-30T09:00:00+07:00')};
+          view.stop();return states;
+        }""")
+        self.assertEqual(states['afterLesson'],{'complete':False,'waiting':True,
+                                                'label':'ожидание до 9:00','level':8})
+        self.assertEqual(states['deadline'],{'complete':False,'waiting':False,'label':'','level':7})
+
     def test_increase_sound_phases_and_loop_cleanup(self):
         page=self.page()
         errors=[];page.on('pageerror',lambda error:errors.append(str(error)))

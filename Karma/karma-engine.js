@@ -8,11 +8,21 @@
   function firstDeadline(series,rules){
     return Date.parse(series.firstDate+'T00:00:00Z')+DAY+(rules.deadlineHour-rules.utcOffsetHours)*3600000;
   }
+  function firstLessonEnd(series,rules){
+    if(!/^\d{2}:\d{2}$/.test(series.end||''))return null;
+    const [hours,minutes]=series.end.split(':').map(Number);
+    return Date.parse(series.firstDate+'T00:00:00Z')+
+      ((hours-rules.utcOffsetHours)*60+minutes)*60000;
+  }
   function status(rules,counts,time){
     const rows=rules.series.map(s=>{
       const due=Math.max(0,Math.floor((time-firstDeadline(s,rules))/(7*DAY))+1);
       const actual=counts[s.id]||0;
-      return {...s,due,actual,sectionComplete:actual>0&&actual>=due};
+      const deadline=firstDeadline(s,rules)+due*7*DAY;
+      const lessonEnd=firstLessonEnd(s,rules);
+      const waiting=lessonEnd!==null&&time>=lessonEnd+due*7*DAY&&time<deadline&&actual<due+1;
+      return {...s,due,actual,waiting,waitingUntil:waiting?deadline:null,
+        sectionComplete:actual>0&&actual>=due};
     });
     return rows.map(row=>({...row,complete:row.sectionComplete&&(!rules.requireWholeSubject||
       rows.filter(s=>s.subject===row.subject).every(s=>s.actual>=s.due)),

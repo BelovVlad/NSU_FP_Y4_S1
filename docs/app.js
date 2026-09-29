@@ -309,7 +309,7 @@
       if(nativeAndroid)return;
       settingsButton?.classList.add('has-update');
       settingsButton?.setAttribute('title','Доступно обновление приложения');
-      notice('Доступно обновление приложения. Откройте «Приложение» → «Обновить сейчас».');
+      notice('Доступно обновление. Закройте все вкладки сайта и откройте его снова, чтобы применить обновление.');
     }
     offerUpdate();
     registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker?.addEventListener('statechange',()=>{if(worker.state==='installed')offerUpdate();});});

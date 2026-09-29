@@ -47,12 +47,13 @@
       }
       h.querySelector('.karma-series').innerHTML=[...subjects].map(([subject,rows])=>{
         rows.sort((a,b)=>a.section.localeCompare(b.section,'ru'));
-        const complete=rows.every(row=>row.complete);
+        const waiting=rows.some(row=>row.waiting);
+        const complete=rows.every(row=>row.complete)&&!waiting;
         // Extra notes in one section cannot cover missing notes in another.
         const covered=rows.reduce((sum,row)=>sum+Math.min(row.actual,row.due),0);
         const due=rows.reduce((sum,row)=>sum+row.due,0);
         const breakdown=rows.map(row=>`${row.section}: ${row.actual} / ${row.due}`).join('; ');
-        return `<div class="karma-subject ${complete?'complete':''}" title="${esc(breakdown)}"><span class="karma-subject-dot">${complete?'✓':'·'}</span><span>${esc(subject)} <small>${esc(rows.map(row=>row.section).join(' + '))}</small></span><b>${covered} / ${due}</b></div>`;
+        return `<div class="karma-subject ${complete?'complete':waiting?'waiting':''}" title="${esc(breakdown)}"><span class="karma-subject-dot">${complete?'✓':'·'}</span><span>${esc(subject)} <small>${esc(rows.map(row=>row.section).join(' + '))}</small>${waiting?'<small class="karma-subject-waiting">ожидание до 9:00</small>':''}</span><b>${covered} / ${due}</b></div>`;
       }).join('');
       h.querySelector('.karma-history-note').textContent=`Серия считается по истории публикаций с ${date(result.observedFrom)}. ${result.rows.some(r=>r.actual>r.due)?'Конспекты, добавленные до срока, уже учтены. ':''}Следующий срок — ${date(result.nextDeadline)}.`;
       let previous=this.last;
