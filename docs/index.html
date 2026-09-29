@@ -1090,7 +1090,9 @@ body{
 </style>
 <link rel="stylesheet" href="knowledge.css?v=3">
 <link rel="stylesheet" href="app.css?v=6">
-<script defer src="app.js?v=13"></script>
+<link rel="stylesheet" href="../Overseer/overseer.css?v=2">
+<script defer src="app.js?v=14"></script>
+<script defer src="../Overseer/overseer.js?v=13"></script>
 </head>
 <body>
 <div id="overlay" class="mobile-overlay"></div>
@@ -1130,15 +1132,6 @@ body{
       <audio id="siteMusic" preload="none" loop></audio>
     </div>
     <div class="sidebar-bottom">
-      <button id="appSettings" class="app-settings" type="button" aria-label="Управление приложением и офлайн-данными" title="Управление приложением">
-        <span class="app-settings-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.09a2 2 0 0 1 1 1.74v.5a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z"/>
-            <circle cx="12" cy="12" r="3"/>
-          </svg>
-        </span>
-        <span>Приложение</span>
-      </button>
       <button id="offlineFiles" type="button" hidden>Сохранённые PDF</button>
       <a class="repo-link" href="https://github.com/BelovVlad/NSU_FP_Y4_S1" target="_blank" rel="noopener"><span>GitHub</span><span data-icon="external" aria-hidden="true"></span></a>
     </div>
@@ -2522,11 +2515,11 @@ else{state.view='home';setActiveNav('home')}
         css.dataset.secretDashboard='1';
         document.head.appendChild(css);
         const karmaCss=document.createElement('link');
-        karmaCss.rel='stylesheet';karmaCss.href='../Karma/karma.css?v=2';
+        karmaCss.rel='stylesheet';karmaCss.href='../Karma/karma.css?v=3';
         document.head.appendChild(karmaCss);
       }
 
-      const scripts=['../Karma/karma-engine.js?v=2','../Karma/karma-animation.js?v=1','../Karma/karma-view.js?v=6','secret-dashboard.js?v=7'];
+      const scripts=['../Karma/karma-engine.js?v=3','../Karma/karma-animation.js?v=1','../Karma/karma-view.js?v=7','secret-dashboard.js?v=7'];
       Promise.all(scripts.map(src=>new Promise((loaded,failed)=>{
         const script=document.createElement('script');
         script.src=src;script.async=true;script.dataset.secretDashboard='1';

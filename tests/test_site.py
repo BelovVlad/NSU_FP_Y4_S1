@@ -50,6 +50,9 @@ class SiteTests(unittest.TestCase):
         for relative in ['docs/index.html', 'docs/knowledge.css', 'docs/search-worker.js', 'docs/pdfjs/viewer.html', 'docs/pdfjs/controls.css',
                          'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/notebook/outline.js', 'docs/giscus-config.json',
                          'docs/app.js', 'docs/app.css', 'docs/sw.js', 'docs/manifest.webmanifest',
+                         'Overseer/overseer.js', 'Overseer/overseer.css',
+                         'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
+                         'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
                          'docs/assets/nsu-fp-emblem.webp', 'docs/assets/app-192.png', 'docs/assets/app-512.png']:
             target = cls.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
