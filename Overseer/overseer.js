@@ -35,6 +35,7 @@
   let frame = 0, lastFrameAt = 0, scanTimer = 0, scanQueued = false;
   let attemptTimer = 0, windowTimer = 0, activeTimer = 0, cooldownTimer = 0;
   let attentionTimer = 0, teleportTimer = 0;
+  let pdfPaused = false, activeDeadline = 0, activeRemaining = 0;
   let dpr = 1, viewportWidth = innerWidth, viewportHeight = innerHeight;
   let imageLoadStarted = false;
   const images = {};
@@ -63,14 +64,13 @@
     projectionKind: '',
     projectionStage: 'idle',
     projectionElapsed: 0,
+    projectionDwell: 0,
+    projectionDwellLimit: 0,
     projectionBuild: 0,
     crownOpen: 1,
     musicHovered: false,
     musicApproach: 'idle',
     musicReadyAt: 0,
-    musicEverPlayed: false,
-    guidanceShown: false,
-    guidanceHoverActive: false,
     haloAmount: 0,
     recentSpots: [],
     attention: null,
@@ -203,6 +203,7 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     if(state.active && !state.disintegrating) {
       const spot = chooseSpot(false, state.edge);
+      if(!spot) { queueScan(); return; }
       state.edge = spot.edge;
       state.pos = {x:spot.x,y:spot.y};
       state.targetPos = {x:spot.x,y:spot.y};
@@ -281,23 +282,80 @@
     scanTimer = setTimeout(scanForGribanov, CONFIG.scanInterval);
   }
 
+  const PDF_SELECTOR='iframe[src*="pdfjs/"],iframe.pdf-fullscreen-frame,object[type="application/pdf"],embed[type="application/pdf"]';
+  const pdfRects=()=>Array.from(document.querySelectorAll(PDF_SELECTOR),visibleRect).filter(Boolean);
+  const pdfFullscreenOpen=()=>document.body.classList.contains('pdf-open');
+  function clearOfPdf(point, rects=pdfRects()) {
+    const margin=CONFIG.bodySize*1.5;
+    return rects.every(rect=>point.x+margin<=rect.left || point.x-margin>=rect.right ||
+      point.y+margin<=rect.top || point.y-margin>=rect.bottom);
+  }
+
+  function edgeIntervals(edge, depth, alongMargin, rects) {
+    const horizontal=edge==='top'||edge==='bottom';
+    const normal=edge==='top'||edge==='left'?depth:(horizontal?viewportHeight:viewportWidth)-depth;
+    const limit=horizontal?viewportWidth:viewportHeight;
+    const margin=CONFIG.bodySize*1.5;
+    let intervals=[[Math.min(alongMargin,limit/2),Math.max(limit/2,limit-alongMargin)]];
+    for(const rect of rects) {
+      if(normal+margin<=(horizontal?rect.top:rect.left) || normal-margin>=(horizontal?rect.bottom:rect.right)) continue;
+      const low=(horizontal?rect.left:rect.top)-margin, high=(horizontal?rect.right:rect.bottom)+margin;
+      intervals=intervals.flatMap(([a,b])=>b<=low||a>=high?[[a,b]]:
+        [...(a<low?[[a,low]]:[]),...(b>high?[[high,b]]:[])]);
+    }
+    return intervals;
+  }
+
+  function syncPdfFullscreen() {
+    const paused=pdfFullscreenOpen();
+    if(paused===pdfPaused) return;
+    pdfPaused=paused;
+    if(paused) {
+      if(state.active && !state.disintegrating) {
+        activeRemaining=Math.max(0,activeDeadline-Date.now());
+        clearTimeout(activeTimer);
+        clearTimeout(teleportTimer);
+        state.teleporting=false;
+        state.musicApproach='idle';
+        state.phase=1;state.phaseDirection=0;
+        host.classList.remove('is-zipping');
+      }
+      if(frame) cancelAnimationFrame(frame);
+      frame=0;
+      ctx.clearRect(0,0,viewportWidth,viewportHeight);
+      host.style.visibility='hidden';
+    } else {
+      host.style.visibility='';
+      state.pointer.seen=false;
+      if(state.active && !state.disintegrating) {
+        activeDeadline=Date.now()+activeRemaining;
+        activeTimer=setTimeout(()=>hide('timeout'),activeRemaining);
+        drawSoon();
+      }
+    }
+  }
+
   function chooseSpot(awayFromPointer = false, fixedEdge = '') {
     const depth = mobilePointer.matches ? 32 : 40;
     const alongMargin = mobilePointer.matches ? 88 : 118;
     // Choose the edge first: UI density must not make the same empty side win
     // every time. Top and bottom have four times the weight of either side.
-    const edges = ['top','bottom','left','right'];
+    const rects=pdfRects();
+    const available=new Map(['top','bottom','left','right'].map(edge=>[edge,edgeIntervals(edge,depth,alongMargin,rects)]));
+    const edges=Array.from(available.keys()).filter(edge=>available.get(edge).length);
+    if(!edges.length) return null;
     const lastSpot = state.recentSpots[0];
     const weights = edges.map(edge => (edge==='top'||edge==='bottom'?4:1) * (edge===lastSpot?.edge ? .45 : 1));
     let pick = random()*weights.reduce((sum,weight)=>sum+weight,0);
-    const edge = fixedEdge || edges.find((_,index)=>(pick-=weights[index])<0) || 'bottom';
+    const edge = (edges.includes(fixedEdge)?fixedEdge:'') || edges.find((_,index)=>(pick-=weights[index])<0) || 'bottom';
     const candidates = [];
     const avoid = [visibleRect(musicButton), state.dangerRect].filter(Boolean);
     for(let i = 0; i < 32; i++) {
       const horizontal = edge === 'top' || edge === 'bottom';
-      const along = horizontal
-        ? lerp(alongMargin, Math.max(alongMargin, viewportWidth-alongMargin), random())
-        : lerp(alongMargin, Math.max(alongMargin, viewportHeight-alongMargin), random());
+      const intervals=available.get(edge);
+      let alongPick=random()*intervals.reduce((sum,[a,b])=>sum+b-a,0);
+      const interval=intervals.find(([a,b])=>(alongPick-=b-a)<=0)||intervals[intervals.length-1];
+      const along=lerp(interval[0],interval[1],random());
       const candidate = edge === 'top' ? {x:along,y:depth,edge}
         : edge === 'bottom' ? {x:along,y:viewportHeight-depth,edge}
         : edge === 'left' ? {x:depth,y:along,edge}
@@ -367,7 +425,10 @@
           const along=(data.horizontal?center.x:center.y)+direction*offset;
           if(along<depth+20 || along>(data.horizontal?viewportWidth:viewportHeight)-depth-20) continue;
           const point=data.horizontal?{x:along,y:data.normal,edge:data.edge}:{x:data.normal,y:along,edge:data.edge};
-          if(distance(point,center)<minDistance) continue;
+          if(distance(point,center)<minDistance || !clearOfPdf(point)) continue;
+          // The proximity zone can include an arrival point: don't land beside
+          // the cursor and immediately cancel the projection with an escape.
+          if(state.pointer.seen && distance(point,state.pointer)<CONFIG.bodySize*1.75) continue;
           const occupied=[[0,0],[-20,0],[20,0],[0,-20],[0,20]].some(([dx,dy])=>
             document.elementsFromPoint(point.x+dx,point.y+dy).some(element=>element.matches?.('button,a,input,select')));
           const previous=state.recentSpots[0];
@@ -397,7 +458,9 @@
   }
 
   function show(reason = 'ambient') {
-    if(state.active || state.suppressedUntilReload || Date.now() < state.cooldownUntil) return false;
+    if(state.active || pdfFullscreenOpen() || state.suppressedUntilReload || Date.now() < state.cooldownUntil) return false;
+    const spot = chooseSpot(true);
+    if(!spot) return false;
     clearSchedule();
     loadImages();
     state.active = true;
@@ -408,6 +471,7 @@
     state.projectionKind = '';
     state.projectionStage = 'idle';
     state.projectionElapsed = 0;
+    state.projectionDwell = 0;
     state.projectionBuild = 0;
     state.crownOpen = 1;
     state.musicApproach = state.musicHovered ? 'pending' : 'idle';
@@ -417,7 +481,6 @@
     state.sparks = [];
     state.activeSince = Date.now();
     state.ambientStage = 0;
-    const spot = chooseSpot(true);
     rememberSpot(spot);
     state.edge = spot.edge;
     state.targetPos = {x:spot.x,y:spot.y};
@@ -435,7 +498,9 @@
     chooseAttention();
     setAttentionSoon();
     clearTimeout(activeTimer);
-    activeTimer = setTimeout(() => hide('timeout'), mobilePointer.matches ? CONFIG.mobileActiveMax : CONFIG.activeMax);
+    activeRemaining=mobilePointer.matches ? CONFIG.mobileActiveMax : CONFIG.activeMax;
+    activeDeadline=Date.now()+activeRemaining;
+    activeTimer = setTimeout(() => hide('timeout'), activeRemaining);
     drawSoon();
     return true;
   }
@@ -443,7 +508,6 @@
   function hide(reason = 'manual') {
     if(!state.active) return false;
     state.musicApproach = 'idle';
-    state.guidanceHoverActive = false;
     state.active = false;
     state.teleporting = false;
     state.reason = '';
@@ -467,7 +531,7 @@
   }
 
   function disintegrate() {
-    if(!state.active || state.disintegrating || !mobilePointer.matches) return false;
+    if(!state.active || pdfPaused || state.disintegrating || !mobilePointer.matches) return false;
     clearSchedule();
     clearTimeout(activeTimer);
     clearTimeout(attentionTimer);
@@ -507,7 +571,7 @@
   }
 
   function teleport(destination = '') {
-    if(!state.active || state.disintegrating || state.teleporting) return false;
+    if(!state.active || pdfPaused || state.disintegrating || state.teleporting) return false;
     state.teleporting = true;
     const towardMusic=destination==='music';
     const fleeing=destination==='escape';
@@ -518,6 +582,11 @@
     clearTimeout(teleportTimer);
     teleportTimer = setTimeout(() => {
       const spot = towardMusic ? spotNearMusic() : chooseSpot(true);
+      if(!spot) {
+        state.teleporting=false;state.phase=1;state.phaseDirection=0;state.musicApproach='idle';
+        host.classList.remove('is-zipping');
+        return;
+      }
       rememberSpot(spot);
       state.edge = spot.edge;
       state.pos = {x:spot.x,y:spot.y};
@@ -544,10 +613,6 @@
   }
 
   function musicChanged() {
-    if(musicAudio && !musicAudio.paused) {
-      state.musicEverPlayed = true;
-      state.guidanceHoverActive = false;
-    }
     if(state.active) {
       state.reason = state.gribanovVisible ? 'danger' : musicMode();
       host.setAttribute('data-reason',state.reason);
@@ -588,15 +653,20 @@
     return result - Math.floor(result);
   }
 
-  function hologramLayout(rect, placement = 'auto') {
+  function hologramLayout(rect, placement = 'auto', gap = 48) {
     const target={x:clamp(rect.left+rect.width/2,12,viewportWidth-12),y:clamp(rect.top+rect.height/2,12,viewportHeight-12)};
     // Project next to the actual target so the warning has an unambiguous subject.
     const above=placement!=='below' && rect.top>65;
     const symbol={x:clamp(target.x,22,viewportWidth-22),
-      y:clamp(above?rect.top-48:rect.bottom+48,24,viewportHeight-24)};
+      y:clamp(above?rect.top-gap:rect.bottom+gap,24,viewportHeight-24)};
     const angle=Math.atan2(target.y-symbol.y,target.x-symbol.x);
-    const arrow={x:symbol.x+Math.cos(angle)*28,y:symbol.y+Math.sin(angle)*28};
+    const arrowDistance=Math.min(28,gap-12);
+    const arrow={x:symbol.x+Math.cos(angle)*arrowDistance,y:symbol.y+Math.sin(angle)*arrowDistance};
     return {target,symbol,arrow,aim:angle+Math.PI/2};
+  }
+
+  function projectionLayout(kind, rect) {
+    return hologramLayout(rect,kind==='danger'?'below':'auto',kind==='pebbles'?32:48);
   }
 
   function drawProjection(layout,color) {
@@ -610,12 +680,16 @@
   function drawHologramSprite(image, center, width, height, color, time, seed, rotation = 0) {
     const source = tinted(image,color);
     if(!source) return false;
-    const tick = Math.floor(time/(reduceMotion.matches ? 3000 : seed < 7 ? 240 : 90))+seed*17;
+    const tick = Math.floor(time/(reduceMotion.matches ? 3000 : 55))+seed*17;
     if(hash(tick)<.012) return true;
-    const jitterX=(hash(tick+2)-.5)*.35+Math.sin(time*.0014+seed)*.3;
-    const jitterY=(hash(tick+7)-.5)*.3+Math.cos(time*.0012+seed)*.25;
+    // Interference briefly displaces the projection, then restores its anchor.
+    const burstTick=Math.floor(time/650)+seed*29;
+    const burst=reduceMotion.matches?0:(hash(burstTick)<.38?Math.max(0,1-(time%650)/220):0);
+    const motion=reduceMotion.matches?0:1;
+    const jitterX=motion*(hash(tick+2)-.5)*2.8+(hash(burstTick+3)-.5)*14*burst;
+    const jitterY=motion*(hash(tick+7)-.5)*1.8+(hash(burstTick+8)-.5)*8*burst;
     const shear=(hash(tick+11)-.5)*.015;
-    const flicker=.84+hash(tick+19)*.12;
+    const flicker=.65+hash(tick+19)*.30;
     ctx.save();
     ctx.translate(center.x+jitterX*HOLOGRAM_SCALE,center.y+jitterY*HOLOGRAM_SCALE);
     ctx.scale(HOLOGRAM_SCALE,HOLOGRAM_SCALE);
@@ -626,15 +700,21 @@
     ctx.beginPath();ctx.rect(-width/2-5,height/2-height*state.projectionBuild,width+10,height*state.projectionBuild);ctx.clip();
     ctx.imageSmoothingEnabled=false;
     ctx.drawImage(source,-width/2,-height/2,width,height);
-    for(let slice=0;slice<(hash(tick+90)<.12?1:0);slice++) {
+    for(let slice=0;slice<(reduceMotion.matches?0:hash(tick+90)<.65?3:1);slice++) {
       const sliceY=-height/2+hash(tick+30+slice)*height;
       const sliceH=1+hash(tick+40+slice)*3.5;
-      const shift=(hash(tick+50+slice)-.5)*2;
+      const shift=(hash(tick+50+slice)-.5)*(5+burst*12);
       ctx.save();
       ctx.beginPath();ctx.rect(-width/2-5,sliceY,width+10,sliceH);ctx.clip();
       ctx.globalAlpha=(.38+hash(tick+60+slice)*.25)*state.projectionBuild;
       ctx.drawImage(source,-width/2+shift,-height/2,width,height);
       ctx.restore();
+    }
+    ctx.fillStyle=color;
+    for(let line=0;line<8;line++) {
+      ctx.globalAlpha=(.08+hash(tick+100+line)*.2)*state.phase*state.projectionBuild;
+      ctx.fillRect(-width/2+hash(tick+120+line)*width,
+        -height/2+hash(tick+140+line)*height,1+hash(tick+160+line)*5,.65);
     }
     ctx.strokeStyle=color;
     ctx.globalAlpha=(.22+hash(tick+70)*.28)*state.projectionBuild;
@@ -652,8 +732,7 @@
   function requestedMusicHologram() {
     if(!state.active || state.disintegrating || state.gribanovVisible || !visibleRect(musicButton)) return '';
     if(state.musicApproach==='arrived' && !state.teleporting && state.phase>=.98 && performance.now()>=state.musicReadyAt &&
-      musicAudio?.paused && !state.musicEverPlayed && (!state.guidanceShown || state.guidanceHoverActive) &&
-      state.musicHovered && musicButton.contains(document.elementFromPoint(state.pointer.x,state.pointer.y))) return 'pebbles';
+      musicAudio?.paused && state.musicHovered) return 'pebbles';
     return musicMode() === 'glitch' ? 'stop' : '';
   }
 
@@ -667,14 +746,18 @@
       state.projectionKind=desired;
       state.projectionStage='opening';
       state.projectionElapsed=0;
+      state.projectionDwell=0;
+      state.projectionDwellLimit=8000+random()*6000;
       state.projectionBuild=0;
     } else if(!desired && state.projectionStage!=='closing' && state.projectionStage!=='idle') {
       state.projectionStage='closing';
       state.projectionElapsed=0;
+      state.projectionDwell=0;
       state.projectionBuild=0;
     }
     state.projectionElapsed+=delta;
     const stage=state.projectionStage;
+    if(stage==='projecting') state.projectionDwell+=delta;
     if(stage==='opening' || stage==='projecting') {
       state.haloAmount=lerp(state.haloAmount,1,1-Math.exp(-delta/110));
       state.crownOpen=lerp(state.crownOpen,state.projectionElapsed<120?1:0,1-Math.exp(-delta/160));
@@ -694,14 +777,10 @@
     if(!kind) return;
     const rect=visibleRect(musicButton);
     if(!rect) return;
-    const layout=hologramLayout(rect);
+    const layout=projectionLayout(kind,rect);
     const color=Math.floor(time/3200)%2===0?yellow:'#fffde7';
     drawProjection(layout,color);
     const sprite=kind==='pebbles'?images.guidance:images.stop;
-    if(kind==='pebbles' && sprite) {
-      state.guidanceShown = true;
-      state.guidanceHoverActive = true;
-    }
     drawHologramSprite(sprite,layout.symbol,kind==='pebbles'?32:23,kind==='pebbles'?29:23,color,time,2);
     drawHologramSprite(images.arrow,layout.arrow,17,18,color,time,3,layout.aim);
     return !!sprite;
@@ -712,7 +791,7 @@
     state.dangerRect=rangeRect(state.dangerRange);
     const rect=state.dangerRect;
     if(!rect) return;
-    const layout=hologramLayout(rect,'below');
+    const layout=projectionLayout('danger',rect);
     const color=reduceMotion.matches?yellow:hash(Math.floor(time/180))>.46?yellow:'#ff3b2f';
     drawProjection(layout,color);
     drawHologramSprite(images.danger,layout.symbol,25,34,color,time,7);
@@ -933,12 +1012,12 @@
     };
     // A rotating conical crown: its bases sit in a plane ahead of the eye,
     // and its tips lean along the gaze in depth as the projection opens.
-    for(let i=0;i<8;i++) {
-      const angle=spin+i*Math.PI/4;
+    for(let i=0;i<5;i++) {
+      const angle=spin+i*Math.PI*2/5;
       addFace([
-        {x:8,y:Math.cos(angle-.28)*12,z:Math.sin(angle-.28)*12},
-        {x:8,y:Math.cos(angle+.28)*12,z:Math.sin(angle+.28)*12},
-        {x:lerp(13,8,state.crownOpen),y:Math.cos(angle)*lerp(10,17,state.crownOpen),z:Math.sin(angle)*lerp(10,17,state.crownOpen)}
+        {x:8,y:Math.cos(angle-.42)*12,z:Math.sin(angle-.42)*12},
+        {x:8,y:Math.cos(angle+.42)*12,z:Math.sin(angle+.42)*12},
+        {x:lerp(15.5,8,state.crownOpen),y:Math.cos(angle)*lerp(9,19.5,state.crownOpen),z:Math.sin(angle)*lerp(9,19.5,state.crownOpen)}
       ]);
     }
     faces.sort((a,b)=>b.depth-a.depth);
@@ -972,7 +1051,18 @@
     return center;
   }
 
+  function updateMusicProximity() {
+    const rect=visibleRect(musicButton), pointer=state.pointer;
+    const near=!!rect && pointer.seen && !mobilePointer.matches &&
+      Math.hypot(Math.max(rect.left-pointer.x,0,pointer.x-rect.right),
+        Math.max(rect.top-pointer.y,0,pointer.y-rect.bottom))<=CONFIG.bodySize*4;
+    if(near && (!state.musicHovered || state.musicApproach==='idle') && state.active && !state.disintegrating) state.musicApproach='pending';
+    if(!near) state.musicApproach='idle';
+    state.musicHovered=near;
+  }
+
   function update(time, delta) {
+    updateMusicProximity();
     if(state.disintegrating) return;
     if(state.musicApproach==='pending' && state.musicHovered && !state.teleporting && !state.gribanovVisible) teleport('music');
     if(state.phaseDirection) {
@@ -982,10 +1072,9 @@
     state.interfaceMotion *= Math.pow(.91, delta / 16.67);
     const attentionCenter = updateAttention();
     const pointerDistance = state.pointer.seen && !mobilePointer.matches ? distance(state.pos, state.pointer) : Infinity;
-    const followRadius = CONFIG.bodySize * 4;
+    const followRadius = CONFIG.bodySize * 8;
     const musicKind=requestedMusicHologram();
-    const atMusicButton=state.musicHovered && visibleRect(musicButton) &&
-      musicButton.contains(document.elementFromPoint(state.pointer.x,state.pointer.y));
+    const atMusicButton=state.musicHovered;
     state.dangerRect=rangeRect(state.dangerRange);
     if(pointerDistance<followRadius && !(atMusicButton && !state.dangerRect)) {
       state.focus='cursor';state.lookAt={...state.pointer};
@@ -1000,9 +1089,18 @@
     }
     const desired=state.teleporting || state.phase<.98 ? '' : state.focus==='danger' ? 'danger' : state.focus==='music' ? musicKind : '';
     updateProjection(desired,delta);
+    if(desired && state.projectionDwell>=state.projectionDwellLimit) {
+      state.projectionDwell=0;
+      teleport(state.focus==='music'?'music':'');
+      updateProjection('',0);
+    }
+    if(desired) {
+      const rect=desired==='danger'?state.dangerRect:visibleRect(musicButton);
+      if(rect) state.lookAt=projectionLayout(desired,rect).symbol;
+    }
 
     if(pointerDistance < CONFIG.bodySize * 1.25 && !state.teleporting) teleport('escape');
-    if(!reduceMotion.matches && time > state.nextWanderAt && !state.teleporting && !(state.musicHovered && !state.gribanovVisible)) {
+    if(!reduceMotion.matches && time > state.nextWanderAt && !state.teleporting && !desired && !(state.musicHovered && !state.gribanovVisible)) {
       if(random() < .35) teleport();
       else {
         // The root stays planted. Only the head leans and turns to inspect things.
@@ -1045,7 +1143,20 @@
 
   function draw(time) {
     frame = 0;
-    if(!state.active) return;
+    if(!state.active || pdfPaused) return;
+    const rects=pdfRects();
+    if(!clearOfPdf(state.pos,rects) || !clearOfPdf(state.targetPos,rects)) {
+      const spot=chooseSpot(true);
+      if(!spot) {
+        ctx.clearRect(0,0,viewportWidth,viewportHeight);
+        frame=requestAnimationFrame(draw);
+        return;
+      }
+      state.edge=spot.edge;state.pos={x:spot.x,y:spot.y};state.targetPos={...state.pos};
+      state.rootAlong=spot.edge==='top'||spot.edge==='bottom'?spot.x:spot.y;
+      state.velocity={x:0,y:0};
+      rememberSpot(spot);
+    }
     const delta = lastFrameAt ? Math.min(50, time - lastFrameAt) : 16.67;
     lastFrameAt = time;
     update(time, delta);
@@ -1055,11 +1166,16 @@
       state.projecting=!!(drawDanger(time) || drawGuidance(time));
       drawOverseer(time,delta);
     }
+    // Embedded readers own their pointer events; keep the entire overlay off PDFs.
+    for(const element of document.querySelectorAll(PDF_SELECTOR)) {
+      const rect=visibleRect(element);
+      if(rect) ctx.clearRect(rect.left,rect.top,rect.width,rect.height);
+    }
     frame = requestAnimationFrame(draw);
   }
 
   function drawSoon() {
-    if(state.active && !frame) {
+    if(state.active && !pdfPaused && !frame) {
       lastFrameAt = 0;
       frame = requestAnimationFrame(draw);
     }
@@ -1077,32 +1193,24 @@
     document.body.append(host);
     ctx = canvas.getContext('2d', {alpha:true});
     musicAudio = document.getElementById('siteMusic');
-    state.musicEverPlayed = !!musicAudio && !musicAudio.paused;
     musicButton = document.getElementById('musicToggle');
-    musicButton?.addEventListener('pointerenter', event => {
-      if(event.pointerType === 'mouse') {
-        state.musicHovered = true;
-        if(state.active && !state.disintegrating) state.musicApproach='pending';
-      }
-    });
-    musicButton?.addEventListener('pointerleave', () => {
-      state.musicHovered = false;
-      state.guidanceHoverActive = false;
-      state.musicApproach = 'idle';
-    });
     resizeCanvas();
+    new MutationObserver(syncPdfFullscreen).observe(document.body,{attributes:true,attributeFilter:['class']});
+    syncPdfFullscreen();
 
     addEventListener('resize', resizeCanvas, {passive:true});
     addEventListener('scroll', queueScan, {passive:true, capture:true});
     addEventListener('pointermove', event => {
       if(event.pointerType === 'touch') return;
       state.pointer = {x:event.clientX,y:event.clientY,seen:true};
-      // Hovering the music button already requests a retreat and approach; don't
+      updateMusicProximity();
+      // Nearness to the music button already requests a retreat and approach; don't
       // replace that request with a random escape before the next animation frame.
       const approachingMusic=state.musicHovered && state.musicApproach==='pending' && !state.gribanovVisible;
       if(state.active && !mobilePointer.matches && !approachingMusic && distance(state.pos,state.pointer)<CONFIG.bodySize*1.25) teleport('escape');
     }, {passive:true});
     addEventListener('pointerdown', event => {
+      if(pdfPaused) return;
       state.pointer = {x:event.clientX,y:event.clientY,seen:true};
       if(state.active && distance(state.pos,state.pointer) < CONFIG.bodySize*(event.pointerType==='touch'?.58:1.25)) {
         if(event.pointerType === 'touch' && mobilePointer.matches) {
@@ -1114,6 +1222,7 @@
       }
     }, {passive:false,capture:true});
     addEventListener('touchstart', event => {
+      if(pdfPaused) return;
       const touch = event.changedTouches?.[0];
       if(!touch) return;
       state.pointer = {x:touch.clientX,y:touch.clientY,seen:true};
@@ -1144,6 +1253,7 @@
     getState() {
       return {
         active: state.active,
+        pdfPaused,
         reason: state.reason,
         mobile: mobilePointer.matches,
         disintegrating: state.disintegrating,

@@ -56,7 +56,7 @@ class KarmaBrowserTests(unittest.TestCase):
         page.goto(self.url)
         self.assertFalse(any('/Karma/' in url for url in requests))
         page.locator('#secretAcademicTrigger').dblclick()
-        page.wait_for_function("document.querySelector('#secretAcademicKarma')?.dataset.level==='3'")
+        page.wait_for_function("document.querySelector('#secretAcademicKarma')?.dataset.level==='1'")
         page.wait_for_timeout(2300)
         self.assertEqual(page.locator('.karma-subject').count(),5)
         self.assertEqual(page.locator('.karma-subject.complete').count(),1)
@@ -69,7 +69,7 @@ class KarmaBrowserTests(unittest.TestCase):
         self.assertIn('Лекции + Семинары',fiham.inner_text())
         self.assertNotIn('долг по предмету',page.locator('.karma-series').inner_text())
         self.assertNotIn('долг',fiham.get_attribute('title'))
-        self.assertEqual(page.locator('.karma-display').get_attribute('aria-label'),'Карма 3 из 10')
+        self.assertEqual(page.locator('.karma-display').get_attribute('aria-label'),'Карма 1 из 10')
         self.assertEqual(page.locator('.karma-status').text_content(),'')
         self.assertTrue(page.locator('.karma-status').is_hidden())
         for subject,total in [('ТДиСФ','4 / 8'),('ФЭЧ','5 / 8'),('ФиХАиМ','6 / 8')]:
@@ -82,8 +82,8 @@ class KarmaBrowserTests(unittest.TestCase):
         self.assertEqual(debts.locator('.secret-debt').count(),6)
         self.assertEqual(debts.locator('.secret-debt').filter(has_text='ФиХАиМ').locator('.secret-debt-name').inner_text(),'ФиХАиМ · Семинары')
         flower=page.locator('.karma-tracks > div').nth(0)
-        self.assertEqual(flower.locator('b').inner_text(),'1 / 7 дней')
-        self.assertAlmostEqual(flower.locator('em').evaluate('(el)=>parseFloat(el.style.width)'),100/7,places=4)
+        self.assertEqual(flower.locator('b').inner_text(),'Закройте все долги')
+        self.assertAlmostEqual(flower.locator('em').evaluate('(el)=>parseFloat(el.style.width)'),0,places=4)
         self.assertTrue(page.evaluate("document.querySelector('#secretAcademicKarma').compareDocumentPosition(document.querySelector('#secretAcademicSummary')) & Node.DOCUMENT_POSITION_FOLLOWING"))
         self.assertTrue(page.evaluate("Array.from(document.querySelector('.karma-display canvas').getContext('2d').getImageData(0,0,280,310).data).some(x=>x>0)"))
         page.locator('#secretAcademicRefresh').click()
@@ -143,7 +143,7 @@ class KarmaBrowserTests(unittest.TestCase):
         page=self.page()
         page.goto(self.url)
         page.locator('#secretAcademicTrigger').dblclick()
-        page.wait_for_function("document.querySelector('#secretAcademicKarma')?.dataset.level==='3'")
+        page.wait_for_function("document.querySelector('#secretAcademicKarma')?.dataset.level==='1'")
         states=page.evaluate("""async () => {
           const {rules}=await (await fetch('search-index/karma-history.json')).json();
           const host=document.createElement('div');
@@ -158,8 +158,15 @@ class KarmaBrowserTests(unittest.TestCase):
               flower:tracks[0].querySelector('b').textContent,width:parseFloat(tracks[0].querySelector('em').style.width),
               maximum:tracks[1].querySelector('b').textContent};
           };
-          const states={initial:read(0,.5),oneDay:read(0,1),beforeFlower:read(0,6.99),
-            flower:read(0,7),all:read(100,0),beforeTop:read(100,13.99),top:read(100,14)};
+          const states={initial:read(0,.5),oneDay:read(100,1),
+            all:read(100,0),beforeTop:read(100,14),top:read(100,15)};
+          const empty=Object.fromEntries(rules.series.map(s=>[s.id,0]));
+          const full=Object.fromEntries(rules.series.map(s=>[s.id,100]));
+          view.render(KarmaEngine.calculate({rules,snapshots:[
+            {at:new Date(now-day).toISOString(),counts:empty},
+            {at:new Date(now).toISOString(),counts:full}]},now),now);
+          states.flower={text:host.querySelector('.karma-tracks b').textContent,
+            width:parseFloat(host.querySelector('.karma-tracks em').style.width)};
           const counts=Object.fromEntries(rules.series.map(s=>[s.id,0]));
           counts['fiham-lectures']=6;counts['fiham-seminars']=2;
           view.render(KarmaEngine.calculate({rules,snapshots:[{at:new Date(now).toISOString(),counts}]},now),now);
@@ -169,17 +176,15 @@ class KarmaBrowserTests(unittest.TestCase):
         }""")
         self.assertEqual(states['initial']['level'],'1')
         self.assertEqual(states['initial']['label'],'Карма 1 из 10')
-        self.assertEqual(states['initial']['flower'],'0 / 7 дней')
+        self.assertEqual(states['initial']['flower'],'Закройте все долги')
         self.assertEqual(states['initial']['width'],0)
-        self.assertEqual(states['oneDay']['flower'],'1 / 7 дней')
-        self.assertAlmostEqual(states['oneDay']['width'],100/7,places=4)
-        self.assertEqual(states['beforeFlower']['flower'],'6 / 7 дней')
-        self.assertEqual(states['flower']['width'],100)
-        self.assertEqual(states['all']['level'],'9')
+        self.assertEqual(states['oneDay']['level'],'2')
+        self.assertEqual(states['flower'],{'text':'Получен','width':100})
+        self.assertEqual(states['all']['level'],'1')
         self.assertEqual(states['beforeTop']['level'],'9')
         self.assertEqual(states['top']['level'],'10')
         self.assertEqual(states['top']['label'],'Карма 10 из 10')
-        self.assertEqual(states['top']['maximum'],'14 / 14 дней')
+        self.assertEqual(states['top']['maximum'],'7 / 7 дней')
         self.assertEqual(states['surplus'],{'count':'6 / 8','complete':False})
 
     def test_waiting_label_replaces_checkmark_only_until_deadline(self):
@@ -204,13 +209,19 @@ class KarmaBrowserTests(unittest.TestCase):
           view.stop();return states;
         }""")
         self.assertEqual(states['afterLesson'],{'complete':False,'waiting':True,
-                                                'label':'ожидание до 9:00','level':8})
-        self.assertEqual(states['deadline'],{'complete':False,'waiting':False,'label':'','level':7})
+                                                'label':'ожидание до 9:00','level':2})
+        self.assertEqual(states['deadline'],{'complete':False,'waiting':False,'label':'','level':1})
 
     def test_increase_sound_phases_and_loop_cleanup(self):
         page=self.page()
         errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
         page.add_init_script("localStorage.setItem('nsu-editor-karma-visual-v1',JSON.stringify({level:1,shield:false,protectedUntil:null}))")
+        rules=json.loads((ROOT/'Karma/rules.json').read_text('utf-8'))
+        full={row['id']:100 for row in rules['series']}
+        page.route('**/search-index/karma-history.json',lambda route:route.fulfill(json={
+            'rules':rules,'currentCounts':full,'snapshots':[{'at':'2026-09-24T09:00:00+07:00','counts':full}]}))
+        page.route('**/search-index/structure.json',lambda route:route.fulfill(json={
+            'groups':[{'subject':row['subject'],'section':row['section'],'items':[{}]*100} for row in rules['series']]}))
         page.goto(self.url)
         page.evaluate("""() => {
           window.__sounds=[];

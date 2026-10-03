@@ -3,17 +3,63 @@
   "utcOffsetHours": 7,
   "deadlineHour": 9,
   "requireWholeSubject": false,
-  "reinforcementDays": 7,
-  "maximumDays": 14,
-  "workingWeekdays": [1, 2, 3, 4, 5, 6],
+  "maximumDays": 7,
   "series": [
-    {"id":"ovf-lectures","subject":"ОВФ","section":"Лекции","firstDate":"2026-09-01","end":"14:15"},
-    {"id":"tdisf-lectures","subject":"ТДиСФ","section":"Лекции","firstDate":"2026-09-04","end":"12:25"},
-    {"id":"tdisf-seminars","subject":"ТДиСФ","section":"Семинары","firstDate":"2026-09-04","end":"14:15"},
-    {"id":"fksv-seminars","subject":"ФКСВ","section":"Семинары","firstDate":"2026-09-05","end":"14:15"},
-    {"id":"fech-seminars","subject":"ФЭЧ","section":"Семинары","firstDate":"2026-09-03","end":"10:55"},
-    {"id":"fech-lectures","subject":"ФЭЧ","section":"Лекции","firstDate":"2026-09-03","end":"12:35"},
-    {"id":"fiham-lectures","subject":"ФиХАиМ","section":"Лекции","firstDate":"2026-09-01","end":"16:05"},
-    {"id":"fiham-seminars","subject":"ФиХАиМ","section":"Семинары","firstDate":"2026-09-01","end":"17:55"}
+    {
+      "id": "ovf-lectures",
+      "subject": "ОВФ",
+      "section": "Лекции",
+      "firstDate": "2026-09-01",
+      "end": "14:15"
+    },
+    {
+      "id": "tdisf-lectures",
+      "subject": "ТДиСФ",
+      "section": "Лекции",
+      "firstDate": "2026-09-04",
+      "end": "12:25"
+    },
+    {
+      "id": "tdisf-seminars",
+      "subject": "ТДиСФ",
+      "section": "Семинары",
+      "firstDate": "2026-09-04",
+      "end": "14:15"
+    },
+    {
+      "id": "fksv-seminars",
+      "subject": "ФКСВ",
+      "section": "Семинары",
+      "firstDate": "2026-09-05",
+      "end": "14:15"
+    },
+    {
+      "id": "fech-seminars",
+      "subject": "ФЭЧ",
+      "section": "Семинары",
+      "firstDate": "2026-09-03",
+      "end": "10:55"
+    },
+    {
+      "id": "fech-lectures",
+      "subject": "ФЭЧ",
+      "section": "Лекции",
+      "firstDate": "2026-09-03",
+      "end": "12:35"
+    },
+    {
+      "id": "fiham-lectures",
+      "subject": "ФиХАиМ",
+      "section": "Лекции",
+      "firstDate": "2026-09-01",
+      "end": "16:05"
+    },
+    {
+      "id": "fiham-seminars",
+      "subject": "ФиХАиМ",
+      "section": "Семинары",
+      "firstDate": "2026-09-01",
+      "end": "17:55"
+    }
   ]
 }

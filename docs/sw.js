@@ -1,5 +1,5 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v56';
+const SHELL_VERSION = 'v63';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
@@ -7,7 +7,7 @@ const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
 const CORE = ['index.html', 'app.js?v=14', 'app.css?v=6', 'knowledge.css?v=3', 'manifest.webmanifest?v=7',
-  '../Overseer/overseer.js?v=13', '../Overseer/overseer.css?v=2',
+  '../Overseer/overseer.js?v=19', '../Overseer/overseer.css?v=2',
   '../Overseer/assets/Circle20.png', '../Overseer/assets/GuidancePebbles.png',
   '../Overseer/assets/miscDangerSymbol.png', '../Overseer/assets/keyArrowA.png', '../Overseer/assets/keyXA.png', '../Overseer/assets/noise.png',
   'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=18', 'notebook/outline.js?build=2',

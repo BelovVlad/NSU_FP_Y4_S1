@@ -249,7 +249,7 @@ class OverseerBrowserTests(unittest.TestCase):
         self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), '')
         page.locator('#musicToggle').hover()
         page.clock.run_for(1500)
-        self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), '')
+        self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
         self.assert_music_distance(page)
         page.mouse.move(640, 400)
         page.evaluate("""() => {
@@ -267,7 +267,7 @@ class OverseerBrowserTests(unittest.TestCase):
         self.assertFalse(page.evaluate('NSUOverseer.getState().active'))
         self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), '')
 
-    def test_playing_either_track_blocks_pebbles_until_reload(self):
+    def test_pebbles_returns_after_pausing_either_track(self):
         for track in ['na19', 'na19x']:
             with self.subTest(track=track):
                 page = self.page(clock=True, config={'activeMax': 20000})
@@ -287,7 +287,7 @@ class OverseerBrowserTests(unittest.TestCase):
                 page.mouse.move(640, 400)
                 page.locator('#musicToggle').hover()
                 page.clock.run_for(1500)
-                self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), '')
+                self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
                 self.assert_music_distance(page)
 
                 page.reload()
@@ -297,6 +297,101 @@ class OverseerBrowserTests(unittest.TestCase):
                 page.locator('#musicToggle').hover()
                 page.clock.run_for(1500)
                 self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
+
+    def test_music_proximity_repeats_without_hover(self):
+        page = self.page(clock=True, config={'activeMax': 20000})
+        page.evaluate("NSUOverseer.show('ambient')")
+        rect = page.locator('#musicToggle').bounding_box()
+        for _ in range(2):
+            page.mouse.move(rect['x'] + rect['width'] + 180, rect['y'] + rect['height']/2)
+            page.clock.run_for(1700)
+            self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
+            page.mouse.move(640, 400)
+            page.clock.run_for(100)
+            self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), '')
+
+    def test_pebbles_recovers_after_escape_inside_music_zone(self):
+        page = self.page(clock=True, config={'activeMax': 20000})
+        page.evaluate("NSUOverseer.show('ambient')")
+        page.locator('#musicToggle').hover()
+        page.clock.run_for(1700)
+        self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
+        page.evaluate("NSUOverseer.teleport('escape')")
+        page.clock.run_for(2200)
+        self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
+
+    def test_projection_relocates_after_five_seconds_and_rechecks_condition(self):
+        page = self.page(clock=True, config={'activeMax': 30000})
+        page.evaluate("NSUOverseer.show('ambient')")
+        page.locator('#musicToggle').hover()
+        page.clock.run_for(1700)
+        for _ in range(2):
+            before = page.evaluate('NSUOverseer.getState().position')
+            page.clock.run_for(4000)
+            self.assertEqual(page.evaluate('NSUOverseer.getState().position'), before)
+            self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
+            page.clock.run_for(2200)
+            self.assertNotEqual(page.evaluate('NSUOverseer.getState().position'), before)
+            self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
+        page.mouse.move(640, 400)
+        page.clock.run_for(6500)
+        self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), '')
+
+    def test_pdf_excludes_positions_and_relocates_existing_overseer(self):
+        page = self.page(clock=True, config={'activeMax': 60000})
+        page.evaluate("NSUOverseer.show('ambient')")
+        page.clock.run_for(400)
+        pos=page.evaluate('NSUOverseer.getState().position')
+        side='left' if pos['x']<640 else 'right'
+        page.evaluate("""side => {
+          const pdf=document.createElement('iframe');pdf.className='pdf-fullscreen-frame';
+          pdf.style.cssText='position:fixed;top:0;'+side+':0;width:50vw;height:100vh;border:0;opacity:1;z-index:9999';
+          document.body.append(pdf);
+        }""", side)
+        for _ in range(8):
+            page.clock.run_for(650)
+            x=page.evaluate('NSUOverseer.getState().position.x')
+            if side=='left': self.assertGreaterEqual(x,712)
+            else: self.assertLessEqual(x,568)
+            page.evaluate('NSUOverseer.teleport()')
+
+    def test_fullscreen_pdf_pauses_and_restores_only_active_encounter(self):
+        page = self.page(clock=True, config={'activeMax': 3000})
+        page.evaluate("NSUOverseer.show('ambient')")
+        page.clock.run_for(500)
+        page.evaluate("document.body.classList.add('pdf-open')")
+        page.clock.run_for(5000)
+        self.assertTrue(page.evaluate('NSUOverseer.getState().pdfPaused'))
+        self.assertTrue(page.evaluate('NSUOverseer.getState().active'))
+        self.assertEqual(page.locator('#nsuOverseer').evaluate("node=>getComputedStyle(node).visibility"),'hidden')
+        page.evaluate("document.body.classList.remove('pdf-open')")
+        page.clock.run_for(100)
+        self.assertTrue(page.evaluate('NSUOverseer.getState().active'))
+        self.assertEqual(page.locator('#nsuOverseer').evaluate("node=>getComputedStyle(node).visibility"),'visible')
+        page.clock.run_for(2500)
+        self.assertFalse(page.evaluate('NSUOverseer.getState().active'))
+        page.evaluate("document.body.classList.add('pdf-open')")
+        page.clock.run_for(1000)
+        self.assertFalse(page.evaluate("NSUOverseer.show('ambient')"))
+        page.evaluate("document.body.classList.remove('pdf-open')")
+        page.clock.run_for(100)
+        self.assertFalse(page.evaluate('NSUOverseer.getState().active'))
+
+    def test_pdf_area_has_no_overlay_pixels(self):
+        page = self.page(clock=True)
+        page.evaluate("""() => {
+          const pdf=document.createElement('iframe');
+          pdf.className='pdf-fullscreen-frame';
+          pdf.style.cssText='position:fixed;inset:0;width:100vw;height:100vh;border:0;z-index:9999;opacity:1';
+          document.body.append(pdf);
+          NSUOverseer.show('ambient');
+        }""")
+        page.clock.run_for(1000)
+        self.assertTrue(page.evaluate("""() => {
+          const canvas=document.querySelector('.overseer-canvas');
+          const pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;
+          return pixels.every((value,index)=>index%4!==3 || value===0);
+        }"""))
 
     def assert_music_distance(self, page):
         self.assertEqual(page.evaluate('NSUOverseer.getState().musicApproach'), 'arrived')
@@ -379,6 +474,8 @@ class OverseerBrowserTests(unittest.TestCase):
 
     def test_cursor_escape_starts_before_touching_the_head(self):
         page = self.page(clock=True)
+        # Isolate the escape response from the music proximity behavior.
+        page.locator('#musicToggle').evaluate("node=>node.style.visibility='hidden'")
         page.emulate_media(reduced_motion='reduce')
         page.evaluate("NSUOverseer.show('ambient')")
         page.clock.run_for(400)

@@ -16,11 +16,13 @@
       host.innerHTML=`<div class="karma-header"><h3>Карма</h3></div>
         <div class="karma-body"><div class="karma-display" role="img"><canvas width="360" height="360" aria-hidden="true"></canvas></div>
         <div class="karma-details"><p class="karma-status" role="status">Проверяю историю конспектов…</p><div class="karma-tracks"></div><div class="karma-series"></div>
-        <details class="karma-rules"><summary>Как считается карма</summary><p>Начальная карма — 1. По одному очку за каждое из восьми направлений. Очки предмета засчитываются, только когда закрыты все его отслеживаемые разделы: лекции и семинары. Счётчик предмета объединяет конспекты по этим разделам.</p><p>После занятия есть время до 09:00 следующего дня. Все восемь направлений дают уровень 9. Две недели без просрочек на этом уровне открывают уровень 10.</p><p>Семь суток на одном уровне дают кармацвет. При просрочке он удержит уровень на один рабочий день (пн–сб), до 09:00 следующего дня. Если долг остаётся, защита исчезнет. Просрочка прерывает путь к уровню 10 даже под защитой. Полосы прогресса учитывают полные сутки.</p><p class="karma-history-note"></p></details></div></div>`;
+        <details class="karma-rules"><summary>Как считается карма</summary><p>Начальная карма — 1. Каждый день в 09:00 по Новосибирску: если долгов нет, карма повышается на 1; если остался хотя бы один долг — понижается на 1. Уровень не опускается ниже 1. После занятия есть время до 09:00 следующего дня.</p><p>Обычные повышения доводят карму до 9. Семь полных календарных суток подряд на девятой карме открывают десятую. Суббота и воскресенье тоже учитываются.</p><p>Закрытие всех накопленных долгов даёт кармацвет сразу, не чаще одного раза за день с 09:00 до 09:00. Кармацвет защищает от следующего снижения на один календарный день, до 09:00 следующих суток. Если долг остаётся, на следующем пересчёте карма снижается на 1. Пока защита удерживает девятую карму, серия продолжается; снижение обнуляет её.</p><p class="karma-history-note"></p></details></div></div>`;
       this.canvas=host.querySelector('canvas');
     }
     error(){
-      this.host.querySelector('.karma-status').textContent='История кармы временно недоступна. Попробуйте обновить данные.';
+      const status=this.host.querySelector('.karma-status');
+      status.hidden=false;
+      status.textContent='История кармы временно недоступна. Попробуйте обновить данные.';
     }
     render(result,now=Date.now(),fresh=false){
       const h=this.host;
@@ -28,14 +30,15 @@
       const displayLevel=result.level+1;
       h.dataset.level=displayLevel;
       h.querySelector('.karma-display').setAttribute('aria-label',`Карма ${displayLevel} из 10${result.shield?' · закреплена':''}`);
-      h.querySelector('.karma-status').textContent=result.protectedUntil
-        ?`Кармацвет удерживает уровень ${displayLevel} до ${date(result.protectedUntil)}. Сейчас закрыто ${result.raw} из 8 направлений.`
-        :result.level===9?'Высшая карма. Все направления закрыты в срок две недели подряд.'
-        :`${result.raw} из 8 направлений закрыто.${result.shield?' Карма закреплена кармацветом.':''}`;
-      const flowerDays=result.shield?7:completedDays(result.stableSince,7,now);
-      const maximumDays=completedDays(result.fullSince,14,now);
-      h.querySelector('.karma-tracks').innerHTML=`<div><span>Кармацвет${result.shield?' · закреплено':result.protectedUntil?' · защита действует':''}</span><b>${flowerDays} / 7 дней</b><i><em style="width:${flowerDays/7*100}%"></em></i></div>
-        <div><span>Высшая карма</span><b>${maximumDays} / 14 дней</b><i><em style="width:${maximumDays/14*100}%"></em></i></div>`;
+      const status=h.querySelector('.karma-status');
+      status.textContent=result.protectedUntil
+        ?`Кармацвет удерживает уровень ${displayLevel} до ${date(result.protectedUntil)}.`
+        :result.level===9?'Высшая карма. Семь календарных суток на девятой карме завершены.'
+        :result.shield?'Карма закреплена кармацветом.':'';
+      status.hidden=!status.textContent;
+      const maximumDays=completedDays(result.fullSince,7,now);
+      h.querySelector('.karma-tracks').innerHTML=`<div><span>Кармацвет</span><b>${result.shield?'Получен':result.protectedUntil?'Защита действует':'Закройте все долги'}</b><i><em style="width:${result.shield||result.protectedUntil?100:0}%"></em></i></div>
+        <div><span>Высшая карма</span><b>${maximumDays} / 7 дней</b><i><em style="width:${maximumDays/7*100}%"></em></i></div>`;
       const subjects=new Map();
       for(const row of result.rows){
         if(!subjects.has(row.subject))subjects.set(row.subject,[]);
@@ -43,14 +46,15 @@
       }
       h.querySelector('.karma-series').innerHTML=[...subjects].map(([subject,rows])=>{
         rows.sort((a,b)=>a.section.localeCompare(b.section,'ru'));
-        const complete=rows.every(row=>row.complete);
+        const waiting=rows.some(row=>row.waiting);
+        const complete=rows.every(row=>row.complete)&&!waiting;
         // Extra notes in one section cannot cover missing notes in another.
         const covered=rows.reduce((sum,row)=>sum+Math.min(row.actual,row.due),0);
         const due=rows.reduce((sum,row)=>sum+row.due,0);
         const breakdown=rows.map(row=>`${row.section}: ${row.actual} / ${row.due}`).join('; ');
-        return `<div class="karma-subject ${complete?'complete':''}" title="${esc(breakdown)}"><span class="karma-subject-dot">${complete?'✓':'·'}</span><span>${esc(subject)} <small>${esc(rows.map(row=>row.section).join(' + '))}</small></span><b>${covered} / ${due}</b></div>`;
+        return `<div class="karma-subject ${complete?'complete':waiting?'waiting':''}" title="${esc(breakdown)}"><span class="karma-subject-dot">${complete?'✓':'·'}</span><span>${esc(subject)} <small>${esc(rows.map(row=>row.section).join(' + '))}</small>${waiting?'<small class="karma-subject-waiting">ожидание до 9:00</small>':''}</span><b>${covered} / ${due}</b></div>`;
       }).join('');
-      h.querySelector('.karma-history-note').textContent=`Серия считается по истории публикаций с ${date(result.observedFrom)}. ${result.rows.some(r=>r.actual>r.due)?'Конспекты, добавленные до срока, уже учтены. ':''}Следующий срок — ${date(result.nextDeadline)}.`;
+      h.querySelector('.karma-history-note').textContent=`Серия считается по истории публикаций с ${date(result.observedFrom)}. ${result.rows.some(r=>r.actual>r.due)?'Конспекты, добавленные до срока, уже учтены. ':''}Следующий пересчёт — ${date(result.nextDeadline)}.`;
       let previous=this.last;
       if(!previous){try{previous=JSON.parse(localStorage.getItem('nsu-editor-karma-visual-v1'))}catch{}}
       if(!previous||!Number.isInteger(previous.level)||previous.level<0||previous.level>9)previous=result;
