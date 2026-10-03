@@ -1092,7 +1092,7 @@ body{
 <link rel="stylesheet" href="app.css?v=6">
 <link rel="stylesheet" href="../Overseer/overseer.css?v=2">
 <script defer src="app.js?v=14"></script>
-<script defer src="../Overseer/overseer.js?v=13"></script>
+<script defer src="../Overseer/overseer.js?v=19"></script>
 </head>
 <body>
 <div id="overlay" class="mobile-overlay"></div>
@@ -2519,7 +2519,7 @@ else{state.view='home';setActiveNav('home')}
         document.head.appendChild(karmaCss);
       }
 
-      const scripts=['../Karma/karma-engine.js?v=3','../Karma/karma-animation.js?v=1','../Karma/karma-view.js?v=7','secret-dashboard.js?v=7'];
+      const scripts=['../Karma/karma-engine.js?v=4','../Karma/karma-animation.js?v=1','../Karma/karma-view.js?v=8','secret-dashboard.js?v=7'];
       Promise.all(scripts.map(src=>new Promise((loaded,failed)=>{
         const script=document.createElement('script');
         script.src=src;script.async=true;script.dataset.secretDashboard='1';

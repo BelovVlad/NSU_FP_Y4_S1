@@ -8,109 +8,104 @@ const counts=n=>Object.fromEntries(rules.series.map(s=>[s.id,n]));
 const snapshot=(when,n)=>({at:new Date(at(when)).toISOString(),counts:typeof n==='number'?counts(n):n});
 const history=(...snapshots)=>({rules,snapshots});
 
-test('zero start; one point per covered direction, not per uploaded file',()=>{
-  assert.equal(calculate(history(snapshot('2026-09-07T09:00:00',0)),at('2026-09-07T20:00:00')).level,0);
-  const c=counts(0);c[rules.series[0].id]=7;
-  assert.equal(calculate(history(snapshot('2026-09-07T09:00:00',c)),at('2026-09-07T20:00:00')).level,1);
+test('starts at one; uploads do not directly increase karma',()=>{
+  for(const n of [0,1,100])assert.equal(calculate(history(snapshot('2026-09-07T09:00:00',n)),at('2026-09-07T23:00:00')).level,0);
 });
-test('FIHAM lectures 4/4 earn one point while seminars are 2/4',()=>{
-  const c=counts(0);c['fiham-lectures']=4;c['fiham-seminars']=2;
-  const r=calculate(history(snapshot('2026-09-29T09:00:00',c)),at('2026-09-29T09:00:00'));
-  assert.equal(r.raw,1);
-  const lectures=r.rows.find(row=>row.id==='fiham-lectures');
-  assert.equal(lectures.sectionComplete,true);assert.equal(lectures.complete,true);assert.equal(lectures.blockedBySubject,false);
-  c['fiham-seminars']=4;
-  assert.equal(calculate(history(snapshot('2026-09-29T09:00:00',c)),at('2026-09-29T09:00:00')).raw,2);
+test('daily gain at 09:00 only; Saturday and Sunday count',()=>{
+  const h=history(snapshot('2026-09-11T09:00:00',100));
+  assert.equal(calculate(h,at('2026-09-12T08:59:59')).level,0);
+  assert.equal(calculate(h,at('2026-09-12T09:00:00')).level,1);
+  assert.equal(calculate(h,at('2026-09-13T09:00:00')).level,2);
 });
-test('each tracked section earns its own point despite missing sibling notes',()=>{
-  for(const series of rules.series){
-    const c=counts(0);c[series.id]=4;
-    const r=calculate(history(snapshot('2026-09-29T09:00:00',c)),at('2026-09-29T09:00:00'));
-    assert.equal(r.raw,1,series.id);
-    assert.deepEqual(r.rows.filter(row=>row.complete).map(row=>row.id),[series.id]);
+test('one daily loss regardless of number of debts; minimum one',()=>{
+  const start=snapshot('2026-09-07T09:00:00',100);
+  for(const missing of [1,8]){
+    const c=counts(100);rules.series.slice(0,missing).forEach(s=>c[s.id]=0);
+    const h=history(start,snapshot('2026-09-10T12:00:00',c));
+    assert.equal(calculate(h,at('2026-09-10T18:00:00')).level,3);
+    assert.equal(calculate(h,at('2026-09-11T09:00:00')).level,2);
+    assert.equal(calculate(h,at('2026-10-01T09:00:00')).level,0);
   }
 });
-test('no loss at lesson end or 08:59; loss exactly at next 09:00',()=>{
-  const h=history(snapshot('2026-09-13T12:00:00',1));
-  for(const t of ['2026-09-14T18:00:00','2026-09-15T08:59:59'])assert.equal(calculate(h,at(t)).level,8);
-  assert.equal(calculate(h,at('2026-09-15T09:00:00')).level,0);
+test('all debts cleared earns flower immediately but partial repayment does not',()=>{
+  const c=counts(0);c[rules.series[0].id]=100;
+  const h=history(snapshot('2026-09-08T09:00:00',0),snapshot('2026-09-08T12:00:00',c),snapshot('2026-09-08T18:00:00',100));
+  assert.equal(calculate(h,at('2026-09-08T17:00:00')).shield,false);
+  const result=calculate(h,at('2026-09-08T18:00:00'));
+  assert.equal(result.shield,true);assert.equal(result.level,0);
+  assert.equal(calculate(h,at('2026-09-09T09:00:00')).level,1);
+  assert.equal(calculate(h,at('2026-09-09T09:00:00')).shield,true);
 });
-test('after each lesson a missing note waits until 09:00 without changing karma',()=>{
+test('a debt-free week alone does not earn flower',()=>{
+  const r=calculate(history(snapshot('2026-09-07T09:00:00',100)),at('2026-09-14T09:00:00'));
+  assert.equal(r.shield,false);assert.equal(r.level,7);
+});
+test('flower protects Sunday until Monday without working-day extension',()=>{
+  const h=history(snapshot('2026-09-07T09:00:00',100),snapshot('2026-09-11T12:00:00',0),
+    snapshot('2026-09-11T18:00:00',100),snapshot('2026-09-12T18:00:00',0));
+  const r=calculate(h,at('2026-09-13T09:00:00'));
+  assert.equal(r.level,5);assert.equal(r.shield,false);
+  assert.equal(r.protectedUntil,at('2026-09-14T09:00:00'));
+  assert.equal(calculate(h,at('2026-09-14T08:59:59')).level,5);
+  assert.equal(calculate(h,at('2026-09-14T09:00:00')).level,4);
+  assert.equal(graceEnd(at('2026-09-13T09:00:00'),rules),at('2026-09-14T09:00:00'));
+});
+test('repaying all debts during protection earns a new flower',()=>{
+  const h=history(snapshot('2026-09-08T09:00:00',0),snapshot('2026-09-08T12:00:00',100),
+    snapshot('2026-09-09T12:00:00',0),snapshot('2026-09-10T18:00:00',100));
+  const r=calculate(h,at('2026-09-10T18:00:00'));
+  assert.equal(r.shield,true);assert.equal(r.protectedUntil,null);
+});
+test('same-day debt toggles do not award multiple flowers',()=>{
+  const h=history(snapshot('2026-09-08T09:00:00',0),snapshot('2026-09-08T12:00:00',100),
+    snapshot('2026-09-08T13:00:00',0),snapshot('2026-09-08T18:00:00',100));
+  assert.equal(calculate(h,at('2026-09-08T18:00:00')).changes.filter(c=>c.type==='reinforced').length,1);
+});
+test('seven full calendar days on ninth karma unlock tenth',()=>{
+  const h=history(snapshot('2026-09-07T09:00:00',100));
+  assert.equal(calculate(h,at('2026-09-15T09:00:00')).level,8);
+  assert.equal(calculate(h,at('2026-09-22T08:59:59')).level,8);
+  const r=calculate(h,at('2026-09-22T09:00:00'));
+  assert.equal(r.level,9);assert.equal(r.fullSince,at('2026-09-15T09:00:00'));
+  assert.equal(calculate(h,at('2026-10-01T09:00:00')).level,9);
+});
+test('loss below ninth resets the seven-day streak',()=>{
+  const h=history(snapshot('2026-09-07T09:00:00',100),snapshot('2026-09-19T12:00:00',0),snapshot('2026-09-20T18:00:00',100));
+  assert.equal(calculate(h,at('2026-09-20T09:00:00')).fullSince,null);
+  assert.equal(calculate(h,at('2026-09-21T09:00:00')).fullSince,at('2026-09-21T09:00:00'));
+  assert.equal(calculate(h,at('2026-09-27T09:00:00')).level,8);
+  assert.equal(calculate(h,at('2026-09-28T09:00:00')).level,9);
+});
+test('upload exactly at deadline wins tie',()=>{
+  const h=history(snapshot('2026-09-07T09:00:00',0),snapshot('2026-09-08T09:00:00',1));
+  const r=calculate(h,at('2026-09-08T09:00:00'));
+  assert.equal(r.level,1);assert.equal(r.shield,false);
+});
+test('waiting after lesson is not overdue before 09:00',()=>{
   const h=history(snapshot('2026-09-13T12:00:00',1));
   for(const series of rules.series){
     const [hours,minutes]=series.end.split(':').map(Number);
-    const before=at('2026-09-14T00:00:00')+(hours*60+minutes-1)*60000;
-    const after=before+60000;
-    const beforeRow=calculate(h,before).rows.find(row=>row.id===series.id);
-    const afterResult=calculate(h,after);
-    const afterRow=afterResult.rows.find(row=>row.id===series.id);
-    assert.equal(beforeRow.waiting,false,series.id);
-    assert.equal(afterRow.waiting,true,series.id);
-    assert.equal(afterRow.waitingUntil,at('2026-09-15T09:00:00'),series.id);
-    assert.equal(afterResult.level,8,series.id);
+    const time=at('2026-09-14T00:00:00')+(hours*60+minutes)*60000;
+    const r=calculate(h,time),row=r.rows.find(row=>row.id===series.id);
+    assert.equal(row.waiting,true);assert.equal(row.waitingUntil,at('2026-09-15T09:00:00'));
+    assert.equal(r.level,1);
   }
+  assert.equal(calculate(h,at('2026-09-15T09:00:00')).level,0);
 });
-test('waiting disappears after an early upload and at the deadline',()=>{
-  const early=history(snapshot('2026-09-13T12:00:00',2));
-  assert.equal(calculate(early,at('2026-09-14T18:00:00')).rows.some(row=>row.waiting),false);
-  const missing=history(snapshot('2026-09-13T12:00:00',1));
-  const atDeadline=calculate(missing,at('2026-09-15T09:00:00'));
-  assert.equal(atDeadline.rows.some(row=>row.waiting),false);
-  assert.equal(atDeadline.rows.some(row=>row.complete),false);
-});
-test('on-time upload at deadline wins tie and keeps level',()=>{
-  const h=history(snapshot('2026-09-13T12:00:00',1),snapshot('2026-09-15T09:00:00',2));
-  assert.equal(calculate(h,at('2026-09-15T09:00:00')).level,8);
-});
-test('missing current week loses point even if earlier notes exist',()=>{
-  const h=history(snapshot('2026-09-13T12:00:00',1));
-  assert.equal(calculate(h,at('2026-09-15T09:00:00')).rows[0].due,2);
-});
-test('level 9 only after full fourteen days, not at day 13',()=>{
-  const h=history(snapshot('2026-09-07T09:00:00',10));
-  assert.equal(calculate(h,at('2026-09-21T08:59:59')).level,8);
-  assert.equal(calculate(h,at('2026-09-21T09:00:00')).level,9);
-});
-test('seven days earns flower; one workday of protection then a drop',()=>{
-  const h=history(snapshot('2026-09-07T09:00:00',1));
-  assert.equal(calculate(h,at('2026-09-14T08:59:59')).shield,false);
-  assert.equal(calculate(h,at('2026-09-14T09:00:00')).shield,true);
-  const protectedState=calculate(h,at('2026-09-15T09:00:00'));
-  assert.equal(protectedState.level,8);assert.equal(protectedState.raw,0);
-  assert.equal(protectedState.protectedUntil,at('2026-09-16T09:00:00'));
-  assert.equal(calculate(h,at('2026-09-16T08:59:59')).level,8);
-  assert.equal(calculate(h,at('2026-09-16T09:00:00')).level,0);
-});
-test('Sunday is skipped; Saturday is a working day',()=>{
-  assert.equal(graceEnd(at('2026-09-27T09:00:00'),rules),at('2026-09-29T09:00:00'));
-  assert.equal(graceEnd(at('2026-09-26T09:00:00'),rules),at('2026-09-27T09:00:00'));
-});
-test('catch-up during protection consumes flower and resets perfect streak',()=>{
-  const h=history(snapshot('2026-09-07T09:00:00',1),snapshot('2026-09-15T18:00:00',10));
-  const r=calculate(h,at('2026-09-16T09:00:00'));
-  assert.equal(r.level,8);assert.equal(r.shield,false);assert.equal(r.protectedUntil,null);
-  assert.equal(r.fullSince,at('2026-09-15T18:00:00'));
-  assert.equal(calculate(h,at('2026-09-21T09:00:00')).level,8);
-});
-test('partial catch-up does not extend protection indefinitely',()=>{
-  const c=counts(1);c[rules.series[0].id]=2;
-  const h=history(snapshot('2026-09-07T09:00:00',1),snapshot('2026-09-15T18:00:00',c));
-  assert.equal(calculate(h,at('2026-09-16T09:00:00')).level,1);
+test('surplus notes cannot repay debt in another section',()=>{
+  const c=counts(0);c['fiham-lectures']=100;
+  const r=calculate(history(snapshot('2026-09-08T09:00:00',c)),at('2026-09-09T09:00:00'));
+  assert.equal(r.level,0);assert.equal(r.raw,1);assert.equal(r.shield,false);
 });
 test('no retroactive credit before first reliable snapshot',()=>{
-  const h=history(snapshot('2026-09-21T09:00:00',10));
-  const r=calculate(h,at('2026-09-21T09:00:00'));
-  assert.equal(r.level,8);assert.equal(r.shield,false);
+  const h=history(snapshot('2026-09-21T12:00:00',100));
+  assert.equal(calculate(h,at('2026-09-21T12:00:00')).level,0);
   assert.throws(()=>calculate(h,at('2026-09-20T09:00:00')));
 });
-test('exact seven-day boundary can protect a simultaneous loss',()=>{
-  const h=history(snapshot('2026-09-08T09:00:00',1));
-  const r=calculate(h,at('2026-09-15T09:00:00'));
-  assert.equal(r.level,8);assert.equal(r.raw,0);assert.ok(r.protectedUntil);
-});
-test('replay gives same results on another device and after long absence',()=>{
-  const h=history(snapshot('2026-09-07T09:00:00',1));
-  calculate(h,at('2026-09-14T09:00:00'));
-  assert.deepEqual(calculate(h,at('2026-10-01T09:00:00')),calculate(JSON.parse(JSON.stringify(h)),at('2026-10-01T09:00:00')));
-  assert.equal(calculate(h,at('2026-10-01T09:00:00')).level,0);
+test('replay is deterministic after long absence and includes every day',()=>{
+  const h=history(snapshot('2026-09-07T09:00:00',100));
+  const result=calculate(h,at('2026-10-01T09:00:00'));
+  assert.deepEqual(result,calculate(JSON.parse(JSON.stringify(h)),at('2026-10-01T09:00:00')));
+  assert.equal(result.level,9);
+  assert.equal(result.nextDeadline,at('2026-10-02T09:00:00'));
 });
