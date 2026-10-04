@@ -1,5 +1,5 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v64';
+const SHELL_VERSION = 'v65';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
@@ -12,7 +12,8 @@ const CORE = ['index.html', 'app.js?v=14', 'app.css?v=6', 'knowledge.css?v=3', '
   '../Overseer/assets/miscDangerSymbol.png', '../Overseer/assets/keyArrowA.png', '../Overseer/assets/keyXA.png', '../Overseer/assets/noise.png',
   'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=18', 'notebook/outline.js?build=2',
   'pdfjs/viewer.html', 'pdfjs/controls.css?v=11', 'assets/nsu-fp-emblem.webp',
-  'assets/app-192.png?v=2', 'assets/app-512.png?v=2', 'particles/index.html', 'particles/particles.js'];
+  'assets/app-192.png?v=2', 'assets/app-512.png?v=2', 'particles/index.html', 'particles/particles.js',
+  'particles/explorer.css?v=2', 'particles/explorer.js?v=2'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json', 'search-index/karma-history.json'];
 const absolute = path => new URL(path, BASE).href;
 const local = url => url.origin === BASE.origin && url.pathname.startsWith(ROOT.pathname);
@@ -27,6 +28,7 @@ function cacheable(url) {
 function keyFor(url) {
   const key = new URL(url);
   if(key.pathname === BASE.pathname) key.pathname += 'index.html';
+  if(key.pathname === new URL('particles/',BASE).pathname) key.pathname += 'index.html';
   // Reader query parameters select a document; they do not change its HTML shell.
   if(/\.html$/.test(key.pathname)) key.search = '';
   return key.href;
@@ -125,7 +127,8 @@ self.addEventListener('fetch', event => {
   }
 
   if(pdfUrl(url)) event.respondWith(material(event.request));
-  else if(cacheable(url) || url.href === BASE.href) event.respondWith(resource(event.request,event));
+  else if(cacheable(url) || url.href === BASE.href ||
+    url.origin === BASE.origin && url.pathname === new URL('particles/',BASE).pathname) event.respondWith(resource(event.request,event));
 });
 
 async function savePdf(message) {
