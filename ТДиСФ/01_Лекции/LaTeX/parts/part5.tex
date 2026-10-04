@@ -1,0 +1,355 @@
+% !TeX root = part5.tex
+\documentclass[../final.tex]{subfiles}
+\begin{document}
+\ifSubfilesClassLoaded{\setcounter{chapter}{2}\setcounter{section}{6}}{}
+
+\chapter{Вырожденный бозе-газ}
+\rsubtitle{Конденсация Бозе--Эйнштейна и теплоёмкость}
+
+\Needspace{7\baselineskip}
+\section{Насыщение возбуждённых состояний}
+\subsection{Распределение Бозе--Эйнштейна}
+Рассматриваем \rassumption{трёхмерный идеальный газ с сохраняющимся числом
+частиц}, спектром $\varepsilon=p^2/(2m)$ и нулевой энергией основного состояния.
+Температура измеряется в энергетических единицах: $T=k_BT_{\mathrm K}$.
+Среднее заполнение одного состояния равно
+\begin{equation*}
+ \overline n_i=\frac1{e^{(\varepsilon_i-\mu)/T}-1}.
+\end{equation*}
+Положительность заполнения требует $\mu<0$ в конечной системе;
+в термодинамическом пределе допускается $\mu=0$.
+Плотность возбуждённых состояний и их суммарное заполнение имеют вид
+\begin{align*}
+ D(\varepsilon)&=AV\sqrt\varepsilon,\qquad
+ A=\frac{g(2m)^{3/2}}{4\pi^2\hbar^3},\\
+ N_{\mathrm{ex}}&=AV\int_0^\infty
+ \frac{\sqrt\varepsilon\,d\varepsilon}{e^{(\varepsilon-\mu)/T}-1}
+ =AVT^{3/2}I(x),\qquad x=\frac\mu T\leq0,\\
+ I(x)&=\int_0^\infty\frac{\sqrt z\,dz}{e^{z-x}-1}.
+\end{align*}
+Здесь $g$ --- кратность внутреннего вырождения, $z=\varepsilon/T$.
+До конденсации основное состояние заполнено немакроскопически и
+$N_{\mathrm{ex}}\simeq N$.
+
+\subsection{Максимальное число возбуждённых частиц}
+При $x<0$ функция $I$ монотонно возрастает:
+\begin{equation*}
+ I'(x)=\int_0^\infty
+ \frac{\sqrt z\,e^{z-x}}{(e^{z-x}-1)^2}\,dz>0.
+\end{equation*}
+Максимум достигается при $\mu\to0^{-}$, когда
+$I(0)=\Gamma(3/2)\zeta(3/2)$:
+\begin{equation*}
+ N_{\mathrm{ex}}^{\max}(T,V)=
+ AVT^{3/2}\Gamma\!\left(\frac32\right)\zeta\!\left(\frac32\right).
+\end{equation*}
+При $N=\mathrm{const}$ уменьшение $T$ или $V$ увеличивает $N/(VT^{3/2})$.
+Химический потенциал приближается к нулю, после чего дальнейшее увеличение
+этого отношения уже невозможно компенсировать изменением $\mu$.
+
+\clearpage
+\section{Конденсация Бозе--Эйнштейна}
+\subsection{Критическая температура и критический объём}
+\rconcept{Температура конденсации Бозе--Эйнштейна} $T_c=T_{\text{БЭ}}$
+определяется равенством $N=N_{\mathrm{ex}}^{\max}(T_c,V)$:
+\begin{align*}
+ T_c&=\left[
+ \frac{N}{AV\Gamma(3/2)\zeta(3/2)}\right]^{2/3}
+ =\frac{2\pi\hbar^2}{m}
+ \left[\frac{N}{gV\zeta(3/2)}\right]^{2/3},\\
+ V_c(T)&=\frac{N}{AT^{3/2}\Gamma(3/2)\zeta(3/2)}.
+\end{align*}
+Использованы $\Gamma(3/2)=\sqrt\pi/2$ и $\zeta(3/2)\simeq2.612$.
+Для температуры в кельвинах правую часть формулы для $T_c$ делят на $k_B$.
+При фиксированном $V$ конденсация происходит при $T<T_c$;
+при фиксированном $T$ --- при сжатии до $V<V_c$.
+
+\subsection{Основное состояние и интегрируемая особенность}
+При $\mu=0$ заполнение состояния с $\varepsilon=0$ формально расходится.
+Однако интеграл по возбуждённым состояниям остаётся конечным:
+\begin{equation*}
+ \int_0^\delta\frac{\sqrt\varepsilon\,d\varepsilon}{e^{\varepsilon/T}-1}
+ \simeq T\int_0^\delta\frac{d\varepsilon}{\sqrt\varepsilon}
+ =2T\sqrt\delta\ \longrightarrow\ 0\quad(\delta\to0).
+\end{equation*}
+Макроскопическое заполнение отдельного основного состояния учитывается
+отдельно от непрерывной плотности состояний:
+\begin{align*}
+ N&=N_0+N_{\mathrm{ex}},\qquad
+ N_{\mathrm{ex}}=AVT^{3/2}\Gamma(3/2)\zeta(3/2),\qquad \mu=0,\\
+ \frac{N_0}{N}&=1-\left(\frac{T}{T_c}\right)^{3/2}\quad(T\leq T_c),\qquad
+ \frac{N_0}{N}=1-\frac{V}{V_c}\quad(V\leq V_c).
+\end{align*}
+При $T>T_c$ или $V>V_c$ доля конденсата равна нулю.
+В конечной системе большое $N_0$ соответствует малому отрицательному
+$\mu$: при невырожденном основном уровне
+$N_0=(e^{-\mu/T}-1)^{-1}\simeq T/(-\mu)$.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,font=\small,line width=0.8pt]
+ \foreach \dx/\xl in {0/{$T/T_c$},6.2/{$V/V_c$}} {
+  \begin{scope}[xshift=\dx cm]
+   \draw[->] (0,0)--(4.8,0) node[right] {\xl};
+   \draw[->] (0,0)--(0,2.7) node[above] {$N_0/N$};
+   \node[left] at (0,2.2) {$1$};
+   \draw[dotted] (3,0)--(3,2.3);
+   \node[below] at (3,0) {$1$};
+   \draw[p3,thick] (3,0)--(4.4,0);
+  \end{scope}
+ }
+ \draw[p3,thick,domain=0:3,samples=65]
+  plot (\x,{2.2*(1-(\x/3)^1.5)});
+ \draw[p3,thick] (6.2,2.2)--(9.2,0);
+\end{tikzpicture}
+\captionof{figure}{Доля частиц в конденсате: слева при охлаждении с постоянными
+ $N,V$, справа при сжатии с постоянными $N,T$. На границе перехода $N_0=0$;
+ ниже критической температуры или критического объёма $N_0$ становится макроскопическим.}
+\end{rbox}
+
+\clearpage
+\section{Бозе-интегралы и специальные функции}
+\subsection{Интеграл при нулевом химическом потенциале}
+Для $\alpha>1$ разложим знаменатель в геометрический ряд:
+\begin{align*}
+ \frac1{e^z-1}&=\sum_{n=1}^{\infty}e^{-nz},\\
+ \int_0^\infty\frac{z^{\alpha-1}\,dz}{e^z-1}
+ &=\sum_{n=1}^{\infty}\int_0^\infty z^{\alpha-1}e^{-nz}\,dz
+ =\Gamma(\alpha)\sum_{n=1}^{\infty}\frac1{n^\alpha}
+ =\Gamma(\alpha)\zeta(\alpha).
+\end{align*}
+Здесь $\Gamma(\alpha)=\int_0^\infty u^{\alpha-1}e^{-u}du$,
+а $\zeta(\alpha)=\sum_{n=1}^\infty n^{-\alpha}$ при $\alpha>1$.
+Аналогично для ферми-газа
+\begin{equation*}
+ \int_0^\infty\frac{z^{\alpha-1}\,dz}{e^z+1}
+ =\Gamma(\alpha)\sum_{n=1}^{\infty}\frac{(-1)^{n-1}}{n^\alpha}
+ =\Gamma(\alpha)(1-2^{1-\alpha})\zeta(\alpha),\qquad \alpha>1.
+\end{equation*}
+Условие $\alpha>1$ для бозе-интеграла связано с поведением
+$z^{\alpha-2}$ при $z\to0$.
+
+\subsection{Ненулевой химический потенциал}
+Введём функцию, используемую в конспекте:
+\begin{align*}
+ F_\alpha(x)&=\sum_{n=1}^{\infty}\frac{e^{nx}}{n^\alpha},\qquad x<0,\\
+ \int_0^\infty\frac{z^{\alpha-1}\,dz}{e^{z-x}-1}
+ &=\Gamma(\alpha)F_\alpha(x),\qquad \alpha>0.
+\end{align*}
+Она совпадает с полилогарифмом $\operatorname{Li}_\alpha(e^x)$.
+При $x<0$ ряд допускает почленное дифференцирование:
+\begin{equation*}
+ F_\alpha'(x)=F_{\alpha-1}(x),\qquad
+ F_\alpha(0)=\zeta(\alpha)\quad(\alpha>1).
+\end{equation*}
+Следовательно,
+\begin{equation*}
+ I(x)=\Gamma(3/2)F_{3/2}(x),\qquad
+ I'(x)=\Gamma(3/2)F_{1/2}(x).
+\end{equation*}
+Сам $I(0)$ конечен, но $I'(x)$ расходится при $x\to0^{-}$.
+Разложение в обычный ряд Тейлора около нуля допустимо для первого
+поправочного члена только при $\alpha>2$:
+\begin{equation*}
+ F_\alpha(x)=\zeta(\alpha)+\zeta(\alpha-1)x+o(|x|),\qquad\alpha>2.
+\end{equation*}
+При $1<\alpha<2$ главная поправка содержит дробную степень $(-x)^{\alpha-1}$.
+
+\clearpage
+\section{Неаналитическое поведение вблизи перехода}
+\subsection{Выделение вклада малых энергий}
+Положим $y=-\mu/T>0$ и рассмотрим $0<a<1$:
+\begin{equation*}
+ b_a(y)=\int_0^\infty\frac{u^a\,du}{e^{u+y}-1}
+ =\Gamma(a+1)F_{a+1}(-y).
+\end{equation*}
+Функция $b_a(0)$ конечна, но её производная при $y\to0^+$ определяется
+областью малых $u$ и расходится. В этой области $e^{u+y}-1\simeq u+y$,
+поэтому главный сингулярный член равен
+\begin{align*}
+ b_a'(y)&=-\int_0^\infty
+ \frac{u^a e^{u+y}}{(e^{u+y}-1)^2}\,du
+ \sim-\int_0^\infty\frac{u^a\,du}{(u+y)^2}\\
+ &=-y^{a-1}\int_0^\infty\frac{v^a\,dv}{(1+v)^2}
+ =-y^{a-1}\Gamma(a+1)\Gamma(1-a).
+\end{align*}
+Подстановка $u=yv$ выделила всю зависимость от малого параметра.
+Последний интеграл вычисляется через бета-функцию:
+\begin{equation*}
+ B(p,q)=\int_0^\infty\frac{v^{p-1}\,dv}{(1+v)^{p+q}}
+ =\frac{\Gamma(p)\Gamma(q)}{\Gamma(p+q)},\qquad p,q>0.
+\end{equation*}
+Интегрируя главный член производной и используя
+$\Gamma(1-a)=-a\Gamma(-a)$, получаем
+\begin{align*}
+ b_a(y)&=b_a(0)-\frac{\Gamma(a+1)\Gamma(1-a)}{a}\,y^a+o(y^a)\\
+ &=\Gamma(a+1)\bigl[\zeta(a+1)+\Gamma(-a)y^a+o(y^a)\bigr],\\
+ F_\alpha(x)&=\zeta(\alpha)+\Gamma(1-\alpha)(-x)^{\alpha-1}
+ +o\!\left((-x)^{\alpha-1}\right),\qquad1<\alpha<2.
+\end{align*}
+При замене $y=z^{1/a}$ главный член $b_a(z^{1/a})-b_a(0)$ становится
+линейным по $z$. Для $a=1/2$ это подстановка $y=z^2$, использованная в лекции.
+
+\subsection{Случай трёхмерного газа}
+Для $\alpha=3/2$ и $\Gamma(-1/2)=-2\sqrt\pi$:
+\begin{align*}
+ F_{3/2}(-y)&=\zeta(3/2)-2\sqrt\pi\sqrt y+O(y),\\
+ F_{1/2}(-y)&=\frac{\sqrt\pi}{\sqrt y}+O(1),\qquad y\to0^+.
+\end{align*}
+Именно корневая особенность определяет поведение $\mu$ и теплоёмкости
+вблизи конденсации.
+
+\clearpage
+\subsection{Химический потенциал при фиксированных числе частиц и объёме}
+В нормальной фазе $T>T_c$ уравнение для числа частиц имеет вид
+\begin{equation*}
+ N=AVT^{3/2}\Gamma(3/2)F_{3/2}(x),\qquad x=\frac\mu T<0.
+\end{equation*}
+Используем это же равенство при $T=T_c$, где $x=0$:
+\begin{equation*}
+ F_{3/2}(x)=\zeta(3/2)\left(\frac{T_c}{T}\right)^{3/2}.
+\end{equation*}
+Для $\tau=(T-T_c)/T_c\to0^+$ из корневой асимптотики следует
+\begin{align*}
+ 2\sqrt\pi\sqrt{-x}
+ &=\zeta(3/2)\left[1-(1+\tau)^{-3/2}\right]+O(\tau^2)\\
+ &=\frac32\zeta(3/2)\tau+O(\tau^2),\\
+ \frac\mu T=x&=-\frac{9\zeta^2(3/2)}{16\pi}\tau^2+O(\tau^3).
+\end{align*}
+Таким образом, $\mu$ приближается к нулю квадратично.
+Тот же вывод получается при дифференцировании уравнения для $N$:
+\begin{align*}
+ 0&=\frac32F_{3/2}(x)+TF_{1/2}(x)\frac{dx}{dT},\\
+ \frac{dx}{dT}&=-\frac{3}{2T}\frac{F_{3/2}(x)}{F_{1/2}(x)},\qquad
+ \left.\frac{dx}{dT}\right|_{T\to T_c^+}=0,\\
+ \left.\frac{d^2x}{dT^2}\right|_{T\to T_c^+}
+ &=-\frac{9\zeta^2(3/2)}{8\pi T_c^2}.
+\end{align*}
+В фазе с конденсатом $\mu=0$ при $T\leq T_c$ в термодинамическом пределе.
+Первая производная $\mu$ непрерывна и равна нулю на границе,
+а вторая производная имеет конечный скачок.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,font=\small,line width=0.8pt,x=1.3cm,y=2cm]
+ \foreach \dx/\xl in {0/{$T/T_c$},6.2/{$V/V_c$}} {
+  \begin{scope}[xshift=\dx cm]
+   \draw[->] (0,0)--(3.65,0) node[right] {\xl};
+   \draw[->] (0,-1.15)--(0,0.4) node[above] {$\mu/T$};
+   \draw[dotted] (1,0)--(1,-1.05);
+   \node[above] at (1,0) {$1$};
+   \draw[p3,very thick] (0.08,0)--(1,0);
+   \node[p3,above] at (0.52,0.1) {$\mu=0$};
+   \node[p3,below] at (2.75,0) {$\mu<0$};
+  \end{scope}
+ }
+ \draw[p3,thick] plot file {\subfix{../image/bose_mu.dat}};
+ \begin{scope}[xshift=6.2cm]
+  \draw[p3,thick] plot file {\subfix{../image/bose_mu_volume.dat}};
+ \end{scope}
+\end{tikzpicture}
+\captionof{figure}{Химический потенциал: слева при постоянных $N,V$, справа
+ при постоянных $N,T$. Кривые вычислены из уравнения для числа частиц.
+ При $T\leq T_c$ или $V\leq V_c$ имеется конденсат и $\mu=0$;
+ со стороны нормальной фазы графики подходят к нулю с горизонтальной касательной.}
+\end{rbox}
+
+\clearpage
+\section{Энергия и теплоёмкость}
+\subsection{Внутренняя энергия}
+Основное состояние с $\varepsilon_0=0$ не вносит вклада в энергию.
+Энергия определяется возбуждёнными частицами:
+\begin{align*}
+ E&=AV\int_0^\infty
+ \frac{\varepsilon^{3/2}\,d\varepsilon}{e^{(\varepsilon-\mu)/T}-1}\\
+ &=AVT^{5/2}\Gamma(5/2)
+ \begin{cases}
+  F_{5/2}(\mu/T),&T>T_c,\\
+  \zeta(5/2),&T\leq T_c.
+ \end{cases}
+\end{align*}
+Здесь $\Gamma(5/2)=3\sqrt\pi/4$, $\zeta(5/2)\simeq1.341$.
+При $T<T_c$ число возбуждённых частиц пропорционально $T^{3/2}$,
+а характерная энергия одной такой частицы --- $T$, поэтому $E\propto T^{5/2}$.
+
+\subsection{Производная энергии при постоянных числе частиц и объёме}
+Теплоёмкость в принятых энергетических единицах определяется как
+$C_V=(\partial E/\partial T)_{N,V}$.
+В конденсированной фазе $\mu=0$, поэтому
+\begin{align*}
+ C_V^-&=\frac52 AVT^{3/2}\Gamma(5/2)\zeta(5/2),\\
+ \frac{C_V^-}{N}&=\frac{15}{4}\frac{\zeta(5/2)}{\zeta(3/2)}
+ \left(\frac{T}{T_c}\right)^{3/2}.
+\end{align*}
+Знак $-$ обозначает ветвь $T<T_c$. В нормальной фазе
+$x=\mu/T$ зависит от температуры:
+\begin{align*}
+ C_V^+&=AV\Gamma(5/2)
+ \left[\frac52T^{3/2}F_{5/2}(x)
+ +T^{5/2}F_{3/2}(x)\frac{dx}{dT}\right]\\
+ &=AVT^{3/2}\Gamma(5/2)
+ \left[\frac52F_{5/2}(x)-\frac32\frac{F_{3/2}^2(x)}{F_{1/2}(x)}\right],\\
+ \frac{C_V^+}{N}&=\frac{15}{4}\frac{F_{5/2}(x)}{F_{3/2}(x)}
+ -\frac94\frac{F_{3/2}(x)}{F_{1/2}(x)},\qquad T>T_c.
+\end{align*}
+При $T\gg T_c$ имеем $e^x\ll1$ и $F_\alpha(x)\simeq e^x$.
+Тогда $E\simeq3NT/2$ и $C_V\to3N/2$: восстанавливается
+классический результат для идеального газа.
+Теплоёмкость по температуре в кельвинах равна $k_BC_V$;
+безразмерная величина $C_V/N$ соответствует обычному $C_{V,\mathrm K}/(Nk_B)$.
+
+\clearpage
+\subsection{Непрерывность теплоёмкости на границе перехода}
+При $T\to T_c^+$ имеем $x\to0^{-}$, $dx/dT\to0$,
+$F_{5/2}(x)\to\zeta(5/2)$ и $F_{1/2}(x)\to\infty$.
+Следовательно,
+\begin{equation*}
+ C_V(T_c^+)=C_V(T_c^-)
+ =\frac{15}{4}N\frac{\zeta(5/2)}{\zeta(3/2)}\simeq1.926N.
+\end{equation*}
+Теплоёмкость непрерывна, достигает максимума при $T=T_c$,
+но её наклон меняется скачком.
+
+\begin{rbox}[unbreakable,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=7pt}
+\begin{tikzpicture}[>=Stealth,font=\small,line width=0.8pt,x=2.65cm,y=1.6cm]
+ \draw[->] (0,0)--(4.25,0) node[right] {$T/T_c$};
+ \draw[->] (0,0)--(0,2.45) node[above] {$C_V/N$};
+ \draw[dashed,red3] (0,1.5)--(4,1.5);
+ \node[left] at (0,1.5) {$3/2$};
+ \draw[dotted] (1,0)--(1,1.926);
+ \node[below] at (1,0) {$1$};
+ \draw[p3,thick,domain=0:1,samples=60] plot (\x,{1.9256717*\x^1.5});
+ \draw[p3,thick] plot file {\subfix{../image/bose_cv.dat}};
+ \fill[p3] (1,1.9256717) circle (1.7pt);
+ \node[above,p3] at (1,1.98) {$1.926$};
+ \node[p3,align=center] at (2.75,0.75) {нормальная\\фаза};
+\end{tikzpicture}
+\captionof{figure}{Теплоёмкость трёхмерного идеального бозе-газа при постоянных $N,V$.
+ Ниже $T_c$ она растёт как $T^{3/2}$; выше $T_c$ уменьшается к классическому
+ пределу $3N/2$. В точке перехода имеется излом без скачка самой теплоёмкости.}
+\end{rbox}
+
+\subsection{Скачок производной теплоёмкости}
+При дифференцировании выражения для $C_V^+$ на границе перехода
+выживает добавка, содержащая $d^2x/dT^2$:
+\begin{align*}
+ \left.\frac{dC_V^+}{dT}\right|_{T_c}
+ -\left.\frac{dC_V^-}{dT}\right|_{T_c}
+ &=AVT_c^{5/2}\Gamma(5/2)\zeta(3/2)
+ \left.\frac{d^2x}{dT^2}\right|_{T_c^+}\\
+ &=-\frac{27}{16\pi}\frac{N}{T_c}\zeta^2(3/2)
+ \simeq-3.666\frac{N}{T_c}.
+\end{align*}
+Произведение $F_{1/2}(x)(dx/dT)^2$ при этом стремится к нулю:
+оно имеет порядок $T-T_c$. Односторонние наклоны равны
+\begin{equation*}
+ \left.\frac{dC_V^-}{dT}\right|_{T_c}
+ =\frac{3C_V(T_c)}{2T_c}\simeq2.889\frac{N}{T_c},\qquad
+ \left.\frac{dC_V^+}{dT}\right|_{T_c}\simeq-0.777\frac{N}{T_c}.
+\end{equation*}
+
+\end{document}
