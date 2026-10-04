@@ -1,5 +1,5 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v63';
+const SHELL_VERSION = 'v64';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
@@ -12,7 +12,7 @@ const CORE = ['index.html', 'app.js?v=14', 'app.css?v=6', 'knowledge.css?v=3', '
   '../Overseer/assets/miscDangerSymbol.png', '../Overseer/assets/keyArrowA.png', '../Overseer/assets/keyXA.png', '../Overseer/assets/noise.png',
   'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=18', 'notebook/outline.js?build=2',
   'pdfjs/viewer.html', 'pdfjs/controls.css?v=11', 'assets/nsu-fp-emblem.webp',
-  'assets/app-192.png?v=2', 'assets/app-512.png?v=2'];
+  'assets/app-192.png?v=2', 'assets/app-512.png?v=2', 'particles/index.html', 'particles/particles.js'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json', 'search-index/karma-history.json'];
 const absolute = path => new URL(path, BASE).href;
 const local = url => url.origin === BASE.origin && url.pathname.startsWith(ROOT.pathname);
@@ -114,6 +114,16 @@ async function resource(request, event) {
 self.addEventListener('fetch', event => {
   if(event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
+
+  // "Частицы" is a visual application rather than a notebook. Keep the catalog
+  // entry in База for indexing/search, but open the explorer itself immediately.
+  const notebookViewerPath = absolute('notebook/viewer.html').replace(BASE.origin,'');
+  if(event.request.mode === 'navigate' && url.origin === BASE.origin &&
+     url.pathname === notebookViewerPath && url.searchParams.get('file') === 'База/Частицы.ipynb') {
+    event.respondWith(Response.redirect(absolute('particles/'),302));
+    return;
+  }
+
   if(pdfUrl(url)) event.respondWith(material(event.request));
   else if(cacheable(url) || url.href === BASE.href) event.respondWith(resource(event.request,event));
 });
@@ -141,9 +151,9 @@ async function savePdf(message) {
     if(length > limit) { await reader.cancel(); throw new Error('Файл больше 150 МБ. Скачайте его через кнопку «Файл».'); }
     chunks.push(value);
   }
-  const blob = new Blob(chunks,{type:'application/pdf'});
+  const blob=new Blob(chunks,{type:'application/pdf'});
   if(!(await blob.slice(0,1024).text()).includes('%PDF-')) throw new Error('Вместо PDF сервер вернул другой файл. Повторите попытку позже.');
-  const cache = await caches.open(PDFS);
+  const cache=await caches.open(PDFS);
   await cache.put(url.href,new Response(blob,{headers:{'Content-Type':'application/pdf',
     'Content-Length':String(length),'Accept-Ranges':'bytes',
     'X-NSU-Title':encodeURIComponent(String(message.title).slice(0,300)),
@@ -151,28 +161,28 @@ async function savePdf(message) {
   return {bytes:length};
 }
 async function listPdfs() {
-  const cache = await caches.open(PDFS);
-  return Promise.all((await cache.keys()).map(async request => {
-    const response = await cache.match(request);
+  const cache=await caches.open(PDFS);
+  return Promise.all((await cache.keys()).map(async request=>{
+    const response=await cache.match(request);
     return {url:request.url,title:decodeURIComponent(response.headers.get('X-NSU-Title')||'PDF'),
       viewer:decodeURIComponent(response.headers.get('X-NSU-Viewer')||''),bytes:Number(response.headers.get('Content-Length'))};
   }));
 }
-self.addEventListener('message', event => {
-  const message = event.data || {};
-  const action = async () => {
-    if(message.type === 'ACTIVATE') return self.skipWaiting();
-    if(message.type === 'SAVE_PDF') return savePdf(message);
-    if(message.type === 'LIST_PDFS') return listPdfs();
-    if(message.type === 'REMOVE_PDF') return (await caches.open(PDFS)).delete(message.url);
-    if(message.type === 'CLEAR_PDFS') return caches.delete(PDFS);
-    if(message.type === 'WARM') {
+self.addEventListener('message',event=>{
+  const message=event.data||{};
+  const action=async()=>{
+    if(message.type==='ACTIVATE') return self.skipWaiting();
+    if(message.type==='SAVE_PDF') return savePdf(message);
+    if(message.type==='LIST_PDFS') return listPdfs();
+    if(message.type==='REMOVE_PDF') return (await caches.open(PDFS)).delete(message.url);
+    if(message.type==='CLEAR_PDFS') return caches.delete(PDFS);
+    if(message.type==='WARM') {
       // Recover resources loaded before the first worker acquired control (including a direct reader link).
-      await Promise.allSettled((message.urls||[]).slice(0,120).filter(href=>cacheable(new URL(href))).map(async href => {
-        const url = new URL(href), key = keyFor(url);
-        const cache = await caches.open(url.origin === BASE.origin && url.pathname.startsWith(BASE.pathname) && !url.pathname.includes('/search-index/') ? SHELL : DATA);
+      await Promise.allSettled((message.urls||[]).slice(0,120).filter(href=>cacheable(new URL(href))).map(async href=>{
+        const url=new URL(href),key=keyFor(url);
+        const cache=await caches.open(url.origin===BASE.origin&&url.pathname.startsWith(BASE.pathname)&&!url.pathname.includes('/search-index/')?SHELL:DATA);
         if(await cache.match(key)) return;
-        const response = await fetch(href,{cache:'force-cache'});
+        const response=await fetch(href,{cache:'force-cache'});
         await put(cache,key,response);
       }));
       return true;
@@ -180,5 +190,5 @@ self.addEventListener('message', event => {
     throw new Error('Неизвестная команда.');
   };
   event.waitUntil(action().then(result=>event.ports[0]?.postMessage({ok:true,result}),error=>
-    event.ports[0]?.postMessage({ok:false,error:error.name === 'QuotaExceededError' ? 'Недостаточно места на устройстве.' : error.message})));
+    event.ports[0]?.postMessage({ok:false,error:error.name==='QuotaExceededError'?'Недостаточно места на устройстве.':error.message})));
 });
