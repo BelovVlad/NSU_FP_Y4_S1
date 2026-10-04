@@ -1,0 +1,307 @@
+% !TeX root = part5.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+\ifSubfilesClassLoaded{}{\addtocontents{toc}{\protect\newpage}}
+\practice{5}{01.10.2026}{Задачи по физике детекторов}
+
+\task[1]{Пробег B-мезонов и асимметрия коллайдера}
+\label{task:b_decay_length_sem5}
+
+\condition
+При энергии в системе центра масс $E_{\text{с.ц.м.}}=10.58\,\text{ГэВ}$
+образуется пара $B\overline B$. Масса мезона $m_Bc^2=5.28\,\text{ГэВ}$,
+собственная длина распада $c\tau\simeq491.1\,\text{мкм}$ (для $B^\pm$).
+Оценить средний пробег мезона в системе центра масс и в лабораторной системе
+для KEKB с энергиями пучков $8$ и $3.5\,\text{ГэВ}$.
+Объяснить, зачем нужна асимметрия пучков.
+
+\solution
+\subsection*{Движение мезонов в системе центра масс}
+
+Двум мезонам одинаковой массы достаются равные энергии:
+\begin{equation*}
+    E_B'=\frac{E_{\text{с.ц.м.}}}{2}=5.29\,\text{ГэВ}.
+\end{equation*}
+Штрихом обозначаем величины в системе центра масс. Импульс равен
+\begin{equation*}
+    p_B'c=\sqrt{(E_B')^2-m_B^2c^4}
+    =\sqrt{5.29^2-5.28^2}\simeq0.325\,\text{ГэВ}
+    \simeq0.33\,\text{ГэВ}.
+\end{equation*}
+Поэтому
+\begin{equation*}
+    \beta_B'=\frac{p_B'c}{E_B'}\simeq0.061,
+    \qquad
+    \gamma_B'=\frac{E_B'}{m_Bc^2}\simeq1.002.
+\end{equation*}
+Из $p=\gamma mv$ также следует
+\begin{equation*}
+    \beta_B'=\frac{p_B'c}{\gamma_B'm_Bc^2}
+    \simeq\frac{p_B'c}{m_Bc^2},
+\end{equation*}
+где последнее приближение допустимо из-за $\gamma_B'\simeq1$.
+Средний пробег до распада:
+\begin{equation*}
+    \ell_B'=\beta_B'\gamma_B'c\tau
+    =\frac{p_B'c}{m_Bc^2}c\tau
+    \simeq30\,\text{мкм}.
+\end{equation*}
+При симметричном коллайдере лабораторная система совпадает с системой
+центра масс, поэтому вершины распада находятся очень близко к точке столкновения.
+
+\begin{rbox}[left=16pt,right=16pt,top=12pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[>=Latex,every node/.style={text=rtext}]
+        \fill[rtext] (0,0) circle(2pt);
+        \draw[rc3,thick,->] (0,0)--(2,0.8) node[right] {$B$};
+        \draw[p3,thick,->] (0,0)--(2,-0.8) node[right] {$\overline B$};
+        \fill[rc3] (1.7,0.68) circle(2pt);
+        \fill[p3] (1.4,-0.56) circle(2pt);
+        \draw[rc3,->] (1.7,0.68)--(2.8,1.5);
+        \draw[rc3,->] (1.7,0.68)--(3.0,0.9);
+        \draw[p3,->] (1.4,-0.56)--(2.8,-0.7);
+        \draw[p3,->] (1.4,-0.56)--(2.4,-1.5);
+        \draw[<->,rtextmuted] (1.4,-1.85)--(1.7,-1.85);
+        \node[below] at (1.55,-1.85) {$\Delta z$};
+        \node[left,align=right] at (0,0) {точка\\столкновения};
+    \end{tikzpicture}
+    \captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+    \captionof{figure}{Схема разнесённых вершин распада в лабораторной системе.
+    Измерение $\Delta z$ позволяет оценить разность времён распада. Масштаб условный.}
+    \label{fig:b_vertices_sem5}
+\end{rbox}
+
+\subsection*{Движение системы центра масс в лабораторной системе}
+
+Для встречных ультрарелятивистских пучков
+\begin{equation*}
+    E_{\text{лаб}}=E_{e^-}+E_{e^+}=11.5\,\text{ГэВ},
+    \qquad
+    P_{\text{лаб}}c=E_{e^-}-E_{e^+}=4.5\,\text{ГэВ}.
+\end{equation*}
+Параметры преобразования из системы центра масс в лабораторную:
+\begin{equation*}
+    \gamma_{\text{ц.м.}}=\frac{11.5}{10.58}\simeq1.09,
+    \qquad
+    \beta_{\text{ц.м.}}=\frac{4.5}{11.5}\simeq0.39.
+\end{equation*}
+Пренебрегая малой скоростью мезона в системе центра масс,
+оцениваем его средний продольный пробег:
+\begin{equation*}
+    \ell_{\text{лаб}}\simeq
+    \beta_{\text{ц.м.}}\gamma_{\text{ц.м.}}c\tau
+    \simeq0.39\cdot1.09\cdot491.1\,\text{мкм}
+    \simeq210\,\text{мкм}.
+\end{equation*}
+
+\answer
+В системе центра масс средний пробег составляет около
+\rresult{$30\,\text{мкм}$}, в лабораторной системе --- порядка
+\rresult{$0.21\,\text{мм}$}. Асимметрия энергий пучков увеличивает
+пространственное разделение вершин и облегчает измерение разности времён
+распада:
+\begin{equation*}
+    \Delta t\simeq\frac{\Delta z}
+    {\beta_{\text{ц.м.}}\gamma_{\text{ц.м.}}c}.
+\end{equation*}
+
+\task[2]{Пороги черенковского детектора}
+\label{task:cherenkov_thresholds_sem5}
+
+\condition
+Найти пороговые импульсы пионов и каонов в аэрогеле ($n=1.01$)
+и кварце ($n=1.54$). Принять
+\begin{equation*}
+    m_\pi c^2\simeq140\,\text{МэВ},\qquad
+    m_Kc^2\simeq494\,\text{МэВ}.
+\end{equation*}
+
+\solution
+Черенковское излучение возникает при $\beta>1/n$.
+На пороге
+\begin{equation*}
+    \beta_{\text{пор}}=\frac1n,\qquad
+    \gamma_{\text{пор}}=\frac1{\sqrt{1-1/n^2}}.
+\end{equation*}
+Используя $pc=\gamma\beta mc^2$, получаем
+\begin{equation*}
+    (pc)_{\text{пор}}=\frac{mc^2}{\sqrt{n^2-1}}.
+\end{equation*}
+
+\subsection*{Аэрогель}
+
+При $n=1.01$
+\begin{equation*}
+    \beta_{\text{пор}}\simeq0.990,
+    \qquad \gamma_{\text{пор}}\simeq7.12.
+\end{equation*}
+Пороговые импульсы:
+\begin{equation*}
+    p_{\pi,\text{пор}}\simeq0.99\,\text{ГэВ}/c,
+    \qquad
+    p_{K,\text{пор}}\simeq3.48\,\text{ГэВ}/c
+    \simeq3.5\,\text{ГэВ}/c.
+\end{equation*}
+
+\subsection*{Кварц}
+
+При $n=1.54$
+\begin{equation*}
+    \beta_{\text{пор}}\simeq0.649,
+    \qquad\gamma_{\text{пор}}\simeq1.315.
+\end{equation*}
+Поэтому
+\begin{equation*}
+    p_{\pi,\text{пор}}\simeq0.120\,\text{ГэВ}/c,
+    \qquad
+    p_{K,\text{пор}}\simeq0.422\,\text{ГэВ}/c.
+\end{equation*}
+
+\answer
+\begin{center}
+    \begin{tabular}{lccc}
+        \hline
+        \rconcept{Среда} & $n$ & $p_{\pi,\text{пор}},\ \text{ГэВ}/c$
+        & $p_{K,\text{пор}},\ \text{ГэВ}/c$\\
+        \hline
+        Аэрогель & 1.01 & 0.99 & 3.48\\
+        Кварц & 1.54 & 0.120 & 0.422\\
+        \hline
+    \end{tabular}
+\end{center}
+В аэрогеле при импульсах между $0.99$ и $3.48\,\text{ГэВ}/c$
+пион излучает, а каон ещё не излучает. Это позволяет различать их
+при одном и том же измеренном импульсе.
+
+\task[3]{Восстановление частиц по фотонам в калориметре}
+\label{task:calorimeter_sem5}
+
+\condition
+В калориметре зарегистрированы четыре вспышки. Считаем их фотонами.
+Их энергии:
+\begin{equation*}
+    E_1=1\,\text{ГэВ},\quad E_2=1.5\,\text{ГэВ},\quad
+    E_3=1.7\,\text{ГэВ},\quad E_4=0.5\,\text{ГэВ}.
+\end{equation*}
+Углы между направлениями:
+\begin{align*}
+    \theta_{12}&=6.3^\circ,& \theta_{13}&=12.7^\circ,&
+    \theta_{14}&=160^\circ,\\
+    \theta_{23}&=23.5^\circ,& \theta_{24}&=85.0^\circ,&
+    \theta_{34}&=34.6^\circ.
+\end{align*}
+Найти инвариантные массы пар и определить возможные родительские частицы.
+
+\solution
+\rassumption{Используем единицы $c=1$}.
+Для любых двух частиц
+\begin{equation*}
+    m_{ij}^2=m_i^2+m_j^2+2E_iE_j
+    -2p_ip_j\cos\theta_{ij}.
+\end{equation*}
+Для фотонов $m_i=m_j=0$ и $p_i=E_i$, поэтому
+\begin{equation*}
+    m_{ij}^2=2E_iE_j(1-\cos\theta_{ij}).
+\end{equation*}
+В частности,
+\begin{align*}
+    m_{12}^2&=2\cdot1\cdot1.5(1-\cos6.3^\circ)
+    \simeq0.0181\,\text{ГэВ}^2,\\
+    m_{12}&\simeq0.135\,\text{ГэВ},\\[0.4em]
+    m_{34}^2&=2\cdot1.7\cdot0.5(1-\cos34.6^\circ)
+    \simeq0.301\,\text{ГэВ}^2,\\
+    m_{34}&\simeq0.548\,\text{ГэВ}.
+\end{align*}
+Для полноты результаты всех пар:
+\begin{center}
+    \begin{tabular}{ccccccc}
+        \hline
+        \rconcept{Пара} & 12 & 13 & 14 & 23 & 24 & 34\\
+        \hline
+        $m_{ij},\ \text{ГэВ}$ & 0.135 & 0.288 & 1.393 & 0.650 & 1.170 & 0.548\\
+        \hline
+    \end{tabular}
+\end{center}
+
+\answer
+Пары $(1,2)$ и $(3,4)$ по инвариантным массам соответствуют распадам
+\begin{equation*}
+    \pi^0\longrightarrow\gamma_1\gamma_2,
+    \qquad
+    \eta\longrightarrow\gamma_3\gamma_4.
+\end{equation*}
+При восстановлении единиц это массы около
+$135\,\text{МэВ}/c^2$ и $548\,\text{МэВ}/c^2$.
+
+\task[4]{Потери энергии электрона в остаточном газе}
+\label{task:vacuum_losses_sem5}
+
+\condition
+В кольцевой трубе длиной $\ell=3\,\text{см}$ находится воздух при давлении
+$P=10^{-7}\,\text{Па}$. Электрон имеет энергию порядка ГэВ.
+Оценить время, за которое он теряет $1\%$ начальной энергии
+из-за тормозного излучения в остаточном газе.
+
+\solution
+\subsection*{Плотность газа}
+
+Для воздуха используем
+\begin{equation*}
+    X_0=36.62\,\text{г}/\text{см}^2,\qquad
+    \rho_0\simeq1.2\cdot10^{-3}\,\text{г}/\text{см}^3,
+    \qquad P_0\simeq10^5\,\text{Па}.
+\end{equation*}
+При \rassumption{неизменной температуре} плотность идеального газа
+пропорциональна давлению:
+\begin{equation*}
+    \rho=\rho_0\frac{P}{P_0}
+    =1.2\cdot10^{-3}\frac{10^{-7}}{10^5}
+    =1.2\cdot10^{-15}\,\text{г}/\text{см}^3.
+\end{equation*}
+
+\subsection*{Суммарный путь до потери одного процента энергии}
+
+Для высокоэнергетического электрона средние радиационные потери задаются
+\begin{equation*}
+    -\frac{dE}{E}=\frac{dX}{X_0},\qquad X=\rho L,
+\end{equation*}
+где $L$ --- суммарный путь за много оборотов, а не длина трубы.
+После интегрирования
+\begin{equation*}
+    E=E_0e^{-X/X_0},\qquad
+    X=X_0\ln\frac{E_0}{E}.
+\end{equation*}
+Потере $1\%$ энергии соответствует $E/E_0=0.99$, следовательно,
+\begin{equation*}
+    L_{1\%}=\frac{X_0}{\rho}\ln\frac1{0.99}
+    \simeq\frac{36.62}{1.2\cdot10^{-15}}\cdot0.01005
+    \simeq3.07\cdot10^{14}\,\text{см}.
+\end{equation*}
+
+\subsection*{Время движения по кольцу}
+
+Электрон с энергией порядка ГэВ ультрарелятивистский, поэтому $v\simeq c$.
+Один оборот занимает
+\begin{equation*}
+    t_{\text{об}}\simeq\frac{\ell}{c}
+    \simeq10^{-10}\,\text{с}.
+\end{equation*}
+Число оборотов до указанной потери энергии:
+\begin{equation*}
+    n\simeq\frac{L_{1\%}}{\ell}\simeq1.02\cdot10^{14}.
+\end{equation*}
+Таким образом,
+\begin{equation*}
+    t_{1\%}=nt_{\text{об}}\simeq\frac{L_{1\%}}c
+    \simeq1.02\cdot10^4\,\text{с}\simeq2.8\,\text{ч}.
+\end{equation*}
+
+\answer
+Время потери $1\%$ средней энергии в остаточном газе составляет
+\rresult{порядка $10^4\,\text{с}$, или $2.8$ часа}.
+При постоянной плотности газа длина кольца сокращается в оценке времени,
+но определяет число оборотов.
+
+\end{document}

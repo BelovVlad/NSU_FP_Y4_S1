@@ -1,0 +1,373 @@
+% !TeX root = part5.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% Лекция 29.09.2026. Продолжение главы об интерполяции.
+\ifSubfilesClassLoaded{\setcounter{chapter}{4}\setcounter{section}{6}}{}
+\captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+
+\subsection{Узлы Чебышёва}
+
+Остаточный член интерполяции содержит \rconcept{узловой множитель}
+\begin{equation*}
+    \omega_{n+1}(x)=\prod_{i=0}^{n}(x-x_i),\qquad
+    y(x)-P_n(x)=\frac{y^{(n+1)}(\xi)}{(n+1)!}\omega_{n+1}(x).
+\end{equation*}
+Поэтому при выборе узлов стремятся минимизировать величину
+\begin{equation*}
+    \max_{x\in[a,b]}\left|\prod_{i=0}^{n}(x-x_i)\right|.
+\end{equation*}
+На отрезке $[-1,1]$ минимум достигается, если $x_i$ --- корни
+полинома Чебышёва $T_{n+1}$:
+\begin{equation*}
+    T_{n+1}(t)=\cos\bigl((n+1)\arccos t\bigr),\qquad
+    t_i=\cos\frac{(2i+1)\pi}{2(n+1)},\quad i=0,\ldots,n.
+\end{equation*}
+Эти узлы сгущаются у концов отрезка.
+На произвольном отрезке $[a,b]$ упорядочим их по возрастанию:
+\begin{equation*}
+    x_i=\frac{a+b}{2}-\frac{b-a}{2}
+    \cos\frac{(2i+1)\pi}{2(n+1)},\qquad i=0,\ldots,n.
+\end{equation*}
+Для такого выбора
+\begin{equation*}
+    \max_{x\in[a,b]}|\omega_{n+1}(x)|
+    =\frac{(b-a)^{n+1}}{2^{2n+1}}.
+\end{equation*}
+Таким образом, \rresult{узлы Чебышёва минимизируют максимум модуля
+узлового множителя} и уменьшают соответствующую оценку погрешности.
+
+\section{Численное дифференцирование}
+
+\subsection{Производные интерполяционного полинома}
+
+Пусть известны значения $y(x_i)=y_i$ в узлах $x_0,\ldots,x_n$.
+Вспомним полином Ньютона:
+\begin{equation*}
+    P_n(x)=y(x_0)+\sum_{k=1}^{n}
+    y^{(k)}(x_0,\ldots,x_k)\prod_{j=0}^{k-1}(x-x_j).
+\end{equation*}
+При нескольких аргументах $y^{(k)}(x_0,\ldots,x_k)$ означает
+разделённую разность, а $y^{(k)}(x)$ с одним аргументом --- производную.
+Приближённые значения производных получаем дифференцированием $P_n$.
+
+Введём \rassumption{локальную равномерную сетку с шагом $h=x_{i+1}-x_i$}.
+При фиксированном числе близких узлов и ограниченных производных
+разложение по формуле Тейлора даёт
+\begin{equation*}
+    y(x)=P_n(x)+O(h^{n+1}),\qquad
+    y^{(m)}(x)=P_n^{(m)}(x)+O(h^{n+1-m}),\quad 1\le m\le n.
+\end{equation*}
+Для полинома степени $m$ по $m+1$ узлам старший коэффициент равен
+разделённой разности порядка $m$, поэтому
+\begin{align*}
+    P_m^{(m)}(x)&=m!\,y^{(m)}(x_0,\ldots,x_m),\\
+    y^{(m)}(x)&=m!\,y^{(m)}(x_0,\ldots,x_m)+O(h).
+\end{align*}
+
+\subsection{Первая производная: правая и левая разности}
+
+Правая разностная производная определяется как
+\begin{equation*}
+    \Delta_{\mathrm r}y(x)
+    =\frac{y(x+h)-y(x)}{h}.
+\end{equation*}
+Это наклон секущей через точки с абсциссами $x$ и $x+h$.
+Аналогично \rconcept{левая разностная производная} равна
+\begin{equation*}
+    \Delta_{\mathrm l}y(x)
+    =\frac{y(x)-y(x-h)}{h}.
+\end{equation*}
+
+\begin{rbox}[breakable=false,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[x=1.75cm,y=0.85cm,
+        every node/.style={text=rtext,font=\small}]
+        \draw[rtext,-{Stealth[length=2.2mm]}] (0,0)--(4.0,0) node[right] {$x$};
+        \draw[rtext,-{Stealth[length=2.2mm]}] (0,0)--(0,2.7) node[left] {$y$};
+        \draw[rc4,line width=1.4pt,domain=0.3:3.6,samples=90]
+            plot(\x,{0.45+0.15*\x*\x});
+        \draw[p3,line width=1.1pt] (1,0.6)--(2,1.05);
+        \draw[red3,line width=1.1pt] (2,1.05)--(3,1.8);
+        \foreach \xx/\yy/\lab in {1/0.6/{x-h},2/1.05/{x},3/1.8/{x+h}}{
+            \draw[rtext!45,dashed] (\xx,0)--(\xx,\yy);
+            \fill[rtext] (\xx,\yy) circle(1.6pt);
+            \node[below=4pt] at (\xx,0) {$\lab$};
+        }
+        \node[p3,above left] at (1.5,0.825) {$\Delta_{\mathrm l}y$};
+        \node[red3,above left] at (2.6,1.5) {$\Delta_{\mathrm r}y$};
+    \end{tikzpicture}
+    \captionof{figure}{Левая и правая разностные производные --- наклоны
+    секущих на соседних участках сетки.}
+    \label{fig:ovf5_one_sided_differences}
+\end{rbox}
+
+\subsection{Оценка погрешности первой производной}
+
+Погрешность правой разности равна $R_{\mathrm r}(h)=
+\Delta_{\mathrm r}y(x)-y'(x)$. Разложим функцию в ряд Тейлора:
+\begin{equation*}
+    y(x+h)=y(x)+hy'(x)+\frac{h^2}{2}y''(x)
+    +\frac{h^3}{6}y'''(x)+O(h^4).
+\end{equation*}
+Подстановка даёт
+\begin{equation*}
+    R_{\mathrm r}(h)
+    =\frac h2y''(x)+\frac{h^2}{6}y'''(x)+O(h^3)=O(h).
+\end{equation*}
+Для левой разности аналогично
+\begin{equation*}
+    R_{\mathrm l}(h)=\Delta_{\mathrm l}y(x)-y'(x)
+    =-\frac h2y''(x)+\frac{h^2}{6}y'''(x)+O(h^3)=O(h).
+\end{equation*}
+Обе односторонние формулы имеют \rresult{первый порядок точности}.
+
+\subsection{Центральная разность}
+
+Усреднение левой и правой разностей устраняет член первого порядка:
+\begin{equation*}
+    \Delta_{\mathrm c}y(x)
+    =\frac{\Delta_{\mathrm r}y(x)+\Delta_{\mathrm l}y(x)}2
+    =\frac{y(x+h)-y(x-h)}{2h}.
+\end{equation*}
+Для достаточно гладкой функции погрешность равна
+\begin{equation*}
+    R_{\mathrm c}(h)=\Delta_{\mathrm c}y(x)-y'(x)
+    =\frac{h^2}{6}y'''(x)+O(h^4)=O(h^2).
+\end{equation*}
+Центральная разность имеет \rresult{второй порядок точности}.
+
+\subsection{Вторая производная}
+
+По трём произвольным близким узлам
+\begin{equation*}
+    y''(x)=2!\,y^{(2)}(x_0,x_1,x_2)+O(h).
+\end{equation*}
+На симметричной равномерной сетке $x_0=x-h$, $x_1=x$, $x_2=x+h$
+разделённая разность равна
+\begin{align*}
+    y^{(2)}(x-h,x,x+h)
+    &=\frac{y^{(1)}(x-h,x)-y^{(1)}(x,x+h)}{(x-h)-(x+h)}\\
+    &=\frac{y(x+h)-2y(x)+y(x-h)}{2h^2}.
+\end{align*}
+Центральная формула и её разложение по Тейлору имеют вид
+\begin{align*}
+    \Delta_2y(x)&=\frac{y(x+h)-2y(x)+y(x-h)}{h^2},\\
+    \Delta_2y(x)&=y''(x)+\frac{h^2}{12}y^{(4)}(x)+O(h^4).
+\end{align*}
+Благодаря симметрии сетки эта формула также имеет
+\rresult{второй порядок точности}.
+
+\chapter{Численное решение обыкновенных дифференциальных уравнений}
+\rsubtitle{Метод Эйлера и явный метод средней точки}
+
+\section{Задача Коши и равномерная сетка}
+
+Рассмотрим \rconcept{задачу Коши} для ОДУ первого порядка:
+\begin{equation*}
+    \begin{cases}
+        u'(x)=f(x,u(x)),\qquad x\in[a,b],\\
+        u(a)=u_0.
+    \end{cases}
+\end{equation*}
+Функцию $u(x)$ будем считать точным решением.
+Значения численного решения на сетке обозначим через $y_i$.
+Для $N$ равных шагов
+\begin{equation*}
+    h=\frac{b-a}{N},\qquad x_i=a+ih,\qquad i=0,\ldots,N,
+    \qquad y_i\simeq u(x_i).
+\end{equation*}
+
+\subsection{Производные точного решения}
+
+Если $f$ достаточно гладкая, производные $u$ можно выразить через $f$.
+По правилу дифференцирования сложной функции
+\begin{align*}
+    u'&=f,\\
+    u''&=f_x+f_u u'=f_x+ff_u,\\
+    u'''&=f_{xx}+2ff_{xu}+f^2f_{uu}+f_xf_u+f(f_u)^2.
+\end{align*}
+Все значения $f$ и её частных производных в этих формулах берутся
+в точке $(x,u(x))$.
+
+\section{Метод Эйлера}
+
+\subsection{Разностная схема}
+
+Заменим производную правой разностью и вычислим правую часть
+в начале шага:
+\begin{equation*}
+    \frac{y_{i+1}-y_i}{h}=f(x_i,y_i).
+\end{equation*}
+Получаем \rconcept{явную схему Эйлера}:
+\begin{equation*}
+    \begin{cases}
+        y_{i+1}=y_i+h f(x_i,y_i),\qquad i=0,\ldots,N-1,\\
+        y_0=u_0.
+    \end{cases}
+\end{equation*}
+На каждом шаге наклон решения заменяется наклоном касательной
+в начале этого шага.
+
+\begin{rbox}[breakable=false,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[x=1.4cm,y=0.8cm,
+        every node/.style={text=rtext,font=\small}]
+        \draw[rtext,-{Stealth[length=2.2mm]}] (0,0)--(5.9,0) node[right] {$x$};
+        \draw[rtext,-{Stealth[length=2.2mm]}] (0,0)--(0,4.55) node[left] {$u$};
+        \draw[rc4,line width=1.4pt,domain=0.6:5.25,samples=90]
+            plot(\x,{0.4+0.14*\x*\x});
+        \draw[p3,line width=1.3pt] (2.2,1.0776)--(3.1,1.632);
+        \draw[p3,dashed] (3.1,1.632)--(3.8,2.0632);
+        \draw[rtext!45,dashed] (0,1.0776)--(2.2,1.0776);
+        \node[left] at (0,1.0776) {$y_i$};
+        \draw[rtext!45,dashed] (2.2,0)--(2.2,1.0776);
+        \draw[rtext!45,dashed] (3.1,0)--(3.1,1.7454);
+        \fill[rtext] (2.2,1.0776) circle(1.6pt);
+        \fill[p3] (3.1,1.632) circle(1.6pt);
+        \fill[rc4] (3.1,1.7454) circle(1.6pt);
+        \node[below=4pt] at (0.8,0) {$a$};
+        \node[below=4pt] at (2.2,0) {$x_i$};
+        \node[below=4pt] at (3.1,0) {$x_{i+1}$};
+        \node[below=4pt] at (5.2,0) {$b$};
+        \node[rc4,above left] at (4.5,3.235) {$u(x)$};
+        \node[p3,right] at (3.8,2.0632) {шаг Эйлера};
+    \end{tikzpicture}
+    \captionof{figure}{Шаг метода Эйлера: переход вдоль касательной
+    вместо движения по точной интегральной кривой.}
+    \label{fig:ovf5_euler_step}
+\end{rbox}
+
+\subsection{Локальная погрешность}
+
+Разложим точное решение около $x_i$:
+\begin{equation*}
+    u(x_i+h)=u(x_i)+hu'(x_i)+\frac{h^2}{2}u''(x_i)+O(h^3).
+\end{equation*}
+Пусть в начале одного шага $y_i=u(x_i)$. Тогда
+\begin{equation*}
+    y_{i+1}=u(x_i)+h f(x_i,u(x_i))=u(x_i)+hu'(x_i).
+\end{equation*}
+Погрешность одного шага равна
+\begin{equation*}
+    u(x_{i+1})-y_{i+1}=\frac{h^2}{2}u''(x_i)+O(h^3).
+\end{equation*}
+Таким образом, \rconcept{локальная погрешность} метода Эйлера
+имеет порядок $O(h^2)$.
+
+\subsection{Невязка и порядок аппроксимации}
+
+Введём разностный оператор
+\begin{equation*}
+    \Delta_h v_i=\frac{v_{i+1}-v_i}{h}-f(x_i,v_i).
+\end{equation*}
+Численная схема записывается как $\Delta_h y_i=0$.
+Подстановка точного решения $u_i=u(x_i)$ в этот оператор даёт
+\rconcept{невязку}:
+\begin{equation*}
+    \Psi_{h,i}=\Delta_h u_i
+    =\frac{u(x_i+h)-u(x_i)}h-f(x_i,u(x_i)).
+\end{equation*}
+Невязка численной аппроксимации дифференциального уравнения ---
+результат подстановки его точного решения в разностную схему.
+Если $\Psi_{h,i}=O(h^p)$, то схема аппроксимирует уравнение
+с порядком $p$.
+
+Для метода Эйлера
+\begin{align*}
+    \Psi_{h,i}
+    &=u'(x_i)+\frac h2u''(x_i)+O(h^2)-f(x_i,u(x_i))\\
+    &=\frac h2u''(x_i)+O(h^2)=O(h).
+\end{align*}
+Следовательно, схема Эйлера имеет \rresult{первый порядок аппроксимации}.
+Невязка отличается от погрешности одного шага множителем $1/h$.
+
+\subsection{Накопление погрешности}
+
+На фиксированном отрезке число шагов равно $N=(b-a)/h$.
+Для оценки накопления локальных ошибок необходимо учитывать
+их распространение между шагами.
+Предположим, что $f$ удовлетворяет \rassumption{условию Липшица по $u$}:
+\begin{equation*}
+    |f(x,v)-f(x,w)|\le L|v-w|.
+\end{equation*}
+Если $e_i=y_i-u(x_i)$ и локальная погрешность ограничена величиной $Ch^2$,
+то
+\begin{equation*}
+    |e_{i+1}|\le(1+Lh)|e_i|+Ch^2,\qquad e_0=0.
+\end{equation*}
+При $L>0$ отсюда следует
+\begin{equation*}
+    |e_i|\le\frac{Ch}{L}\bigl((1+Lh)^i-1\bigr)
+    \le\frac{Ch}{L}\bigl(e^{L(b-a)}-1\bigr)=O(h).
+\end{equation*}
+При $L=0$ оценка принимает вид
+\begin{equation*}
+    |e_N|\le NCh^2=C(b-a)h=O(h).
+\end{equation*}
+Таким образом, глобальная погрешность Эйлера на фиксированном отрезке
+имеет \rresult{первый порядок по шагу $h$}.
+
+\section{Модифицированный метод Эйлера}
+
+\subsection{Интегральная форма уравнения}
+
+Интегрируя $u'=f(x,u)$ на одном шаге, получаем
+\begin{equation*}
+    u(x_{i+1})=u(x_i)+\int_{x_i}^{x_{i+1}}f(x,u(x))\,dx.
+\end{equation*}
+Замена интеграла формулой левых прямоугольников даёт
+\begin{equation*}
+    u(x_{i+1})=u(x_i)+h f(x_i,u(x_i))+O(h^2),
+\end{equation*}
+то есть обычную схему Эйлера.
+
+Чтобы повысить порядок точности, используем \rconcept{метод средних
+прямоугольников}:
+\begin{equation*}
+    u(x_{i+1})=u(x_i)
+    +h f\!\left(x_i+\frac h2,u\!\left(x_i+\frac h2\right)\right)
+    +O(h^3).
+\end{equation*}
+Значение решения в середине шага заранее неизвестно. Оценим его
+полушагом метода Эйлера:
+\begin{equation*}
+    y_{i+1/2}=y_i+\frac h2 f(x_i,y_i).
+\end{equation*}
+
+\subsection{Явная схема средней точки}
+
+Получаем \rconcept{модифицированный метод Эйлера}:
+\begin{equation*}
+    \begin{cases}
+        y_{i+1/2}=y_i+\dfrac h2f(x_i,y_i),\\[0.5em]
+        y_{i+1}=y_i+h f\!\left(x_i+\dfrac h2,y_{i+1/2}\right),\\[0.5em]
+        y_0=u_0.
+    \end{cases}
+\end{equation*}
+В одной формуле
+\begin{equation*}
+    y_{i+1}=y_i+h f\!\left(x_i+\frac h2,
+    y_i+\frac h2 f(x_i,y_i)\right).
+\end{equation*}
+Здесь правая часть вычисляется дважды: в начале шага и в приближённой
+средней точке.
+
+\subsection{Порядок точности}
+
+Если $y_i=u(x_i)$, то разложение $f$ в средней точке даёт
+\begin{equation*}
+    f\!\left(x_i+\frac h2,u(x_i)+\frac h2f(x_i,u(x_i))\right)
+    =f+\frac h2(f_x+ff_u)+O(h^2).
+\end{equation*}
+Следовательно,
+\begin{equation*}
+    y_{i+1}=u(x_i)+hu'(x_i)+\frac{h^2}{2}u''(x_i)+O(h^3).
+\end{equation*}
+Первые три члена совпадают с разложением точного решения.
+Поэтому локальная погрешность равна $O(h^3)$, невязка --- $O(h^2)$,
+а глобальная погрешность при тех же условиях гладкости и Липшица --- $O(h^2)$.
+Модифицированный метод Эйлера имеет \rresult{второй порядок точности}.
+
+\end{document}

@@ -5,63 +5,64 @@
     "utcOffsetHours": 7,
     "deadlineHour": 9,
     "requireWholeSubject": false,
-    "maximumDays": 7,
+    "reinforcementDays": 7,
+    "maximumDays": 14,
+    "workingWeekdays": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
     "series": [
       {
         "id": "ovf-lectures",
         "subject": "ОВФ",
         "section": "Лекции",
-        "firstDate": "2026-09-01",
-        "end": "14:15"
+        "firstDate": "2026-09-01"
       },
       {
         "id": "tdisf-lectures",
         "subject": "ТДиСФ",
         "section": "Лекции",
-        "firstDate": "2026-09-04",
-        "end": "12:25"
+        "firstDate": "2026-09-04"
       },
       {
         "id": "tdisf-seminars",
         "subject": "ТДиСФ",
         "section": "Семинары",
-        "firstDate": "2026-09-04",
-        "end": "14:15"
+        "firstDate": "2026-09-04"
       },
       {
         "id": "fksv-seminars",
         "subject": "ФКСВ",
         "section": "Семинары",
-        "firstDate": "2026-09-05",
-        "end": "14:15"
+        "firstDate": "2026-09-05"
       },
       {
         "id": "fech-seminars",
         "subject": "ФЭЧ",
         "section": "Семинары",
-        "firstDate": "2026-09-03",
-        "end": "10:55"
+        "firstDate": "2026-09-03"
       },
       {
         "id": "fech-lectures",
         "subject": "ФЭЧ",
         "section": "Лекции",
-        "firstDate": "2026-09-03",
-        "end": "12:35"
+        "firstDate": "2026-09-03"
       },
       {
         "id": "fiham-lectures",
         "subject": "ФиХАиМ",
         "section": "Лекции",
-        "firstDate": "2026-09-01",
-        "end": "16:05"
+        "firstDate": "2026-09-01"
       },
       {
         "id": "fiham-seminars",
         "subject": "ФиХАиМ",
         "section": "Семинары",
-        "firstDate": "2026-09-01",
-        "end": "17:55"
+        "firstDate": "2026-09-01"
       }
     ]
   },
@@ -164,6 +165,20 @@
         "fiham-seminars": 4
       },
       "commit": "f5b19c83d5c0a57dec17b50b941b94131f1520fd"
+    },
+    {
+      "at": "2026-10-04T15:41:15.524842+00:00",
+      "counts": {
+        "ovf-lectures": 4,
+        "tdisf-lectures": 4,
+        "tdisf-seminars": 4,
+        "fksv-seminars": 4,
+        "fech-seminars": 5,
+        "fech-lectures": 2,
+        "fiham-lectures": 4,
+        "fiham-seminars": 4
+      },
+      "source": "index-build"
     }
   ],
   "currentCounts": {
@@ -171,10 +186,10 @@
     "tdisf-lectures": 4,
     "tdisf-seminars": 4,
     "fksv-seminars": 4,
-    "fech-seminars": 3,
+    "fech-seminars": 5,
     "fech-lectures": 2,
     "fiham-lectures": 4,
     "fiham-seminars": 4
   },
-  "indexGeneratedAt": "2026-10-03T06:55:14.177169+00:00"
+  "indexGeneratedAt": "2026-10-04T15:38:35.574965+00:00"
 }
