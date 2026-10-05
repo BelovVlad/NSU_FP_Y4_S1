@@ -1,5 +1,11 @@
 # Проверки сайта
 
+Particle Explorer: `python -m unittest discover -s tests -p test_particles_browser.py -v`
+проверяет режимы, вложенные семейства, поиск, связи, мобильные жесты и офлайн-кэш.
+`node --test tests/particles-layout.test.cjs` проверяет отсутствие пересечений
+на исходных 49 частицах и синтетическом каталоге из 800 состояний, включая
+неравномерное расширение отдельных семейств. Справочные данные не изменяются.
+
 ```sh
 python -m pip install -r tests/requirements.txt
 python -m playwright install chromium

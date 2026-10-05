@@ -1,6 +1,7 @@
 """Particle Explorer browser regressions against the real, unchanged dataset."""
 import functools
 import http.server
+import json
 import os
 from pathlib import Path
 import re
@@ -133,6 +134,67 @@ class ParticleExplorerTests(unittest.TestCase):
         expect(self.page.locator('#emptyState')).to_be_visible()
         self.page.locator('#clearSearch').click()
         self.assertEqual(self.page.locator('.class-family [data-particle]').count(), 49)
+
+    def test_family_drilldown_and_connection_density(self):
+        self.assertEqual(self.page.locator('.region').count(), 5)
+        self.assertEqual(self.page.locator('.cluster').count(), 20)
+        initial_edges = self.page.locator('.edge:visible').count()
+        self.assertLess(initial_edges, 35, 'The overview must not show a hairball of global edges')
+        self.page.locator('#edgeViewBtn').click()
+        self.assertEqual(self.page.locator('.edge:visible').count(), 104)
+        self.page.locator('#edgeViewBtn').click()
+        self.assertEqual(self.page.locator('.edge:visible').count(), initial_edges)
+        before = self.page.locator('#viewport').get_attribute('transform')
+        # Keyboard and pointer users can drill down to a family independently of node selection.
+        self.page.locator('.cluster[data-cluster="mesons:pion"]').focus()
+        self.page.keyboard.press('Enter')
+        expect(self.page.locator('#mapPath')).to_have_text('Пионы')
+        self.assertNotEqual(before, self.page.locator('#viewport').get_attribute('transform'))
+        expect(self.page.locator('#world')).to_have_class(re.compile(r'detail-level'))
+        self.assertEqual(self.page.locator('.node.selected').count(), 0)
+        self.assertEqual(self.page.locator('.cluster-muted').count(), 19)
+        self.assertEqual(self.page.locator('.node.dim').count(), 46)
+        self.page.locator('.node[data-id="pip"] .sphere').click()
+        self.assertGreater(self.page.locator('.edge.active:visible').count(), 0)
+        self.page.locator('#mapHome').click()
+        expect(self.page.locator('#mapPath')).to_have_text('Все семейства')
+        self.assertEqual(before, self.page.locator('#viewport').get_attribute('transform'))
+        self.assertEqual(self.page.locator('.node.selected').count(), 0)
+        self.assertEqual(self.page.locator('.cluster-muted').count(), 0)
+        self.assertEqual(self.page.locator('.node.dim').count(), 0)
+
+    def test_mobile_overview_and_family_tap(self):
+        expect(self.page.locator('#world')).to_have_class(re.compile(r'overview'))
+        labels = self.page.locator('.node text').evaluate_all('nodes=>nodes.filter(n=>getComputedStyle(n).opacity !== "0").length')
+        self.assertEqual(labels, 0, 'Unreadably small state labels disappear at overview scale')
+        cluster = self.page.locator('.cluster[data-cluster="mesons:pion"] .cluster-shell')
+        cluster.tap(position={'x': cluster.bounding_box()['width']/2, 'y': 3})
+        expect(self.page.locator('#mapPath')).to_have_text('Пионы')
+        expect(self.page.locator('#details')).not_to_have_class('right open')
+        self.assertEqual(self.page.locator('.node.selected').count(), 0)
+        self.page.locator('.node[data-id="pip"] .sphere').tap()
+        expect(self.page.locator('#details')).to_have_class('right open')
+        expect(self.page.locator('#detailSymbol')).to_have_text('π⁺')
+
+    def test_large_catalogue_overview_search_and_table(self):
+        data = self.page.evaluate('''()=>{
+            const data=structuredClone(PARTICLE_DATA),templates=[...data.particles];
+            for(let i=templates.length;i<800;i++){
+                const p=templates[i%templates.length];
+                data.particles.push({...p,id:'state-'+i,pdg:800000+i,ru:'Тестовое состояние '+i,family:PARTICLE_LAYOUT.familyFor(p)});
+            }
+            return data;
+        }''')
+        self.page.route('**/particles.js', lambda route: route.fulfill(content_type='application/javascript', body='window.PARTICLE_DATA='+json.dumps(data)))
+        self.page.reload()
+        self.assertEqual(self.page.locator('.node').count(), 800)
+        expect(self.page.locator('#world')).to_have_class(re.compile(r'overview'))
+        self.page.locator('#search').fill('800799')
+        expect(self.page.locator('#detailName')).to_contain_text('Тестовое состояние 799')
+        expect(self.page.locator('.node[data-id="state-799"]')).to_have_attribute('aria-pressed', 'true')
+        self.mode('Таблица')
+        self.page.locator('#search').fill('')
+        self.assertEqual(self.page.locator('tbody tr').count(), 800)
 
     def test_composition_and_decay_chain(self):
         self.page.locator('#search').fill('протон')
