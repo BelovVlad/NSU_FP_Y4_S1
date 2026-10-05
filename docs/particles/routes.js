@@ -63,10 +63,9 @@
       ports.set(p.id,particlePorts);
     });
     const headers=regions.map(r=>r.header);
-    function route(from,to){
-      if(!ports.has(from)||!ports.has(to))return [];
-      const goals=new Set(ports.get(to)),cost=new Float64Array(nodes.length).fill(Infinity),previous=new Int32Array(nodes.length).fill(-1),queue=new Heap();
-      ports.get(from).forEach(id=>{cost[id]=0;queue.push({id,cost:0});});
+    function shortest(starts,ends){
+      const goals=new Set(ends),cost=new Float64Array(nodes.length).fill(Infinity),previous=new Int32Array(nodes.length).fill(-1),queue=new Heap();
+      starts.forEach(id=>{cost[id]=0;queue.push({id,cost:0});});
       let end=-1;
       while(queue.items.length){
         const item=queue.pop();if(item.cost>cost[item.id])continue;
@@ -76,15 +75,25 @@
           if(candidate<cost[next]-.00001){cost[next]=candidate;previous[next]=item.id;queue.push({id:next,cost:candidate});}
         });
       }
-      if(end<0)throw new Error('No unobstructed hexagon route: '+from+' → '+to);
+      if(end<0)throw new Error('No unobstructed hexagon route');
       const path=[];
       for(let id=end;id>=0;id=previous[id])path.push({x:nodes[id].x,y:nodes[id].y});
       path.reverse();
+      return path;
+    }
+    function annotation(from,to){
+      if(!positions.has(from)||!positions.has(to))return [];
+      const corner=id=>{const p=vertices(positions.get(id))[0];return keys.get(p.x.toFixed(4)+','+p.y.toFixed(4));};
+      return shortest([corner(from)],[corner(to)]);
+    }
+    function route(from,to){
+      if(!ports.has(from)||!ports.has(to))return [];
+      const path=shortest(ports.get(from),ports.get(to));
       const inset=(point,p)=>{const factor=2.5/distance(point,p);return {x:point.x+(p.x-point.x)*factor,y:point.y+(p.y-point.y)*factor};};
       // Short terminal stems make the source and destination unambiguous, even for adjacent cells.
       return [inset(path[0],positions.get(from)),...path,inset(path.at(-1),positions.get(to))];
     }
-    return {route,ribs,headers,nodeCount:nodes.length};
+    return {route,annotation,ribs,headers,nodeCount:nodes.length};
   }
   return {create,vertices,crossesBox,offsetPath};
 });

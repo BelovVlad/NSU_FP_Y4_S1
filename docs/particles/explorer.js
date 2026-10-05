@@ -29,12 +29,13 @@
   const layout=Object.fromEntries(diagram.groupBounds);
   const labels={light:'Лёгкие мезоны',strange:'Странные мезоны',charm:'Charm / charmonium',bottom:'Bottom / bottomonium',bosons:'Бозоны',baryons:'Барионы',leptons:'Лептоны',quarks:'Кварки'};
   const clusterMap=new Map(clusters.map(c=>[c.id,c]));
-  let focusedCluster=null,focusedRegion=null;
+  let focusedCluster=null,focusedRegion=null,routeTarget=null,hoverTarget=null;
   let mode='graph', selected=null, current='pip', activeGroup='all', detailTab='properties';
   let query='', charge='all', spin='all', scale=1, tx=0, ty=0, autoFit=true;
   let sortKey='pdg', sortDirection=1, lastSheetTrigger=null;
   const enabledEdges=new Set(Object.keys(edgeColors));
   const nodeElements=new Map(), edgeElements=new Map(), edgeTracks=new Map(), hullElements=new Map(), miniElements=new Map(), clusterElements=new Map(), captionElements=new Map();
+  const taggedLabels=new Map();
   const routes=window.PARTICLE_ROUTES.create(diagram);
   const escape = value => String(value ?? '—').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const normalize = value => String(value).toLocaleLowerCase('ru').replace(/ё/g,'е');
@@ -78,7 +79,7 @@
     const cosmos=$('#cosmos');
     for(let i=0;i<240;i++)cosmos.append(el('circle',{cx:noise(i+1)*1600,cy:noise(i+811)*1200,r:noise(i+45)>.94?2.0:.45+noise(i+271)*.85,fill:i%9===0?'#e9d7ff':'#b8d5ff',opacity:.13+noise(i+135)*.52,class:i%13===0?'twinkle':''}));
     Object.entries(edgeColors).forEach(([kind,color])=>{
-      const marker=el('marker',{id:'arrow-'+kind,markerWidth:9,markerHeight:9,refX:8,refY:4.5,orient:'auto',markerUnits:'userSpaceOnUse',viewBox:'0 0 9 9'});
+      const marker=el('marker',{id:'arrow-'+kind,markerWidth:12,markerHeight:12,refX:8,refY:4.5,orient:'auto',markerUnits:'userSpaceOnUse',viewBox:'0 0 9 9'});
       marker.append(el('path',{d:'M0 0 L9 4.5 L0 9 L2 4.5 Z',fill:color}));defs.append(marker);
     });
     function boundary(ids){
@@ -99,22 +100,28 @@
       const title=el('text',{x:x+width/2,y:y+height/2,'text-anchor':'middle',class:'region-title',fill:colors[region.tone]},region.label);
       title.append(el('tspan',{dx:8,class:'region-count'},'('+region.count+')'));holder.append(title);
       holder.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();focusRegion(region.id);}});
-      $('#hulls').append(holder);hullElements.set(region.id,holder);
-      $('#groupBorders').append(el('path',{d:boundary(region.children.flatMap(c=>c.ids)),class:'group-border',stroke:colors[region.tone]}));
+      $('#mapHeadings').append(holder);hullElements.set(region.id,holder);
+      $('#groupBorders').append(el('path',{d:boundary(region.children.flatMap(c=>c.ids)),class:'group-border','data-region':region.id,stroke:colors[region.tone]}));
+      holder.addEventListener('pointerenter',()=>{$('#groupBorders').querySelector('[data-region='+region.id+']').classList.add('group-preview');});
+      holder.addEventListener('pointerleave',()=>{$('#groupBorders').querySelector('[data-region='+region.id+']').classList.remove('group-preview');});
     });
     clusters.forEach(cluster=>{
       const color=tileColors.get(cluster.id),outline=boundary(cluster.ids);
       const gradient=el('linearGradient',{id:'tile-'+cluster.id.replace(':','-'),x1:'0%',y1:'0%',x2:'70%',y2:'100%'});
-      [['0%',.44],['100%',.16]].forEach(([offset,opacity])=>gradient.append(el('stop',{offset,'stop-color':color,'stop-opacity':opacity})));defs.append(gradient);
+      [['0%',.57],['100%',.28]].forEach(([offset,opacity])=>gradient.append(el('stop',{offset,'stop-color':color,'stop-opacity':opacity})));defs.append(gradient);
       const holder=el('g',{class:'cluster','data-cluster':cluster.id,style:'--tone:'+color,role:'button',tabindex:0,'aria-label':cluster.label+' — '+cluster.ids.length+' состояний. Приблизить подгруппу.'});
       holder.append(el('path',{d:outline,class:'subgroup-depth',transform:'translate(0 8)'}));
       holder.append(el('path',{d:outline,class:'subgroup-boundary',stroke:color}));
+      holder.append(el('path',{d:outline,class:'subgroup-rim',stroke:'#eaf4ff'}));
       holder.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();focusCluster(cluster.id);}});
       $('#hulls').append(holder);clusterElements.set(cluster.id,holder);
       const caption=el('g',{class:'cluster-caption','data-cluster':cluster.id,style:'--tone:'+color});
+      caption.append(el('path',{class:'caption-leader'}));
+      caption.append(el('circle',{class:'caption-anchor',r:3}));
       caption.append(el('rect',{class:'cluster-shell',rx:7}));
       const title=el('text',{class:'cluster-title','text-anchor':'middle'},regionMap.get(cluster.root).label+' / '+cluster.label);
       title.append(el('tspan',{dx:8,class:'cluster-count'},String(cluster.ids.length)));caption.append(title);
+      caption.append(el('text',{class:'selected-caption','text-anchor':'middle'}));
       $('#focusLabels').append(caption);captionElements.set(cluster.id,caption);
     });
     D.edges.forEach(edge=>{
@@ -128,9 +135,13 @@
       const {x,y,r}=positions.get(p.id),color=colorFor(p);
       const node=el('g',{class:'node','data-id':p.id,'data-cluster':membership.get(p.id),transform:`translate(${x} ${y})`,role:'button',tabindex:0,'aria-label':p.symbol+' — '+p.ru,style:'--tone:'+color});
       node.append(el('title',{},p.symbol+' · '+p.ru+' · PDG '+p.pdg));
-      node.append(el('polygon',{class:'selection-ring',points:hexPoints(r+4),'pointer-events':'none'}));
+      node.append(el('polygon',{class:'selection-ring',points:hexPoints(r-4),'pointer-events':'none'}));
       node.append(el('polygon',{class:'sphere hex-cell','data-radius':r,points:hexPoints(r),fill:'url(#tile-'+membership.get(p.id).replace(':','-')+')',stroke:color}));
-      node.append(el('text',{x:0,y:0,'font-size':r>=60?54:r>=40?44:p.symbol.length>3?29:34},p.symbol));
+      const label=el('text',{class:'particle-label',x:0,y:0});
+      const split=p.symbol.match(/^(.+?)(\([^)]*\).*)$/);
+      if(split){label.append(el('tspan',{class:'symbol-main',x:0,y:-4},split[1]));label.append(el('tspan',{class:'symbol-state',x:0,y:15},split[2]));}
+      else label.textContent=p.symbol;
+      node.append(label);
       node.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();select(p.id,true);}});
       node.addEventListener('pointerenter',event=>{
         if(event.pointerType==='touch')return;
@@ -145,61 +156,116 @@
     });
     $('#minimap').setAttribute('viewBox',`0 0 ${world.width} ${world.height}`);
     fitNodeLabels();
-    document.fonts.ready.then(fitNodeLabels);
+    document.fonts.ready.then(()=>{fitNodeLabels();updateLevel();});
+  }
+  function restoreTaggedLabels(){
+    taggedLabels.forEach(parts=>parts.forEach(([item,attrs])=>Object.entries(attrs).forEach(([key,value])=>value===null?item.removeAttribute(key):item.setAttribute(key,value))));
+    taggedLabels.clear();
   }
   function fitNodeLabels() {
+    restoreTaggedLabels();
     nodeElements.forEach((node,id)=>{
-      const label=node.querySelector('text'),r=positions.get(id).r;
-      label.removeAttribute('textLength');label.removeAttribute('lengthAdjust');
-      label.setAttribute('x',0);label.setAttribute('y',0);
-      label.style.fontSize=(r>=60?54:r>=40?44:34)+'px';
-      const box=label.getBBox();
-      const factor=Math.min(1,r*1.42/(box.width||1),r*.95/(box.height||1));
-      let size=parseFloat(label.style.fontSize)*factor;
-      for(let pass=0;pass<4;pass++){
+      const label=node.querySelector('.particle-label'),r=positions.get(id).r,main=label.querySelector('.symbol-main'),state=label.querySelector('.symbol-state');
+      label.removeAttribute('textLength');label.removeAttribute('lengthAdjust');label.removeAttribute('transform');
+      let size=32;
+      for(let pass=0;pass<5;pass++){
         label.style.fontSize=size+'px';label.setAttribute('font-size',size);
         label.setAttribute('x',0);label.setAttribute('y',0);
-        const fitted=label.getBBox();
-        // Optical centring includes superscripts and glyph overhangs.
-        label.setAttribute('x',-(fitted.x+fitted.width/2));
-        label.setAttribute('y',-(fitted.y+fitted.height/2));
-        const b=label.getBBox();
-        const corner=Math.hypot(Math.max(Math.abs(b.x),Math.abs(b.x+b.width)),Math.max(Math.abs(b.y),Math.abs(b.y+b.height)));
-        if(corner<=r*.82)break;
-        size*=r*.81/corner;
+        if(main){
+          main.setAttribute('x',0);main.setAttribute('y',-3);state.setAttribute('x',0);state.setAttribute('y',size*.51);
+          state.style.fontSize=size*.45+'px';
+          [main,state].forEach(t=>{const b=t.getBBox();t.setAttribute('x',-(b.x+b.width/2));});
+        }
+        const b=label.getBBox(),x=Math.max(Math.abs(b.x),Math.abs(b.x+b.width));
+        const y=Math.max(Math.abs(b.y),Math.abs(b.y+b.height));
+        const factor=Math.min(1,r*1.42/(b.width||1),r*1.36/(b.height||1),r*.81/Math.hypot(x,y));
+        if(factor>=.999)break;size*=factor;
       }
+      const b=label.getBBox();
+      if(!main){label.setAttribute('x',-(b.x+b.width/2));label.setAttribute('y',-(b.y+b.height/2));}
+      else {const shift=-(b.y+b.height/2);[main,state].forEach(t=>t.setAttribute('y',+t.getAttribute('y')+shift));}
     });
   }
   function updateLevel() {
     const overview=scale<.3,detail=scale>=.65;
     svg.classList.toggle('overview',overview);svg.classList.toggle('detail-level',detail);
-    regions.forEach(region=>{
-      const title=hullElements.get(region.id).querySelector('.region-title'),header=region.header;
-      title.querySelector('.region-count').style.display=header.width*scale<100?'none':'';
-      title.style.fontSize=Math.min(64,(isMobile()?14:18)/scale)+'px';title.setAttribute('y',0);
-      const b=title.getBBox(),factor=Math.min(1,(header.width-8)/(b.width||1),52/(b.height||1));
-      title.style.fontSize=parseFloat(title.style.fontSize)*factor+'px';
-      const fitted=title.getBBox();title.setAttribute('y',header.y+header.height/2-fitted.y-fitted.height/2);
+    const headingOrder=['mesons','quarks','bosons','leptons','baryons'];
+    const slot=(wrap.clientWidth-32)/5,headY=isMobile()?117:88;
+    headingOrder.forEach((id,i)=>{
+      const region=regionMap.get(id),holder=hullElements.get(id),title=holder.querySelector('.region-title'),hit=holder.querySelector('rect');
+      holder.setAttribute('transform','');
+      const x=16+i*slot;
+      Object.entries({x,y:headY,width:slot-5,height:30,rx:6}).forEach(([k,v])=>hit.setAttribute(k,v));
+      title.querySelector('.region-count').style.display=slot<120?'none':'';
+      title.style.fontSize=(slot<85?10:14)+'px';title.setAttribute('x',x+(slot-5)/2);title.setAttribute('y',headY+20);
     });
     const lifted=selected?membership.get(selected):focusedCluster;
     captionElements.forEach((caption,id)=>{
       const show=id===lifted&&mode==='graph';caption.style.display=show?'':'none';if(!show)return;
-      const cluster=clusterMap.get(id),title=caption.querySelector('text'),box=caption.querySelector('rect');
-      title.style.fontSize='15px';title.setAttribute('x',0);title.setAttribute('y',0);
-      const b=title.getBBox(),width=Math.min(wrap.clientWidth-32,b.width+24);
-      if(b.width>width-24)title.style.fontSize=15*(width-24)/b.width+'px';
-      const fitted=title.getBBox(),center=Math.max(width/2+16,Math.min(wrap.clientWidth-width/2-16,cluster.cx*scale+tx)),y=isMobile()?137:102;
-      title.setAttribute('x',center);title.setAttribute('y',y-fitted.y-fitted.height/2);
-      Object.entries({x:center-width/2,y:y-15,width,height:30}).forEach(([key,value])=>box.setAttribute(key,value));
+      const cluster=clusterMap.get(id),title=caption.querySelector('.cluster-title'),box=caption.querySelector('rect'),sub=caption.querySelector('.selected-caption');
+      const y=isMobile()?158:130,center=wrap.clientWidth/2;
+      title.style.fontSize='13px';title.setAttribute('x',0);title.setAttribute('y',0);
+      sub.textContent=selected?byId.get(selected).symbol+' · '+byId.get(selected).ru:'';
+      sub.style.fontSize='12px';sub.setAttribute('x',0);sub.setAttribute('y',0);
+      const maxWidth=wrap.clientWidth-48;
+      for(const t of [title,sub]){const b=t.getBBox();if(b.width>maxWidth-24)t.style.fontSize=parseFloat(t.style.fontSize)*(maxWidth-24)/b.width+'px';}
+      const width=Math.max(title.getBBox().width,sub.getBBox().width)+24,height=selected?44:28;
+      title.setAttribute('x',center);title.setAttribute('y',y+4);sub.setAttribute('x',center);sub.setAttribute('y',y+22);
+      Object.entries({x:center-width/2,y:y-14,width,height}).forEach(([k,v])=>box.setAttribute(k,v));
+      // The annotation terminates on an actual, visible cell of this territory.
+      const top=isMobile()?199:174,bottom=wrap.clientHeight-145;
+      const candidates=cluster.ids.map(id=>({...positions.get(id),id})).filter(p=>{
+        const x=p.x*scale+tx,y=p.y*scale+ty;return nodeElements.get(p.id).style.display!=='none'&&x>=12&&x<=wrap.clientWidth-12&&y-p.r*scale>=top&&y-p.r*scale<bottom;
+      }).sort((a,b)=>(a.y-b.y)||Math.abs(a.x-(selected?positions.get(selected).x:(center-tx)/scale))-Math.abs(b.x-(selected?positions.get(selected).x:(center-tx)/scale)));
+      const anchor=candidates[0],line=caption.querySelector('path'),dot=caption.querySelector('circle');
+      line.style.display=dot.style.display=anchor?'':'none';
+      if(anchor){
+        const x=anchor.x*scale+tx,y=anchor.y*scale+ty-anchor.r*scale;
+        const entry=[...positions.values()].filter(p=>p.x*scale+tx>=12&&p.x*scale+tx<=wrap.clientWidth-12&&p.y*scale+ty-p.r*scale>=top)
+          .sort((a,b)=>a.y-b.y||Math.abs(a.x-anchor.x)-Math.abs(b.x-anchor.x))[0];
+        const ribPath=entry?routes.annotation(entry.id,anchor.id).map(p=>({x:p.x*scale+tx,y:p.y*scale+ty})):[];
+        const start=ribPath[0]||{x,y};
+        line.setAttribute('d',`M${center} ${+box.getAttribute('y')+height} L${center} ${top-5} L${start.x} ${top-5} L${start.x} ${start.y}`+ribPath.map(p=>` L${p.x} ${p.y}`).join(''));
+        dot.setAttribute('cx',x);dot.setAttribute('cy',y);caption.dataset.anchor=anchor.id;
+      }else delete caption.dataset.anchor;
     });
     nodeElements.forEach((node,id)=>{
-      const label=node.querySelector('text'),size=Number(label.getAttribute('font-size'));
-      label.style.opacity=selected===id||size*scale>=10?'1':'0';
+      const label=node.querySelector('.particle-label'),size=Number(label.getAttribute('font-size'));
+      label.style.opacity=selected===id||id===(hoverTarget||routeTarget)||(!overview&&size*scale>=7)?'1':'0';
     });
-    $('#levelInfo').textContent=overview?'Обзор · нажмите название группы':detail?'Соты частиц · выберите частицу для связей':'Подгруппы · нажмите название для приближения';
+    // Family names occupy the top of a representative cell; its glyph moves below them.
+    restoreTaggedLabels();
+    $$('.subgroup-tag').forEach(tag=>tag.remove());
+    if(scale>=.9){
+      clusters.forEach(c=>{
+        if(focusedRegion&&c.root!==focusedRegion&&(!selected||c.id!==membership.get(selected)))return;
+        const p=c.ids.map(id=>({...positions.get(id),id})).filter(p=>nodeElements.get(p.id).style.display!=='none')
+          .sort((a,b)=>(a.y-b.y)||a.x-b.x)[0];
+        if(!p)return;
+        const tag=el('g',{class:'subgroup-tag','data-cluster':c.id,transform:`translate(${p.x} ${p.y-18})`,role:'button',tabindex:0,'aria-label':regionMap.get(c.root).label+' / '+c.label});
+        const short={lightresonances:'Резон.',strangemesons:'Стран.',strangeexcited:'K-рез.',charmedbaryons:'c-барионы',bottombaryons:'b-барионы',bottomonium:'b b̄',charmonium:'c c̄',charged:'Заряж.',weakboson:'W / Z',massless:'γ / g',lightquark:'u d s',heavyquark:'c b t'}[c.family]||c.label;
+        tag.append(el('rect',{x:-20,y:-6,width:40,height:13,rx:3,fill:'#101b2c',stroke:tileColors.get(c.id)}));
+        const text=el('text',{'text-anchor':'middle',y:3,fill:'#f2f7ff',style:'font:9px system-ui'},short);tag.append(text);
+        tag.append(el('title',{},regionMap.get(c.root).label+' / '+c.label+' · '+c.ids.length+' состояний. Нажмите, чтобы приблизить.'));
+        tag.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();focusCluster(c.id);}});
+        $('#subgroupTags').append(tag);
+        const label=nodeElements.get(p.id).querySelector('.particle-label'),parts=[...label.querySelectorAll('tspan')];
+        taggedLabels.set(p.id,[label,...parts].map(item=>[item,Object.fromEntries(['x','y','transform'].map(key=>[key,item.getAttribute(key)]))]));
+        if(parts.length)parts.forEach(t=>t.setAttribute('y',+t.getAttribute('y')+10));else label.setAttribute('y',+label.getAttribute('y')+10);
+        const bounds=label.getBBox(),r=positions.get(p.id).r;
+        const maxX=Math.max(Math.abs(bounds.x),Math.abs(bounds.x+bounds.width)),maxY=Math.max(Math.abs(bounds.y),Math.abs(bounds.y+bounds.height));
+        if(maxX+Math.sqrt(3)*maxY>Math.sqrt(3)*r){
+          // Shrink about the origin so no glyph spills into an adjoining cell.
+          label.setAttribute('transform',`scale(${Math.min(1,r*Math.sqrt(3)*.94/(maxX+Math.sqrt(3)*maxY))})`);
+        }
+        const b=text.getBBox();if(b.width>36)text.style.fontSize=9*36/b.width+'px';
+      });
+    }
+    $('#levelInfo').textContent=selected?'Белая рамка — выбор · золотая — связанная частица':overview?'Нажмите название семейства, чтобы увидеть частицы':'Нажмите частицу · названия подгрупп появятся при приближении';
+    updateConnectionReadout();
   }
   function focusBox(box,limit=2) {
-    const top=isMobile()?165:145,bottom=105;
+    const top=isMobile()?215:190,bottom=145;
     scale=Math.max(minZoom(),Math.min((wrap.clientWidth-40)/box.width,Math.max(100,wrap.clientHeight-top-bottom)/box.height,limit));
     tx=wrap.clientWidth/2-(box.x+box.width/2)*scale;
     ty=top+(wrap.clientHeight-top-bottom)/2-(box.y+box.height/2)*scale;
@@ -217,7 +283,9 @@
     applyState();focusBox(cluster,2);
   }
   function applyState() {
-    highlightRoutes(null);
+    hoverTarget=null;
+    if(!selected)routeTarget=null;
+    else if(routeTarget&&!connectionTargets().includes(routeTarget))routeTarget=connectionTargets()[0]||null;
     const hits=filtered(),hitIds=new Set(hits.map(p=>p.id)),rel=selected?neighbors(selected):new Set();
     const visible=new Set(D.particles.filter(p=>baseVisible(p)&&(hitIds.has(p.id)||(query&&hits.length&&rel.has(p.id)))).map(p=>p.id));
     nodeElements.forEach((node,id)=>{
@@ -249,9 +317,10 @@
     });
     regions.forEach(region=>{
       const show=region.children.some(c=>c.ids.some(id=>visible.has(id)));
-      const holder=hullElements.get(region.id);holder.style.display=show?'':'none';holder.setAttribute('tabindex',show?'0':'-1');holder.classList.toggle('region-focused',region.id===focusedRegion);
+      const holder=hullElements.get(region.id);holder.style.display=show?'':'none';holder.setAttribute('tabindex',show?'0':'-1');holder.classList.toggle('region-focused',region.id===(selected?clusterMap.get(membership.get(selected)).root:focusedRegion));
+      $('#groupBorders').querySelector('[data-region='+region.id+']').classList.toggle('group-focused',region.id===(selected?clusterMap.get(membership.get(selected)).root:focusedRegion));
     });
-    updateLevel();
+    highlightRoutes(null);updateLevel();
     $('#resultCount').textContent=query?hits.length+' найдено':'';
     $('#visibleCount').textContent=hits.length+' / '+D.particles.length+' состояний';
     $('#emptyState').hidden=hits.length>0;
@@ -259,14 +328,58 @@
     $('#selectionHint').textContent=selected?'Выбрано: '+byId.get(selected).symbol:'Выберите узел на карте';
     if(mode!=='graph') renderMode();
   }
+  function connectionTargets(){
+    if(!selected)return [];
+    const rank={strong:0,em:1,weak:2,composition:3,mixing:4,family:5},targets=new Map();
+    D.edges.filter(e=>enabledEdges.has(e.kind)&&(e.from===selected||e.to===selected)).forEach(e=>{
+      const id=e.from===selected?e.to:e.from;
+      if(!baseVisible(byId.get(id)))return;
+      targets.set(id,Math.min(targets.get(id)??99,rank[e.kind]));
+    });
+    return [...targets].sort((a,b)=>a[1]-b[1]||Math.hypot(positions.get(a[0]).x-positions.get(selected).x,positions.get(a[0]).y-positions.get(selected).y)-Math.hypot(positions.get(b[0]).x-positions.get(selected).x,positions.get(b[0]).y-positions.get(selected).y)).map(([id])=>id);
+  }
   function highlightRoutes(id){
-    const pair=selected&&id&&id!==selected&&neighbors(selected).has(id);
-    edgeElements.forEach((path)=>{
-      const matching=pair&&[path.dataset.from,path.dataset.to].includes(id);
+    hoverTarget=selected&&id&&id!==selected&&neighbors(selected).has(id)?id:null;
+    const target=hoverTarget||routeTarget,pair=selected&&target;
+    edgeElements.forEach(path=>{
+      const matching=pair&&[path.dataset.from,path.dataset.to].includes(target);
       path.classList.toggle('route-highlight',!!matching);path.classList.toggle('route-muted',!!pair&&!matching);
       edgeTracks.get(path.dataset.id).classList.toggle('route-muted',!!pair&&!matching);
       if(matching)$('#edges').append(path);
     });
+    nodeElements.forEach((node,id)=>{
+      node.classList.toggle('route-target',!!pair&&id===target);
+      const label=node.querySelector('.particle-label'),size=Number(label.getAttribute('font-size'));
+      label.style.opacity=selected===id||id===target||(scale>=.3&&size*scale>=7)?'1':'0';
+    });
+    updateConnectionReadout();
+  }
+  function updateConnectionReadout(){
+    const box=$('#connectionReadout'),target=hoverTarget||routeTarget,targets=connectionTargets();
+    box.hidden=!selected||mode!=='graph';if(box.hidden)return;
+    if(!target){$('#connectionPair').textContent=byId.get(selected).symbol+(targets.length?' · все связи':' · связей нет');$('#connectionKind').textContent=targets.length+' частиц · наведите на светлую соту';}
+    else {
+      const edges=D.edges.filter(e=>enabledEdges.has(e.kind)&&[e.from,e.to].includes(selected)&&[e.from,e.to].includes(target));
+      const directional=edges.filter(e=>e.kind!=='family'),forward=directional.some(e=>e.from===selected),reverse=directional.some(e=>e.to===selected);
+      $('#connectionPair').textContent=byId.get(selected).symbol+(forward&&reverse?' ↔ ':forward?' → ':reverse?' ← ':' — ')+byId.get(target).symbol;
+      $('#connectionKind').textContent=[...new Set(edges.map(e=>edgeNames[e.kind]))].join(' · ');
+    }
+    $('#connectionPosition').textContent=target?(targets.indexOf(target)+1)+' / '+targets.length:String(targets.length);
+    $('#connectionPrev').disabled=$('#connectionNext').disabled=targets.length<2;
+    $('#connectionAll').disabled=!targets.length;
+    $('#connectionAll').setAttribute('aria-pressed',String(!routeTarget));
+    $('#connectionAll').textContent=routeTarget?'Все связи':'По одной';
+  }
+  function stepConnection(step){
+    const targets=connectionTargets();if(!targets.length)return;
+    routeTarget=targets[(Math.max(0,targets.indexOf(routeTarget))+step+targets.length)%targets.length];
+    highlightRoutes(null);ensureRouteInView();
+  }
+  function ensureRouteInView(){
+    if(!selected)return;
+    if(!routeTarget){focusParticle(selected,1.1);return;}
+    const a=positions.get(selected),b=positions.get(routeTarget),pad=65;
+    focusBox({x:Math.min(a.x,b.x)-pad,y:Math.min(a.y,b.y)-pad,width:Math.abs(a.x-b.x)+pad*2,height:Math.abs(a.y-b.y)+pad*2},Math.min(Math.max(scale,1.1),1.5));
   }
   function particleChip(p, extra='') {
     return `<button class="particle-chip ${p.id===selected?'selected':''} ${extra}" data-particle="${escape(p.id)}" style="--c:${colorFor(p)}" title="${escape(p.ru)}">${escape(p.symbol)}</button>`;
@@ -289,9 +402,11 @@
   }
   function select(id,open=false) {
     if(!byId.has(id)) return;
-    selected=id;current=id;updateDetails();applyState();
-    if(open&&mode==='graph'&&!isMobile()&&scale<.65)focusParticle(id,.85);
-    if(open&&isMobile()) {openSheet('details');if(mode==='graph')focusParticle(id,.6);}
+    selected=id;current=id;hoverTarget=null;focusedRegion=clusterMap.get(membership.get(id)).root;focusedCluster=null;
+    $('#mapPath').textContent=regionMap.get(focusedRegion).label+' / '+clusterMap.get(membership.get(id)).label+' / '+byId.get(id).symbol;
+    routeTarget=connectionTargets()[0]||null;updateDetails();applyState();
+    if(open&&mode==='graph')ensureRouteInView();
+    if(open&&isMobile()&&mode!=='graph')openSheet('details');
   }
   function setDetailTab(tab,focus=false) {
     detailTab=tab;
@@ -385,17 +500,20 @@
   function applyTransform() {
     scale=Math.max(minZoom(),Math.min(maxZoom,scale));
     // Keep some of the map in reach even after a long drag or minimap jump.
-    const margin=64;
-    tx=Math.max(margin-world.width*scale,Math.min(wrap.clientWidth-margin,tx));
-    ty=Math.max(100-world.height*scale,Math.min(wrap.clientHeight-margin,ty));
-    const surfaceTop=isMobile()?158:126;
+    const points=[...positions.values()],left=Math.min(...points.map(p=>p.x-p.r*Math.sqrt(3)/2)),right=Math.max(...points.map(p=>p.x+p.r*Math.sqrt(3)/2));
+    const upper=Math.min(...points.map(p=>p.y-p.r)),lower=Math.max(...points.map(p=>p.y+p.r)),top=isMobile()?199:174,bottom=wrap.clientHeight-175;
+    if((right-left)*scale>wrap.clientWidth-48)tx=Math.max(wrap.clientWidth-24-right*scale,Math.min(24-left*scale,tx));
+    else tx=(wrap.clientWidth-(right+left)*scale)/2;
+    if((lower-upper)*scale>bottom-top)ty=Math.max(bottom-lower*scale,Math.min(top-upper*scale,ty));
+    else ty=top+(bottom-top-(lower-upper)*scale)/2-upper*scale;
+    const surfaceTop=isMobile()?199:174;
     Object.entries({x:0,y:surfaceTop,width:wrap.clientWidth,height:Math.max(1,wrap.clientHeight-surfaceTop-100)}).forEach(([key,value])=>$('#mapSurfaceRect').setAttribute(key,value));
     viewport.setAttribute('transform',`translate(${tx} ${ty}) scale(${scale})`);
     $('#reset').textContent=Math.round(scale*100)+'%';
     $('#minus').disabled=scale<=minZoom()+.000001;
     $('#plus').disabled=scale>=maxZoom-.000001;
-    const mini=$('#miniViewport'),top=isMobile()?120:94,bottom=100;
-    Object.entries({x:-tx/scale,y:(top-ty)/scale,width:wrap.clientWidth/scale,height:(wrap.clientHeight-top-bottom)/scale}).forEach(([key,value])=>mini.setAttribute(key,value));
+    const mini=$('#miniViewport'),miniTop=isMobile()?199:174,miniBottom=175;
+    Object.entries({x:-tx/scale,y:(miniTop-ty)/scale,width:wrap.clientWidth/scale,height:(wrap.clientHeight-miniTop-miniBottom)/scale}).forEach(([key,value])=>mini.setAttribute(key,value));
     updateLevel();
   }
   function fit() {
@@ -408,7 +526,7 @@
   function focusParticle(id,minScale=.85) {
     const p=positions.get(id);if(!p)return;
     const available=isMobile()&&$('#details').classList.contains('open')?wrap.clientHeight-$('#details').offsetHeight:wrap.clientHeight;
-    scale=Math.max(scale,minScale);tx=wrap.clientWidth/2-p.x*scale;ty=Math.max((isMobile()?170:145)+p.r*scale,available*.45)-p.y*scale;autoFit=false;applyTransform();
+    scale=Math.max(scale,minScale);tx=wrap.clientWidth/2-p.x*scale;ty=Math.max((isMobile()?215:190)+p.r*scale,available*.45)-p.y*scale;autoFit=false;applyTransform();
   }
   function zoomAt(factor,x,y) {
     const next=Math.max(minZoom(),Math.min(maxZoom,scale*factor));
@@ -418,7 +536,7 @@
     const hits=filtered();
     const exact=hits.find(p=>[p.pdg,p.symbol,...(p.aliases||[])].some(value=>normalize(value)===query));
     const p=exact||hits[0];
-    if(query&&p){select(p.id,open);if(mode==='graph')focusParticle(p.id);}
+    if(query&&p){select(p.id,open);if(open&&isMobile())openSheet('details');if(mode==='graph')focusParticle(p.id);}
     else {selected=null;applyState();}
   }
   function clearFilters() {
@@ -461,7 +579,7 @@
     const rect=svg.getBoundingClientRect();
     pointers.set(event.pointerId,{x:event.clientX-rect.left,y:event.clientY-rect.top});
     svg.setPointerCapture(event.pointerId);
-    if(pointers.size===1){moved=false;suppressClick=false;pressedNode=event.target.closest('.node')?.dataset.id||null;pressedCluster=event.target.closest('.cluster,.cluster-caption')?.dataset.cluster||null;pressedRegion=event.target.closest('.region')?.dataset.region||null;}
+    if(pointers.size===1){moved=false;suppressClick=false;pressedNode=event.target.closest('.node')?.dataset.id||null;pressedCluster=event.target.closest('.cluster,.cluster-caption,.subgroup-tag')?.dataset.cluster||null;pressedRegion=event.target.closest('.region')?.dataset.region||null;}
     if(pointers.size>1){moved=true;suppressClick=true;}
     rebaseGesture();
   });
@@ -492,7 +610,7 @@
   svg.addEventListener('click',event=>{
     if(suppressClick){suppressClick=false;return;}
     const node=event.target.closest('.node');
-    const cluster=event.target.closest('.cluster,.cluster-caption'),region=event.target.closest('.region');
+    const cluster=event.target.closest('.cluster,.cluster-caption,.subgroup-tag'),region=event.target.closest('.region');
     if(node)select(node.dataset.id,true);
     else if(cluster)focusCluster(cluster.dataset.cluster);
     else if(region)focusRegion(region.dataset.region);
@@ -538,7 +656,7 @@
   content.addEventListener('change',event=>{if(event.target.id==='localParticle')select(event.target.value);});
   $('#related').addEventListener('click',event=>{const button=event.target.closest('[data-particle]');if(button){const p=byId.get(button.dataset.particle);if(!baseVisible(p)||!matches(p)){clearFilters();}select(p.id);if(mode==='graph')focusParticle(p.id);}});
   $('#plus').onclick=()=>zoomAt(1.25,wrap.clientWidth/2,wrap.clientHeight/2);$('#minus').onclick=()=>zoomAt(.8,wrap.clientWidth/2,wrap.clientHeight/2);
-  $('#reset').onclick=fit;$('#centerBtn').onclick=fit;$('#mapHome').onclick=()=>{selected=null;fit();applyState();};$('#showAll').onclick=()=>{selected=null;applyState();};
+  $('#reset').onclick=fit;$('#centerBtn').onclick=fit;$('#mapHome').onclick=()=>{selected=null;fit();applyState();};$('#showAll').onclick=()=>{selected=null;focusedRegion=null;focusedCluster=null;$('#mapPath').textContent='Все семейства';applyState();};
   $('#focusParticle').onclick=()=>{const id=current;clearFilters();setMode('graph');select(id);focusParticle(id);};
   $('#openComposition').onclick=()=>{selected=current;setMode('composition');};$('#openDecays').onclick=()=>{selected=current;setMode('decays');};
   $('#filtersBtn').onclick=()=>openSheet('filters');$('#detailBtn').onclick=()=>{openSheet('details');if(mode==='graph')focusParticle(current,.6);};
@@ -559,6 +677,9 @@
     previousSize=next;if(!isMobile())closeSheets(false);
   }).observe(wrap);
   $('#datasetVersion').textContent='PDG 2024 · '+D.particles.length+' состояний';$('#totalCount').textContent=D.particles.length;
+  $('#connectionPrev').onclick=()=>stepConnection(-1);
+  $('#connectionNext').onclick=()=>stepConnection(1);
+  $('#connectionAll').onclick=()=>{routeTarget=routeTarget?null:connectionTargets()[0]||null;highlightRoutes(null);if(routeTarget)ensureRouteInView();};
   buildGraph();updateDetails();applyState();fit();
   if('serviceWorker' in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{});
 })();

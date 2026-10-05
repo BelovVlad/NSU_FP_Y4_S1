@@ -93,6 +93,23 @@ function catalogue(count, templates=data.particles) {
     return {...p,id:p.id+'-state-'+i,pdg:100000+i,family:layout.familyFor(p),r:i%3===0?42:30};
   }),edges:[]};
 }
+test('Caption leaders follow ribs from the upper atlas edge to the named family',()=>{
+  const diagram=layout.create(data),network=routes.create(diagram),points=[...diagram.positions.values()];
+  for(const cluster of diagram.clusters){
+    const target=cluster.ids.map(id=>diagram.positions.get(id)).sort((a,b)=>a.y-b.y||a.x-b.x)[0];
+    const source=points.slice().sort((a,b)=>a.y-b.y||Math.abs(a.x-target.x)-Math.abs(b.x-target.x))[0];
+    const path=network.annotation(source.id,target.id);
+    assert.deepEqual(path[0],routes.vertices(source)[0]);
+    assert.deepEqual(path.at(-1),routes.vertices(target)[0]);
+    for(let i=1;i<path.length;i++){
+      const a=path[i-1],b=path[i];
+      assert.ok(network.ribs.some(([p,q])=>{
+        const length=Math.hypot(q.x-p.x,q.y-p.y);
+        return [a,b].every(v=>Math.abs((v.x-p.x)*(q.y-p.y)-(v.y-p.y)*(q.x-p.x))<length*.0001&&Math.hypot(v.x-p.x,v.y-p.y)+Math.hypot(v.x-q.x,v.y-q.y)<length+.0001);
+      }),'A caption connector must not cross a particle interior');
+    }
+  }
+});
 
 test('Real particles preserve data in one connected honeycomb',()=>{
   const diagram=verify(data);

@@ -91,6 +91,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.edge[data-kind="family"]:visible').count(), 0)
         self.page.locator('#showAll').click()
         self.assertEqual(self.page.locator('.node.dim').count(), 0)
+        self.page.locator('#centerBtn').click()
         before = self.page.locator('#viewport').get_attribute('transform')
         self.page.locator('#plus').click()
         self.assertNotEqual(before, self.page.locator('#viewport').get_attribute('transform'))
@@ -106,6 +107,8 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.node:visible').count(), 29)
         self.page.locator('#resetFilters').click()
         self.assertEqual(self.page.locator('.node:visible').count(), 200)
+        self.page.locator('#plus').click()
+        self.page.locator('#plus').click()
         rect = self.page.locator('#miniViewport').get_attribute('x')
         self.page.locator('#minimap').click(position={'x': 20, 'y': 20})
         self.assertNotEqual(rect, self.page.locator('#miniViewport').get_attribute('x'))
@@ -197,14 +200,15 @@ class ParticleExplorerTests(unittest.TestCase):
             self.page.set_viewport_size({'width':width,'height':height})
             self.page.wait_for_timeout(50)
             failures=self.page.evaluate('''()=>{
-                const d=PARTICLE_LAYOUT.create(PARTICLE_DATA),failures=[];
-                for(const r of d.regions){
-                    const b=document.querySelector('.region[data-region="'+r.id+'"] text').getBBox(),h=r.header;
-                    if(b.x<h.x-.1||b.x+b.width>h.x+h.width+.1||b.y<h.y||b.y+b.height>h.y+h.height)failures.push(r.id);
+                const failures=[],heads=[...document.querySelectorAll('.region')],wrap=document.querySelector('#canvasWrap').getBoundingClientRect();
+                const surfaceTop=wrap.top+Number(document.querySelector('#mapSurfaceRect').getAttribute('y'));
+                for(const r of heads){
+                    const b=r.querySelector('text').getBoundingClientRect(),h=r.querySelector('rect').getBoundingClientRect();
+                    if(b.left<h.left-.1||b.right>h.right+.1||b.top<h.top||b.bottom>h.bottom||h.bottom>surfaceTop||h.left<wrap.left||h.right>wrap.right)failures.push(r.dataset.region);
                 }
                 return failures;
             }''')
-            self.assertEqual(failures,[], 'Headings stay in their reserved empty bands')
+            self.assertEqual(failures,[], 'Family keys remain visible in the empty band above the map')
 
     def test_raised_subgroup_and_route_highlight(self):
         self.page.locator('.node[data-id="pip"] .sphere').click()
@@ -218,10 +222,81 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.node.lifted').count(),0)
         self.assertEqual(self.page.locator('.edge:visible').count(),0)
 
+    def test_map_labels_and_attached_caption(self):
+        self.page.evaluate('async()=>await document.fonts.ready')
+        labels=self.page.locator('.particle-label').evaluate_all('nodes=>nodes.filter(n=>getComputedStyle(n).opacity!=="0").length')
+        self.assertEqual(labels,200,'Every state has a readable glyph at desktop overview')
+        self.page.locator('.node[data-id="pdg4122"]').focus()
+        self.page.keyboard.press('Enter')
+        caption=self.page.locator('.cluster-caption:visible')
+        self.assertIn('Барионы / Очарованные',caption.text_content())
+        anchor=caption.get_attribute('data-anchor')
+        self.assertTrue(anchor,'The label must point to a visible tile instead of floating over the map')
+        self.assertEqual(self.page.locator(f'.node[data-id="{anchor}"]').get_attribute('data-cluster'),caption.get_attribute('data-cluster'))
+        coordinates=caption.evaluate('''c=>{
+            const anchor=document.querySelector('.node[data-id="'+c.dataset.anchor+'"] .sphere').getBoundingClientRect(),dot=c.querySelector('.caption-anchor'),map=document.querySelector('#canvasWrap').getBoundingClientRect();
+            return {dx:Math.abs(+dot.getAttribute('cx')+map.left-(anchor.left+anchor.right)/2),dy:Math.abs(+dot.getAttribute('cy')+map.top-anchor.top)};
+        }''')
+        self.assertLess(coordinates['dx'],.1)
+        self.assertLess(coordinates['dy'],.1)
+        self.assertTrue(self.page.locator('.node.dim').evaluate_all('nodes=>nodes.every(n=>getComputedStyle(n).opacity==="1" && getComputedStyle(n.querySelector(".particle-label")).fill==="rgb(168, 180, 198)")'),'Context labels remain legible when unrelated fills are muted')
+        self.page.locator('#mapHome').click()
+        self.page.locator('.region[data-region="mesons"]').focus()
+        self.page.keyboard.press('Enter')
+        self.assertEqual(self.page.locator('.subgroup-tag').count(),8)
+        for root in ['mesons','baryons','quarks','bosons','leptons']:
+            self.page.locator(f'.region[data-region="{root}"]').focus()
+            self.page.keyboard.press('Enter')
+            collisions=self.page.evaluate('''()=>{
+                const labels=[...document.querySelectorAll('.particle-label')].filter(t=>getComputedStyle(t).opacity==='1');
+                return [...document.querySelectorAll('.subgroup-tag rect')].flatMap(tag=>{
+                    const a=tag.getBoundingClientRect();
+                    return labels.filter(t=>{const b=t.getBoundingClientRect();return Math.min(a.right,b.right)-Math.max(a.left,b.left)>.5&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>.5;}).map(t=>t.closest('.node').dataset.id);
+                });
+            }''')
+            self.assertEqual(collisions,[],root+': family names must not cover any particle glyph')
+        self.page.locator('.region[data-region="mesons"]').focus()
+        self.page.keyboard.press('Enter')
+        self.page.locator('.subgroup-tag[data-cluster="mesons:lightmesons"]').focus()
+        self.page.keyboard.press('Enter')
+        expect(self.page.locator('#mapPath')).to_have_text('Мезоны / Лёгкие')
+
+    def test_explicit_route_pair_and_cycle(self):
+        self.page.locator('.node[data-id="pip"] .sphere').click()
+        expect(self.page.locator('#connectionReadout')).to_be_visible()
+        self.assertEqual(self.page.locator('.node.route-target').count(),1)
+        target=self.page.locator('.node.route-target').get_attribute('data-id')
+        highlighted=self.page.locator('.edge.route-highlight:visible')
+        self.assertGreater(highlighted.count(),0)
+        self.assertTrue(highlighted.evaluate_all("edges=>edges.every(e=>[e.dataset.from,e.dataset.to].includes('pip'))"))
+        self.assertIn(self.page.locator('.node.route-target title').text_content().split(' · ')[0],self.page.locator('#connectionPair').inner_text())
+        self.assertTrue(self.page.locator('.edge.route-muted:visible').evaluate_all('edges=>edges.every(e=>+getComputedStyle(e).opacity<.05)'))
+        self.page.locator('#connectionNext').click()
+        self.assertNotEqual(target,self.page.locator('.node.route-target').get_attribute('data-id'))
+        self.page.locator('#connectionPrev').click()
+        self.assertEqual(target,self.page.locator('.node.route-target').get_attribute('data-id'))
+        # Hover temporarily shows another pair, then restores the pinned route.
+        self.page.locator('.node[data-id="pi0"] .sphere').hover()
+        self.assertIn('π⁰',self.page.locator('#connectionPair').inner_text())
+        self.page.mouse.move(10,10)
+        self.assertEqual(target,self.page.locator('.node.route-target').get_attribute('data-id'))
+        self.page.locator('#connectionAll').click()
+        self.assertEqual(self.page.locator('.edge.route-muted:visible').count(),0)
+        self.assertEqual(self.page.locator('.node.route-target').count(),0)
+        for kind in ['strong','em','weak','composition','mixing','family']:
+            self.page.locator(f'[data-edge="{kind}"]').uncheck()
+        self.page.locator('.node[data-id="pip"] .sphere').click()
+        self.assertEqual(self.page.locator('.edge:visible').count(),0)
+        expect(self.page.locator('#connectionPair')).to_contain_text('связей нет')
+        expect(self.page.locator('#connectionNext')).to_be_disabled()
+        self.assertGreater(self.page.locator('.node.selected .sphere').bounding_box()['height'],60,'A particle without enabled relations still opens at a readable scale')
+        self.page.locator('#mapHome').click()
+        expect(self.page.locator('#connectionReadout')).to_be_hidden()
+
     def test_symbol_fits_every_hexagon_after_fonts_load(self):
         self.page.evaluate('async()=>await document.fonts.ready')
         failures=self.page.locator('.node').evaluate_all('''nodes=>nodes.flatMap(n=>{
-            const text=n.querySelector('text'),b=text.getBBox(),r=+n.querySelector('.sphere').dataset.radius;
+            const text=n.querySelector('.particle-label'),raw=text.getBBox(),factor=text.transform.baseVal.numberOfItems?text.transform.baseVal.getItem(0).matrix.a:1,b={x:raw.x*factor,y:raw.y*factor,width:raw.width*factor,height:raw.height*factor},r=+n.querySelector('.sphere').dataset.radius;
             const x=Math.max(Math.abs(b.x),Math.abs(b.x+b.width)),y=Math.max(Math.abs(b.y),Math.abs(b.y+b.height));
             return x>Math.sqrt(3)*r/2||x+Math.sqrt(3)*y>Math.sqrt(3)*r?[n.dataset.id]:[];
         })''')
@@ -237,18 +312,21 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.locator('.region[data-region="mesons"] .region-title').tap()
         expect(self.page.locator('#mapPath')).to_have_text('Мезоны')
         self.page.locator('.node[data-id="pip"] .sphere').tap()
-        expect(self.page.locator('#details')).to_have_class('right open')
+        expect(self.page.locator('#details')).not_to_have_class('right open')
+        expect(self.page.locator('#connectionReadout')).to_be_visible()
         expect(self.page.locator('#detailSymbol')).to_have_text('π⁺')
         expect(self.page.locator('.cluster[data-cluster="mesons:lightmesons"]')).to_have_class(re.compile('subgroup-lifted'))
         self.page.wait_for_function("()=>document.querySelector('.node[data-id=pip] .sphere').getBoundingClientRect().top>=document.querySelector('.cluster-caption[data-cluster=\"mesons:lightmesons\"] rect').getBoundingClientRect().bottom")
 
+        self.page.locator('#detailBtn').click()
+        expect(self.page.locator('#details')).to_have_class('right open')
         self.page.locator('#closeDetail').click()
         self.page.locator('.cluster-caption[data-cluster="mesons:lightmesons"] .cluster-title').tap()
         expect(self.page.locator('#mapPath')).to_have_text('Мезоны / Лёгкие')
         expect(self.page.locator('#details')).not_to_have_class('right open')
         self.assertEqual(self.page.locator('.node.selected').count(), 0)
         self.page.locator('.node[data-id="pip"] .sphere').tap()
-        expect(self.page.locator('#details')).to_have_class('right open')
+        expect(self.page.locator('#details')).not_to_have_class('right open')
         expect(self.page.locator('#detailSymbol')).to_have_text('π⁺')
 
     def test_large_catalogue_overview_search_and_table(self):
@@ -355,6 +433,9 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.locator('#resetFilters').click()
         self.page.locator('#closeFilters').click()
         self.page.wait_for_function("document.querySelector('#filters').getBoundingClientRect().right <= 0")
+        # The whole atlas stays centered at its zoom floor; pan after zooming in.
+        self.page.locator('#plus').click()
+        self.page.locator('#plus').click()
         before = self.page.locator('#viewport').get_attribute('transform')
         self.page.mouse.move(100, 240)
         self.page.mouse.down()
