@@ -6,6 +6,9 @@ const path = require('node:path');
 const layout = require('../docs/particles/layout.js');
 const context = {window:{}};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../docs/particles/particles.js'),'utf8'),context);
+const original=JSON.stringify(context.window.PARTICLE_DATA.particles);
+const originalEdges=JSON.stringify(context.window.PARTICLE_DATA.edges);
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../docs/particles/extra-particles.js'),'utf8'),context);
 const data = JSON.parse(JSON.stringify(context.window.PARTICLE_DATA));
 
 function verify(data) {
@@ -26,7 +29,11 @@ function verify(data) {
       const cluster=region.children[i];
       assert.ok(cluster.x>=region.x&&cluster.y>=region.y+100);
       assert.ok(cluster.x+cluster.width<=region.x+region.width&&cluster.y+cluster.height<=region.y+region.height);
-      for(const other of region.children.slice(i+1))assert.ok(disjoint(cluster,other),'Family zones overlap');
+      // Bounding boxes may overlap diagonally; collision checks above cover the actual circles.
+      for(const other of region.children.slice(i+1)){
+        const clearance=Math.hypot((cluster.cx-other.cx)/(cluster.rx+other.rx+38),(cluster.cy-other.cy)/(cluster.ry+other.ry+86));
+        assert.ok(clearance>.999,'Family labels and inner clouds require clearance');
+      }
       for(const id of cluster.ids) {
         assert.equal(diagram.membership.get(id),cluster.id);
         const point=diagram.positions.get(id);
@@ -48,11 +55,29 @@ function catalogue(count, templates=data.particles) {
   }),edges:[]};
 }
 
-test('49 real particles preserve data and fit in 20 disjoint family zones',()=>{
+test('Real particles preserve data in separated constellations',()=>{
   const diagram=verify(data);
+  assert.equal(data.particles.length,99);
+  assert.equal(JSON.stringify(data.particles.slice(0,49)),original,'The original 49 records are unmodified');
+  assert.equal(JSON.stringify(data.edges.slice(0,104)),originalEdges,'The original 104 relationships are unmodified');
   assert.equal(diagram.regions.length,5);
-  assert.equal(diagram.clusters.length,20);
   assert.equal(JSON.stringify([...diagram.positions]),JSON.stringify([...layout.create(data).positions]),'Placement is deterministic');
+});
+test('50 additional states have unique PDG IDs, quantum numbers and provenance; edges resolve',()=>{
+  assert.equal(new Set(data.particles.map(p=>p.pdg)).size,99);
+  for(const p of data.particles.slice(49)){
+    assert.equal(p.source.edition,'2024');
+    assert.ok(p.source.mass&&p.source.particle);
+    assert.ok(['0','1','2','1/2','3/2'].includes(p.spin));
+    assert.ok(p.mass&&!p.mass.includes('не указано'));
+  }
+  const byId=new Map(data.particles.map(p=>[p.id,p]));
+  for(const e of data.edges)assert.ok(byId.has(e.from)&&byId.has(e.to),'A relation references an absent state');
+  assert.ok(!data.edges.some(e=>e.id.startsWith('extra-')&&e.from==='t'),'A mixed-state annotation must not create a top-quark constituent');
+  assert.equal(byId.get('pdg2224').charge,'+2');
+  assert.equal(byId.get('pdg9000221').mass,'400–800 MeV');
+  assert.match(byId.get('pdg433').lifetime,/Γ <1.9 MeV/);
+  assert.equal(byId.get('pdg511').lifetime,'τ = (1517 ± 4) × 10⁻¹⁵ s');
 });
 test('800-state catalogue has no sphere, family or root-region collisions',()=>verify(catalogue(800)));
 test('A heavily expanded lepton catalogue reserves its own column',()=>{

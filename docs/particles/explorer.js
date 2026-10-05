@@ -11,6 +11,7 @@
   const svg = $('#world'), viewport = $('#viewport'), wrap = $('#canvasWrap');
   const content = $('#modeContent'), search = $('#search');
   const byId = new Map(D.particles.map(p => [p.id, p]));
+  const byPdg = new Map(D.particles.map(p=>[p.pdg,p]));
   const groups = new Map(D.groups.map(g => [g.id, g]));
   const colors = {rose:'#ff527c', orange:'#ff8954', violet:'#c176ff', gold:'#ffd16b', blue:'#498fff', green:'#53e592', purple:'#ae73ff', pearl:'#bbcfdf'};
   const edgeColors = {strong:'#ff466b', em:'#52b6ff', weak:'#53e592', composition:'#bd87ff', mixing:'#ffba75', family:'#aebdcc'};
@@ -20,7 +21,7 @@
   const {positions,membership,regions,clusters,world}=diagram;
   const minZoom=Math.min(.08,180/Math.max(world.width,world.height));
   const layout=Object.fromEntries(diagram.groupBounds);
-  const labels={light:'Лёгкие мезоны',strange:'Странные мезоны',charm:'Charm / charmonium',bosons:'Бозоны',baryons:'Барионы',leptons:'Лептоны',quarks:'Кварки'};
+  const labels={light:'Лёгкие мезоны',strange:'Странные мезоны',charm:'Charm / charmonium',bottom:'Bottom / bottomonium',bosons:'Бозоны',baryons:'Барионы',leptons:'Лептоны',quarks:'Кварки'};
   const clusterMap=new Map(clusters.map(c=>[c.id,c]));
   let allEdges=false,focusedCluster=null;
   let mode='graph', selected=null, current='pip', activeGroup='all', detailTab='properties';
@@ -31,6 +32,31 @@
   const escape = value => String(value ?? '—').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const normalize = value => String(value).toLocaleLowerCase('ru').replace(/ё/g,'е');
   const isMobile = () => matchMedia('(max-width:900px)').matches;
+  const noise=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);};
+  function smoothOutline(points) {
+    return points.map((p,i)=>{
+      const a=points[(i+points.length-1)%points.length],b=points[(i+1)%points.length],c=points[(i+2)%points.length];
+      return (i?'':'M'+p.x+' '+p.y+' ')+`C${p.x+(b.x-a.x)/6} ${p.y+(b.y-a.y)/6} ${b.x-(c.x-p.x)/6} ${b.y-(c.y-p.y)/6} ${b.x} ${b.y}`;
+    }).join(' ')+' Z';
+  }
+  function cloudPath(cx,cy,rx,ry,phase=0) {
+    return smoothOutline(Array.from({length:32},(_,i)=>{
+      const angle=i*Math.PI/16,warp=1+.025*Math.sin(angle*3+phase)+.016*Math.cos(angle*5-phase);
+      return {x:cx+Math.cos(angle)*rx*warp,y:cy+Math.sin(angle)*ry*warp};
+    }));
+  }
+  function regionPath(region) {
+    const points=region.children.flatMap(c=>Array.from({length:18},(_,i)=>{
+      const angle=i*Math.PI/9;return {x:c.cx+Math.cos(angle)*(c.rx+42),y:c.cy+Math.sin(angle)*(c.ry+40)};
+    })).sort((a,b)=>a.x-b.x||a.y-b.y);
+    const cross=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x),lower=[],upper=[];
+    for(const p of points){while(lower.length>1&&cross(lower.at(-2),lower.at(-1),p)<=0)lower.pop();lower.push(p);}
+    for(const p of [...points].reverse()){while(upper.length>1&&cross(upper.at(-2),upper.at(-1),p)<=0)upper.pop();upper.push(p);}
+    let hull=[...lower.slice(0,-1),...upper.slice(0,-1)];
+    // Cut the corners before smoothing; irregular spacing must not create sharp spline cusps.
+    for(let pass=0;pass<2;pass++)hull=hull.flatMap((a,i)=>{const b=hull[(i+1)%hull.length];return [{x:a.x*.75+b.x*.25,y:a.y*.75+b.y*.25},{x:a.x*.25+b.x*.75,y:a.y*.25+b.y*.75}];});
+    return smoothOutline(hull);
+  }
   function el(tag, attrs={}, text='') {
     const item=document.createElementNS('http://www.w3.org/2000/svg',tag);
     Object.entries(attrs).forEach(([key,value])=>item.setAttribute(key,value));
@@ -40,13 +66,14 @@
   function tone(p) {
     if(p.id==='g') return 'pearl';
     if(p.id==='gamma') return 'blue';
-    return groups.get(p.group).tone;
+    return clusterMap.get(membership.get(p.id))?.tone||groups.get(p.group).tone;
   }
   function baseVisible(p) {
     const sign=p.charge.startsWith('−')||p.charge.startsWith('-')?'negative':p.charge.startsWith('+')?'positive':'neutral';
     return (activeGroup==='all'||p.group===activeGroup) && (charge==='all'||charge===sign) && (spin==='all'||spin===p.spin);
   }
   function matches(p) {
+    if(/^-?\d+$/.test(query)&&byPdg.has(Number(query)))return p.pdg===Number(query);
     return !query || normalize([p.symbol,p.name,p.ru,p.pdg,...(p.aliases||[])].join(' ')).includes(query);
   }
   const filtered = () => D.particles.filter(p=>baseVisible(p)&&matches(p));
@@ -61,12 +88,14 @@
   }
   function buildGraph() {
     const defs=$('#worldDefs');
+    const cosmos=$('#cosmos');
+    for(let i=0;i<240;i++)cosmos.append(el('circle',{cx:noise(i+1)*1600,cy:noise(i+811)*1200,r:noise(i+45)>.94?2.0:.45+noise(i+271)*.85,fill:i%9===0?'#e9d7ff':'#b8d5ff',opacity:.13+noise(i+135)*.52,class:i%13===0?'twinkle':''}));
     Object.entries(colors).forEach(([key,color])=>{
       const gradient=el('radialGradient',{id:'sphere-'+key,cx:'32%',cy:'24%',r:'84%'});
       [['0%','#eaf4ff'],['10%',color],['37%',color],['100%','#080e19']].forEach(([offset,fill])=>gradient.append(el('stop',{offset,'stop-color':fill})));
       defs.append(gradient);
       const aura=el('radialGradient',{id:'aura-'+key,cx:'50%',cy:'35%',r:'72%'});
-      [['0%',.10],['60%',.045],['100%',0]].forEach(([offset,opacity])=>aura.append(el('stop',{offset,'stop-color':color,'stop-opacity':opacity})));
+      [['0%',.19],['60%',.095],['100%',.01]].forEach(([offset,opacity])=>aura.append(el('stop',{offset,'stop-color':color,'stop-opacity':opacity})));
       defs.append(aura);
     });
     Object.entries(edgeColors).forEach(([kind,color])=>{
@@ -76,17 +105,32 @@
     regions.forEach(region=>{
       const holder=el('g',{class:'region','data-region':region.id,style:'--tone:'+colors[region.tone]});
       const {x,y,width,height}=region;
-      holder.append(el('rect',{x,y,width,height,rx:90,fill:'url(#aura-'+region.tone+')',stroke:colors[region.tone],class:'region-boundary'}));
-      holder.append(el('text',{x:x+width/2,y:y+45,'text-anchor':'middle',class:'region-title',fill:colors[region.tone]},region.label));
-      holder.append(el('text',{x:x+width/2,y:y+74,'text-anchor':'middle',class:'region-summary'},region.count+' состояний · '+region.children.length+' семейств'));
+      const outline=regionPath(region),centerX=x+width/2,centerY=y+height/2;
+      holder.append(el('path',{d:outline,fill:'url(#aura-'+region.tone+')',stroke:colors[region.tone],class:'region-boundary'}));
+      [1.03,1.065].forEach((factor,i)=>holder.append(el('path',{d:outline,fill:'none',stroke:colors[region.tone],class:'region-orbit',transform:`translate(${centerX} ${centerY}) scale(${factor}) translate(${-centerX} ${-centerY})`,opacity:i?.12:.22})));
+      const title=el('text',{x:centerX,y:y+45,'text-anchor':'middle',class:'region-title',fill:colors[region.tone]},region.label);
+      title.append(el('tspan',{dx:12,class:'region-count'},'('+region.count+')'));holder.append(title);
+      holder.append(el('text',{x:centerX,y:y+74,'text-anchor':'middle',class:'region-summary'},region.subtitle));
       $('#hulls').append(holder);hullElements.set(region.id,holder);
-      const mini=el('rect',{x,y,width,height,rx:70,fill:colors[region.tone],'fill-opacity':.04,stroke:colors[region.tone],'stroke-opacity':.4,'stroke-width':4});
+      const mini=el('path',{d:outline,fill:colors[region.tone],'fill-opacity':.08,stroke:colors[region.tone],'stroke-opacity':.4,'stroke-width':4});
       $('#miniRegions').append(mini);
     });
-    clusters.forEach(cluster=>{
+    const bosonRegion=regions.find(r=>r.id==='bosons');
+    if(bosonRegion){
+      const cx=bosonRegion.x+bosonRegion.width/2,cy=155,galaxy=el('g',{class:'hadron-bridge','aria-hidden':'true'});
+      galaxy.append(el('text',{x:cx,y:93,'text-anchor':'middle',class:'bridge-title'},'Адроны ('+D.particles.filter(p=>['light','strange','charm','bottom','baryons'].includes(p.group)).length+')'));
+      for(let i=0;i<90;i++){
+        const arm=i%3,rad=Math.sqrt(i/90)*58,angle=rad*.12+arm*Math.PI*2/3;
+        galaxy.append(el('circle',{cx:cx+Math.cos(angle)*rad,cy:cy+Math.sin(angle)*rad*.45,r:.6+noise(i+331)*1.8,fill:i<20?'#f6e7ff':'#82a8ff',opacity:.2+noise(i+515)*.7}));
+      }
+      galaxy.append(el('ellipse',{cx,cy,rx:56,ry:23,fill:'none',stroke:'#8c83ff','stroke-opacity':.15,'stroke-width':8,class:'galaxy-haze'}));
+      $('#hulls').append(galaxy);
+    }
+    clusters.forEach((cluster,index)=>{
       const holder=el('g',{class:'cluster','data-cluster':cluster.id,style:'--tone:'+colors[cluster.tone],role:'button',tabindex:0,'aria-label':cluster.label+' — '+cluster.ids.length+' состояний. Приблизить семейство.'});
-      holder.append(el('ellipse',{cx:cluster.cx,cy:cluster.cy,rx:cluster.rx,ry:cluster.ry,fill:'url(#aura-'+cluster.tone+')',stroke:colors[cluster.tone],class:'cluster-shell'}));
-      holder.append(el('ellipse',{cx:cluster.cx,cy:cluster.cy,rx:cluster.rx-9,ry:cluster.ry-8,fill:'none',stroke:colors[cluster.tone],class:'cluster-inner'}));
+      holder.append(el('path',{d:cloudPath(cluster.cx,cluster.cy,cluster.rx,cluster.ry,index*.81),fill:'url(#aura-'+cluster.tone+')',stroke:colors[cluster.tone],class:'cluster-shell'}));
+      holder.append(el('path',{d:cloudPath(cluster.cx,cluster.cy,cluster.rx*.94,cluster.ry*.96,index*.81+.14),fill:'none',stroke:colors[cluster.tone],class:'cluster-inner'}));
+      holder.append(el('path',{d:cloudPath(cluster.cx,cluster.cy,cluster.rx*1.05,cluster.ry*1.06,index*.81-.2),fill:'none',stroke:colors[cluster.tone],class:'cluster-halo'}));
       const title=el('text',{x:cluster.cx,y:cluster.y+25,'text-anchor':'middle',class:'cluster-title'},cluster.label);
       title.append(el('tspan',{'dx':10,class:'cluster-count'},String(cluster.ids.length)));
       holder.append(title);
@@ -114,7 +158,7 @@
       const a=positions.get(edge.from),b=positions.get(edge.to);if(!a||!b)return;
       const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy),ux=dx/length,uy=dy/length;
       const ax=a.x+ux*(a.r+2),ay=a.y+uy*(a.r+2),bx=b.x-ux*(b.r+5),by=b.y-uy*(b.r+5);
-      const curve=membership.get(edge.from)===membership.get(edge.to)?.17:.22;
+      const curve=(membership.get(edge.from)===membership.get(edge.to)?.16:.26)+(noise(edgeElements.size+7)-.5)*.16;
       const path=el('path',{class:'edge',stroke:edgeColors[edge.kind],style:'color:'+edgeColors[edge.kind],d:`M${ax} ${ay} Q${(ax+bx)/2-dy*curve} ${(ay+by)/2+dx*curve} ${bx} ${by}`,'data-id':edge.id,'data-from':edge.from,'data-to':edge.to,'data-kind':edge.kind});
       if(edge.kind!=='family')path.setAttribute('marker-end','url(#arrow-'+edge.kind+')');
       if(['mixing','composition','family'].includes(edge.kind))path.setAttribute('stroke-dasharray',edge.kind==='mixing'?'7 5':'3 5');
@@ -127,7 +171,7 @@
       node.append(el('circle',{class:'selection-ring',r:r+8,'pointer-events':'none'}));
       node.append(el('circle',{class:'sphere',r,fill:'url(#sphere-'+tone(p)+')',stroke:color}));
       node.append(el('ellipse',{class:'shine',cx:-r*.23,cy:-r*.42,rx:r*.19,ry:r*.07,fill:'#fff',transform:'rotate(-25)'}));
-      node.append(el('text',{x:0,y:1,'font-size':p.symbol.length>3?29:34},p.symbol));
+      node.append(el('text',{x:0,y:1,'font-size':r>=60?54:r>=40?44:p.symbol.length>3?29:34},p.symbol));
       node.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();select(p.id,true);}});
       node.addEventListener('pointerenter',event=>{
         if(event.pointerType==='touch')return;
@@ -144,13 +188,13 @@
     $('#minimap').setAttribute('viewBox',`0 0 ${world.width} ${world.height}`);
   }
   function updateLevel() {
-    const overview=scale<.30,detail=scale>=.65;
+    const overview=scale<.22,detail=scale>=.65;
     svg.classList.toggle('overview',overview);svg.classList.toggle('detail-level',detail);svg.classList.toggle('show-all',allEdges);
-    regions.forEach(region=>{const title=hullElements.get(region.id).querySelector('.region-title');title.setAttribute('font-size',Math.max(12/scale,Math.min(46,22/scale)));title.setAttribute('y',region.y+Math.max(45,17/scale));});
+    regions.forEach(region=>{const title=hullElements.get(region.id).querySelector('.region-title');title.setAttribute('font-size',Math.max(12/scale,Math.min(48,26/scale)));title.setAttribute('y',region.id==='bosons'?region.y+region.height+10:region.y+Math.max(45,20/scale));});
     $$('.region-summary').forEach(title=>title.setAttribute('font-size',Math.max(8.5/scale,Math.min(18,10/scale))));
     clusterElements.forEach(holder=>{
-      holder.querySelector('.cluster-title').style.fontSize=Math.min(32,18/scale)+'px';
-      holder.querySelector('.cluster-count').style.fontSize=Math.min(20,11/scale)+'px';
+      holder.querySelector('.cluster-title').style.fontSize=Math.max(12/scale,Math.min(36,18/scale))+'px';
+      holder.querySelector('.cluster-count').style.fontSize=Math.max(9/scale,Math.min(20,11/scale))+'px';
       holder.querySelector('.cluster-subtitle').style.fontSize=Math.min(17,11/scale)+'px';
     });
     nodeElements.forEach((node,id)=>{
@@ -183,7 +227,9 @@
       const path=edgeElements.get(edge.id);if(!path)return;
       const active=selected&&(edge.from===selected||edge.to===selected);
       const local=membership.get(edge.from)===membership.get(edge.to);
-      path.style.display=enabledEdges.has(edge.kind)&&visible.has(edge.from)&&visible.has(edge.to)&&(allEdges||active||(!selected&&local))?'':'none';
+      const fromRoot=window.PARTICLE_LAYOUT.rootFor(byId.get(edge.from)),toRoot=window.PARTICLE_LAYOUT.rootFor(byId.get(edge.to));
+      const bridge=fromRoot==='bosons'||toRoot==='bosons';
+      path.style.display=enabledEdges.has(edge.kind)&&visible.has(edge.from)&&visible.has(edge.to)&&(allEdges||active||(!selected&&(local||bridge||fromRoot===toRoot)))?'':'none';
       path.classList.toggle('active',!!active);path.classList.toggle('dim',selected?!active:!!focusedCluster&&membership.get(edge.from)!==focusedCluster);
     });
     clusters.forEach(cluster=>{
@@ -198,7 +244,7 @@
     });
     bundles.forEach(bundle=>bundle.path.style.display=!selected&&!allEdges&&activeGroup==='all'&&enabledEdges.has(bundle.kind)&&bundle.edges.some(e=>visible.has(e.from)&&visible.has(e.to))?'':'none');
     $('#edgeViewBtn').setAttribute('aria-pressed',String(allEdges));
-    $('#edgeViewBtn').textContent=allEdges?'Все связи':'Связи по выбору';
+    $('#edgeViewBtn').textContent=allEdges?'Все связи':'Основные связи';
     updateLevel();
     $('#resultCount').textContent=query?hits.length+' найдено':'';
     $('#visibleCount').textContent=hits.length+' / '+D.particles.length+' состояний';
@@ -217,6 +263,7 @@
     $('#metricStrip').innerHTML=[['Масса',p.mass],['Заряд',p.charge],['Спин J',p.spin]].map(([label,value],i)=>`<div><small>${escape(label)}</small><strong class="${i===0?'mass':''}">${escape(value)}</strong></div>`).join('');
     const rows=[['Символ',p.symbol],['Название',p.ru],['PDG ID',p.pdg],['Класс',group.label],['Чётность P',p.parity],['C-чётность',p.cparity],['Кварковый состав',p.quarks],['Жизнь / ширина',p.lifetime]];
     $('#props').innerHTML=rows.map(([name,value])=>`<dt>${escape(name)}</dt><dd>${escape(value)}</dd>`).join('');
+    $('#dataSource').innerHTML=p.source?'<a href="https://pdg.lbl.gov/2024/api/index.html" target="_blank" rel="noopener">PDG 2024 · '+escape(p.source.particle)+'</a>':'Исходная выборка · PDG 2024';
     $('#decays').innerHTML=p.decays.length?p.decays.map(([channel,br])=>`<div class="decay-row"><span>${escape(channel)}</span><small>${escape(br)}</small></div>`).join(''):'<p class="help">'+escape(p.lifetime)+'<br>Каналы распада в наборе не указаны.</p>';
     const kinds=new Map();
     D.edges.forEach(e=>{if(e.from===current||e.to===current){const id=e.from===current?e.to:e.from;if(!kinds.has(id))kinds.set(id,new Set());kinds.get(id).add(edgeNames[e.kind]);}});
@@ -251,6 +298,7 @@
   // Numeric values are used only for table ordering. Original display strings stay intact.
   function numeric(p,key) {
     if(key==='pdg')return p.pdg;
+    if(key==='mass'&&Number.isFinite(p.massValue))return p.massValue;
     if(key==='spin'||key==='charge'){
       const text=p[key].replace('−','-');const [a,b]=text.split('/').map(Number);return b?a/b:a;
     }
@@ -276,7 +324,7 @@
     return `<div class="class-family" style="--c:${color}"><h4>${title}<small>${particles.length}</small></h4><div class="particle-chips">${particles.map(p=>particleChip(p)).join('')}</div></div>`;
   }
   function renderClassification(hits) {
-    return `<h2>Классификация</h2><p class="mode-intro">Элементарные частицы и составные адроны. Выберите состояние, чтобы открыть его свойства.</p><div class="classification-root"><div class="tree-label">Частицы · ${hits.length}</div><div class="tree-branches"><section class="tree-branch"><h3>Элементарные</h3><p>Фермионы: лептоны и кварки · бозоны: переносчики и Хиггс</p>${family(['leptons'],'Лептоны · фермионы',hits,colors.green)}${family(['quarks'],'Кварки · фермионы',hits,colors.purple)}${family(['bosons'],'Бозоны',hits,colors.gold)}</section><section class="tree-branch"><h3>Адроны</h3><p>Составные состояния кварков и антикварков</p>${family(['light','strange','charm'],'Мезоны · бозоны',hits,colors.rose)}${family(['baryons'],'Барионы · фермионы',hits,colors.blue)}</section></div></div>`;
+    return `<h2>Классификация</h2><p class="mode-intro">Элементарные частицы и составные адроны. Выберите состояние, чтобы открыть его свойства.</p><div class="classification-root"><div class="tree-label">Частицы · ${hits.length}</div><div class="tree-branches"><section class="tree-branch"><h3>Элементарные</h3><p>Фермионы: лептоны и кварки · бозоны: переносчики и Хиггс</p>${family(['leptons'],'Лептоны · фермионы',hits,colors.green)}${family(['quarks'],'Кварки · фермионы',hits,colors.purple)}${family(['bosons'],'Бозоны',hits,colors.gold)}</section><section class="tree-branch"><h3>Адроны</h3><p>Составные состояния кварков и антикварков</p>${family(['light','strange','charm','bottom'],'Мезоны · бозоны',hits,colors.rose)}${family(['baryons'],'Барионы · фермионы',hits,colors.blue)}</section></div></div>`;
   }
   function localPicker(hits,p) {
     return `<label class="local-picker" for="localParticle">Выбранная частица<select id="localParticle">${hits.map(item=>`<option value="${item.id}" ${item.id===p.id?'selected':''}>${escape(item.symbol+' · '+item.ru)}</option>`).join('')}</select></label>`;
@@ -285,16 +333,17 @@
     return p.quarks.replace(/\bmixture\b/g,'').match(/[udscbtū]̄?/g)||[];
   }
   function renderComposition(hits,p) {
-    const hadron=['light','strange','charm','baryons'].includes(p.group);
+    const hadron=['light','strange','charm','bottom','baryons'].includes(p.group);
     const tokens=hadron?quarkTokens(p):[];
     const mixed=/mixture|√/.test(p.quarks);
+    const compositionCaption=!tokens.length?'Однозначный валентный состав в этой выборке не указан.':mixed?'Смешанное состояние: показаны компоненты сохранённой формулы, а не один фиксированный набор кварков.':'Кнопки компонентов открывают свойства соответствующего кваркового аромата. Черта обозначает антикварк.';
     const components=tokens.map(token=>{
       const anti=token==='ū'||token.includes('̄');
       const flavor=token==='ū'?'u':token[0];
       return `<button class="component-orb" data-particle="${flavor}" title="${anti?'Антикварк; свойства соответствующего кварка':'Кварк'} ${flavor}" aria-label="${anti?'Антикварк':'Кварк'} ${flavor}, открыть свойства кварка">${escape(token)}</button>`;
     }).join('');
     // Tokenization preserves the stored formula; mixed states are not presented as a single fixed composition.
-    return `<h2>Кварковый состав</h2><p class="mode-intro">Локальное представление состава выбранного состояния из текущей базы.</p>${localPicker(hits,p)}<div class="local-stage" style="--c:${colors[tone(p)]}"><div class="local-parent">${escape(p.symbol)}</div><div class="formula">${escape(p.quarks)}</div>${hadron?`<div class="flow-arrow">↓</div><div class="component-orbs">${components}</div><p class="local-caption">${mixed?'Смешанное состояние: показаны компоненты сохранённой формулы, а не один фиксированный набор кварков.':'Кнопки компонентов открывают свойства соответствующего кваркового аромата. Черта обозначает антикварк.'}</p>`:`<p class="local-caption">${p.group==='quarks'?'Элементарный кварк. Адроны с этим ароматом в текущем наборе:':'Элементарная частица; кваркового состава нет.'}</p>`}${p.group==='quarks'?`<div class="particle-chips">${D.particles.filter(item=>['light','strange','charm','baryons'].includes(item.group)&&quarkTokens(item).some(token=>token.replace('ū','u')[0]===p.id)).map(item=>particleChip(item)).join('')}</div>`:''}</div>`;
+    return `<h2>Кварковый состав</h2><p class="mode-intro">Локальное представление состава выбранного состояния из текущей базы.</p>${localPicker(hits,p)}<div class="local-stage" style="--c:${colors[tone(p)]}"><div class="local-parent">${escape(p.symbol)}</div><div class="formula">${escape(p.quarks)}</div>${hadron?`<div class="flow-arrow">↓</div><div class="component-orbs">${components}</div><p class="local-caption">${escape(compositionCaption)} ${escape(p.compositionNote||'')}</p>`:`<p class="local-caption">${p.group==='quarks'?'Элементарный кварк. Адроны с этим ароматом в текущем наборе:':'Элементарная частица; кваркового состава нет.'}</p>`}${p.group==='quarks'?`<div class="particle-chips">${D.particles.filter(item=>['light','strange','charm','bottom','baryons'].includes(item.group)&&quarkTokens(item).some(token=>token.replace('ū','u')[0]===p.id)).map(item=>particleChip(item)).join('')}</div>`:''}</div>`;
   }
   function decayProducts(channel) {
     // Exact symbol matching: absent antiparticles/general channels remain explicit, non-clickable labels.

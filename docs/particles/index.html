@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#050910">
-<title>Карта частиц · NSU FP</title><link rel="stylesheet" href="explorer.css?v=3"><script src="particles.js" defer></script><script src="layout.js?v=1" defer></script><script src="explorer.js?v=3" defer></script>
+<title>Карта частиц · NSU FP</title><link rel="stylesheet" href="explorer.css?v=4"><script src="particles.js" defer></script><script src="extra-particles.js?v=1" defer></script><script src="layout.js?v=2" defer></script><script src="explorer.js?v=4" defer></script>
 </head>
 <body><div class="app">
 <header class="top">
@@ -22,12 +22,13 @@
 <label class="toggle"><span><i style="--c:#aebdcc"></i>Семейство</span><input type="checkbox" data-edge="family" checked></label>
 <div class="sep"></div><div class="panel-heading">Свойства</div>
 <label class="select-label" for="chargeFilter">Заряд<select id="chargeFilter"><option value="all">Все</option><option value="neutral">Нейтральные</option><option value="positive">Положительный</option><option value="negative">Отрицательный</option></select></label>
-<label class="select-label" for="spinFilter">Спин J<select id="spinFilter"><option value="all">Все</option><option>0</option><option>1/2</option><option>1</option><option>3/2</option></select></label>
+<label class="select-label" for="spinFilter">Спин J<select id="spinFilter"><option value="all">Все</option><option>0</option><option>1/2</option><option>1</option><option>3/2</option><option>2</option></select></label>
 <button id="resetFilters" class="outline full">Сбросить фильтры</button>
 <p class="help">Перетаскивание — двигать карту<br>Колесо / щипок — масштаб<br>Нажатие на семейство — приблизить<br>Выбор частицы — локальные связи</p>
-<div class="dataset-note">PDG 2024<span>Демонстрационный набор.<br>Числа и каналы из текущей базы.</span></div>
+<div class="dataset-note">PDG 2024<span>Выборка частиц и резонансов.<br>Числа и каналы из текущей базы.</span></div>
 </aside>
 <main id="canvasWrap" class="canvas-wrap">
+<svg id="cosmos" viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
 <div class="mobile-toolbar"><button id="filtersBtn" class="outline" aria-expanded="false" aria-controls="filters">☷ Фильтры</button><button id="detailBtn" class="outline" aria-expanded="false" aria-controls="details">Свойства</button></div>
 <div class="view-status"><span id="viewTitle">Карта взаимодействий</span><span id="visibleCount"></span></div>
 <svg id="world" aria-label="Интерактивная карта частиц"><defs id="worldDefs"></defs><g id="viewport"><g id="bundles"></g><g id="hulls"></g><g id="edges"></g><g id="nodes"></g></g></svg>
@@ -41,7 +42,7 @@
 <div class="sheet-handle"></div><div class="details-head"><div><div id="detailSymbol" class="symbol">π⁺</div><div id="detailName" class="name"></div></div><button id="closeDetail" class="plain" aria-label="Закрыть карточку">×</button></div>
 <div id="metricStrip" class="metric-strip"></div>
 <div class="detail-tabs" role="tablist" aria-label="Сведения о частице"><button class="active" id="tab-properties" data-detail="properties" role="tab" aria-selected="true" aria-controls="propertiesPanel">Свойства</button><button id="tab-decays" data-detail="decays" role="tab" aria-selected="false" aria-controls="decaysPanel" tabindex="-1">Распады</button><button id="tab-links" data-detail="links" role="tab" aria-selected="false" aria-controls="linksPanel" tabindex="-1">Связи</button></div>
-<div id="propertiesPanel" role="tabpanel" aria-labelledby="tab-properties"><dl id="props" class="props"></dl><button id="openComposition" class="outline full">Показать кварковый состав →</button></div>
+<div id="propertiesPanel" role="tabpanel" aria-labelledby="tab-properties"><dl id="props" class="props"></dl><p id="dataSource" class="data-source"></p><button id="openComposition" class="outline full">Показать кварковый состав →</button></div>
 <div id="decaysPanel" role="tabpanel" aria-labelledby="tab-decays" hidden><div id="decays"></div><button id="openDecays" class="outline full">Открыть дерево распадов →</button></div>
 <div id="linksPanel" role="tabpanel" aria-labelledby="tab-links" hidden><p class="help">Связи набора включают переходы, состав и семейства. Каналы распадов — в отдельной вкладке.</p><div id="related"></div></div>
 <div class="card-footer"><span id="selectionHint">Выберите узел на карте</span><button id="focusParticle" class="outline full">Найти на карте ⌖</button></div>
