@@ -94,3 +94,17 @@
 .edge{pointer-events:none;vector-effect:non-scaling-stroke}.edge.active{stroke-width:1.8;opacity:.95;filter:drop-shadow(0 0 2px currentColor)}
 .cluster-muted{opacity:.4}.graph-toolbar #edgeHint{font-size:11px}
 @media(max-width:900px){#edgeHint{display:none}.region-count{font-size:.65em}.graph-toolbar{gap:8px}}
+
+/* One continuous mosaic, with raised subgroup contours and routes above all tile fills. */
+.group-border{fill:none;stroke-width:3;stroke-opacity:.8;vector-effect:non-scaling-stroke;pointer-events:none;stroke-linejoin:round}
+.subgroup-boundary{fill:none;stroke-width:1.15;stroke-opacity:.5;vector-effect:non-scaling-stroke;pointer-events:stroke;cursor:zoom-in;stroke-linejoin:round}
+.subgroup-depth{fill:none;stroke:#000;stroke-width:9;stroke-opacity:0;pointer-events:none;filter:blur(2px)}
+.subgroup-lifted .subgroup-depth{stroke-opacity:.7}.subgroup-lifted .subgroup-boundary{stroke-width:2.2;stroke-opacity:1;filter:drop-shadow(0 3px 4px #000)}
+.node.lifted .sphere{fill-opacity:1;stroke-opacity:1;filter:drop-shadow(0 3px 4px #0009)}
+.cluster-muted{opacity:.3}.cluster-caption{cursor:zoom-in}.cluster-caption .cluster-title,.overview .cluster-caption .cluster-title{opacity:1;fill:#eef4fc;font:15px system-ui;text-shadow:none}
+.cluster-caption .cluster-count{font-size:11px;fill:var(--tone)}.cluster-caption .cluster-shell{fill:#111b29;stroke:var(--tone);stroke-width:1;filter:drop-shadow(0 5px 8px #0009)}
+.edge.active{stroke-width:1.45;opacity:.9;stroke-linejoin:round;stroke-linecap:round;filter:none}
+.edge.active[data-kind=family]{opacity:.45;stroke-width:1}.edge.route-muted{opacity:.1!important}.edge.route-highlight{stroke-width:2.6!important;opacity:1!important;filter:drop-shadow(0 0 3px currentColor)}
+.node.selected .selection-ring{stroke-width:1.3;stroke-opacity:.6}.node.dim{opacity:.3}
+
+.edge-track{fill:none;stroke:#03070d;stroke-width:3.8;stroke-linejoin:round;stroke-linecap:round;opacity:.9;vector-effect:non-scaling-stroke;pointer-events:none}.edge-track.route-muted{opacity:.12}

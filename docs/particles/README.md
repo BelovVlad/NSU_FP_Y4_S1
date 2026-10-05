@@ -24,19 +24,24 @@ python .github/scripts/build_particle_extension.py
 ```
 
 The browser needs no Python, network API, or third-party rendering library.
-`layout.js` packs each state into a pointy hexagon on a regular staggered lattice.
-Small gutters separate subgroups and the five root groups. Empty header bands reserve
-space for group and subgroup names; colour is applied to tiles only, with related shades
-within each root. Positions stay deterministic and stable while filtering and browsing.
-Click a root heading to fit its group, a subgroup heading to fit its tiles, or any tile to
-open the existing particle card. Wheel zoom, pan, pinch, search and minimap navigation
-also remain available. Zoom-out stops at the overview scale for the current viewport;
-zoom-in stops at 4x. Dragging is bounded so the map cannot disappear completely.
-Only the selected particle's direct, enabled relationships are drawn. A mask keeps
-connections outside tile interiors and reserved headers; arrow colours and dashed
-styles retain the existing interaction legend. Symbol sizes use rendered glyph bounds
-after fonts load. `contours.js` is retained for its standalone geometry utilities but
-is no longer loaded by the honeycomb map.
+`layout.js` partitions one regular hexagonal lattice into five touching root territories,
+then subdivides each root into compact family patches. Every tile shares complete ribs
+with its neighbours. Tile colours carry root identity and family shades; thicker root
+contours separate mesons, baryons, quarks, bosons and leptons without coloured area fills.
+Root headings occupy an empty band above the complete mosaic. Selecting a particle or
+subgroup gives its patch a raised outline and shadow, while its full name appears in a
+reserved badge above the map. The footprint stays fixed so neighbours remain tessellated.
+Click root headings, subgroup borders or the active badge to drill down; wheel, pinch,
+pan, search and minimap navigation remain available. Zoom-out stops at the current
+viewport's overview scale and zoom-in stops at 4x.
+
+`routes.js` builds a graph of shared hexagon ribs and computes continuous shortest paths.
+Small parallel offsets separate interaction colours. Dark casings make routes readable
+above cell borders. Terminal stems and arrowheads identify their destination; family
+relations retain their undirected dashed style. Hover a related particle to highlight
+its connection while fading the other routes. Routes are generated lazily for the
+selected particle, never masked or hidden behind tile fills. They avoid symbols and
+root headings. `contours.js` remains a standalone utility, unused by the atlas.
 
 Validation:
 

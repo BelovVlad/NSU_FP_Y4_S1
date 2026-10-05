@@ -5,6 +5,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 const layout = require('../docs/particles/layout.js');
 const contours = require('../docs/particles/contours.js');
+const routes = require('../docs/particles/routes.js');
 const context = {window:{}};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../docs/particles/particles.js'),'utf8'),context);
 const original=JSON.stringify(context.window.PARTICLE_DATA.particles);
@@ -34,38 +35,58 @@ test('Neighbouring curved shores follow one bisector with a constant normal gap'
   }
 });
 
+function connected(points){
+  const seen=new Set([0]),queue=[0];
+  for(let i=0;i<queue.length;i++)for(let j=0;j<points.length;j++){
+    if(!seen.has(j)&&Math.abs(Math.hypot(points[queue[i]].x-points[j].x,points[queue[i]].y-points[j].y)-Math.sqrt(3)*36)<.001){seen.add(j);queue.push(j);}
+  }
+  return seen.size===points.length;
+}
 function verify(data) {
   const before=JSON.stringify(data),diagram=layout.create(data);
   assert.equal(diagram.positions.size,data.particles.length);
   assert.equal(JSON.stringify(data),before,'Layout must preserve all source data');
   const points=[...diagram.positions.values()];
-  // Separating-axis clearance for actual pointy hexagons (their bounding circles overlap).
+  assert.ok(connected(points),'All tiles form one connected honeycomb');
   for(let i=0;i<points.length;i++)for(let j=i+1;j<points.length;j++){
     const a=points[i],b=points[j];
     const clearance=Math.max(...[0,Math.PI/3,Math.PI*2/3].map(angle=>Math.abs((b.x-a.x)*Math.cos(angle)+(b.y-a.y)*Math.sin(angle))-(a.r+b.r)*Math.sqrt(3)/2));
-    assert.ok(clearance>6.9,`Overlapping or touching tiles: ${a.id}, ${b.id}`);
-  }
-  function separated(a,b,gap=0){
-    return a.x+a.width+gap<=b.x||b.x+b.width+gap<=a.x||a.y+a.height+gap<=b.y||b.y+b.height+gap<=a.y;
+    assert.ok(clearance>=-.001,`Overlapping tile interiors: ${a.id}, ${b.id}`);
   }
   for(const region of diagram.regions){
+    const rootPoints=region.children.flatMap(c=>c.ids.map(id=>diagram.positions.get(id)));
+    assert.ok(connected(rootPoints),'Root territory stays connected: '+region.id);
+    assert.ok(region.header.y+region.header.height<Math.min(...points.map(p=>p.y-p.r)),'Root titles occupy an empty common band');
     for(const cluster of region.children){
-      assert.ok(cluster.x>=region.x&&cluster.y>=region.y+96,'Empty root header is reserved');
-      assert.ok(cluster.x+cluster.width<=region.x+region.width&&cluster.y+cluster.height<=region.y+region.height);
-      for(const other of region.children)if(other!==cluster)assert.ok(separated(cluster,other,19.9),'Subgroups retain a small gutter');
-      for(const id of cluster.ids){
-        assert.equal(diagram.membership.get(id),cluster.id);
-        const p=diagram.positions.get(id);
-        assert.ok(p.y-p.r>=cluster.y+52,'Tiles never enter the subgroup header');
-        assert.ok(p.x-p.r*Math.sqrt(3)/2>=cluster.x&&p.x+p.r*Math.sqrt(3)/2<=cluster.x+cluster.width);
-        assert.ok(p.y+p.r<=cluster.y+cluster.height);
-      }
+      const family=cluster.ids.map(id=>diagram.positions.get(id));
+      assert.ok(connected(family),'Family territory stays connected: '+cluster.id);
+      for(const id of cluster.ids)assert.equal(diagram.membership.get(id),cluster.id);
     }
-    for(const other of diagram.regions)if(other!==region)assert.ok(separated(region,other,29.9),'Root groups retain a small gutter');
     assert.ok(region.x>=0&&region.y>=0&&region.x+region.width<=diagram.world.width&&region.y+region.height<=diagram.world.height);
   }
   return diagram;
 }
+test('Every relationship follows continuous ribs, ends on its target, and avoids headings',()=>{
+  const diagram=layout.create(data),network=routes.create(diagram);
+  function onSegment(p,a,b){
+    const length=Math.hypot(b.x-a.x,b.y-a.y),cross=Math.abs((p.x-a.x)*(b.y-a.y)-(p.y-a.y)*(b.x-a.x));
+    return cross<length*.0001&&p.x>=Math.min(a.x,b.x)-.0001&&p.x<=Math.max(a.x,b.x)+.0001&&p.y>=Math.min(a.y,b.y)-.0001&&p.y<=Math.max(a.y,b.y)+.0001;
+  }
+  for(const edge of data.edges){
+    const path=network.route(edge.from,edge.to);
+    assert.ok(path.length>=4,'Even touching cells have a non-zero route');
+    const source=diagram.positions.get(edge.from),target=diagram.positions.get(edge.to);
+    assert.ok(Math.hypot(path[0].x-source.x,path[0].y-source.y)<source.r);
+    assert.ok(Math.hypot(path.at(-1).x-target.x,path.at(-1).y-target.y)<target.r);
+    for(let i=2;i<path.length-1;i++){
+      const a=path[i-1],b=path[i];
+      assert.ok(network.ribs.some(([p,q])=>onSegment(a,p,q)&&onSegment(b,p,q)),'Route leaves the actual hexagon ribs: '+edge.id);
+      assert.ok(network.headers.every(box=>!routes.crossesBox(a,b,box)),'Route crosses a root title');
+    }
+    const shifted=routes.offsetPath(path,1.4);
+    shifted.forEach((p,i)=>assert.ok(Math.hypot(p.x-path[i].x,p.y-path[i].y)<=2.801,'Colour lanes stay beside their rib'));
+  }
+});
 function catalogue(count, templates=data.particles) {
   return {...data,particles:Array.from({length:count},(_,i)=>{
     const p=templates[i%templates.length];
@@ -73,7 +94,7 @@ function catalogue(count, templates=data.particles) {
   }),edges:[]};
 }
 
-test('Real particles preserve data in separated honeycomb groups',()=>{
+test('Real particles preserve data in one connected honeycomb',()=>{
   const diagram=verify(data);
   assert.equal(data.particles.length,200);
   assert.equal(JSON.stringify(data.particles.slice(0,49)),original,'The original 49 records are unmodified');
@@ -97,7 +118,7 @@ test('151 additional states have unique PDG IDs, quantum numbers and provenance;
   assert.match(byId.get('pdg433').lifetime,/Γ <1.9 MeV/);
   assert.equal(byId.get('pdg511').lifetime,'τ = (1517 ± 4) × 10⁻¹⁵ s');
 });
-test('800-state catalogue has no tile, subgroup or root-group collisions',()=>verify(catalogue(800)));
+test('800-state catalogue has connected tiles and territories without interior collisions',()=>verify(catalogue(800)));
 test('A heavily expanded lepton catalogue reserves its own column',()=>{
   const expanded=catalogue(650,data.particles.filter(p=>p.group==='leptons'));
   verify({...data,particles:[...data.particles,...expanded.particles]});

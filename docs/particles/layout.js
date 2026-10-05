@@ -1,4 +1,4 @@
-/* Deterministic honeycomb tiles, with reserved group and subgroup headers. */
+/* One tessellated lattice; group and family territories share complete hexagon ribs. */
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
@@ -41,72 +41,88 @@
     return ['g','gamma'].includes(id)?'massless':id==='h'?'higgs':'weakboson';
   }
 
-  const radius=36, pitch=Math.sqrt(3)*40, rowPitch=60;
-  function pack(particles) {
-    const rank=p=>{const i=preferred.indexOf(p.id);return i<0?100:i;};
-    const ordered=[...particles].sort((a,b)=>rank(a)-rank(b)||Math.abs(a.pdg)-Math.abs(b.pdg)||a.id.localeCompare(b.id));
-    const columns=Math.max(2,Math.ceil(Math.sqrt(ordered.length*.95)));
-    const placed=ordered.map((p,i)=>({id:p.id,x:8+Math.sqrt(3)*radius/2+(i%columns+(Math.floor(i/columns)%2)*.5)*pitch,y:88+Math.floor(i/columns)*rowPitch,r:radius}));
-    const width=Math.max(176,...placed.map(p=>p.x+Math.sqrt(3)*radius/2+8));
-    const height=Math.max(...placed.map(p=>p.y+radius))+8;
-    return {placed,width,height,rx:width/2,ry:(height-52)/2};
+
+  const radius=36,pitch=Math.sqrt(3)*radius,rowPitch=radius*1.5;
+  function connected(points){
+    if(!points.length)return true;
+    const keys=new Set(points.map(p=>p.row+','+p.col)),seen=new Set(),queue=[points[0]];
+    for(let i=0;i<queue.length;i++){
+      const p=queue[i],key=p.row+','+p.col;if(seen.has(key))continue;seen.add(key);
+      const diagonal=p.row%2?1:-1;
+      [[p.row,p.col-1],[p.row,p.col+1],[p.row-1,p.col],[p.row+1,p.col],[p.row-1,p.col+diagonal],[p.row+1,p.col+diagonal]].forEach(([row,col])=>{
+        const other=row+','+col;if(keys.has(other)&&!seen.has(other))queue.push({row,col});
+      });
+    }
+    return seen.size===points.length;
   }
-  function arrange(children,root) {
-    const columns=['mesons','baryons'].includes(root)?2:1;
-    const lanes=Array.from({length:columns},()=>({height:0,width:0,items:[]}));
-    children.forEach(child=>{
-      const lane=lanes.reduce((a,b)=>a.height<=b.height?a:b);
-      lane.items.push({child,y:lane.height});lane.height+=child.height+20;lane.width=Math.max(lane.width,child.width);
-    });
-    let x=0;
-    lanes.forEach(lane=>{
-      lane.items.forEach(({child,y})=>Object.assign(child,{x,y:96+y,cx:x+child.width/2,cy:96+y+52+child.ry}));
-      x+=lane.width+20;
-    });
-    return {width:x-20,height:96+Math.max(...lanes.map(l=>l.height))-20};
+  function bounds(points){
+    const x=Math.min(...points.map(p=>p.x-p.r*Math.sqrt(3)/2)),y=Math.min(...points.map(p=>p.y-p.r));
+    const width=Math.max(...points.map(p=>p.x+p.r*Math.sqrt(3)/2))-x,height=Math.max(...points.map(p=>p.y+p.r))-y;
+    return {x,y,width,height,cx:x+width/2,cy:y+height/2,rx:width/2,ry:height/2};
   }
-  function create(data) {
-    const buckets=new Map(),positions=new Map(),membership=new Map(),regions=[],clusters=[];
+  function partition(points,children){
+    if(children.length===1){children[0].cells=points;return;}
+    const total=points.length;
+    let count=0,split=1,best=Infinity;
+    for(let i=1;i<children.length;i++){
+      count+=children[i-1].particles.length;
+      if(Math.abs(count-total/2)<best){best=Math.abs(count-total/2);split=i;}
+    }
+    const first=children.slice(0,split),second=children.slice(split),quota=first.reduce((n,c)=>n+c.particles.length,0);
+    const columns=Math.max(...points.map(p=>p.col))-Math.min(...points.map(p=>p.col));
+    const rows=Math.max(...points.map(p=>p.row))-Math.min(...points.map(p=>p.row));
+    const primary=columns*pitch>=rows*rowPitch?'col':'row',secondary=primary==='col'?'row':'col';
+    let ordered=null;
+    for(const axis of [primary,secondary])for(const direction of [1,-1])for(const tie of [1,-1]){
+      if(ordered)continue;
+      const other=axis==='col'?'row':'col',candidate=[...points].sort((a,b)=>direction*(a[axis]-b[axis])||tie*(a[other]-b[other]));
+      if(connected(candidate.slice(0,quota))&&connected(candidate.slice(quota)))ordered=candidate;
+    }
+    if(!ordered)throw new Error('Cannot divide a family without disconnected cells');
+    partition(ordered.slice(0,quota),first);partition(ordered.slice(quota),second);
+  }
+  function create(data){
+    const positions=new Map(),membership=new Map(),regions=[],clusters=[],buckets=new Map();
     data.particles.forEach(p=>{
-      const family=familyFor(p),root=rootFor(p),key=root+':'+family;
-      if(!buckets.has(key))buckets.set(key,{id:key,family,root,group:p.group,particles:[]});
-      buckets.get(key).particles.push(p);
+      const family=familyFor(p),root=rootFor(p),id=root+':'+family;
+      if(!buckets.has(id))buckets.set(id,{id,family,root,group:p.group,particles:[]});
+      buckets.get(id).particles.push(p);
     });
+    const columns=Math.max(4,Math.ceil(Math.sqrt(data.particles.length*1.7)));
+    const cells=data.particles.map((_,i)=>{
+      const row=Math.floor(i/columns),col=i%columns;
+      return {row,col,x:48+pitch/2+(col+(row%2)*.5)*pitch,y:196+row*rowPitch,r:radius};
+    });
+    const world={width:(columns+.5)*pitch+96,height:Math.max(...cells.map(p=>p.y))+radius+48};
+    const rootCounts=new Map(roots.map(r=>[r.id,data.particles.filter(p=>rootFor(p)===r.id).length]));
+    const ordered=[...cells].sort((a,b)=>a.col-b.col||a.row-b.row),rootCells=new Map();
+    const mesons=rootCounts.get('mesons'),baryons=rootCounts.get('baryons');
+    rootCells.set('mesons',ordered.slice(0,mesons));
+    rootCells.set('baryons',baryons?ordered.slice(-baryons):[]);
+    const center=ordered.slice(mesons,ordered.length-baryons).sort((a,b)=>a.row-b.row||a.col-b.col);
+    let start=0;
+    ['quarks','bosons','leptons'].forEach(id=>{const count=rootCounts.get(id);rootCells.set(id,center.slice(start,start+count));start+=count;});
+    const activeRoots=['mesons','quarks','bosons','leptons','baryons'].filter(id=>rootCounts.get(id));
     roots.forEach(root=>{
-      const children=[...buckets.values()].filter(b=>b.root===root.id);
-      if(!children.length)return;
-      const order=Object.keys(families),rank=child=>{const i=order.indexOf(child.family);return i<0?order.length:i;};
-      children.sort((a,b)=>rank(a)-rank(b)||a.family.localeCompare(b.family));
+      const points=rootCells.get(root.id);if(!points.length)return;
+      const children=[...buckets.values()].filter(c=>c.root===root.id),order=Object.keys(families);
+      children.sort((a,b)=>order.indexOf(a.family)-order.indexOf(b.family)||a.family.localeCompare(b.family));
+      partition(points,children);
       children.forEach((child,index)=>{
         const info=families[child.family]||[child.particles[0].familyLabel||'Другие состояния','',root.tone];
-        Object.assign(child,{label:info[0],subtitle:info[1],tone:root.tone,shade:index},pack(child.particles));
+        const rank=p=>{const i=preferred.indexOf(p.id);return i<0?100:i;};
+        const particles=[...child.particles].sort((a,b)=>rank(a)-rank(b)||Math.abs(a.pdg)-Math.abs(b.pdg)||a.id.localeCompare(b.id));
+        const assigned=[...child.cells].sort((a,b)=>a.row-b.row||a.col-b.col);
+        Object.assign(child,{label:info[0],subtitle:info[1],tone:root.tone,shade:index,ids:particles.map(p=>p.id)},bounds(assigned));
+        assigned.forEach((point,i)=>{positions.set(particles[i].id,{...point,id:particles[i].id});membership.set(particles[i].id,child.id);});
+        delete child.cells;clusters.push(child);
       });
-      regions.push({...root,x:0,y:48,...arrange(children,root.id),children,count:children.reduce((n,c)=>n+c.particles.length,0)});
+      const slot=(world.width-96)/activeRoots.length,index=activeRoots.indexOf(root.id);
+      regions.push({...root,...bounds(points),children,count:points.length,header:{x:48+index*slot,y:32,width:slot-4,height:64}});
     });
-    const regionMap=new Map(regions.map(r=>[r.id,r]));
-    const mesons=regionMap.get('mesons'),baryons=regionMap.get('baryons');
-    const central=['quarks','bosons','leptons'].map(id=>regionMap.get(id)).filter(Boolean);
-    const centerWidth=Math.max(0,...central.map(r=>r.width));
-    const gap=30,leftWidth=mesons?.width||0;
-    if(mesons)mesons.x=48;
-    let centerY=48;
-    central.forEach(region=>{region.x=48+leftWidth+gap+(centerWidth-region.width)/2;region.y=centerY;centerY+=region.height+gap;});
-    if(baryons)baryons.x=48+leftWidth+gap+centerWidth+gap;
-    regions.forEach(region=>region.children.forEach(child=>{
-      child.x+=region.x;child.y+=region.y;child.cx+=region.x;child.cy+=region.y;
-      child.ids=child.particles.map(p=>p.id);clusters.push(child);
-      child.placed.forEach(point=>{positions.set(point.id,{...point,x:child.x+point.x,y:child.y+point.y});membership.set(point.id,child.id);});
-    }));
-    const world={width:Math.max(...regions.map(r=>r.x+r.width))+48,height:Math.max(...regions.map(r=>r.y+r.height))+48};
     const groupBounds=new Map();
-    data.groups.forEach(g=>{
-      const points=data.particles.filter(p=>p.group===g.id).map(p=>positions.get(p.id));
-      if(!points.length)return;
-      const x=Math.min(...points.map(p=>p.x-p.r))-8,y=Math.min(...points.map(p=>p.y-p.r))-64;
-      const width=Math.max(...points.map(p=>p.x+p.r))-x+8,height=Math.max(...points.map(p=>p.y+p.r))-y+8;
-      groupBounds.set(g.id,{x,y,width,height,cx:x+width/2,cy:y+height/2,rx:width/2,ry:height/2});
-    });
-    return {world,regions,clusters,positions,membership,groupBounds};
+    data.groups.forEach(g=>{const points=data.particles.filter(p=>p.group===g.id).map(p=>positions.get(p.id));if(points.length)groupBounds.set(g.id,bounds(points));});
+    return {world,regions,clusters,positions,membership,groupBounds,unified:true};
   }
   return {create,familyFor,rootFor};
 });

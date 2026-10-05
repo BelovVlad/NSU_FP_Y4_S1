@@ -143,7 +143,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.cluster').count(), 23)
         self.assertEqual(self.page.locator('.edge:visible').count(), 0)
         self.assertEqual(self.page.locator('.bundle:visible').count(), 0)
-        self.page.locator('.cluster[data-cluster="mesons:lightmesons"] .cluster-title').hover()
+        self.page.locator('.node[data-id="pip"] .sphere').hover()
         self.assertEqual(self.page.locator('.edge:visible').count(), 0, 'Hover leaves the honeycomb unobstructed')
         self.assertTrue(self.page.locator('.edge:visible').evaluate_all('''edges=>edges.every(e=>
             [e.dataset.from,e.dataset.to].some(id=>document.querySelector('.node[data-id="'+id+'"]').dataset.cluster==='mesons:lightmesons'))'''))
@@ -161,7 +161,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.node.dim').count(), 182)
         self.page.locator('.node[data-id="pip"] .sphere').click()
         self.assertGreater(self.page.locator('.edge.active:visible').count(), 0)
-        self.page.locator('.cluster[data-cluster="mesons:lightmesons"] .cluster-title').hover()
+        self.page.locator('.node[data-id="pip"] .sphere').hover()
         self.assertEqual(self.page.locator('.edge.preview:visible').count(), 0)
         self.assertTrue(self.page.locator('.edge:visible').evaluate_all("edges=>edges.every(e=>e.dataset.from==='pip'||e.dataset.to==='pip')"))
         self.page.locator('#mapHome').click()
@@ -173,7 +173,9 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.node circle').count(),0)
         self.assertEqual(self.page.locator('.region-boundary,.region-orbit,.cluster-inner').count(),0)
         self.assertTrue(self.page.locator('.hex-cell').evaluate_all('cells=>cells.every(c=>c.points.numberOfItems===6)'))
-        self.assertTrue(self.page.locator('#edges').get_attribute('mask'))
+        self.assertFalse(self.page.locator('#edges').get_attribute('mask'))
+        self.assertEqual(self.page.locator('.edge-track').count(),746)
+        self.assertTrue(self.page.evaluate("!!(document.querySelector('#nodes').compareDocumentPosition(document.querySelector('#edges')) & Node.DOCUMENT_POSITION_FOLLOWING)"))
         overview=float(self.page.locator('#viewport').get_attribute('transform').split('scale(')[1].rstrip(')'))
         self.page.mouse.move(700,500)
         self.page.mouse.wheel(0,100000)
@@ -197,16 +199,24 @@ class ParticleExplorerTests(unittest.TestCase):
             failures=self.page.evaluate('''()=>{
                 const d=PARTICLE_LAYOUT.create(PARTICLE_DATA),failures=[];
                 for(const r of d.regions){
-                    const b=document.querySelector('.region[data-region="'+r.id+'"] text').getBBox();
-                    if(b.x<r.x-.1||b.x+b.width>r.x+r.width+.1||b.y<r.y||b.y+b.height>r.y+82)failures.push(r.id);
-                }
-                for(const c of d.clusters){
-                    const b=document.querySelector('.cluster[data-cluster="'+c.id+'"] text').getBBox();
-                    if(b.y<c.y-.1||b.y+b.height>c.y+52+.1)failures.push(c.id);
+                    const b=document.querySelector('.region[data-region="'+r.id+'"] text').getBBox(),h=r.header;
+                    if(b.x<h.x-.1||b.x+b.width>h.x+h.width+.1||b.y<h.y||b.y+b.height>h.y+h.height)failures.push(r.id);
                 }
                 return failures;
             }''')
             self.assertEqual(failures,[], 'Headings stay in their reserved empty bands')
+
+    def test_raised_subgroup_and_route_highlight(self):
+        self.page.locator('.node[data-id="pip"] .sphere').click()
+        self.assertEqual(self.page.locator('.node.lifted').count(),18)
+        expect(self.page.locator('.cluster-caption[data-cluster="mesons:lightmesons"]')).to_be_visible()
+        self.assertTrue(self.page.locator('.edge:visible').evaluate_all("paths=>paths.every(p=>p.dataset.routed==='true'&&p.getTotalLength()>0&&!p.getAttribute('d').includes('Q'))"))
+        self.page.locator('.node[data-id="pi0"] .sphere').hover()
+        self.assertGreater(self.page.locator('.edge.route-highlight:visible').count(),0)
+        self.assertTrue(self.page.locator('.edge.route-highlight:visible').evaluate_all("paths=>paths.every(p=>[p.dataset.from,p.dataset.to].includes('pip')&&[p.dataset.from,p.dataset.to].includes('pi0'))"))
+        self.page.locator('#mapHome').click()
+        self.assertEqual(self.page.locator('.node.lifted').count(),0)
+        self.assertEqual(self.page.locator('.edge:visible').count(),0)
 
     def test_symbol_fits_every_hexagon_after_fonts_load(self):
         self.page.evaluate('async()=>await document.fonts.ready')
@@ -226,8 +236,14 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(labels, 0, 'Unreadably small state labels disappear at overview scale')
         self.page.locator('.region[data-region="mesons"] .region-title').tap()
         expect(self.page.locator('#mapPath')).to_have_text('Мезоны')
-        cluster = self.page.locator('.cluster[data-cluster="mesons:lightmesons"] .cluster-shell')
-        cluster.tap(position={'x': cluster.bounding_box()['width']/2, 'y': 3})
+        self.page.locator('.node[data-id="pip"] .sphere').tap()
+        expect(self.page.locator('#details')).to_have_class('right open')
+        expect(self.page.locator('#detailSymbol')).to_have_text('π⁺')
+        expect(self.page.locator('.cluster[data-cluster="mesons:lightmesons"]')).to_have_class(re.compile('subgroup-lifted'))
+        self.page.wait_for_function("()=>document.querySelector('.node[data-id=pip] .sphere').getBoundingClientRect().top>=document.querySelector('.cluster-caption[data-cluster=\"mesons:lightmesons\"] rect').getBoundingClientRect().bottom")
+
+        self.page.locator('#closeDetail').click()
+        self.page.locator('.cluster-caption[data-cluster="mesons:lightmesons"] .cluster-title').tap()
         expect(self.page.locator('#mapPath')).to_have_text('Мезоны / Лёгкие')
         expect(self.page.locator('#details')).not_to_have_class('right open')
         self.assertEqual(self.page.locator('.node.selected').count(), 0)
@@ -248,7 +264,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.route('**/extra-particles.js*', lambda route: route.fulfill(content_type='application/javascript', body=''))
         self.page.reload()
         self.assertEqual(self.page.locator('.node').count(), 800)
-        self.assertLess(float(self.page.locator('#reset').inner_text().rstrip('%')), 35)
+        expect(self.page.locator('#minus')).to_be_disabled()
         self.page.locator('#search').fill('800799')
         expect(self.page.locator('#detailName')).to_contain_text('Тестовое состояние 799')
         expect(self.page.locator('.node[data-id="state-799"]')).to_have_attribute('aria-pressed', 'true')
