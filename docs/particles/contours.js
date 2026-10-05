@@ -77,8 +77,11 @@
   }
   function trace(owner,neighbours,gap,levels,step) {
     const box=owner.box,pad=owner.reach+step*2;
-    const x0=Math.floor((box.minX-pad)/step)*step,y0=Math.floor((box.minY-pad)/step)*step;
-    const cols=Math.ceil((box.maxX+pad-x0)/step),rows=Math.ceil((box.maxY+pad-y0)/step);
+    const parent=owner.parent?bounds(owner.parent):null;
+    const minX=Math.max(box.minX-pad,parent?parent.minX-step*2:-Infinity),minY=Math.max(box.minY-pad,parent?parent.minY-step*2:-Infinity);
+    const maxX=Math.min(box.maxX+pad,parent?parent.maxX+step*2:Infinity),maxY=Math.min(box.maxY+pad,parent?parent.maxY+step*2:Infinity);
+    const x0=Math.floor(minX/step)*step,y0=Math.floor(minY/step)*step;
+    const cols=Math.ceil((maxX-x0)/step),rows=Math.ceil((maxY-y0)/step);
     const values=Array.from({length:rows+1},(_,j)=>Array.from({length:cols+1},(_,i)=>field(owner,neighbours,x0+i*step,y0+j*step,gap)));
     return levels.map(level=>{
       const segments=[];
@@ -117,22 +120,22 @@
     const owners=seeds.map(s=>({...s,box:bounds(s.core)}));
     return new Map(owners.map(owner=>{
       const pad=owner.reach*2+gap+step*4;
-      const neighbours=owners.filter(b=>b!==owner&&b.box.minX<owner.box.maxX+pad&&b.box.maxX>owner.box.minX-pad&&b.box.minY<owner.box.maxY+pad&&b.box.maxY>owner.box.minY-pad);
+      const neighbours=owners.filter(b=>b!==owner&&(owner.domain===undefined||b.domain===owner.domain)&&b.box.minX<owner.box.maxX+pad&&b.box.maxX>owner.box.minX-pad&&b.box.minY<owner.box.maxY+pad&&b.box.maxY>owner.box.minY-pad);
       const outer=trace(owner,neighbours,gap,[0],step)[0].map(poly=>simplify(poly));
       // Inner rings are actual Euclidean offsets of the finished outer shore.
       // Reusing the competing fields here would bend each ring differently.
       const inner=levels.slice(1).map(()=>[]);
       outer.forEach(core=>{
-        const layers=trace({core,box:bounds(core),reach:0},[],0,levels.slice(1),Math.max(4,step*.5));
+        const layers=trace({core,box:bounds(core),reach:0},[],0,levels.slice(1),Math.min(8,Math.max(4,step*.28)));
         layers.forEach((loops,i)=>inner[i].push(...loops.map(poly=>simplify(poly,.35))));
       });
       return [owner.id,{core:owner.core,neighbours:neighbours.map(b=>b.id),layers:[outer,...inner]}];
     }));
   }
   function create(diagram) {
-    const step=Math.min(18,10*Math.sqrt(Math.max(99,diagram.positions.size)/99));
-    const regions=territories(diagram.regions.map(r=>({id:r.id,core:hull(r.children.flatMap((c,i)=>cloud(c,i*.81,75))),reach:65})),{gap:34,step:step*1.4,levels:[0,18,36]});
-    const clusters=territories(diagram.clusters.map((c,i)=>({id:c.id,core:cloud(c,i*.81),reach:170,parent:regions.get(c.root).layers[0][0],parentGap:60})),{gap:28,step});
+    const step=Math.min(28,10*Math.sqrt(Math.max(99,diagram.positions.size)/99));
+    const regions=territories(diagram.regions.map(r=>({id:r.id,core:simplify(hull(r.children.flatMap((c,i)=>cloud(c,i*.81,75)))),reach:140})),{gap:34,step:step*1.4,levels:[0,18,36]});
+    const clusters=territories(diagram.clusters.map((c,i)=>({id:c.id,domain:c.root,core:cloud(c,i*.81),reach:300,parent:regions.get(c.root).layers[0][0],parentGap:60})),{gap:28,step});
     return {clusters,regions};
   }
   return {create,territories,cloud,distance,field};

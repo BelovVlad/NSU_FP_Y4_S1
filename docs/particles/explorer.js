@@ -35,10 +35,12 @@
   const isMobile = () => matchMedia('(max-width:900px)').matches;
   const noise=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);};
   function smoothOutline(points) {
-    return points.map((p,i)=>{
-      const a=points[(i+points.length-1)%points.length],b=points[(i+1)%points.length],c=points[(i+2)%points.length];
-      return (i?'':'M'+p.x+' '+p.y+' ')+`C${p.x+(b.x-a.x)/6} ${p.y+(b.y-a.y)/6} ${b.x-(c.x-p.x)/6} ${b.y-(c.y-p.y)/6} ${b.x} ${b.y}`;
-    }).join(' ')+' Z';
+    const corners=points.map((p,i)=>{
+      const a=points[(i+points.length-1)%points.length],b=points[(i+1)%points.length];
+      const before=Math.hypot(p.x-a.x,p.y-a.y),after=Math.hypot(b.x-p.x,b.y-p.y),r=Math.min(18,before*.3,after*.3);
+      return {p,entry:{x:p.x-(p.x-a.x)*r/(before||1),y:p.y-(p.y-a.y)*r/(before||1)},exit:{x:p.x+(b.x-p.x)*r/(after||1),y:p.y+(b.y-p.y)*r/(after||1)}};
+    });
+    return corners.map(({p,entry,exit},i)=>(i?'L':'M')+`${entry.x} ${entry.y} Q${p.x} ${p.y} ${exit.x} ${exit.y}`).join(' ')+' Z';
   }
   function contourPath(territory,layer=0) {
     return territory.layers[layer].map(smoothOutline).join(' ');
@@ -101,17 +103,6 @@
       const mini=el('path',{d:outline,fill:colors[region.tone],'fill-opacity':.08,stroke:colors[region.tone],'stroke-opacity':.4,'stroke-width':4});
       $('#miniRegions').append(mini);
     });
-    const bosonRegion=regions.find(r=>r.id==='bosons');
-    if(bosonRegion){
-      const cx=bosonRegion.x+bosonRegion.width/2,cy=155,galaxy=el('g',{class:'hadron-bridge','aria-hidden':'true'});
-      galaxy.append(el('text',{x:cx,y:93,'text-anchor':'middle',class:'bridge-title'},'Адроны ('+D.particles.filter(p=>['light','strange','charm','bottom','baryons'].includes(p.group)).length+')'));
-      for(let i=0;i<90;i++){
-        const arm=i%3,rad=Math.sqrt(i/90)*58,angle=rad*.12+arm*Math.PI*2/3;
-        galaxy.append(el('circle',{cx:cx+Math.cos(angle)*rad,cy:cy+Math.sin(angle)*rad*.45,r:.6+noise(i+331)*1.8,fill:i<20?'#f6e7ff':'#82a8ff',opacity:.2+noise(i+515)*.7}));
-      }
-      galaxy.append(el('ellipse',{cx,cy,rx:56,ry:23,fill:'none',stroke:'#8c83ff','stroke-opacity':.15,'stroke-width':8,class:'galaxy-haze'}));
-      $('#hulls').append(galaxy);
-    }
     clusters.forEach(cluster=>{
       const holder=el('g',{class:'cluster','data-cluster':cluster.id,style:'--tone:'+colors[cluster.tone],role:'button',tabindex:0,'aria-label':cluster.label+' — '+cluster.ids.length+' состояний. Приблизить семейство.'});
       const territory=contours.clusters.get(cluster.id);
@@ -191,7 +182,11 @@
   function updateLevel() {
     const overview=scale<.22,detail=scale>=.65;
     svg.classList.toggle('overview',overview);svg.classList.toggle('detail-level',detail);
-    regions.forEach(region=>{const title=hullElements.get(region.id).querySelector('.region-title');title.setAttribute('font-size',Math.max(12/scale,Math.min(48,26/scale)));title.setAttribute('y',region.id==='bosons'?region.y+region.height+10:region.y+Math.max(45,20/scale));});
+    regions.forEach(region=>{
+      const title=hullElements.get(region.id).querySelector('.region-title'),top=Math.min(...contours.regions.get(region.id).layers[0][0].map(p=>p.y));
+      title.setAttribute('font-size',Math.max(12/scale,Math.min(48,26/scale)));
+      title.setAttribute('y',['leptons','quarks'].includes(region.id)?top+45:top-18/scale);
+    });
     $$('.region-summary').forEach(title=>title.setAttribute('font-size',Math.max(8.5/scale,Math.min(18,10/scale))));
     clusterElements.forEach((holder,id)=>{
       const title=holder.querySelector('.cluster-title'),cluster=clusterMap.get(id);
@@ -205,7 +200,11 @@
       title.setAttribute('y',0);const box=title.getBBox();
       for(let y=minY-box.y+10;y<cluster.cy;y+=6){
         const corners=[{x:box.x,y:y+box.y},{x:box.x+box.width,y:y+box.y},{x:box.x,y:y+box.y+box.height},{x:box.x+box.width,y:y+box.y+box.height}];
-        if(corners.every(p=>window.PARTICLE_CONTOURS.distance(shore,p.x,p.y).d<-6)){
+        const clear=cluster.ids.every(id=>{
+          const p=positions.get(id),x=Math.max(box.x,Math.min(box.x+box.width,p.x)),py=Math.max(y+box.y,Math.min(y+box.y+box.height,p.y));
+          return Math.hypot(p.x-x,p.y-py)>p.r+8;
+        });
+        if(clear&&corners.every(p=>window.PARTICLE_CONTOURS.distance(shore,p.x,p.y).d<-6)){
           title.setAttribute('y',y);holder.querySelector('.cluster-subtitle').setAttribute('y',y+24);break;
         }
       }
@@ -221,8 +220,11 @@
     const cluster=clusterMap.get(id);if(!cluster)return;
     focusedCluster=id;selected=null;if(isMobile())hoveredCluster=id;applyState();
     const top=isMobile()?125:100,bottom=105;
-    scale=Math.min((wrap.clientWidth-60)/cluster.width,(wrap.clientHeight-top-bottom)/cluster.height,1.8);
-    tx=wrap.clientWidth/2-cluster.cx*scale;ty=top+(wrap.clientHeight-top-bottom)/2-cluster.cy*scale;
+    const shore=contours.clusters.get(id).layers[0][0];
+    const left=Math.min(...shore.map(p=>p.x)),right=Math.max(...shore.map(p=>p.x));
+    const upper=Math.min(...shore.map(p=>p.y)),lower=Math.max(...shore.map(p=>p.y));
+    scale=Math.min((wrap.clientWidth-60)/(right-left),(wrap.clientHeight-top-bottom)/(lower-upper),1.8);
+    tx=wrap.clientWidth/2-(left+right)/2*scale;ty=top+(wrap.clientHeight-top-bottom)/2-(upper+lower)/2*scale;
     autoFit=false;$('#mapPath').textContent=cluster.label;applyTransform();
   }
   function applyState() {
@@ -491,6 +493,8 @@
     const point=new DOMPoint(event.clientX,event.clientY).matrixTransform($('#minimap').getScreenCTM().inverse());
     tx=wrap.clientWidth/2-point.x*scale;ty=wrap.clientHeight/2-point.y*scale;autoFit=false;applyTransform();
   });
+  const spins=[...new Set(D.particles.map(p=>p.spin))].sort((a,b)=>numeric({spin:a},'spin')-numeric({spin:b},'spin'));
+  $('#spinFilter').innerHTML='<option value="all">Все</option>'+spins.map(value=>`<option value="${escape(value)}">${escape(value)}</option>`).join('');
   $('#groupFilters').innerHTML=D.groups.map(g=>`<button class="filter" data-group="${g.id}" aria-pressed="false"><i class="dot" style="--c:${colors[g.tone]}"></i>${escape(labels[g.id])}<small>${D.particles.filter(p=>p.group===g.id).length}</small></button>`).join('');
   $$('.filter').forEach(button=>button.addEventListener('click',()=>{
     activeGroup=button.dataset.group;selected=null;updateFilterButtons();applyState();

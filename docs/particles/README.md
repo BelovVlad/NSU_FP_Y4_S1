@@ -1,7 +1,7 @@
 # Particle Explorer
 
 `particles.js` contains the original 49 records and 104 relationships, preserved without edits.
-`extra-particles.js` adds 50 distinct states, making 99 in total, and their composition,
+`extra-particles.js` adds 151 distinct states, making 200 in total, and their composition,
 family, kaon-mixing and explicitly named decay-product relationships.
 
 The added masses, widths, lifetimes, charges and J/P/C quantum numbers come from the official
@@ -30,7 +30,10 @@ partitions neighbouring clouds along a shared curved distance bisector, leaving 
 shore, so they remain parallel. Each family is also clipped to a 60-unit inset of
 its enclosing root shore (24 units beyond the innermost root ring). This makes the
 inner and outer hierarchy conform along their neighbouring edges. Positions stay
-stable while filtering and browsing.
+stable while filtering and browsing. The layout has a loose hexagonal silhouette:
+mesons and baryons occupy the flanks, quarks cap the top, leptons cap the bottom,
+and bosons connect the centre. A collision-aware docking pass brings the caps
+close to neighbouring regions. No hexagonal frame or uniform cell shape is imposed.
 Connections appear only on family hover/keyboard focus or particle selection; selection
 takes precedence. Label sizes use their rendered glyph bounds after fonts load.
 

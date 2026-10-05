@@ -14,6 +14,7 @@
   ];
   const families = {
     lightmesons:['Лёгкие','π / ρ / η','rose'],strangemesons:['Странные','K / K* / ϕ','orange'],
+    lightresonances:['Резонансы','Возбуждения π / ρ / a / f','rose'],strangeexcited:['K-резонансы','Возбуждённые странные мезоны','orange'],
     pion:['Пионы','π · J = 0','rose'],rho:['ρ-мезоны','ρ · J = 1','rose'],isoscalar:['η / η′','Нейтральные состояния','rose'],
     kaon:['Каоны','K · открытая странность','orange'],kstar:['K*-мезоны','Векторные каоны','orange'],phi:['ϕ-мезоны','Скрытая странность','orange'],
     opencharm:['D-мезоны','Открытый charm','rose'],charmonium:['Чармоний','c c̄','violet'],
@@ -81,7 +82,7 @@
   }
   function arrange(children,root) {
     const anchors={
-      mesons:[[-.55,-1.1],[.7,-.75],[.6,.14],[-.57,-.05],[.52,1.05],[-.6,1.06]],
+      mesons:[[-.64,-1.04],[.61,-.94],[-1.14,.02],[-.03,.11],[1.04,.06],[-.88,1.05],[.19,1.12],[1.18,1.0]],
       baryons:[[-.55,-1.04],[.55,-1.0],[-.64,.02],[.62,-.03],[-.6,.89],[.47,.72],[.69,1.47],[-.65,1.65]],
       leptons:[[-.6,-.08],[.6,.12]],quarks:[[-.58,.12],[.59,-.12]],
       bosons:[[.03,-1.0],[-.13,.05],[.18,1.04]]
@@ -135,14 +136,38 @@
       center.children.forEach(c=>{c.cy=150+(c.cy-150)*factor;c.y=c.cy-c.ry-54;});
       center.height=Math.max(...center.children.map(c=>c.y+c.height))+40;
     }
-    // Reserve each column for its widest region, including an expanded lower catalogue.
-    const gap=24,leftWidth=Math.max(left?.width||0,leptons?.width||0),centerWidth=center?.width||320;
+    const gap=24,leftWidth=left?.width||0,centerWidth=center?.width||320;
     const rightX=48+leftWidth+gap+centerWidth+gap;
     if(left)Object.assign(left,{x:48,y:68});
     if(right)Object.assign(right,{x:rightX,y:108});
     if(center)Object.assign(center,{x:48+leftWidth+gap,y:68+Math.max(130,mainHeight-center.height+25)});
-    if(leptons)Object.assign(leptons,{x:48,y:108+mainHeight+28});
-    if(quarks)Object.assign(quarks,{x:rightX,y:108+mainHeight+28});
+    // A loose hexagonal silhouette: organic hadron clouds form the flanks,
+    // quarks cap the top, leptons cap the bottom, bosons connect the centre.
+    const mainY=(quarks?.height||0)+160;
+    if(left)left.y=mainY+(mainHeight-left.height)/2;
+    if(right)right.y=mainY+(mainHeight-right.height)/2;
+    if(center){
+      const first=center.children[0],last=center.children.at(-1),origin=first.cy,span=last.cy-origin;
+      const start=158+first.ry,end=mainHeight+72-last.ry;
+      center.children.forEach(c=>{c.cy=start+(c.cy-origin)*(end-start)/(span||1);c.y=c.cy-c.ry-54;});
+      center.y=mainY-140;center.height=mainHeight+140;
+    }
+    const seamX=48+leftWidth+gap+centerWidth/2;
+    const main=[left,center,right].filter(Boolean);
+    function dock(cap,top){
+      if(!cap)return;
+      cap.x=seamX-cap.width/2;cap.y=top?48:mainY+mainHeight+180;
+      const clear=()=>main.every(b=>cap.children.every(a=>b.children.every(c=>
+        Math.hypot((a.cx+cap.x-c.cx-b.x)/(a.rx+c.rx+160),(a.cy+cap.y-c.cy-b.y)/(a.ry+c.ry+160))>=1)));
+      const step=top?8:-8;
+      for(let pass=0;pass<1000;pass++){
+        cap.y+=step;
+        if(!clear()){cap.y-=step;break;}
+      }
+    }
+    dock(quarks,true);dock(leptons,false);
+    const shiftX=48-Math.min(...regions.map(r=>r.x)),shiftY=48-Math.min(...regions.map(r=>r.y));
+    regions.forEach(r=>{r.x+=shiftX;r.y+=shiftY;});
     regions.forEach(region=>region.children.forEach(child=>{
       child.x+=region.x;child.y+=region.y;child.cx=child.x+child.width/2;child.cy=child.y+54+child.ry;
       child.ids=child.particles.map(p=>p.id);clusters.push(child);

@@ -1307,7 +1307,7 @@ window.PARTICLE_EXTENSION = [
         "(35.7 ± 2.6)%"
       ],
       [
-        "γ chi_b2(2P)",
+        "γ χb₂(2P)",
         "(13.1 ± 1.6)%"
       ]
     ],
@@ -2225,6 +2225,4109 @@ window.PARTICLE_EXTENSION = [
       ]
     },
     "massValue": 5619.59622631785
+  },
+  {
+    "id": "pdg10223",
+    "pdg": 10223,
+    "symbol": "h₁(1170)",
+    "name": "h_1(1170)0",
+    "ru": "h1-мезон 1170",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1166 ± 6 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "−1",
+    "quarks": "смешанное изоскалярное состояние",
+    "lifetime": "Γ = 375 ± 35 MeV",
+    "aliases": [
+      "h_1(1170)0",
+      "h1-мезон 1170",
+      "10223"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "M030/2024",
+      "mass": "M030M/2024",
+      "lifetime": null,
+      "width": "M030W/2024",
+      "decays": []
+    },
+    "massValue": 1166.0
+  },
+  {
+    "id": "pdg10113",
+    "pdg": 10113,
+    "symbol": "b₁(1235)⁰",
+    "name": "b_1(1235)0",
+    "ru": "b1-мезон нейтральный",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1229.5 ± 3.2 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "−1",
+    "quarks": "(uū − dd̄)/√2",
+    "lifetime": "Γ = 142 ± 9 MeV",
+    "aliases": [
+      "b_1(1235)0",
+      "b1-мезон нейтральный",
+      "10113"
+    ],
+    "decays": [
+      [
+        "pi+- γ",
+        "(1.6 ± 0.4) × 10⁻³"
+      ],
+      [
+        "K^*(892)+- K-+",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M011/2024",
+      "mass": "M011M/2024",
+      "lifetime": null,
+      "width": "M011W/2024",
+      "decays": [
+        "M011.9/2024",
+        "M011.74/2024"
+      ]
+    },
+    "massValue": 1229.48344698013
+  },
+  {
+    "id": "pdg10213",
+    "pdg": 10213,
+    "symbol": "b₁(1235)⁺",
+    "name": "b_1(1235)+",
+    "ru": "b1-мезон положительный",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1229.5 ± 3.2 MeV",
+    "charge": "+1",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "−1",
+    "quarks": "u d̄",
+    "lifetime": "Γ = 142 ± 9 MeV",
+    "aliases": [
+      "b_1(1235)+",
+      "b1-мезон положительный",
+      "10213"
+    ],
+    "decays": [
+      [
+        "pi+- γ",
+        "(1.6 ± 0.4) × 10⁻³"
+      ],
+      [
+        "K^*(892)+- K-+",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M011/2024",
+      "mass": "M011M/2024",
+      "lifetime": null,
+      "width": "M011W/2024",
+      "decays": [
+        "M011.9/2024",
+        "M011.74/2024"
+      ]
+    },
+    "massValue": 1229.48344698013
+  },
+  {
+    "id": "pdg20113",
+    "pdg": 20113,
+    "symbol": "a₁(1260)⁰",
+    "name": "a_1(1260)0",
+    "ru": "a1-мезон нейтральный",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1230 ± 40 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "(uū − dd̄)/√2",
+    "lifetime": "Γ = 250–600 MeV",
+    "aliases": [
+      "a_1(1260)0",
+      "a1-мезон нейтральный",
+      "20113"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "M010/2024",
+      "mass": "M010M/2024",
+      "lifetime": null,
+      "width": "M010W/2024",
+      "decays": []
+    },
+    "massValue": 1230.0
+  },
+  {
+    "id": "pdg20213",
+    "pdg": 20213,
+    "symbol": "a₁(1260)⁺",
+    "name": "a_1(1260)+",
+    "ru": "a1-мезон положительный",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1230 ± 40 MeV",
+    "charge": "+1",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "u d̄",
+    "lifetime": "Γ = 250–600 MeV",
+    "aliases": [
+      "a_1(1260)+",
+      "a1-мезон положительный",
+      "20213"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "M010/2024",
+      "mass": "M010M/2024",
+      "lifetime": null,
+      "width": "M010W/2024",
+      "decays": []
+    },
+    "massValue": 1230.0
+  },
+  {
+    "id": "pdg20223",
+    "pdg": 20223,
+    "symbol": "f₁(1285)",
+    "name": "f_1(1285)0",
+    "ru": "f1-мезон 1285",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1281.8 ± 0.5 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "смешанное изоскалярное состояние",
+    "lifetime": "Γ = 23.0 ± 1.1 MeV",
+    "aliases": [
+      "f_1(1285)0",
+      "f1-мезон 1285",
+      "20223"
+    ],
+    "decays": [
+      [
+        "η pi pi",
+        "(52.2 ± 1.9)%"
+      ],
+      [
+        "η π⁺ π⁻",
+        "(35 ± 15)%"
+      ],
+      [
+        "4pi",
+        "(32.7 ± 1.8)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M008/2024",
+      "mass": "M008M/2024",
+      "lifetime": null,
+      "width": "M008W/2024",
+      "decays": [
+        "M008.3/2024",
+        "M008.198/2024",
+        "M008.21/2024"
+      ]
+    },
+    "massValue": 1281.78954484982
+  },
+  {
+    "id": "pdg100221",
+    "pdg": 100221,
+    "symbol": "η(1295)",
+    "name": "eta(1295)0",
+    "ru": "эта-мезон 1295",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1294 ± 4 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "−1",
+    "cparity": "+1",
+    "quarks": "смешанное изоскалярное состояние",
+    "lifetime": "Γ = 55 ± 5 MeV",
+    "aliases": [
+      "eta(1295)0",
+      "эта-мезон 1295",
+      "100221"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "M037/2024",
+      "mass": "M037M/2024",
+      "lifetime": null,
+      "width": "M037W/2024",
+      "decays": []
+    },
+    "massValue": 1293.71013039117
+  },
+  {
+    "id": "pdg100211",
+    "pdg": 100211,
+    "symbol": "π(1300)⁺",
+    "name": "pi(1300)+",
+    "ru": "возбуждённый положительный пион",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1300 ± 100 MeV",
+    "charge": "+1",
+    "spin": "0",
+    "parity": "−1",
+    "cparity": "+1",
+    "quarks": "u d̄",
+    "lifetime": "Γ = 200 … 600 MeV",
+    "aliases": [
+      "pi(1300)+",
+      "возбуждённый положительный пион",
+      "100211"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "M058/2024",
+      "mass": "M058M/2024",
+      "lifetime": null,
+      "width": "M058W/2024",
+      "decays": []
+    },
+    "massValue": 1300.0
+  },
+  {
+    "id": "pdg215",
+    "pdg": 215,
+    "symbol": "a₂(1320)⁺",
+    "name": "a_2(1320)+",
+    "ru": "положительный тензорный a2",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1318.2 ± 0.6 MeV",
+    "charge": "+1",
+    "spin": "2",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "u d̄",
+    "lifetime": "Γ = 107 ± 5 MeV",
+    "aliases": [
+      "a_2(1320)+",
+      "положительный тензорный a2",
+      "215"
+    ],
+    "decays": [
+      [
+        "3 pi",
+        "(70.1 ± 2.7)%"
+      ],
+      [
+        "η pi",
+        "(14.5 ± 1.2)%"
+      ],
+      [
+        "omega pi pi",
+        "(10.6 ± 3.2)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M012/2024",
+      "mass": "M012M0/2024",
+      "lifetime": null,
+      "width": "M012W/2024",
+      "decays": [
+        "M012.1/2024",
+        "M012.3/2024",
+        "M012.4/2024"
+      ]
+    },
+    "massValue": 1318.20292649998
+  },
+  {
+    "id": "pdg10221",
+    "pdg": 10221,
+    "symbol": "f₀(1370)",
+    "name": "f_0(1370)0",
+    "ru": "скалярный f0 1370",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1200–1500 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "смешанное скалярное состояние",
+    "lifetime": "Γ = 200–500 MeV",
+    "aliases": [
+      "f_0(1370)0",
+      "скалярный f0 1370",
+      "10221"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "M147/2024",
+      "mass": "M147M/2024",
+      "lifetime": null,
+      "width": "M147W/2024",
+      "decays": []
+    },
+    "massValue": 1350.0
+  },
+  {
+    "id": "pdg9020221",
+    "pdg": 9020221,
+    "symbol": "η(1405)",
+    "name": "eta(1405)0",
+    "ru": "эта-мезон 1405",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1408.7+2.0-1.2 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "−1",
+    "cparity": "+1",
+    "quarks": "смешанное изоскалярное состояние",
+    "lifetime": "Γ = 50.3 ± 2.5 MeV",
+    "aliases": [
+      "eta(1405)0",
+      "эта-мезон 1405",
+      "9020221"
+    ],
+    "decays": [
+      [
+        "f_0(980) π⁰ --> π⁺ π⁻ π⁰",
+        "not seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M027/2024",
+      "mass": "M027MX/2024",
+      "lifetime": null,
+      "width": "M027WX/2024",
+      "decays": [
+        "M027.15/2024"
+      ]
+    },
+    "massValue": 1408.68078677506
+  },
+  {
+    "id": "pdg10333",
+    "pdg": 10333,
+    "symbol": "h₁(1415)",
+    "name": "h_1(1415)0",
+    "ru": "h1-мезон 1415",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1409+9-8 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "−1",
+    "quarks": "смешанное изоскалярное состояние",
+    "lifetime": "Γ = 78 ± 11 MeV",
+    "aliases": [
+      "h_1(1415)0",
+      "h1-мезон 1415",
+      "10333"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "M109/2024",
+      "mass": "M109M/2024",
+      "lifetime": null,
+      "width": "M109W/2024",
+      "decays": []
+    },
+    "massValue": 1409.06245079205
+  },
+  {
+    "id": "pdg20333",
+    "pdg": 20333,
+    "symbol": "f₁(1420)",
+    "name": "f_1(1420)0",
+    "ru": "f1-мезон 1420",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1428.4+1.5-1.3 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "смешанное изоскалярное состояние",
+    "lifetime": "Γ = 56.7 ± 3.3 MeV",
+    "aliases": [
+      "f_1(1420)0",
+      "f1-мезон 1420",
+      "20333"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "M006/2024",
+      "mass": "M006M2/2024",
+      "lifetime": null,
+      "width": "M006W/2024",
+      "decays": []
+    },
+    "massValue": 1428.40240247104
+  },
+  {
+    "id": "pdg10111",
+    "pdg": 10111,
+    "symbol": "a₀(1450)⁰",
+    "name": "a_0(1450)0",
+    "ru": "нейтральный скалярный a0 1450",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1439 ± 34 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "(uū − dd̄)/√2",
+    "lifetime": "Γ = 258 ± 14 MeV",
+    "aliases": [
+      "a_0(1450)0",
+      "нейтральный скалярный a0 1450",
+      "10111"
+    ],
+    "decays": [
+      [
+        "pi η",
+        "0.093 ± 0.020"
+      ],
+      [
+        "K Kbar",
+        "0.082 ± 0.028"
+      ],
+      [
+        "pi eta^'(958)",
+        "0.033 ± 0.017"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M149/2024",
+      "mass": "M149M/2024",
+      "lifetime": null,
+      "width": "M149W/2024",
+      "decays": [
+        "M149.1/2024",
+        "M149.3/2024",
+        "M149.2/2024"
+      ]
+    },
+    "massValue": 1438.68852459016
+  },
+  {
+    "id": "pdg10211",
+    "pdg": 10211,
+    "symbol": "a₀(1450)⁺",
+    "name": "a_0(1450)+",
+    "ru": "положительный скалярный a0 1450",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1439 ± 34 MeV",
+    "charge": "+1",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "u d̄",
+    "lifetime": "Γ = 258 ± 14 MeV",
+    "aliases": [
+      "a_0(1450)+",
+      "положительный скалярный a0 1450",
+      "10211"
+    ],
+    "decays": [
+      [
+        "pi η",
+        "0.093 ± 0.020"
+      ],
+      [
+        "K Kbar",
+        "0.082 ± 0.028"
+      ],
+      [
+        "pi eta^'(958)",
+        "0.033 ± 0.017"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M149/2024",
+      "mass": "M149M/2024",
+      "lifetime": null,
+      "width": "M149W/2024",
+      "decays": [
+        "M149.1/2024",
+        "M149.3/2024",
+        "M149.2/2024"
+      ]
+    },
+    "massValue": 1438.68852459016
+  },
+  {
+    "id": "pdg100213",
+    "pdg": 100213,
+    "symbol": "ρ(1450)⁺",
+    "name": "rho(1450)+",
+    "ru": "положительный ро-мезон 1450",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1465  ± 25 MeV",
+    "charge": "+1",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "−1",
+    "quarks": "u d̄",
+    "lifetime": "Γ = 400  ± 60 MeV",
+    "aliases": [
+      "rho(1450)+",
+      "положительный ро-мезон 1450",
+      "100213"
+    ],
+    "decays": [
+      [
+        "η rho",
+        "seen"
+      ],
+      [
+        "η γ",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M105/2024",
+      "mass": "M105M0/2024",
+      "lifetime": null,
+      "width": "M105W0/2024",
+      "decays": [
+        "M105.3/2024",
+        "M105.9/2024"
+      ]
+    },
+    "massValue": 1465.0
+  },
+  {
+    "id": "pdg100331",
+    "pdg": 100331,
+    "symbol": "η(1475)",
+    "name": "eta(1475)0",
+    "ru": "эта-мезон 1475",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1476 ± 4 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "−1",
+    "cparity": "+1",
+    "quarks": "смешанное изоскалярное состояние",
+    "lifetime": "Γ = 96 ± 9 MeV",
+    "aliases": [
+      "eta(1475)0",
+      "эта-мезон 1475",
+      "100331"
+    ],
+    "decays": [
+      [
+        "γ phi(1020)",
+        "possibly seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M175/2024",
+      "mass": "M175M5/2024",
+      "lifetime": null,
+      "width": "M175W5/2024",
+      "decays": [
+        "M175.9/2024"
+      ]
+    },
+    "massValue": 1475.52834417662
+  },
+  {
+    "id": "pdg9030221",
+    "pdg": 9030221,
+    "symbol": "f₀(1500)",
+    "name": "f_0(1500)0",
+    "ru": "скалярный f0 1500",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1522 ± 25 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "смешанное скалярное состояние",
+    "lifetime": "Γ = 108 ± 33 MeV",
+    "aliases": [
+      "f_0(1500)0",
+      "скалярный f0 1500",
+      "9030221"
+    ],
+    "decays": [
+      [
+        "4pi",
+        "(48.9 ± 3.3)%"
+      ],
+      [
+        "pi pi",
+        "(34.5 ± 2.2)%"
+      ],
+      [
+        "K Kbar",
+        "(8.5 ± 1.0)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M152/2024",
+      "mass": "M152M/2024",
+      "lifetime": null,
+      "width": "M152W/2024",
+      "decays": [
+        "M152.7/2024",
+        "M152.8/2024",
+        "M152.4/2024"
+      ]
+    },
+    "massValue": 1522.0
+  },
+  {
+    "id": "pdg335",
+    "pdg": 335,
+    "symbol": "f₂′(1525)",
+    "name": "f_2^'(1525)0",
+    "ru": "тензорный f2 штрих",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1517.3 ± 2.4 MeV",
+    "charge": "0",
+    "spin": "2",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "смешанное изоскалярное состояние",
+    "lifetime": "Γ = 72+7-6 MeV",
+    "aliases": [
+      "f_2^'(1525)0",
+      "тензорный f2 штрих",
+      "335"
+    ],
+    "decays": [
+      [
+        "K Kbar",
+        "(88.8 ± 2.2)%"
+      ],
+      [
+        "η η",
+        "(10.3 ± 2.2)%"
+      ],
+      [
+        "pi pi",
+        "(8.2 ± 1.5) × 10⁻³"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M013/2024",
+      "mass": "M013MX/2024",
+      "lifetime": null,
+      "width": "M013WX/2024",
+      "decays": [
+        "M013.2/2024",
+        "M013.4/2024",
+        "M013.1/2024"
+      ]
+    },
+    "massValue": 1517.30424326538
+  },
+  {
+    "id": "pdg30113",
+    "pdg": 30113,
+    "symbol": "ρ(1700)⁰",
+    "name": "rho(1700)0",
+    "ru": "нейтральный ро-мезон 1700",
+    "group": "light",
+    "family": "lightresonances",
+    "r": 26,
+    "mass": "1720 ± 20 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "−1",
+    "quarks": "(uū − dd̄)/√2",
+    "lifetime": "Γ = 250 ± 100 MeV",
+    "aliases": [
+      "rho(1700)0",
+      "нейтральный ро-мезон 1700",
+      "30113"
+    ],
+    "decays": [
+      [
+        "π⁰ γ",
+        "not seen"
+      ],
+      [
+        "f_0(1500) γ",
+        "not seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M065/2024",
+      "mass": "M065M0/2024",
+      "lifetime": null,
+      "width": "M065W0/2024",
+      "decays": [
+        "M065.194/2024",
+        "M065.195/2024"
+      ]
+    },
+    "massValue": 1720.0
+  },
+  {
+    "id": "pdg9000311",
+    "pdg": 9000311,
+    "symbol": "K₀*(700)⁰",
+    "name": "K_0^*(700)0",
+    "ru": "скалярный каон 700",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "(630 -- 730) - i (260 -- 340) MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "состав скалярного состояния не указан",
+    "lifetime": "Γ = 468 ± 30 MeV",
+    "aliases": [
+      "K_0^*(700)0",
+      "скалярный каон 700",
+      "9000311"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "M174/2024",
+      "mass": "M174TMP/2024",
+      "lifetime": null,
+      "width": "M174W/2024",
+      "decays": []
+    }
+  },
+  {
+    "id": "pdg10323",
+    "pdg": 10323,
+    "symbol": "K₁(1270)⁺",
+    "name": "K_1(1270)+",
+    "ru": "положительный аксиальный каон 1270",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "1253 ± 7 MeV",
+    "charge": "+1",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "u s̄",
+    "lifetime": "Γ = 90 ± 20 MeV",
+    "aliases": [
+      "K_1(1270)+",
+      "положительный аксиальный каон 1270",
+      "10323"
+    ],
+    "decays": [
+      [
+        "K rho",
+        "(38 ± 13)%"
+      ],
+      [
+        "K_0^*(1430) pi",
+        "(28 ± 4)%"
+      ],
+      [
+        "K^*(892) pi",
+        "(21 ± 10)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M028/2024",
+      "mass": "M028MX/2024",
+      "lifetime": null,
+      "width": "M028WX/2024",
+      "decays": [
+        "M028.2/2024",
+        "M028.7/2024",
+        "M028.1/2024"
+      ]
+    },
+    "massValue": 1253.09283410029
+  },
+  {
+    "id": "pdg20313",
+    "pdg": 20313,
+    "symbol": "K₁(1400)⁰",
+    "name": "K_1(1400)0",
+    "ru": "нейтральный аксиальный каон 1400",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "1403 ± 7 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "d s̄",
+    "lifetime": "Γ = 174 ± 13 MeV",
+    "aliases": [
+      "K_1(1400)0",
+      "нейтральный аксиальный каон 1400",
+      "20313"
+    ],
+    "decays": [
+      [
+        "K^*(892) pi",
+        "(94 ± 6)%"
+      ],
+      [
+        "K rho",
+        "(3.0 ± 3.0)%"
+      ],
+      [
+        "K f_0(1370)",
+        "(2.0 ± 2.0)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M064/2024",
+      "mass": "M064M/2024",
+      "lifetime": null,
+      "width": "M064W/2024",
+      "decays": [
+        "M064.1/2024",
+        "M064.2/2024",
+        "M064.8/2024"
+      ]
+    },
+    "massValue": 1402.51679147302
+  },
+  {
+    "id": "pdg20323",
+    "pdg": 20323,
+    "symbol": "K₁(1400)⁺",
+    "name": "K_1(1400)+",
+    "ru": "положительный аксиальный каон 1400",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "1403 ± 7 MeV",
+    "charge": "+1",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "u s̄",
+    "lifetime": "Γ = 174 ± 13 MeV",
+    "aliases": [
+      "K_1(1400)+",
+      "положительный аксиальный каон 1400",
+      "20323"
+    ],
+    "decays": [
+      [
+        "K^*(892) pi",
+        "(94 ± 6)%"
+      ],
+      [
+        "K rho",
+        "(3.0 ± 3.0)%"
+      ],
+      [
+        "K f_0(1370)",
+        "(2.0 ± 2.0)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M064/2024",
+      "mass": "M064M/2024",
+      "lifetime": null,
+      "width": "M064W/2024",
+      "decays": [
+        "M064.1/2024",
+        "M064.2/2024",
+        "M064.8/2024"
+      ]
+    },
+    "massValue": 1402.51679147302
+  },
+  {
+    "id": "pdg100313",
+    "pdg": 100313,
+    "symbol": "K*(1410)⁰",
+    "name": "K^*(1410)0",
+    "ru": "нейтральный векторный каон 1410",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "1414 ± 15 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "d s̄",
+    "lifetime": "Γ = 232 ± 21 MeV",
+    "aliases": [
+      "K^*(1410)0",
+      "нейтральный векторный каон 1410",
+      "100313"
+    ],
+    "decays": [
+      [
+        "K pi",
+        "(6.6 ± 1.3)%"
+      ],
+      [
+        "K phi",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M094/2024",
+      "mass": "M094M/2024",
+      "lifetime": null,
+      "width": "M094W/2024",
+      "decays": [
+        "M094.1/2024",
+        "M094.5/2024"
+      ]
+    },
+    "massValue": 1413.73291272345
+  },
+  {
+    "id": "pdg100323",
+    "pdg": 100323,
+    "symbol": "K*(1410)⁺",
+    "name": "K^*(1410)+",
+    "ru": "положительный векторный каон 1410",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "1414 ± 15 MeV",
+    "charge": "+1",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "u s̄",
+    "lifetime": "Γ = 232 ± 21 MeV",
+    "aliases": [
+      "K^*(1410)+",
+      "положительный векторный каон 1410",
+      "100323"
+    ],
+    "decays": [
+      [
+        "K pi",
+        "(6.6 ± 1.3)%"
+      ],
+      [
+        "K phi",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M094/2024",
+      "mass": "M094M/2024",
+      "lifetime": null,
+      "width": "M094W/2024",
+      "decays": [
+        "M094.1/2024",
+        "M094.5/2024"
+      ]
+    },
+    "massValue": 1413.73291272345
+  },
+  {
+    "id": "pdg10311",
+    "pdg": 10311,
+    "symbol": "K₀*(1430)⁰",
+    "name": "K_0^*(1430)0",
+    "ru": "нейтральный скалярный каон 1430",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "1425 ± 50 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "d s̄",
+    "lifetime": "Γ = 270 ± 80 MeV",
+    "aliases": [
+      "K_0^*(1430)0",
+      "нейтральный скалярный каон 1430",
+      "10311"
+    ],
+    "decays": [
+      [
+        "K pi",
+        "(93 ± 10)%"
+      ],
+      [
+        "K η",
+        "(8.6+2.7-3.4)%"
+      ],
+      [
+        "K eta^'(958)",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M019/2024",
+      "mass": "M019M/2024",
+      "lifetime": null,
+      "width": "M019W/2024",
+      "decays": [
+        "M019.1/2024",
+        "M019.2/2024",
+        "M019.3/2024"
+      ]
+    },
+    "massValue": 1425.0
+  },
+  {
+    "id": "pdg10321",
+    "pdg": 10321,
+    "symbol": "K₀*(1430)⁺",
+    "name": "K_0^*(1430)+",
+    "ru": "положительный скалярный каон 1430",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "1425 ± 50 MeV",
+    "charge": "+1",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "u s̄",
+    "lifetime": "Γ = 270 ± 80 MeV",
+    "aliases": [
+      "K_0^*(1430)+",
+      "положительный скалярный каон 1430",
+      "10321"
+    ],
+    "decays": [
+      [
+        "K pi",
+        "(93 ± 10)%"
+      ],
+      [
+        "K η",
+        "(8.6+2.7-3.4)%"
+      ],
+      [
+        "K eta^'(958)",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M019/2024",
+      "mass": "M019M/2024",
+      "lifetime": null,
+      "width": "M019W/2024",
+      "decays": [
+        "M019.1/2024",
+        "M019.2/2024",
+        "M019.3/2024"
+      ]
+    },
+    "massValue": 1425.0
+  },
+  {
+    "id": "pdg325",
+    "pdg": 325,
+    "symbol": "K₂*(1430)⁺",
+    "name": "K_2^*(1430)+",
+    "ru": "положительный тензорный каон 1430",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "1427.3 ± 1.5 MeV",
+    "charge": "+1",
+    "spin": "2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "u s̄",
+    "lifetime": "Γ = 100.0 ± 2.2 MeV",
+    "aliases": [
+      "K_2^*(1430)+",
+      "положительный тензорный каон 1430",
+      "325"
+    ],
+    "decays": [
+      [
+        "K pi",
+        "(49.9 ± 1.2)%"
+      ],
+      [
+        "K^*(892) pi",
+        "(24.7 ± 1.5)%"
+      ],
+      [
+        "K^*(892) pi pi",
+        "(13.4 ± 2.2)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M022/2024",
+      "mass": "M022M1/2024",
+      "lifetime": null,
+      "width": "M022W1/2024",
+      "decays": [
+        "M022.1/2024",
+        "M022.2/2024",
+        "M022.6/2024"
+      ]
+    },
+    "massValue": 1427.25161067732
+  },
+  {
+    "id": "pdg30313",
+    "pdg": 30313,
+    "symbol": "K*(1680)⁰",
+    "name": "K^*(1680)0",
+    "ru": "нейтральный векторный каон 1680",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "1718 ± 18 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "d s̄",
+    "lifetime": "Γ = 320 ± 110 MeV",
+    "aliases": [
+      "K^*(1680)0",
+      "нейтральный векторный каон 1680",
+      "30313"
+    ],
+    "decays": [
+      [
+        "K pi",
+        "(38.7 ± 2.5)%"
+      ],
+      [
+        "K rho",
+        "(31.4+5.0-2.1)%"
+      ],
+      [
+        "K^*(892) pi",
+        "(29.9+2.2-5.0)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M095/2024",
+      "mass": "M095M/2024",
+      "lifetime": null,
+      "width": "M095W/2024",
+      "decays": [
+        "M095.1/2024",
+        "M095.3/2024",
+        "M095.2/2024"
+      ]
+    },
+    "massValue": 1717.57713219754
+  },
+  {
+    "id": "pdg30323",
+    "pdg": 30323,
+    "symbol": "K*(1680)⁺",
+    "name": "K^*(1680)+",
+    "ru": "положительный векторный каон 1680",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "1718 ± 18 MeV",
+    "charge": "+1",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "u s̄",
+    "lifetime": "Γ = 320 ± 110 MeV",
+    "aliases": [
+      "K^*(1680)+",
+      "положительный векторный каон 1680",
+      "30323"
+    ],
+    "decays": [
+      [
+        "K pi",
+        "(38.7 ± 2.5)%"
+      ],
+      [
+        "K rho",
+        "(31.4+5.0-2.1)%"
+      ],
+      [
+        "K^*(892) pi",
+        "(29.9+2.2-5.0)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M095/2024",
+      "mass": "M095M/2024",
+      "lifetime": null,
+      "width": "M095W/2024",
+      "decays": [
+        "M095.1/2024",
+        "M095.3/2024",
+        "M095.2/2024"
+      ]
+    },
+    "massValue": 1717.57713219754
+  },
+  {
+    "id": "pdg317",
+    "pdg": 317,
+    "symbol": "K₃*(1780)⁰",
+    "name": "K_3^*(1780)0",
+    "ru": "нейтральный каон со спином 3",
+    "group": "strange",
+    "family": "strangeexcited",
+    "r": 26,
+    "mass": "1779 ± 8 MeV",
+    "charge": "0",
+    "spin": "3",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "d s̄",
+    "lifetime": "Γ = 161 ± 17 MeV",
+    "aliases": [
+      "K_3^*(1780)0",
+      "нейтральный каон со спином 3",
+      "317"
+    ],
+    "decays": [
+      [
+        "K rho",
+        "(31 ± 9)%"
+      ],
+      [
+        "K η",
+        "(30 ± 13)%"
+      ],
+      [
+        "K^*(892) pi",
+        "(20 ± 5)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M060/2024",
+      "mass": "M060M/2024",
+      "lifetime": null,
+      "width": "M060W/2024",
+      "decays": [
+        "M060.3/2024",
+        "M060.6/2024",
+        "M060.2/2024"
+      ]
+    },
+    "massValue": 1778.94799700284
+  },
+  {
+    "id": "pdg10421",
+    "pdg": 10421,
+    "symbol": "D₀*(2300)⁰",
+    "name": "D_0^*(2300)0",
+    "ru": "нейтральный скалярный D",
+    "group": "charm",
+    "family": "opencharm",
+    "r": 26,
+    "mass": "2343 ± 10 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "c ū",
+    "lifetime": "Γ = 229 ± 16 MeV",
+    "aliases": [
+      "D_0^*(2300)0",
+      "нейтральный скалярный D",
+      "10421"
+    ],
+    "decays": [
+      [
+        "D pi+-",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M252/2024",
+      "mass": "M252M/2024",
+      "lifetime": null,
+      "width": "M252W/2024",
+      "decays": [
+        "M252.1/2024"
+      ]
+    },
+    "massValue": 2343.20408025736
+  },
+  {
+    "id": "pdg10411",
+    "pdg": 10411,
+    "symbol": "D₀*(2300)⁺",
+    "name": "D_0^*(2300)+",
+    "ru": "положительный скалярный D",
+    "group": "charm",
+    "family": "opencharm",
+    "r": 26,
+    "mass": "2343 ± 10 MeV",
+    "charge": "+1",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "c d̄",
+    "lifetime": "Γ = 229 ± 16 MeV",
+    "aliases": [
+      "D_0^*(2300)+",
+      "положительный скалярный D",
+      "10411"
+    ],
+    "decays": [
+      [
+        "D pi+-",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M252/2024",
+      "mass": "M252M/2024",
+      "lifetime": null,
+      "width": "M252W/2024",
+      "decays": [
+        "M252.1/2024"
+      ]
+    },
+    "massValue": 2343.20408025736
+  },
+  {
+    "id": "pdg10423",
+    "pdg": 10423,
+    "symbol": "D₁(2420)⁰",
+    "name": "D_1(2420)0",
+    "ru": "нейтральный аксиальный D 2420",
+    "group": "charm",
+    "family": "opencharm",
+    "r": 26,
+    "mass": "2422.1 ± 0.6 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "c ū",
+    "lifetime": "Γ = 31.3 ± 1.9 MeV",
+    "aliases": [
+      "D_1(2420)0",
+      "нейтральный аксиальный D 2420",
+      "10423"
+    ],
+    "decays": [
+      [
+        "D*⁰ pi",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M253/2024",
+      "mass": "M253M/2024",
+      "lifetime": null,
+      "width": "M253W/2024",
+      "decays": [
+        "M253.1/2024"
+      ]
+    },
+    "massValue": 2422.08171044672
+  },
+  {
+    "id": "pdg10413",
+    "pdg": 10413,
+    "symbol": "D₁(2420)⁺",
+    "name": "D_1(2420)+",
+    "ru": "положительный аксиальный D 2420",
+    "group": "charm",
+    "family": "opencharm",
+    "r": 26,
+    "mass": "2422.1 ± 0.6 MeV",
+    "charge": "+1",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "c d̄",
+    "lifetime": "Γ = 31.3 ± 1.9 MeV",
+    "aliases": [
+      "D_1(2420)+",
+      "положительный аксиальный D 2420",
+      "10413"
+    ],
+    "decays": [
+      [
+        "D*⁰ pi",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M253/2024",
+      "mass": "M253M/2024",
+      "lifetime": null,
+      "width": "M253W/2024",
+      "decays": [
+        "M253.1/2024"
+      ]
+    },
+    "massValue": 2422.08171044672
+  },
+  {
+    "id": "pdg20423",
+    "pdg": 20423,
+    "symbol": "D₁(2430)⁰",
+    "name": "D_1(2430)0",
+    "ru": "нейтральный аксиальный D 2430",
+    "group": "charm",
+    "family": "opencharm",
+    "r": 26,
+    "mass": "2412 ± 9 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "c ū",
+    "lifetime": "Γ = 314 ± 29 MeV",
+    "aliases": [
+      "D_1(2430)0",
+      "нейтральный аксиальный D 2430",
+      "20423"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "M180/2024",
+      "mass": "M180M/2024",
+      "lifetime": null,
+      "width": "M180W/2024",
+      "decays": []
+    },
+    "massValue": 2412.03522645579
+  },
+  {
+    "id": "pdg425",
+    "pdg": 425,
+    "symbol": "D₂*(2460)⁰",
+    "name": "D_2^*(2460)0",
+    "ru": "нейтральный тензорный D",
+    "group": "charm",
+    "family": "opencharm",
+    "r": 26,
+    "mass": "2461.1 ± 0.8 MeV",
+    "charge": "0",
+    "spin": "2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "c ū",
+    "lifetime": "Γ = 47.3 ± 0.8 MeV",
+    "aliases": [
+      "D_2^*(2460)0",
+      "нейтральный тензорный D",
+      "425"
+    ],
+    "decays": [
+      [
+        "D^*(2010) π⁻",
+        "seen"
+      ],
+      [
+        "D π⁻",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M254/2024",
+      "mass": "M254M/2024",
+      "lifetime": null,
+      "width": "M254W/2024",
+      "decays": [
+        "M254.2/2024",
+        "M254.1/2024"
+      ]
+    },
+    "massValue": 2461.13205689706
+  },
+  {
+    "id": "pdg415",
+    "pdg": 415,
+    "symbol": "D₂*(2460)⁺",
+    "name": "D_2^*(2460)+",
+    "ru": "положительный тензорный D",
+    "group": "charm",
+    "family": "opencharm",
+    "r": 26,
+    "mass": "2461.1 ± 0.8 MeV",
+    "charge": "+1",
+    "spin": "2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "c d̄",
+    "lifetime": "Γ = 47.3 ± 0.8 MeV",
+    "aliases": [
+      "D_2^*(2460)+",
+      "положительный тензорный D",
+      "415"
+    ],
+    "decays": [
+      [
+        "D^*(2010) π⁻",
+        "seen"
+      ],
+      [
+        "D π⁻",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M254/2024",
+      "mass": "M254M/2024",
+      "lifetime": null,
+      "width": "M254W/2024",
+      "decays": [
+        "M254.2/2024",
+        "M254.1/2024"
+      ]
+    },
+    "massValue": 2461.13205689706
+  },
+  {
+    "id": "pdg10431",
+    "pdg": 10431,
+    "symbol": "Dₛ₀*(2317)⁺",
+    "name": "D_s0^*(2317)+",
+    "ru": "скалярный странный D",
+    "group": "charm",
+    "family": "opencharm",
+    "r": 26,
+    "mass": "2317.8 ± 0.5 MeV",
+    "charge": "+1",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "c s̄",
+    "lifetime": "Γ < 3.8 MeV",
+    "aliases": [
+      "D_s0^*(2317)+",
+      "скалярный странный D",
+      "10431"
+    ],
+    "decays": [
+      [
+        "Dₛ⁺ π⁰",
+        "(100+0-20)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M172/2024",
+      "mass": "M172M/2024",
+      "lifetime": null,
+      "width": "M172W/2024",
+      "decays": [
+        "M172.1/2024"
+      ]
+    },
+    "massValue": 2317.77309641894
+  },
+  {
+    "id": "pdg20433",
+    "pdg": 20433,
+    "symbol": "Dₛ₁(2460)⁺",
+    "name": "D_s1(2460)+",
+    "ru": "аксиальный странный D 2460",
+    "group": "charm",
+    "family": "opencharm",
+    "r": 26,
+    "mass": "2459.5 ± 0.6 MeV",
+    "charge": "+1",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "c s̄",
+    "lifetime": "Γ < 3.5 MeV",
+    "aliases": [
+      "D_s1(2460)+",
+      "аксиальный странный D 2460",
+      "20433"
+    ],
+    "decays": [
+      [
+        "Dₛ*⁺ π⁰",
+        "(48 ± 11)%"
+      ],
+      [
+        "Dₛ⁺ γ",
+        "(18 ± 4)%"
+      ],
+      [
+        "Dₛ⁺ π⁺ π⁻",
+        "(4.3 ± 1.3)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M173/2024",
+      "mass": "M173M/2024",
+      "lifetime": null,
+      "width": "M173W/2024",
+      "decays": [
+        "M173.1/2024",
+        "M173.2/2024",
+        "M173.3/2024"
+      ]
+    },
+    "massValue": 2459.49999417326
+  },
+  {
+    "id": "pdg10433",
+    "pdg": 10433,
+    "symbol": "Dₛ₁(2536)⁺",
+    "name": "D_s1(2536)+",
+    "ru": "аксиальный странный D 2536",
+    "group": "charm",
+    "family": "opencharm",
+    "r": 26,
+    "mass": "2535.11 ± 0.06 MeV",
+    "charge": "+1",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "c s̄",
+    "lifetime": "Γ = 0.92 ± 0.05 MeV",
+    "aliases": [
+      "D_s1(2536)+",
+      "аксиальный странный D 2536",
+      "10433"
+    ],
+    "decays": [
+      [
+        "D*⁺ K⁰",
+        "0.85 ± 0.12"
+      ],
+      [
+        "K0S D*⁺",
+        "0.48 ± 0.07"
+      ],
+      [
+        "D⁺ π⁻ K⁺",
+        "0.028 ± 0.005"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M121/2024",
+      "mass": "M121M/2024",
+      "lifetime": null,
+      "width": "M121W/2024",
+      "decays": [
+        "M121.1/2024",
+        "M121.10/2024",
+        "M121.8/2024"
+      ]
+    },
+    "massValue": 2535.11114324949
+  },
+  {
+    "id": "pdg10443",
+    "pdg": 10443,
+    "symbol": "hc(1P)",
+    "name": "h_c(1P)",
+    "ru": "h-чарм 1P",
+    "group": "charm",
+    "family": "charmonium",
+    "r": 26,
+    "mass": "3525.37 ± 0.14 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "−1",
+    "quarks": "c c̄",
+    "lifetime": "Γ = 0.78 ± 0.28 MeV",
+    "aliases": [
+      "h_c(1P)",
+      "h-чарм 1P",
+      "10443"
+    ],
+    "decays": [
+      [
+        "γ ηc",
+        "(60 ± 4)%"
+      ],
+      [
+        "2pi+ 2pi- π⁰",
+        "(9.4 ± 1.7) × 10⁻³"
+      ],
+      [
+        "π⁺ π⁻ π⁰ η",
+        "(8.3 ± 2.4) × 10⁻³"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M144/2024",
+      "mass": "M144M/2024",
+      "lifetime": null,
+      "width": "M144W/2024",
+      "decays": [
+        "M144.4/2024",
+        "M144.6/2024",
+        "M144.14/2024"
+      ]
+    },
+    "massValue": 3525.36760067371
+  },
+  {
+    "id": "pdg100441",
+    "pdg": 100441,
+    "symbol": "ηc(2S)",
+    "name": "eta_c(2S)",
+    "ru": "эта-чарм 2S",
+    "group": "charm",
+    "family": "charmonium",
+    "r": 26,
+    "mass": "3637.7 ± 0.9 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "−1",
+    "cparity": "+1",
+    "quarks": "c c̄",
+    "lifetime": "Γ = 11.8 ± 1.6 MeV",
+    "aliases": [
+      "eta_c(2S)",
+      "эта-чарм 2S",
+      "100441"
+    ],
+    "decays": [
+      [
+        "K Kbar pi",
+        "(1.9 ± 1.2)%"
+      ],
+      [
+        "K⁺ K⁻ π⁺ π⁻ π⁰",
+        "(1.4 ± 1.0)%"
+      ],
+      [
+        "3pi+ 3pi-",
+        "(1.3 ± 0.9)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M059/2024",
+      "mass": "M059M/2024",
+      "lifetime": null,
+      "width": "M059W/2024",
+      "decays": [
+        "M059.4/2024",
+        "M059.9/2024",
+        "M059.8/2024"
+      ]
+    },
+    "massValue": 3637.73028320257
+  },
+  {
+    "id": "pdg30443",
+    "pdg": 30443,
+    "symbol": "ψ(3770)",
+    "name": "psi(3770)",
+    "ru": "пси 3770",
+    "group": "charm",
+    "family": "charmonium",
+    "r": 26,
+    "mass": "3773.7 ± 0.7 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "−1",
+    "quarks": "c c̄",
+    "lifetime": "Γ = 27.2 ± 1.0 MeV",
+    "aliases": [
+      "psi(3770)",
+      "пси 3770",
+      "30443"
+    ],
+    "decays": [
+      [
+        "D Dbar",
+        "(93+8-9)%"
+      ],
+      [
+        "γ chi_c0()",
+        "(6.9 ± 0.6) × 10⁻³"
+      ],
+      [
+        "γ chi_c1()",
+        "(2.49 ± 0.23) × 10⁻³"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M053/2024",
+      "mass": "M053M/2024",
+      "lifetime": null,
+      "width": "M053W/2024",
+      "decays": [
+        "M053.2/2024",
+        "M053.49/2024",
+        "M053.50/2024"
+      ]
+    },
+    "massValue": 3773.67710463641
+  },
+  {
+    "id": "pdg100445",
+    "pdg": 100445,
+    "symbol": "χc₂(3930)",
+    "name": "chi_c2(3930)",
+    "ru": "хи-чарм 3930",
+    "group": "charm",
+    "family": "charmonium",
+    "r": 26,
+    "mass": "3922.5 ± 1.0 MeV",
+    "charge": "0",
+    "spin": "2",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "c c̄",
+    "lifetime": "Γ = 35.2 ± 2.2 MeV",
+    "aliases": [
+      "chi_c2(3930)",
+      "хи-чарм 3930",
+      "100445"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "M050/2024",
+      "mass": "M050M/2024",
+      "lifetime": null,
+      "width": "M050W/2024",
+      "decays": []
+    },
+    "massValue": 3922.46087800474
+  },
+  {
+    "id": "pdg9000443",
+    "pdg": 9000443,
+    "symbol": "ψ(4040)",
+    "name": "psi(4040)",
+    "ru": "пси 4040",
+    "group": "charm",
+    "family": "charmonium",
+    "r": 26,
+    "mass": "4040 ± 4 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "−1",
+    "quarks": "c c̄",
+    "lifetime": "Γ = 84 ± 12 MeV",
+    "aliases": [
+      "psi(4040)",
+      "пси 4040",
+      "9000443"
+    ],
+    "decays": [
+      [
+        "e⁺ e⁻",
+        "(1.02 ± 0.17) × 10⁻⁵"
+      ],
+      [
+        "μ⁺ μ⁻",
+        "(9 ± 6) × 10⁻⁶"
+      ],
+      [
+        "Dₛ⁺ D_s()-",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M072/2024",
+      "mass": "M072M/2024",
+      "lifetime": null,
+      "width": "M072W/2024",
+      "decays": [
+        "M072.5/2024",
+        "M072.6/2024",
+        "M072.27/2024"
+      ]
+    },
+    "massValue": 4039.6
+  },
+  {
+    "id": "pdg9010443",
+    "pdg": 9010443,
+    "symbol": "ψ(4160)",
+    "name": "psi(4160)",
+    "ru": "пси 4160",
+    "group": "charm",
+    "family": "charmonium",
+    "r": 26,
+    "mass": "4191 ± 5 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "−1",
+    "quarks": "c c̄",
+    "lifetime": "Γ = 69 ± 10 MeV",
+    "aliases": [
+      "psi(4160)",
+      "пси 4160",
+      "9010443"
+    ],
+    "decays": [
+      [
+        "e⁺ e⁻",
+        "(6.9 ± 3.3) × 10⁻⁶"
+      ],
+      [
+        "p pbar p pbar",
+        "not seen"
+      ],
+      [
+        "omega π⁰",
+        "not seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M025/2024",
+      "mass": "M025M/2024",
+      "lifetime": null,
+      "width": "M025W/2024",
+      "decays": [
+        "M025.1/2024",
+        "M025.45/2024",
+        "M025.47/2024"
+      ]
+    },
+    "massValue": 4191.31795657733
+  },
+  {
+    "id": "pdg9020443",
+    "pdg": 9020443,
+    "symbol": "ψ(4415)",
+    "name": "psi(4415)",
+    "ru": "пси 4415",
+    "group": "charm",
+    "family": "charmonium",
+    "r": 26,
+    "mass": "4415 ± 5 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "−1",
+    "quarks": "c c̄",
+    "lifetime": "Γ = 110 ± 22 MeV",
+    "aliases": [
+      "psi(4415)",
+      "пси 4415",
+      "9020443"
+    ],
+    "decays": [
+      [
+        "D Dbar_2^*(2460) --> D⁰ D- π⁺ +c.c.",
+        "(10 ± 4)%"
+      ],
+      [
+        "μ⁺ μ⁻",
+        "(1.1 ± 0.5) × 10⁻⁵"
+      ],
+      [
+        "e⁺ e⁻",
+        "(5.3 ± 1.2) × 10⁻⁶"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M073/2024",
+      "mass": "M073M/2024",
+      "lifetime": null,
+      "width": "M073W/2024",
+      "decays": [
+        "M073.5/2024",
+        "M073.26/2024",
+        "M073.1/2024"
+      ]
+    },
+    "massValue": 4414.81932901601
+  },
+  {
+    "id": "pdg513",
+    "pdg": 513,
+    "symbol": "B*⁰",
+    "name": "B^*0",
+    "ru": "нейтральный векторный B",
+    "group": "bottom",
+    "family": "openbottom",
+    "r": 26,
+    "mass": "5324.75 ± 0.20 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "d b̄",
+    "lifetime": "В наборе не указано",
+    "aliases": [
+      "B^*0",
+      "нейтральный векторный B",
+      "513"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "S085/2024",
+      "mass": "S085M/2024",
+      "lifetime": null,
+      "width": null,
+      "decays": []
+    },
+    "massValue": 5324.74543363307
+  },
+  {
+    "id": "pdg523",
+    "pdg": 523,
+    "symbol": "B*⁺",
+    "name": "B^*+",
+    "ru": "положительный векторный B",
+    "group": "bottom",
+    "family": "openbottom",
+    "r": 26,
+    "mass": "5324.75 ± 0.20 MeV",
+    "charge": "+1",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "u b̄",
+    "lifetime": "В наборе не указано",
+    "aliases": [
+      "B^*+",
+      "положительный векторный B",
+      "523"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "S085/2024",
+      "mass": "S085M/2024",
+      "lifetime": null,
+      "width": null,
+      "decays": []
+    },
+    "massValue": 5324.74543363307
+  },
+  {
+    "id": "pdg515",
+    "pdg": 515,
+    "symbol": "B₂*(5747)⁰",
+    "name": "B_2^*(5747)0",
+    "ru": "нейтральный тензорный B",
+    "group": "bottom",
+    "family": "openbottom",
+    "r": 26,
+    "mass": "5739.6 ± 0.7 MeV",
+    "charge": "0",
+    "spin": "2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "d b̄",
+    "lifetime": "Γ = 24.2 ± 1.7 MeV",
+    "aliases": [
+      "B_2^*(5747)0",
+      "нейтральный тензорный B",
+      "515"
+    ],
+    "decays": [
+      [
+        "B^* pi",
+        "seen"
+      ],
+      [
+        "B pi",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M245/2024",
+      "mass": "M245M0/2024",
+      "lifetime": null,
+      "width": "M245W0/2024",
+      "decays": [
+        "M245.2/2024",
+        "M245.1/2024"
+      ]
+    },
+    "massValue": 5739.58457479472
+  },
+  {
+    "id": "pdg525",
+    "pdg": 525,
+    "symbol": "B₂*(5747)⁺",
+    "name": "B_2^*(5747)+",
+    "ru": "положительный тензорный B",
+    "group": "bottom",
+    "family": "openbottom",
+    "r": 26,
+    "mass": "5737.3 ± 0.7 MeV",
+    "charge": "+1",
+    "spin": "2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "u b̄",
+    "lifetime": "Γ = 20 ± 5 MeV",
+    "aliases": [
+      "B_2^*(5747)+",
+      "положительный тензорный B",
+      "525"
+    ],
+    "decays": [
+      [
+        "B^* pi",
+        "seen"
+      ],
+      [
+        "B pi",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M245/2024",
+      "mass": "M245M+/2024",
+      "lifetime": null,
+      "width": "M245W+/2024",
+      "decays": [
+        "M245.2/2024",
+        "M245.1/2024"
+      ]
+    },
+    "massValue": 5737.2566077792
+  },
+  {
+    "id": "pdg533",
+    "pdg": 533,
+    "symbol": "Bₛ*⁰",
+    "name": "B_s^*0",
+    "ru": "векторный странный B",
+    "group": "bottom",
+    "family": "openbottom",
+    "r": 26,
+    "mass": "5415.4 ± 1.4 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "s b̄",
+    "lifetime": "В наборе не указано",
+    "aliases": [
+      "B_s^*0",
+      "векторный странный B",
+      "533"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "S087/2024",
+      "mass": "S087M/2024",
+      "lifetime": null,
+      "width": null,
+      "decays": []
+    },
+    "massValue": 5415.44209743894
+  },
+  {
+    "id": "pdg535",
+    "pdg": 535,
+    "symbol": "Bₛ₂*(5840)⁰",
+    "name": "B_s2^*(5840)0",
+    "ru": "тензорный странный B",
+    "group": "bottom",
+    "family": "openbottom",
+    "r": 26,
+    "mass": "5839.88 ± 0.12 MeV",
+    "charge": "0",
+    "spin": "2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "s b̄",
+    "lifetime": "Γ = 1.49 ± 0.27 MeV",
+    "aliases": [
+      "B_s2^*(5840)0",
+      "тензорный странный B",
+      "535"
+    ],
+    "decays": [
+      [
+        "B⁰ K0S",
+        "0.43 ± 0.11"
+      ],
+      [
+        "B^*()+ K⁻",
+        "0.093 ± 0.018"
+      ],
+      [
+        "B*⁰ K0S",
+        "0.04 ± 0.04"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M186/2024",
+      "mass": "M186M/2024",
+      "lifetime": null,
+      "width": "M186W/2024",
+      "decays": [
+        "M186.4/2024",
+        "M186.2/2024",
+        "M186.3/2024"
+      ]
+    },
+    "massValue": 5839.88164862309
+  },
+  {
+    "id": "pdg10551",
+    "pdg": 10551,
+    "symbol": "χb₀(1P)",
+    "name": "chi_b0(1P)",
+    "ru": "хи-боттом 0 1P",
+    "group": "bottom",
+    "family": "bottomonium",
+    "r": 26,
+    "mass": "9859.44 ± 0.42 ± 0.31 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "b b̄",
+    "lifetime": "В наборе не указано",
+    "aliases": [
+      "chi_b0(1P)",
+      "хи-боттом 0 1P",
+      "10551"
+    ],
+    "decays": [
+      [
+        "γ Υ(1S)",
+        "(1.94 ± 0.27)%"
+      ],
+      [
+        "3pi+ 3pi- K⁺ K⁻",
+        "(2.4 ± 1.2) × 10⁻⁴"
+      ],
+      [
+        "2pi+ 2pi- K⁺ K⁻",
+        "(1.1 ± 0.6) × 10⁻⁴"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M076/2024",
+      "mass": "M076M/2024",
+      "lifetime": null,
+      "width": null,
+      "decays": [
+        "M076.1/2024",
+        "M076.13/2024",
+        "M076.7/2024"
+      ]
+    },
+    "massValue": 9859.44
+  },
+  {
+    "id": "pdg20553",
+    "pdg": 20553,
+    "symbol": "χb₁(1P)",
+    "name": "chi_b1(1P)",
+    "ru": "хи-боттом 1 1P",
+    "group": "bottom",
+    "family": "bottomonium",
+    "r": 26,
+    "mass": "9892.78 ± 0.26 ± 0.31 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "b b̄",
+    "lifetime": "В наборе не указано",
+    "aliases": [
+      "chi_b1(1P)",
+      "хи-боттом 1 1P",
+      "20553"
+    ],
+    "decays": [
+      [
+        "γ Υ(1S)",
+        "(35.2 ± 2.0)%"
+      ],
+      [
+        "3pi+ 3pi- 2pi0",
+        "(1.7 ± 0.5) × 10⁻³"
+      ],
+      [
+        "4pi+ 4pi- 2pi0",
+        "(1.4 ± 0.6) × 10⁻³"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M077/2024",
+      "mass": "M077M/2024",
+      "lifetime": null,
+      "width": null,
+      "decays": [
+        "M077.1/2024",
+        "M077.12/2024",
+        "M077.16/2024"
+      ]
+    },
+    "massValue": 9892.78
+  },
+  {
+    "id": "pdg10553",
+    "pdg": 10553,
+    "symbol": "hb(1P)",
+    "name": "h_b(1P)",
+    "ru": "h-боттом 1P",
+    "group": "bottom",
+    "family": "bottomonium",
+    "r": 26,
+    "mass": "9899.3 ± 0.8 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "−1",
+    "quarks": "b b̄",
+    "lifetime": "В наборе не указано",
+    "aliases": [
+      "h_b(1P)",
+      "h-боттом 1P",
+      "10553"
+    ],
+    "decays": [
+      [
+        "ηb γ",
+        "(52+6-5)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M204/2024",
+      "mass": "M204M/2024",
+      "lifetime": null,
+      "width": null,
+      "decays": [
+        "M204.1/2024"
+      ]
+    },
+    "massValue": 9899.27891156463
+  },
+  {
+    "id": "pdg555",
+    "pdg": 555,
+    "symbol": "χb₂(1P)",
+    "name": "chi_b2(1P)",
+    "ru": "хи-боттом 2 1P",
+    "group": "bottom",
+    "family": "bottomonium",
+    "r": 26,
+    "mass": "9912.21 ± 0.26 ± 0.31 MeV",
+    "charge": "0",
+    "spin": "2",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "b b̄",
+    "lifetime": "В наборе не указано",
+    "aliases": [
+      "chi_b2(1P)",
+      "хи-боттом 2 1P",
+      "555"
+    ],
+    "decays": [
+      [
+        "γ Υ(1S)",
+        "(18.0 ± 1.0)%"
+      ],
+      [
+        "4pi+ 4pi- 2pi0",
+        "(1.8 ± 0.7) × 10⁻³"
+      ],
+      [
+        "3pi+ 3pi- 2pi0",
+        "(1.0 ± 0.4) × 10⁻³"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M078/2024",
+      "mass": "M078M/2024",
+      "lifetime": null,
+      "width": null,
+      "decays": [
+        "M078.1/2024",
+        "M078.16/2024",
+        "M078.12/2024"
+      ]
+    },
+    "massValue": 9912.21
+  },
+  {
+    "id": "pdg100551",
+    "pdg": 100551,
+    "symbol": "ηb(2S)",
+    "name": "eta_b(2S)",
+    "ru": "эта-боттом 2S",
+    "group": "bottom",
+    "family": "bottomonium",
+    "r": 26,
+    "mass": "9999 ± 4 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "−1",
+    "cparity": "+1",
+    "quarks": "b b̄",
+    "lifetime": "Γ < 24 MeV",
+    "aliases": [
+      "eta_b(2S)",
+      "эта-боттом 2S",
+      "100551"
+    ],
+    "decays": [
+      [
+        "hadrons",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M200/2024",
+      "mass": "M200M/2024",
+      "lifetime": null,
+      "width": "M200W/2024",
+      "decays": [
+        "M200.1/2024"
+      ]
+    },
+    "massValue": 9999.0
+  },
+  {
+    "id": "pdg110551",
+    "pdg": 110551,
+    "symbol": "χb₀(2P)",
+    "name": "chi_b0(2P)",
+    "ru": "хи-боттом 0 2P",
+    "group": "bottom",
+    "family": "bottomonium",
+    "r": 26,
+    "mass": "10232.5 ± 0.4 ± 0.5 MeV",
+    "charge": "0",
+    "spin": "0",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "b b̄",
+    "lifetime": "В наборе не указано",
+    "aliases": [
+      "chi_b0(2P)",
+      "хи-боттом 0 2P",
+      "110551"
+    ],
+    "decays": [
+      [
+        "γ Υ(2S)",
+        "(1.38 ± 0.30)%"
+      ],
+      [
+        "γ Υ(1S)",
+        "(3.8 ± 1.7) × 10⁻³"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M079/2024",
+      "mass": "M079M/2024",
+      "lifetime": null,
+      "width": null,
+      "decays": [
+        "M079.2/2024",
+        "M079.1/2024"
+      ]
+    },
+    "massValue": 10232.5
+  },
+  {
+    "id": "pdg120553",
+    "pdg": 120553,
+    "symbol": "χb₁(2P)",
+    "name": "chi_b1(2P)",
+    "ru": "хи-боттом 1 2P",
+    "group": "bottom",
+    "family": "bottomonium",
+    "r": 26,
+    "mass": "10255.46 ± 0.22 ± 0.50 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "b b̄",
+    "lifetime": "В наборе не указано",
+    "aliases": [
+      "chi_b1(2P)",
+      "хи-боттом 1 2P",
+      "120553"
+    ],
+    "decays": [
+      [
+        "γ Υ(2S)",
+        "(18.1 ± 1.9)%"
+      ],
+      [
+        "γ Υ(1S)",
+        "(9.9 ± 1.0)%"
+      ],
+      [
+        "omega Υ(1S)",
+        "(1.63+0.40-0.34)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M080/2024",
+      "mass": "M080M/2024",
+      "lifetime": null,
+      "width": null,
+      "decays": [
+        "M080.2/2024",
+        "M080.1/2024",
+        "M080.3/2024"
+      ]
+    },
+    "massValue": 10255.46
+  },
+  {
+    "id": "pdg100555",
+    "pdg": 100555,
+    "symbol": "χb₂(2P)",
+    "name": "chi_b2(2P)",
+    "ru": "хи-боттом 2 2P",
+    "group": "bottom",
+    "family": "bottomonium",
+    "r": 26,
+    "mass": "10268.65 ± 0.22 ± 0.50 MeV",
+    "charge": "0",
+    "spin": "2",
+    "parity": "+1",
+    "cparity": "+1",
+    "quarks": "b b̄",
+    "lifetime": "В наборе не указано",
+    "aliases": [
+      "chi_b2(2P)",
+      "хи-боттом 2 2P",
+      "100555"
+    ],
+    "decays": [
+      [
+        "γ Υ(2S)",
+        "(8.9 ± 1.2)%"
+      ],
+      [
+        "γ Υ(1S)",
+        "(6.6 ± 0.8)%"
+      ],
+      [
+        "omega Υ(1S)",
+        "(1.10+0.34-0.30)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M081/2024",
+      "mass": "M081M/2024",
+      "lifetime": null,
+      "width": null,
+      "decays": [
+        "M081.2/2024",
+        "M081.1/2024",
+        "M081.3/2024"
+      ]
+    },
+    "massValue": 10268.65
+  },
+  {
+    "id": "pdg300553",
+    "pdg": 300553,
+    "symbol": "Υ(4S)",
+    "name": "Upsilon(4S)",
+    "ru": "ипсилон 4S",
+    "group": "bottom",
+    "family": "bottomonium",
+    "r": 26,
+    "mass": "10579.4 ± 1.2 MeV",
+    "charge": "0",
+    "spin": "1",
+    "parity": "−1",
+    "cparity": "−1",
+    "quarks": "b b̄",
+    "lifetime": "Γ = 20.5 ± 2.5 MeV",
+    "aliases": [
+      "Upsilon(4S)",
+      "ипсилон 4S",
+      "300553"
+    ],
+    "decays": [
+      [
+        "Υ(1S) eta^'",
+        "(3.4 ± 0.9) × 10⁻⁵"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "M047/2024",
+      "mass": "M047M/2024",
+      "lifetime": null,
+      "width": "M047W/2024",
+      "decays": [
+        "M047.26/2024"
+      ]
+    },
+    "massValue": 10579.380866426
+  },
+  {
+    "id": "pdg1214",
+    "pdg": 1214,
+    "symbol": "N(1520)⁰",
+    "name": "N(1520)0",
+    "ru": "нейтральный нуклон 1520",
+    "group": "baryons",
+    "family": "nucleon",
+    "r": 26,
+    "mass": "1510 … 1515 … 1520 MeV",
+    "charge": "0",
+    "spin": "3/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "udd",
+    "lifetime": "Γ = 100–110–120 MeV",
+    "aliases": [
+      "N(1520)0",
+      "нейтральный нуклон 1520",
+      "1214"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B062/2024",
+      "mass": "B062M/2024",
+      "lifetime": null,
+      "width": "B062W/2024",
+      "decays": []
+    },
+    "massValue": 1515.0
+  },
+  {
+    "id": "pdg2124",
+    "pdg": 2124,
+    "symbol": "N(1520)⁺",
+    "name": "N(1520)+",
+    "ru": "положительный нуклон 1520",
+    "group": "baryons",
+    "family": "nucleon",
+    "r": 26,
+    "mass": "1510 … 1515 … 1520 MeV",
+    "charge": "+1",
+    "spin": "3/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "uud",
+    "lifetime": "Γ = 100–110–120 MeV",
+    "aliases": [
+      "N(1520)+",
+      "положительный нуклон 1520",
+      "2124"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B062/2024",
+      "mass": "B062M/2024",
+      "lifetime": null,
+      "width": "B062W/2024",
+      "decays": []
+    },
+    "massValue": 1515.0
+  },
+  {
+    "id": "pdg22112",
+    "pdg": 22112,
+    "symbol": "N(1535)⁰",
+    "name": "N(1535)0",
+    "ru": "нейтральный нуклон 1535",
+    "group": "baryons",
+    "family": "nucleon",
+    "r": 26,
+    "mass": "1515–1530–1545 MeV",
+    "charge": "0",
+    "spin": "1/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "udd",
+    "lifetime": "Γ = 125 … 150 … 175 MeV",
+    "aliases": [
+      "N(1535)0",
+      "нейтральный нуклон 1535",
+      "22112"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B063/2024",
+      "mass": "B063M/2024",
+      "lifetime": null,
+      "width": "B063W/2024",
+      "decays": []
+    },
+    "massValue": 1530.0
+  },
+  {
+    "id": "pdg22212",
+    "pdg": 22212,
+    "symbol": "N(1535)⁺",
+    "name": "N(1535)+",
+    "ru": "положительный нуклон 1535",
+    "group": "baryons",
+    "family": "nucleon",
+    "r": 26,
+    "mass": "1515–1530–1545 MeV",
+    "charge": "+1",
+    "spin": "1/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "uud",
+    "lifetime": "Γ = 125 … 150 … 175 MeV",
+    "aliases": [
+      "N(1535)+",
+      "положительный нуклон 1535",
+      "22212"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B063/2024",
+      "mass": "B063M/2024",
+      "lifetime": null,
+      "width": "B063W/2024",
+      "decays": []
+    },
+    "massValue": 1530.0
+  },
+  {
+    "id": "pdg32112",
+    "pdg": 32112,
+    "symbol": "N(1650)⁰",
+    "name": "N(1650)0",
+    "ru": "нейтральный нуклон 1650",
+    "group": "baryons",
+    "family": "nucleon",
+    "r": 26,
+    "mass": "1635–1650–1665 MeV",
+    "charge": "0",
+    "spin": "1/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "udd",
+    "lifetime": "Γ = 100–125–150 MeV",
+    "aliases": [
+      "N(1650)0",
+      "нейтральный нуклон 1650",
+      "32112"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B066/2024",
+      "mass": "B066M/2024",
+      "lifetime": null,
+      "width": "B066W/2024",
+      "decays": []
+    },
+    "massValue": 1650.0
+  },
+  {
+    "id": "pdg32212",
+    "pdg": 32212,
+    "symbol": "N(1650)⁺",
+    "name": "N(1650)+",
+    "ru": "положительный нуклон 1650",
+    "group": "baryons",
+    "family": "nucleon",
+    "r": 26,
+    "mass": "1635–1650–1665 MeV",
+    "charge": "+1",
+    "spin": "1/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "uud",
+    "lifetime": "Γ = 100–125–150 MeV",
+    "aliases": [
+      "N(1650)+",
+      "положительный нуклон 1650",
+      "32212"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B066/2024",
+      "mass": "B066M/2024",
+      "lifetime": null,
+      "width": "B066W/2024",
+      "decays": []
+    },
+    "massValue": 1650.0
+  },
+  {
+    "id": "pdg2116",
+    "pdg": 2116,
+    "symbol": "N(1675)⁰",
+    "name": "N(1675)0",
+    "ru": "нейтральный нуклон 1675",
+    "group": "baryons",
+    "family": "nucleon",
+    "r": 26,
+    "mass": "1665–1675–1680 MeV",
+    "charge": "0",
+    "spin": "5/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "udd",
+    "lifetime": "Γ = 130–145–160 MeV",
+    "aliases": [
+      "N(1675)0",
+      "нейтральный нуклон 1675",
+      "2116"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B064/2024",
+      "mass": "B064M/2024",
+      "lifetime": null,
+      "width": "B064W/2024",
+      "decays": []
+    },
+    "massValue": 1675.0
+  },
+  {
+    "id": "pdg2216",
+    "pdg": 2216,
+    "symbol": "N(1675)⁺",
+    "name": "N(1675)+",
+    "ru": "положительный нуклон 1675",
+    "group": "baryons",
+    "family": "nucleon",
+    "r": 26,
+    "mass": "1665–1675–1680 MeV",
+    "charge": "+1",
+    "spin": "5/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "uud",
+    "lifetime": "Γ = 130–145–160 MeV",
+    "aliases": [
+      "N(1675)+",
+      "положительный нуклон 1675",
+      "2216"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B064/2024",
+      "mass": "B064M/2024",
+      "lifetime": null,
+      "width": "B064W/2024",
+      "decays": []
+    },
+    "massValue": 1675.0
+  },
+  {
+    "id": "pdg12116",
+    "pdg": 12116,
+    "symbol": "N(1680)⁰",
+    "name": "N(1680)0",
+    "ru": "нейтральный нуклон 1680",
+    "group": "baryons",
+    "family": "nucleon",
+    "r": 26,
+    "mass": "1680 … 1685 … 1690 MeV",
+    "charge": "0",
+    "spin": "5/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "udd",
+    "lifetime": "Γ = 115–120–130 MeV",
+    "aliases": [
+      "N(1680)0",
+      "нейтральный нуклон 1680",
+      "12116"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B065/2024",
+      "mass": "B065M/2024",
+      "lifetime": null,
+      "width": "B065W/2024",
+      "decays": []
+    },
+    "massValue": 1685.0
+  },
+  {
+    "id": "pdg12216",
+    "pdg": 12216,
+    "symbol": "N(1680)⁺",
+    "name": "N(1680)+",
+    "ru": "положительный нуклон 1680",
+    "group": "baryons",
+    "family": "nucleon",
+    "r": 26,
+    "mass": "1680 … 1685 … 1690 MeV",
+    "charge": "+1",
+    "spin": "5/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "uud",
+    "lifetime": "Γ = 115–120–130 MeV",
+    "aliases": [
+      "N(1680)+",
+      "положительный нуклон 1680",
+      "12216"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B065/2024",
+      "mass": "B065M/2024",
+      "lifetime": null,
+      "width": "B065W/2024",
+      "decays": []
+    },
+    "massValue": 1685.0
+  },
+  {
+    "id": "pdg31114",
+    "pdg": 31114,
+    "symbol": "Δ(1600)⁻",
+    "name": "Delta(1600)-",
+    "ru": "дельта 1600 минус",
+    "group": "baryons",
+    "family": "delta",
+    "r": 26,
+    "mass": "1500–1570–1640 MeV",
+    "charge": "−1",
+    "spin": "3/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "ddd",
+    "lifetime": "Γ = 200–250–300 MeV",
+    "aliases": [
+      "Delta(1600)-",
+      "дельта 1600 минус",
+      "31114"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B019/2024",
+      "mass": "B019M/2024",
+      "lifetime": null,
+      "width": "B019W/2024",
+      "decays": []
+    },
+    "massValue": 1570.0
+  },
+  {
+    "id": "pdg32114",
+    "pdg": 32114,
+    "symbol": "Δ(1600)⁰",
+    "name": "Delta(1600)0",
+    "ru": "дельта 1600 ноль",
+    "group": "baryons",
+    "family": "delta",
+    "r": 26,
+    "mass": "1500–1570–1640 MeV",
+    "charge": "0",
+    "spin": "3/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "udd",
+    "lifetime": "Γ = 200–250–300 MeV",
+    "aliases": [
+      "Delta(1600)0",
+      "дельта 1600 ноль",
+      "32114"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B019/2024",
+      "mass": "B019M/2024",
+      "lifetime": null,
+      "width": "B019W/2024",
+      "decays": []
+    },
+    "massValue": 1570.0
+  },
+  {
+    "id": "pdg32214",
+    "pdg": 32214,
+    "symbol": "Δ(1600)⁺",
+    "name": "Delta(1600)+",
+    "ru": "дельта 1600 плюс",
+    "group": "baryons",
+    "family": "delta",
+    "r": 26,
+    "mass": "1500–1570–1640 MeV",
+    "charge": "+1",
+    "spin": "3/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "uud",
+    "lifetime": "Γ = 200–250–300 MeV",
+    "aliases": [
+      "Delta(1600)+",
+      "дельта 1600 плюс",
+      "32214"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B019/2024",
+      "mass": "B019M/2024",
+      "lifetime": null,
+      "width": "B019W/2024",
+      "decays": []
+    },
+    "massValue": 1570.0
+  },
+  {
+    "id": "pdg32224",
+    "pdg": 32224,
+    "symbol": "Δ(1600)⁺⁺",
+    "name": "Delta(1600)++",
+    "ru": "дельта 1600 два-плюс",
+    "group": "baryons",
+    "family": "delta",
+    "r": 26,
+    "mass": "1500–1570–1640 MeV",
+    "charge": "+2",
+    "spin": "3/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "uuu",
+    "lifetime": "Γ = 200–250–300 MeV",
+    "aliases": [
+      "Delta(1600)++",
+      "дельта 1600 два-плюс",
+      "32224"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B019/2024",
+      "mass": "B019M/2024",
+      "lifetime": null,
+      "width": "B019W/2024",
+      "decays": []
+    },
+    "massValue": 1570.0
+  },
+  {
+    "id": "pdg13122",
+    "pdg": 13122,
+    "symbol": "Λ(1405)⁰",
+    "name": "Lambda(1405)0",
+    "ru": "лямбда 1405",
+    "group": "baryons",
+    "family": "lambda",
+    "r": 26,
+    "mass": "1405.1+1.3-1.0 MeV",
+    "charge": "0",
+    "spin": "1/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "uds",
+    "lifetime": "Γ = 50.5 ± 2.0 MeV",
+    "aliases": [
+      "Lambda(1405)0",
+      "лямбда 1405",
+      "13122"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B037/2024",
+      "mass": "B037M1/2024",
+      "lifetime": null,
+      "width": "B037W1/2024",
+      "decays": []
+    },
+    "massValue": 1405.11964125523
+  },
+  {
+    "id": "pdg23122",
+    "pdg": 23122,
+    "symbol": "Λ(1600)⁰",
+    "name": "Lambda(1600)0",
+    "ru": "лямбда 1600",
+    "group": "baryons",
+    "family": "lambda",
+    "r": 26,
+    "mass": "1570–1600–1630 MeV",
+    "charge": "0",
+    "spin": "1/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "uds",
+    "lifetime": "Γ = 150–200–250 MeV",
+    "aliases": [
+      "Lambda(1600)0",
+      "лямбда 1600",
+      "23122"
+    ],
+    "decays": [
+      [
+        "Λ⁰ sigma",
+        "(19 ± 4)%"
+      ],
+      [
+        "Sigma(1385) pi",
+        "(9 ± 4)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "B101/2024",
+      "mass": "B101M/2024",
+      "lifetime": null,
+      "width": "B101W/2024",
+      "decays": [
+        "B101.5/2024",
+        "B101.3/2024"
+      ]
+    },
+    "massValue": 1600.0
+  },
+  {
+    "id": "pdg33122",
+    "pdg": 33122,
+    "symbol": "Λ(1670)⁰",
+    "name": "Lambda(1670)0",
+    "ru": "лямбда 1670",
+    "group": "baryons",
+    "family": "lambda",
+    "r": 26,
+    "mass": "1670–1674–1678 MeV",
+    "charge": "0",
+    "spin": "1/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "uds",
+    "lifetime": "Γ = 25–30–35 MeV",
+    "aliases": [
+      "Lambda(1670)0",
+      "лямбда 1670",
+      "33122"
+    ],
+    "decays": [
+      [
+        "Λ⁰ sigma",
+        "(20 ± 8)%"
+      ],
+      [
+        "Sigma(1385) pi, D-wave",
+        "(6.0 ± 2.0)%"
+      ],
+      [
+        "N Kbar^*(892), S=3/2, D-wave",
+        "(5 ± 4)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "B040/2024",
+      "mass": "B040M/2024",
+      "lifetime": null,
+      "width": "B040W/2024",
+      "decays": [
+        "B040.10/2024",
+        "B040.4/2024",
+        "B040.5/2024"
+      ]
+    },
+    "massValue": 1674.0
+  },
+  {
+    "id": "pdg13124",
+    "pdg": 13124,
+    "symbol": "Λ(1690)⁰",
+    "name": "Lambda(1690)0",
+    "ru": "лямбда 1690",
+    "group": "baryons",
+    "family": "lambda",
+    "r": 26,
+    "mass": "1685–1690–1695 MeV",
+    "charge": "0",
+    "spin": "3/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "uds",
+    "lifetime": "Γ = 60–70–80 MeV",
+    "aliases": [
+      "Lambda(1690)0",
+      "лямбда 1690",
+      "13124"
+    ],
+    "decays": [
+      [
+        "Λ⁰ pi pi",
+        "~25%"
+      ],
+      [
+        "Sigma pi pi",
+        "~20%"
+      ],
+      [
+        "Sigma(1385) pi, S-wave",
+        "(9 ± 5)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "B055/2024",
+      "mass": "B055M/2024",
+      "lifetime": null,
+      "width": "B055W/2024",
+      "decays": [
+        "B055.3/2024",
+        "B055.4/2024",
+        "B055.5/2024"
+      ]
+    },
+    "massValue": 1690.0
+  },
+  {
+    "id": "pdg43122",
+    "pdg": 43122,
+    "symbol": "Λ(1800)⁰",
+    "name": "Lambda(1800)0",
+    "ru": "лямбда 1800",
+    "group": "baryons",
+    "family": "lambda",
+    "r": 26,
+    "mass": "1750–1800–1850 MeV",
+    "charge": "0",
+    "spin": "1/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "uds",
+    "lifetime": "Γ = 150–200–250 MeV",
+    "aliases": [
+      "Lambda(1800)0",
+      "лямбда 1800",
+      "43122"
+    ],
+    "decays": [
+      [
+        "Λ⁰ sigma",
+        "(15 ± 4)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "B036/2024",
+      "mass": "B036M/2024",
+      "lifetime": null,
+      "width": "B036W/2024",
+      "decays": [
+        "B036.8/2024"
+      ]
+    },
+    "massValue": 1800.0
+  },
+  {
+    "id": "pdg53122",
+    "pdg": 53122,
+    "symbol": "Λ(1810)⁰",
+    "name": "Lambda(1810)0",
+    "ru": "лямбда 1810",
+    "group": "baryons",
+    "family": "lambda",
+    "r": 26,
+    "mass": "1740–1790–1840 MeV",
+    "charge": "0",
+    "spin": "1/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "uds",
+    "lifetime": "Γ = 50–110–170 MeV",
+    "aliases": [
+      "Lambda(1810)0",
+      "лямбда 1810",
+      "53122"
+    ],
+    "decays": [
+      [
+        "Sigma(1385) pi",
+        "(40 ± 15)%"
+      ],
+      [
+        "Sigma pi",
+        "(16 ± 5)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "B077/2024",
+      "mass": "B077M/2024",
+      "lifetime": null,
+      "width": "B077W/2024",
+      "decays": [
+        "B077.3/2024",
+        "B077.2/2024"
+      ]
+    },
+    "massValue": 1790.0
+  },
+  {
+    "id": "pdg3126",
+    "pdg": 3126,
+    "symbol": "Λ(1820)⁰",
+    "name": "Lambda(1820)0",
+    "ru": "лямбда 1820",
+    "group": "baryons",
+    "family": "lambda",
+    "r": 26,
+    "mass": "1815 … 1820 … 1825 MeV",
+    "charge": "0",
+    "spin": "5/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "uds",
+    "lifetime": "Γ = 70 … 80 … 90 MeV",
+    "aliases": [
+      "Lambda(1820)0",
+      "лямбда 1820",
+      "3126"
+    ],
+    "decays": [
+      [
+        "N Kbar^*(892), S=3/2, P-wave",
+        "(3.0 ± 1.0)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "B039/2024",
+      "mass": "B039M/2024",
+      "lifetime": null,
+      "width": "B039W/2024",
+      "decays": [
+        "B039.8/2024"
+      ]
+    },
+    "massValue": 1820.0
+  },
+  {
+    "id": "pdg13112",
+    "pdg": 13112,
+    "symbol": "Σ(1660)⁻",
+    "name": "Sigma(1660)-",
+    "ru": "сигма 1660 минус",
+    "group": "baryons",
+    "family": "sigma",
+    "r": 26,
+    "mass": "1640–1660–1680 MeV",
+    "charge": "−1",
+    "spin": "1/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "dds",
+    "lifetime": "Γ = 100–200–300 MeV",
+    "aliases": [
+      "Sigma(1660)-",
+      "сигма 1660 минус",
+      "13112"
+    ],
+    "decays": [
+      [
+        "Sigma pi",
+        "(37 ± 10)%"
+      ],
+      [
+        "Λ⁰ pi",
+        "(35 ± 12)%"
+      ],
+      [
+        "Sigma sigma",
+        "(20 ± 8)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "B079/2024",
+      "mass": "B079M/2024",
+      "lifetime": null,
+      "width": "B079W/2024",
+      "decays": [
+        "B079.2/2024",
+        "B079.3/2024",
+        "B079.5/2024"
+      ]
+    },
+    "massValue": 1660.0
+  },
+  {
+    "id": "pdg13212",
+    "pdg": 13212,
+    "symbol": "Σ(1660)⁰",
+    "name": "Sigma(1660)0",
+    "ru": "сигма 1660 ноль",
+    "group": "baryons",
+    "family": "sigma",
+    "r": 26,
+    "mass": "1640–1660–1680 MeV",
+    "charge": "0",
+    "spin": "1/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "uds",
+    "lifetime": "Γ = 100–200–300 MeV",
+    "aliases": [
+      "Sigma(1660)0",
+      "сигма 1660 ноль",
+      "13212"
+    ],
+    "decays": [
+      [
+        "Sigma pi",
+        "(37 ± 10)%"
+      ],
+      [
+        "Λ⁰ pi",
+        "(35 ± 12)%"
+      ],
+      [
+        "Sigma sigma",
+        "(20 ± 8)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "B079/2024",
+      "mass": "B079M/2024",
+      "lifetime": null,
+      "width": "B079W/2024",
+      "decays": [
+        "B079.2/2024",
+        "B079.3/2024",
+        "B079.5/2024"
+      ]
+    },
+    "massValue": 1660.0
+  },
+  {
+    "id": "pdg13222",
+    "pdg": 13222,
+    "symbol": "Σ(1660)⁺",
+    "name": "Sigma(1660)+",
+    "ru": "сигма 1660 плюс",
+    "group": "baryons",
+    "family": "sigma",
+    "r": 26,
+    "mass": "1640–1660–1680 MeV",
+    "charge": "+1",
+    "spin": "1/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "uus",
+    "lifetime": "Γ = 100–200–300 MeV",
+    "aliases": [
+      "Sigma(1660)+",
+      "сигма 1660 плюс",
+      "13222"
+    ],
+    "decays": [
+      [
+        "Sigma pi",
+        "(37 ± 10)%"
+      ],
+      [
+        "Λ⁰ pi",
+        "(35 ± 12)%"
+      ],
+      [
+        "Sigma sigma",
+        "(20 ± 8)%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "B079/2024",
+      "mass": "B079M/2024",
+      "lifetime": null,
+      "width": "B079W/2024",
+      "decays": [
+        "B079.2/2024",
+        "B079.3/2024",
+        "B079.5/2024"
+      ]
+    },
+    "massValue": 1660.0
+  },
+  {
+    "id": "pdg13114",
+    "pdg": 13114,
+    "symbol": "Σ(1670)⁻",
+    "name": "Sigma(1670)-",
+    "ru": "сигма 1670 минус",
+    "group": "baryons",
+    "family": "sigma",
+    "r": 26,
+    "mass": "1665–1675–1685 MeV",
+    "charge": "−1",
+    "spin": "3/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "dds",
+    "lifetime": "Γ = 40–70–100 MeV",
+    "aliases": [
+      "Sigma(1670)-",
+      "сигма 1670 минус",
+      "13114"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B044/2024",
+      "mass": "B044M/2024",
+      "lifetime": null,
+      "width": "B044W/2024",
+      "decays": []
+    },
+    "massValue": 1675.0
+  },
+  {
+    "id": "pdg13214",
+    "pdg": 13214,
+    "symbol": "Σ(1670)⁰",
+    "name": "Sigma(1670)0",
+    "ru": "сигма 1670 ноль",
+    "group": "baryons",
+    "family": "sigma",
+    "r": 26,
+    "mass": "1665–1675–1685 MeV",
+    "charge": "0",
+    "spin": "3/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "uds",
+    "lifetime": "Γ = 40–70–100 MeV",
+    "aliases": [
+      "Sigma(1670)0",
+      "сигма 1670 ноль",
+      "13214"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B044/2024",
+      "mass": "B044M/2024",
+      "lifetime": null,
+      "width": "B044W/2024",
+      "decays": []
+    },
+    "massValue": 1675.0
+  },
+  {
+    "id": "pdg13224",
+    "pdg": 13224,
+    "symbol": "Σ(1670)⁺",
+    "name": "Sigma(1670)+",
+    "ru": "сигма 1670 плюс",
+    "group": "baryons",
+    "family": "sigma",
+    "r": 26,
+    "mass": "1665–1675–1685 MeV",
+    "charge": "+1",
+    "spin": "3/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "uus",
+    "lifetime": "Γ = 40–70–100 MeV",
+    "aliases": [
+      "Sigma(1670)+",
+      "сигма 1670 плюс",
+      "13224"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B044/2024",
+      "mass": "B044M/2024",
+      "lifetime": null,
+      "width": "B044W/2024",
+      "decays": []
+    },
+    "massValue": 1675.0
+  },
+  {
+    "id": "pdg14122",
+    "pdg": 14122,
+    "symbol": "Λ꜀(2595)⁺",
+    "name": "Lambda_c(2595)+",
+    "ru": "очарованная лямбда 2595",
+    "group": "baryons",
+    "family": "charmedbaryons",
+    "r": 26,
+    "mass": "2592.25 ± 0.28 MeV",
+    "charge": "+1",
+    "spin": "1/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "udc",
+    "lifetime": "Γ = 2.6 ± 0.6 MeV",
+    "aliases": [
+      "Lambda_c(2595)+",
+      "очарованная лямбда 2595",
+      "14122"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B119/2024",
+      "mass": "B119M/2024",
+      "lifetime": null,
+      "width": "B119W/2024",
+      "decays": []
+    },
+    "massValue": 2592.25158306563
+  },
+  {
+    "id": "pdg104122",
+    "pdg": 104122,
+    "symbol": "Λ꜀(2625)⁺",
+    "name": "Lambda_c(2625)+",
+    "ru": "очарованная лямбда 2625",
+    "group": "baryons",
+    "family": "charmedbaryons",
+    "r": 26,
+    "mass": "2628.00 ± 0.15 MeV",
+    "charge": "+1",
+    "spin": "3/2",
+    "parity": "−1",
+    "cparity": "—",
+    "quarks": "udc",
+    "lifetime": "Γ < 0.52 MeV",
+    "aliases": [
+      "Lambda_c(2625)+",
+      "очарованная лямбда 2625",
+      "104122"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B102/2024",
+      "mass": "B102M/2024",
+      "lifetime": null,
+      "width": "B102W/2024",
+      "decays": []
+    },
+    "massValue": 2627.99889849886
+  },
+  {
+    "id": "pdg204126",
+    "pdg": 204126,
+    "symbol": "Λ꜀(2880)⁺",
+    "name": "Lambda_c(2880)+",
+    "ru": "очарованная лямбда 2880",
+    "group": "baryons",
+    "family": "charmedbaryons",
+    "r": 26,
+    "mass": "2881.63 ± 0.24 MeV",
+    "charge": "+1",
+    "spin": "5/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "udc",
+    "lifetime": "Γ = 5.6+0.8-0.6 MeV",
+    "aliases": [
+      "Lambda_c(2880)+",
+      "очарованная лямбда 2880",
+      "204126"
+    ],
+    "decays": [],
+    "source": {
+      "edition": "2024",
+      "particle": "B151/2024",
+      "mass": "B151M/2024",
+      "lifetime": null,
+      "width": "B151W/2024",
+      "decays": []
+    },
+    "massValue": 2881.63238918155
+  },
+  {
+    "id": "pdg4114",
+    "pdg": 4114,
+    "symbol": "Σ꜀*(2520)⁰",
+    "name": "Sigma_c(2520)0",
+    "ru": "очарованная сигма 2520 ноль",
+    "group": "baryons",
+    "family": "charmedbaryons",
+    "r": 26,
+    "mass": "2518.48 ± 0.21 MeV",
+    "charge": "0",
+    "spin": "3/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "ddc",
+    "lifetime": "Γ = 15.3+0.4-0.5 MeV",
+    "aliases": [
+      "Sigma_c(2520)0",
+      "очарованная сигма 2520 ноль",
+      "4114"
+    ],
+    "decays": [
+      [
+        "Λ꜀⁺ pi",
+        "~100%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "B115/2024",
+      "mass": "B115M0/2024",
+      "lifetime": null,
+      "width": "B115W0/2024",
+      "decays": [
+        "B115.1/2024"
+      ]
+    },
+    "massValue": 2518.47784272359
+  },
+  {
+    "id": "pdg4224",
+    "pdg": 4224,
+    "symbol": "Σ꜀*(2520)⁺⁺",
+    "name": "Sigma_c(2520)++",
+    "ru": "очарованная сигма 2520 два-плюс",
+    "group": "baryons",
+    "family": "charmedbaryons",
+    "r": 26,
+    "mass": "2518.41 ± 0.22 MeV",
+    "charge": "+2",
+    "spin": "3/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "uuc",
+    "lifetime": "Γ = 14.78+0.30-0.40 MeV",
+    "aliases": [
+      "Sigma_c(2520)++",
+      "очарованная сигма 2520 два-плюс",
+      "4224"
+    ],
+    "decays": [
+      [
+        "Λ꜀⁺ pi",
+        "~100%"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "B115/2024",
+      "mass": "B115M++/2024",
+      "lifetime": null,
+      "width": "B115W++/2024",
+      "decays": [
+        "B115.1/2024"
+      ]
+    },
+    "massValue": 2518.40992191419
+  },
+  {
+    "id": "pdg5112",
+    "pdg": 5112,
+    "symbol": "Σb⁻",
+    "name": "Sigma_b()-",
+    "ru": "боттом-сигма минус",
+    "group": "baryons",
+    "family": "bottombaryons",
+    "r": 26,
+    "mass": "5810.56 ± 0.25 MeV",
+    "charge": "−1",
+    "spin": "1/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "ddb",
+    "lifetime": "Γ = 5.0 ± 0.5 MeV",
+    "aliases": [
+      "Sigma_b()-",
+      "боттом-сигма минус",
+      "5112"
+    ],
+    "decays": [
+      [
+        "Λb⁰ pi",
+        "dominant"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "S026/2024",
+      "mass": "S026M+/2024",
+      "lifetime": null,
+      "width": "S026W+/2024",
+      "decays": [
+        "S026.1/2024"
+      ]
+    },
+    "massValue": 5810.563372133
+  },
+  {
+    "id": "pdg5222",
+    "pdg": 5222,
+    "symbol": "Σb⁺",
+    "name": "Sigma_b()+",
+    "ru": "боттом-сигма плюс",
+    "group": "baryons",
+    "family": "bottombaryons",
+    "r": 26,
+    "mass": "5810.56 ± 0.25 MeV",
+    "charge": "+1",
+    "spin": "1/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "uub",
+    "lifetime": "Γ = 5.0 ± 0.5 MeV",
+    "aliases": [
+      "Sigma_b()+",
+      "боттом-сигма плюс",
+      "5222"
+    ],
+    "decays": [
+      [
+        "Λb⁰ pi",
+        "dominant"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "S026/2024",
+      "mass": "S026M+/2024",
+      "lifetime": null,
+      "width": "S026W+/2024",
+      "decays": [
+        "S026.1/2024"
+      ]
+    },
+    "massValue": 5810.563372133
+  },
+  {
+    "id": "pdg5114",
+    "pdg": 5114,
+    "symbol": "Σb*⁻",
+    "name": "Sigma_b^*()-",
+    "ru": "боттом-сигма звезда минус",
+    "group": "baryons",
+    "family": "bottombaryons",
+    "r": 26,
+    "mass": "5830.32 ± 0.27 MeV",
+    "charge": "−1",
+    "spin": "3/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "ddb",
+    "lifetime": "Γ = 9.4 ± 0.5 MeV",
+    "aliases": [
+      "Sigma_b^*()-",
+      "боттом-сигма звезда минус",
+      "5114"
+    ],
+    "decays": [
+      [
+        "Λb⁰ pi",
+        "dominant"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "S062/2024",
+      "mass": "S062M+/2024",
+      "lifetime": null,
+      "width": "S062W+/2024",
+      "decays": [
+        "S062.1/2024"
+      ]
+    },
+    "massValue": 5830.31704200229
+  },
+  {
+    "id": "pdg5224",
+    "pdg": 5224,
+    "symbol": "Σb*⁺",
+    "name": "Sigma_b^*()+",
+    "ru": "боттом-сигма звезда плюс",
+    "group": "baryons",
+    "family": "bottombaryons",
+    "r": 26,
+    "mass": "5830.32 ± 0.27 MeV",
+    "charge": "+1",
+    "spin": "3/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "uub",
+    "lifetime": "Γ = 9.4 ± 0.5 MeV",
+    "aliases": [
+      "Sigma_b^*()+",
+      "боттом-сигма звезда плюс",
+      "5224"
+    ],
+    "decays": [
+      [
+        "Λb⁰ pi",
+        "dominant"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "S062/2024",
+      "mass": "S062M+/2024",
+      "lifetime": null,
+      "width": "S062W+/2024",
+      "decays": [
+        "S062.1/2024"
+      ]
+    },
+    "massValue": 5830.31704200229
+  },
+  {
+    "id": "pdg5332",
+    "pdg": 5332,
+    "symbol": "Ωb⁻",
+    "name": "Omega_b()-",
+    "ru": "боттом-омега",
+    "group": "baryons",
+    "family": "bottombaryons",
+    "r": 26,
+    "mass": "6045.8 ± 0.8 MeV",
+    "charge": "−1",
+    "spin": "1/2",
+    "parity": "+1",
+    "cparity": "—",
+    "quarks": "ssb",
+    "lifetime": "τ = (1.64+0.18-0.17) × 10⁻¹² s",
+    "aliases": [
+      "Omega_b()-",
+      "боттом-омега",
+      "5332"
+    ],
+    "decays": [
+      [
+        "J/psi Omega- xB(b --> Omega_b())",
+        "(1.4+0.5-0.4) × 10⁻⁶"
+      ],
+      [
+        "Ω꜀⁰ π⁻",
+        "seen"
+      ]
+    ],
+    "source": {
+      "edition": "2024",
+      "particle": "S063/2024",
+      "mass": "S063M/2024",
+      "lifetime": "S063T/2024",
+      "width": null,
+      "decays": [
+        "S063.1/2024",
+        "S063.5/2024"
+      ]
+    },
+    "massValue": 6045.77125243348
   }
 ];
 (() => {
@@ -2233,7 +6336,7 @@ window.PARTICLE_EXTENSION = [
   data.particles.push(...window.PARTICLE_EXTENSION);
   const symbolToId=new Map(data.particles.map(p=>[p.symbol,p.id])),newEdges=[];
   const add=(from,to,kind)=>{if(from!==to&&!newEdges.some(e=>e.from===from&&e.to===to&&e.kind===kind))newEdges.push({from,to,kind});};
-  const anchors={lightmesons:'pip',strangemesons:'k0',opencharm:'d0',charmonium:'jpsi',openbottom:'pdg511',bottomonium:'pdg553',delta:'pdg2224',nucleon:'p',lambda:'lambda',sigma:'sig0',xi:'xi0',charmedbaryons:'pdg4122',bottombaryons:'pdg5122'};
+  const anchors={lightmesons:'pip',lightresonances:'pip',strangemesons:'k0',strangeexcited:'k0',opencharm:'d0',charmonium:'jpsi',openbottom:'pdg511',bottomonium:'pdg553',delta:'pdg2224',nucleon:'p',lambda:'lambda',sigma:'sig0',xi:'xi0',charmedbaryons:'pdg4122',bottombaryons:'pdg5122'};
   for(const p of window.PARTICLE_EXTENSION){
     if(anchors[p.family])add(p.id,anchors[p.family],'family');
     for(const flavor of new Set(p.quarks.replace(/\bmixture\b/g,'').match(/[udscbtū]/g)||[])){

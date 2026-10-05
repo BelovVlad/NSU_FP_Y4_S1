@@ -34,8 +34,14 @@ test('Neighbouring curved shores follow one bisector with a constant normal gap'
   }
 });
 
-test('All 99 spheres stay inside coordinated family and root shores',()=>{
+test('All 200 spheres stay inside coordinated family and root shores',()=>{
   const diagram=layout.create(data),result=contours.create(diagram);
+  for(const id of ['quarks','leptons']){
+    const cap=result.regions.get(id).layers[0][0];
+    const main=[...result.regions].filter(([other])=>!['quarks','leptons'].includes(other));
+    const gap=Math.min(...cap.map(p=>Math.min(...main.map(([,shore])=>contours.distance(shore.layers[0][0],p.x,p.y).d))));
+    assert.ok(gap>30&&gap<40,`Detached or overlapping ${id} cap: ${gap}`);
+  }
   for(const [id,p] of diagram.positions){
     const family=result.clusters.get(diagram.membership.get(id));
     const region=result.regions.get(layout.rootFor(data.particles.find(item=>item.id===id)));
@@ -72,9 +78,12 @@ function verify(data) {
     const a=points[i],b=points[j];
     assert.ok(Math.hypot(a.x-b.x,a.y-b.y)>=a.r+b.r+21.9,`Overlapping states: ${a.id}, ${b.id}`);
   }
-  const disjoint=(a,b)=>a.x+a.width<=b.x||b.x+b.width<=a.x||a.y+a.height<=b.y||b.y+b.height<=a.y;
-  for(let i=0;i<diagram.regions.length;i++)for(let j=i+1;j<diagram.regions.length;j++)
-    assert.ok(disjoint(diagram.regions[i],diagram.regions[j]),'Root regions overlap');
+  // Docked organic territories can share bounding-box area. Test their actual
+  // packed cloud envelopes, rather than imposing distant rectangular columns.
+  for(let i=0;i<diagram.clusters.length;i++)for(let j=i+1;j<diagram.clusters.length;j++){
+    const a=diagram.clusters[i],b=diagram.clusters[j];if(a.root===b.root)continue;
+    assert.ok(Math.hypot((a.cx-b.cx)/(a.rx+b.rx+20),(a.cy-b.cy)/(a.ry+b.ry+20))>=1,'Root cloud cores overlap');
+  }
   for(const region of diagram.regions) {
     for(let i=0;i<region.children.length;i++) {
       const cluster=region.children[i];
@@ -108,18 +117,18 @@ function catalogue(count, templates=data.particles) {
 
 test('Real particles preserve data in separated constellations',()=>{
   const diagram=verify(data);
-  assert.equal(data.particles.length,99);
+  assert.equal(data.particles.length,200);
   assert.equal(JSON.stringify(data.particles.slice(0,49)),original,'The original 49 records are unmodified');
   assert.equal(JSON.stringify(data.edges.slice(0,104)),originalEdges,'The original 104 relationships are unmodified');
   assert.equal(diagram.regions.length,5);
   assert.equal(JSON.stringify([...diagram.positions]),JSON.stringify([...layout.create(data).positions]),'Placement is deterministic');
 });
-test('50 additional states have unique PDG IDs, quantum numbers and provenance; edges resolve',()=>{
-  assert.equal(new Set(data.particles.map(p=>p.pdg)).size,99);
+test('151 additional states have unique PDG IDs, quantum numbers and provenance; edges resolve',()=>{
+  assert.equal(new Set(data.particles.map(p=>p.pdg)).size,200);
   for(const p of data.particles.slice(49)){
     assert.equal(p.source.edition,'2024');
     assert.ok(p.source.mass&&p.source.particle);
-    assert.ok(['0','1','2','1/2','3/2'].includes(p.spin));
+    assert.ok(['0','1','2','3','1/2','3/2','5/2'].includes(p.spin));
     assert.ok(p.mass&&!p.mass.includes('не указано'));
   }
   const byId=new Map(data.particles.map(p=>[p.id,p]));
