@@ -34,76 +34,34 @@ test('Neighbouring curved shores follow one bisector with a constant normal gap'
   }
 });
 
-test('All 200 spheres stay inside coordinated family and root shores',()=>{
-  const diagram=layout.create(data),result=contours.create(diagram);
-  for(const id of ['quarks','leptons']){
-    const cap=result.regions.get(id).layers[0][0];
-    const main=[...result.regions].filter(([other])=>!['quarks','leptons'].includes(other));
-    const gap=Math.min(...cap.map(p=>Math.min(...main.map(([,shore])=>contours.distance(shore.layers[0][0],p.x,p.y).d))));
-    assert.ok(gap>30&&gap<40,`Detached or overlapping ${id} cap: ${gap}`);
-  }
-  for(const [id,p] of diagram.positions){
-    const family=result.clusters.get(diagram.membership.get(id));
-    const region=result.regions.get(layout.rootFor(data.particles.find(item=>item.id===id)));
-    for(const territory of [family,region]){
-      assert.equal(territory.layers[0].length,1,'Territory is one continuous shape');
-      assert.ok(contours.distance(territory.layers[0][0],p.x,p.y).d<-p.r-10,`Boundary cuts ${id}`);
-    }
-  }
-  for(const [id,territory] of result.clusters){
-    assert.equal(territory.layers.length,3);
-    const root=diagram.clusters.find(c=>c.id===id).root;
-    const parent=result.regions.get(root).layers[0][0];
-    for(const p of territory.layers[0][0])
-      assert.ok(contours.distance(parent,p.x,p.y).d<-57,`Family crosses its enclosing root shore: ${id}`);
-    for(let i=1;i<3;i++)for(const p of territory.layers[i][0]){
-      const inset=-contours.distance(territory.layers[0][0],p.x,p.y).d;
-      assert.ok(Math.abs(inset-i*14)<2,`Inner contour is not parallel: ${id}, ${inset}`);
-    }
-    for(const otherId of territory.neighbours){
-      const other=result.clusters.get(otherId).layers[0][0];
-      for(const point of territory.layers[0][0])
-        assert.ok(contours.distance(other,point.x,point.y).d>23,`Overlapping shores: ${id}, ${otherId}`);
-    }
-  }
-});
-
 function verify(data) {
-  const before = JSON.stringify(data);
-  const diagram = layout.create(data);
+  const before=JSON.stringify(data),diagram=layout.create(data);
   assert.equal(diagram.positions.size,data.particles.length);
   assert.equal(JSON.stringify(data),before,'Layout must preserve all source data');
-  const points = [...diagram.positions.values()];
-  for(let i=0;i<points.length;i++)for(let j=i+1;j<points.length;j++) {
+  const points=[...diagram.positions.values()];
+  // Separating-axis clearance for actual pointy hexagons (their bounding circles overlap).
+  for(let i=0;i<points.length;i++)for(let j=i+1;j<points.length;j++){
     const a=points[i],b=points[j];
-    assert.ok(Math.hypot(a.x-b.x,a.y-b.y)>=a.r+b.r+21.9,`Overlapping states: ${a.id}, ${b.id}`);
+    const clearance=Math.max(...[0,Math.PI/3,Math.PI*2/3].map(angle=>Math.abs((b.x-a.x)*Math.cos(angle)+(b.y-a.y)*Math.sin(angle))-(a.r+b.r)*Math.sqrt(3)/2));
+    assert.ok(clearance>6.9,`Overlapping or touching tiles: ${a.id}, ${b.id}`);
   }
-  // Docked organic territories can share bounding-box area. Test their actual
-  // packed cloud envelopes, rather than imposing distant rectangular columns.
-  for(let i=0;i<diagram.clusters.length;i++)for(let j=i+1;j<diagram.clusters.length;j++){
-    const a=diagram.clusters[i],b=diagram.clusters[j];if(a.root===b.root)continue;
-    assert.ok(Math.hypot((a.cx-b.cx)/(a.rx+b.rx+20),(a.cy-b.cy)/(a.ry+b.ry+20))>=1,'Root cloud cores overlap');
+  function separated(a,b,gap=0){
+    return a.x+a.width+gap<=b.x||b.x+b.width+gap<=a.x||a.y+a.height+gap<=b.y||b.y+b.height+gap<=a.y;
   }
-  for(const region of diagram.regions) {
-    for(let i=0;i<region.children.length;i++) {
-      const cluster=region.children[i];
-      assert.ok(cluster.x>=region.x&&cluster.y>=region.y+100);
+  for(const region of diagram.regions){
+    for(const cluster of region.children){
+      assert.ok(cluster.x>=region.x&&cluster.y>=region.y+96,'Empty root header is reserved');
       assert.ok(cluster.x+cluster.width<=region.x+region.width&&cluster.y+cluster.height<=region.y+region.height);
-      // Bounding boxes may overlap diagonally; collision checks above cover the actual circles.
-      for(const other of region.children.slice(i+1)){
-        const clearance=Math.hypot((cluster.cx-other.cx)/(cluster.rx+other.rx+38),(cluster.cy-other.cy)/(cluster.ry+other.ry+86));
-        assert.ok(clearance>.999,'Family labels and inner clouds require clearance');
-      }
-      for(const id of cluster.ids) {
+      for(const other of region.children)if(other!==cluster)assert.ok(separated(cluster,other,19.9),'Subgroups retain a small gutter');
+      for(const id of cluster.ids){
         assert.equal(diagram.membership.get(id),cluster.id);
-        const point=diagram.positions.get(id);
-        for(let degree=0;degree<360;degree+=3) {
-          const angle=degree*Math.PI/180;
-          const norm=((point.x+Math.cos(angle)*point.r-cluster.cx)/cluster.rx)**2+((point.y+Math.sin(angle)*point.r-cluster.cy)/cluster.ry)**2;
-          assert.ok(norm<.86,'Complete sphere must stay inside its family shell');
-        }
+        const p=diagram.positions.get(id);
+        assert.ok(p.y-p.r>=cluster.y+52,'Tiles never enter the subgroup header');
+        assert.ok(p.x-p.r*Math.sqrt(3)/2>=cluster.x&&p.x+p.r*Math.sqrt(3)/2<=cluster.x+cluster.width);
+        assert.ok(p.y+p.r<=cluster.y+cluster.height);
       }
     }
+    for(const other of diagram.regions)if(other!==region)assert.ok(separated(region,other,29.9),'Root groups retain a small gutter');
     assert.ok(region.x>=0&&region.y>=0&&region.x+region.width<=diagram.world.width&&region.y+region.height<=diagram.world.height);
   }
   return diagram;
@@ -115,7 +73,7 @@ function catalogue(count, templates=data.particles) {
   }),edges:[]};
 }
 
-test('Real particles preserve data in separated constellations',()=>{
+test('Real particles preserve data in separated honeycomb groups',()=>{
   const diagram=verify(data);
   assert.equal(data.particles.length,200);
   assert.equal(JSON.stringify(data.particles.slice(0,49)),original,'The original 49 records are unmodified');
@@ -139,7 +97,7 @@ test('151 additional states have unique PDG IDs, quantum numbers and provenance;
   assert.match(byId.get('pdg433').lifetime,/Γ <1.9 MeV/);
   assert.equal(byId.get('pdg511').lifetime,'τ = (1517 ± 4) × 10⁻¹⁵ s');
 });
-test('800-state catalogue has no sphere, family or root-region collisions',()=>verify(catalogue(800)));
+test('800-state catalogue has no tile, subgroup or root-group collisions',()=>verify(catalogue(800)));
 test('A heavily expanded lepton catalogue reserves its own column',()=>{
   const expanded=catalogue(650,data.particles.filter(p=>p.group==='leptons'));
   verify({...data,particles:[...data.particles,...expanded.particles]});

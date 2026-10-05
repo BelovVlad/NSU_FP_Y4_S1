@@ -144,7 +144,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.edge:visible').count(), 0)
         self.assertEqual(self.page.locator('.bundle:visible').count(), 0)
         self.page.locator('.cluster[data-cluster="mesons:lightmesons"] .cluster-title').hover()
-        self.assertGreater(self.page.locator('.edge.preview:visible').count(), 0)
+        self.assertEqual(self.page.locator('.edge:visible').count(), 0, 'Hover leaves the honeycomb unobstructed')
         self.assertTrue(self.page.locator('.edge:visible').evaluate_all('''edges=>edges.every(e=>
             [e.dataset.from,e.dataset.to].some(id=>document.querySelector('.node[data-id="'+id+'"]').dataset.cluster==='mesons:lightmesons'))'''))
         self.page.mouse.move(230, 180)
@@ -153,7 +153,7 @@ class ParticleExplorerTests(unittest.TestCase):
         # Keyboard and pointer users can drill down to a family independently of node selection.
         self.page.locator('.cluster[data-cluster="mesons:lightmesons"]').focus()
         self.page.keyboard.press('Enter')
-        expect(self.page.locator('#mapPath')).to_have_text('Лёгкие')
+        expect(self.page.locator('#mapPath')).to_have_text('Мезоны / Лёгкие')
         self.assertNotEqual(before, self.page.locator('#viewport').get_attribute('transform'))
         expect(self.page.locator('#world')).to_have_class(re.compile(r'detail-level'))
         self.assertEqual(self.page.locator('.node.selected').count(), 0)
@@ -168,13 +168,54 @@ class ParticleExplorerTests(unittest.TestCase):
         expect(self.page.locator('#mapPath')).to_have_text('Все семейства')
         self.assertEqual(before, self.page.locator('#viewport').get_attribute('transform'))
 
-    def test_symbol_fits_every_sphere_after_fonts_load(self):
+    def test_group_headers_tiles_and_zoom_limits(self):
+        self.assertEqual(self.page.locator('.node polygon.hex-cell').count(),200)
+        self.assertEqual(self.page.locator('.node circle').count(),0)
+        self.assertEqual(self.page.locator('.region-boundary,.region-orbit,.cluster-inner').count(),0)
+        self.assertTrue(self.page.locator('.hex-cell').evaluate_all('cells=>cells.every(c=>c.points.numberOfItems===6)'))
+        self.assertTrue(self.page.locator('#edges').get_attribute('mask'))
+        overview=float(self.page.locator('#viewport').get_attribute('transform').split('scale(')[1].rstrip(')'))
+        self.page.mouse.move(700,500)
+        self.page.mouse.wheel(0,100000)
+        self.page.wait_for_timeout(100)
+        self.assertAlmostEqual(float(self.page.locator('#viewport').get_attribute('transform').split('scale(')[1].rstrip(')')),overview)
+        expect(self.page.locator('#minus')).to_be_disabled()
+        self.page.locator('.region[data-region="mesons"] .region-title').click()
+        expect(self.page.locator('#mapPath')).to_have_text('Мезоны')
+        self.assertEqual(self.page.locator('.node.dim').count(),87)
+        self.page.mouse.move(700,500)
+        self.page.mouse.wheel(0,-100000)
+        self.page.wait_for_timeout(100)
+        self.assertEqual(float(self.page.locator('#viewport').get_attribute('transform').split('scale(')[1].rstrip(')')),4)
+        expect(self.page.locator('#plus')).to_be_disabled()
+        self.page.locator('#mapHome').click()
+        self.page.locator('.cluster[data-cluster="mesons:lightmesons"]').focus()
+        self.page.keyboard.press('Enter')
+        for width,height in [(320,740),(390,844),(1600,1000),(1920,1080)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            self.page.wait_for_timeout(50)
+            failures=self.page.evaluate('''()=>{
+                const d=PARTICLE_LAYOUT.create(PARTICLE_DATA),failures=[];
+                for(const r of d.regions){
+                    const b=document.querySelector('.region[data-region="'+r.id+'"] text').getBBox();
+                    if(b.x<r.x-.1||b.x+b.width>r.x+r.width+.1||b.y<r.y||b.y+b.height>r.y+82)failures.push(r.id);
+                }
+                for(const c of d.clusters){
+                    const b=document.querySelector('.cluster[data-cluster="'+c.id+'"] text').getBBox();
+                    if(b.y<c.y-.1||b.y+b.height>c.y+52+.1)failures.push(c.id);
+                }
+                return failures;
+            }''')
+            self.assertEqual(failures,[], 'Headings stay in their reserved empty bands')
+
+    def test_symbol_fits_every_hexagon_after_fonts_load(self):
         self.page.evaluate('async()=>await document.fonts.ready')
         failures=self.page.locator('.node').evaluate_all('''nodes=>nodes.flatMap(n=>{
-            const text=n.querySelector('text'),b=text.getBBox(),r=+n.querySelector('.sphere').getAttribute('r');
-            return Math.hypot(Math.max(Math.abs(b.x),Math.abs(b.x+b.width)),Math.max(Math.abs(b.y),Math.abs(b.y+b.height)))>r*.94?[n.dataset.id]:[];
+            const text=n.querySelector('text'),b=text.getBBox(),r=+n.querySelector('.sphere').dataset.radius;
+            const x=Math.max(Math.abs(b.x),Math.abs(b.x+b.width)),y=Math.max(Math.abs(b.y),Math.abs(b.y+b.height));
+            return x>Math.sqrt(3)*r/2||x+Math.sqrt(3)*y>Math.sqrt(3)*r?[n.dataset.id]:[];
         })''')
-        self.assertEqual(failures, [], 'Labels including superscripts stay inside their spheres')
+        self.assertEqual(failures, [], 'Labels including superscripts stay inside their hexagons')
         self.page.locator('#search').fill('9000111')
         self.page.locator('#search').press('Enter')
         expect(self.page.locator('.node[data-id="pdg9000111"] text')).to_be_visible()
@@ -183,9 +224,11 @@ class ParticleExplorerTests(unittest.TestCase):
         expect(self.page.locator('#world')).to_have_class(re.compile(r'overview'))
         labels = self.page.locator('.node text').evaluate_all('nodes=>nodes.filter(n=>getComputedStyle(n).opacity !== "0").length')
         self.assertEqual(labels, 0, 'Unreadably small state labels disappear at overview scale')
+        self.page.locator('.region[data-region="mesons"] .region-title').tap()
+        expect(self.page.locator('#mapPath')).to_have_text('Мезоны')
         cluster = self.page.locator('.cluster[data-cluster="mesons:lightmesons"] .cluster-shell')
         cluster.tap(position={'x': cluster.bounding_box()['width']/2, 'y': 3})
-        expect(self.page.locator('#mapPath')).to_have_text('Лёгкие')
+        expect(self.page.locator('#mapPath')).to_have_text('Мезоны / Лёгкие')
         expect(self.page.locator('#details')).not_to_have_class('right open')
         self.assertEqual(self.page.locator('.node.selected').count(), 0)
         self.page.locator('.node[data-id="pip"] .sphere').tap()
@@ -205,7 +248,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.route('**/extra-particles.js*', lambda route: route.fulfill(content_type='application/javascript', body=''))
         self.page.reload()
         self.assertEqual(self.page.locator('.node').count(), 800)
-        expect(self.page.locator('#world')).to_have_class(re.compile(r'overview'))
+        self.assertLess(float(self.page.locator('#reset').inner_text().rstrip('%')), 35)
         self.page.locator('#search').fill('800799')
         expect(self.page.locator('#detailName')).to_contain_text('Тестовое состояние 799')
         expect(self.page.locator('.node[data-id="state-799"]')).to_have_attribute('aria-pressed', 'true')
@@ -312,6 +355,15 @@ class ParticleExplorerTests(unittest.TestCase):
         touch('touchEnd', [])
         self.assertNotEqual(before_scale, self.page.locator('#reset').inner_text())
         self.assertEqual(self.page.locator('.node.selected').count(), 0, 'A pinch must not select a particle')
+        touch('touchStart', [(80, 400), (310, 400)])
+        touch('touchMove', [(190, 400), (191, 400)])
+        touch('touchEnd', [])
+        expect(self.page.locator('#minus')).to_be_disabled()
+        pinch_scale=float(self.page.locator('#viewport').get_attribute('transform').split('scale(')[1].rstrip(')'))
+        self.page.locator('#mapHome').click()
+        overview_scale=float(self.page.locator('#viewport').get_attribute('transform').split('scale(')[1].rstrip(')'))
+        self.assertAlmostEqual(pinch_scale,overview_scale,'Pinch-out stops at the full-map overview')
+
         self.assertFalse(self.page.evaluate('document.documentElement.scrollWidth > innerWidth'))
 
     def test_routes_and_catalog_without_service_worker(self):

@@ -76,3 +76,21 @@
 #edgeHint{margin-left:auto;color:#71859f;font-size:10px;white-space:nowrap}.cluster-deep{stroke-opacity:.12}.cluster-preview .cluster-shell{stroke-opacity:1;stroke-width:1.7}.edge.preview{opacity:.68;stroke-width:1.3}.region-boundary{stroke-opacity:.18;fill-opacity:.45}.region-orbit{opacity:.12!important}.local-parent{width:105px;height:105px;box-sizing:border-box;padding:10px}.local-parent span{display:block;white-space:nowrap;font-size:39px}.node text{font-style:normal}.cluster-shell{stroke-linejoin:round}
 
 .region-boundary{stroke-opacity:.36;fill-opacity:.4}.region-orbit{display:block;opacity:.18!important}.cluster-inner{stroke-opacity:.2}.cluster-deep{stroke-opacity:.1}
+
+/* Honeycomb atlas: colour belongs to individual cells, headings occupy empty bands. */
+.canvas-wrap{background:#070b12}.canvas-wrap:before,.canvas-wrap:after{opacity:.07}
+.region{cursor:zoom-in}.region-hit{stroke:none}.region-title{font-family:system-ui;font-weight:600;letter-spacing:.4px;text-shadow:none}.region-count{font-size:.65em;fill:#8491a5}
+.region:hover .region-title,.region:focus-visible .region-title,.region-focused .region-title{fill:#eef3fa}
+.cluster-shell{stroke:none;filter:none;cursor:zoom-in}.cluster-title{font-family:system-ui;font-weight:500;text-shadow:none;fill:var(--tone);opacity:var(--label-opacity,1)}
+.cluster-count{font-size:.65em;fill:#7f8ea6}.cluster-subtitle,.detail-level .cluster-subtitle{opacity:0;pointer-events:none}
+.cluster:hover .cluster-title,.cluster-focused .cluster-title,.cluster:focus-visible .cluster-title{fill:#f0f5ff;opacity:1}
+.overview .cluster-title{opacity:0}.overview .cluster:hover .cluster-title{opacity:0}.overview .region-title{opacity:1}
+.node .sphere{stroke-width:1.2;stroke-opacity:.85;filter:none;vector-effect:non-scaling-stroke;transition:fill-opacity .18s,stroke .18s}
+.node text{fill:#edf3fa;font-family:Georgia,serif;font-style:normal;text-shadow:0 1px 2px #000;font-weight:400;pointer-events:none}
+.node .selection-ring{fill:none;stroke:var(--tone);stroke-width:1.4;stroke-opacity:0;vector-effect:non-scaling-stroke;animation:none!important}
+.node:hover .sphere{fill-opacity:1;stroke:#f4f8ff;filter:drop-shadow(0 0 3px var(--tone))}
+.node.selected .sphere{stroke:#fff;stroke-width:2;filter:drop-shadow(0 0 5px var(--tone))}
+.node.selected .selection-ring{stroke-opacity:.8}.node.related .sphere{stroke:#dce8f8;filter:none}.node.dim{opacity:.23}
+.edge{pointer-events:none;vector-effect:non-scaling-stroke}.edge.active{stroke-width:1.8;opacity:.95;filter:drop-shadow(0 0 2px currentColor)}
+.cluster-muted{opacity:.4}.graph-toolbar #edgeHint{font-size:11px}
+@media(max-width:900px){#edgeHint{display:none}.region-count{font-size:.65em}.graph-toolbar{gap:8px}}

@@ -19,12 +19,17 @@
   const modeNames = {graph:'Карта взаимодействий', classification:'Иерархия частиц', table:'Таблица частиц', composition:'Кварковый состав', decays:'Локальные каналы распада'};
   const diagram=window.PARTICLE_LAYOUT.create(D);
   const {positions,membership,regions,clusters,world}=diagram;
-  const contours=window.PARTICLE_CONTOURS.create(diagram);
-  const minZoom=Math.min(.08,180/Math.max(world.width,world.height));
+  const regionMap=new Map(regions.map(r=>[r.id,r]));
+  const maxZoom=4;
+  function overviewScale() {
+    const top=isMobile()?130:100,bottom=110;
+    return Math.min((wrap.clientWidth-36)/world.width,Math.max(100,wrap.clientHeight-top-bottom)/world.height);
+  }
+  const minZoom=()=>overviewScale();
   const layout=Object.fromEntries(diagram.groupBounds);
   const labels={light:'Лёгкие мезоны',strange:'Странные мезоны',charm:'Charm / charmonium',bottom:'Bottom / bottomonium',bosons:'Бозоны',baryons:'Барионы',leptons:'Лептоны',quarks:'Кварки'};
   const clusterMap=new Map(clusters.map(c=>[c.id,c]));
-  let hoveredCluster=null,focusedCluster=null;
+  let focusedCluster=null,focusedRegion=null;
   let mode='graph', selected=null, current='pip', activeGroup='all', detailTab='properties';
   let query='', charge='all', spin='all', scale=1, tx=0, ty=0, autoFit=true;
   let sortKey='pdg', sortDirection=1, lastSheetTrigger=null;
@@ -34,17 +39,12 @@
   const normalize = value => String(value).toLocaleLowerCase('ru').replace(/ё/g,'е');
   const isMobile = () => matchMedia('(max-width:900px)').matches;
   const noise=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);};
-  function smoothOutline(points) {
-    const corners=points.map((p,i)=>{
-      const a=points[(i+points.length-1)%points.length],b=points[(i+1)%points.length];
-      const before=Math.hypot(p.x-a.x,p.y-a.y),after=Math.hypot(b.x-p.x,b.y-p.y),r=Math.min(18,before*.3,after*.3);
-      return {p,entry:{x:p.x-(p.x-a.x)*r/(before||1),y:p.y-(p.y-a.y)*r/(before||1)},exit:{x:p.x+(b.x-p.x)*r/(after||1),y:p.y+(b.y-p.y)*r/(after||1)}};
-    });
-    return corners.map(({p,entry,exit},i)=>(i?'L':'M')+`${entry.x} ${entry.y} Q${p.x} ${p.y} ${exit.x} ${exit.y}`).join(' ')+' Z';
+  function hexPoints(r) {
+    return Array.from({length:6},(_,i)=>{const a=(i*60-90)*Math.PI/180;return `${Math.cos(a)*r},${Math.sin(a)*r}`;}).join(' ');
   }
-  function contourPath(territory,layer=0) {
-    return territory.layers[layer].map(smoothOutline).join(' ');
-  }
+  const shades={mesons:['#f45670','#ff776a','#de3c60','#ef947e','#f47f9b','#c74263','#ff6064','#de7791'],baryons:['#4b9af2','#6ebdf5','#5077dc','#55acd8','#657cdb','#7b9fee','#368fba','#8797e4'],quarks:['#b27aef','#9670e8'],leptons:['#4dce96','#7fe2b0'],bosons:['#ebc668','#e8ae49','#ffe499']};
+  const tileColors=new Map(clusters.map(c=>[c.id,(shades[c.root]||[colors[c.tone]])[c.shade%(shades[c.root]?.length||1)]]));
+  const colorFor=p=>tileColors.get(membership.get(p.id))||colors[tone(p)];
   function el(tag, attrs={}, text='') {
     const item=document.createElementNS('http://www.w3.org/2000/svg',tag);
     Object.entries(attrs).forEach(([key,value])=>item.setAttribute(key,value));
@@ -52,8 +52,6 @@
     return item;
   }
   function tone(p) {
-    if(p.id==='g') return 'pearl';
-    if(p.id==='gamma') return 'blue';
     return clusterMap.get(membership.get(p.id))?.tone||groups.get(p.group).tone;
   }
   function baseVisible(p) {
@@ -76,47 +74,38 @@
   }
   function buildGraph() {
     const defs=$('#worldDefs');
+    const edgeMask=el('mask',{id:'edge-mask',maskUnits:'userSpaceOnUse',x:0,y:0,width:world.width,height:world.height});
+    edgeMask.append(el('rect',{x:0,y:0,width:world.width,height:world.height,fill:'white'}));
+    positions.forEach(({x,y,r})=>edgeMask.append(el('polygon',{points:hexPoints(r+3),transform:`translate(${x} ${y})`,fill:'black'})));
+    [...regions.map(r=>({...r,height:82})),...clusters.map(c=>({...c,height:52}))].forEach(box=>edgeMask.append(el('rect',{x:box.x,y:box.y,width:box.width,height:box.height,fill:'black'})));
+    defs.append(edgeMask);$('#edges').setAttribute('mask','url(#edge-mask)');
     const cosmos=$('#cosmos');
     for(let i=0;i<240;i++)cosmos.append(el('circle',{cx:noise(i+1)*1600,cy:noise(i+811)*1200,r:noise(i+45)>.94?2.0:.45+noise(i+271)*.85,fill:i%9===0?'#e9d7ff':'#b8d5ff',opacity:.13+noise(i+135)*.52,class:i%13===0?'twinkle':''}));
-    Object.entries(colors).forEach(([key,color])=>{
-      const gradient=el('radialGradient',{id:'sphere-'+key,cx:'32%',cy:'24%',r:'84%'});
-      [['0%','#eaf4ff'],['10%',color],['37%',color],['100%','#080e19']].forEach(([offset,fill])=>gradient.append(el('stop',{offset,'stop-color':fill})));
-      defs.append(gradient);
-      const aura=el('radialGradient',{id:'aura-'+key,cx:'50%',cy:'35%',r:'72%'});
-      [['0%',.19],['60%',.095],['100%',.01]].forEach(([offset,opacity])=>aura.append(el('stop',{offset,'stop-color':color,'stop-opacity':opacity})));
-      defs.append(aura);
-    });
     Object.entries(edgeColors).forEach(([kind,color])=>{
       const marker=el('marker',{id:'arrow-'+kind,markerWidth:9,markerHeight:9,refX:8,refY:4.5,orient:'auto',markerUnits:'userSpaceOnUse',viewBox:'0 0 9 9'});
       marker.append(el('path',{d:'M0 0 L9 4.5 L0 9 L2 4.5 Z',fill:color}));defs.append(marker);
     });
     regions.forEach(region=>{
-      const holder=el('g',{class:'region','data-region':region.id,style:'--tone:'+colors[region.tone]});
+      const holder=el('g',{class:'region','data-region':region.id,style:'--tone:'+colors[region.tone],role:'button',tabindex:0,'aria-label':region.label+' — '+region.count+' состояний. Приблизить группу.'});
       const {x,y,width}=region;
-      const territory=contours.regions.get(region.id),outline=contourPath(territory),centerX=x+width/2;
-      holder.append(el('path',{d:outline,fill:'url(#aura-'+region.tone+')',stroke:colors[region.tone],class:'region-boundary'}));
-      [1,2].forEach(layer=>holder.append(el('path',{d:contourPath(territory,layer),fill:'none',stroke:colors[region.tone],class:'region-orbit',opacity:layer===2?.12:.22})));
-      const title=el('text',{x:centerX,y:y+45,'text-anchor':'middle',class:'region-title',fill:colors[region.tone]},region.label);
-      title.append(el('tspan',{dx:12,class:'region-count'},'('+region.count+')'));holder.append(title);
-      holder.append(el('text',{x:centerX,y:y+74,'text-anchor':'middle',class:'region-summary'},region.subtitle));
+      holder.append(el('rect',{x,y,width,height:82,fill:'transparent',class:'region-hit'}));
+      const title=el('text',{x:x+width/2,y:y+48,'text-anchor':'middle',class:'region-title',fill:colors[region.tone]},region.label);
+      title.append(el('tspan',{dx:10,class:'region-count'},'('+region.count+')'));holder.append(title);
+      holder.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();focusRegion(region.id);}});
       $('#hulls').append(holder);hullElements.set(region.id,holder);
-      const mini=el('path',{d:outline,fill:colors[region.tone],'fill-opacity':.08,stroke:colors[region.tone],'stroke-opacity':.4,'stroke-width':4});
-      $('#miniRegions').append(mini);
     });
     clusters.forEach(cluster=>{
-      const holder=el('g',{class:'cluster','data-cluster':cluster.id,style:'--tone:'+colors[cluster.tone],role:'button',tabindex:0,'aria-label':cluster.label+' — '+cluster.ids.length+' состояний. Приблизить семейство.'});
-      const territory=contours.clusters.get(cluster.id);
-      holder.append(el('path',{d:contourPath(territory),fill:'url(#aura-'+cluster.tone+')',stroke:colors[cluster.tone],class:'cluster-shell'}));
-      holder.append(el('path',{d:contourPath(territory,1),fill:'none',stroke:colors[cluster.tone],class:'cluster-inner'}));
-      holder.append(el('path',{d:contourPath(territory,2),fill:'none',stroke:colors[cluster.tone],class:'cluster-inner cluster-deep'}));
-      holder.append(el('path',{d:contourPath(territory),fill:'none',stroke:colors[cluster.tone],class:'cluster-halo'}));
-      const title=el('text',{x:cluster.cx,y:cluster.y+25,'text-anchor':'middle',class:'cluster-title'},cluster.label);
-      title.append(el('tspan',{'dx':10,class:'cluster-count'},String(cluster.ids.length)));
-      holder.append(title);
+      const color=tileColors.get(cluster.id);
+      const gradient=el('linearGradient',{id:'tile-'+cluster.id.replace(':','-'),x1:'0%',y1:'0%',x2:'70%',y2:'100%'});
+      [['0%',.44],['100%',.16]].forEach(([offset,opacity])=>gradient.append(el('stop',{offset,'stop-color':color,'stop-opacity':opacity})));
+      defs.append(gradient);
+      const holder=el('g',{class:'cluster','data-cluster':cluster.id,style:'--tone:'+color,role:'button',tabindex:0,'aria-label':cluster.label+' — '+cluster.ids.length+' состояний. Приблизить подгруппу.'});
+      holder.append(el('rect',{x:cluster.x,y:cluster.y,width:cluster.width,height:48,fill:'transparent',class:'cluster-shell'}));
+      const title=el('text',{x:cluster.cx,y:cluster.y+30,'text-anchor':'middle',class:'cluster-title'},cluster.label);
+      title.setAttribute('dominant-baseline','middle');title.setAttribute('y',cluster.y+24);
+      title.append(el('tspan',{dx:8,class:'cluster-count'},String(cluster.ids.length)));holder.append(title);
       holder.append(el('text',{x:cluster.cx,y:cluster.y+48,'text-anchor':'middle',class:'cluster-subtitle'},cluster.subtitle));
       holder.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();focusCluster(cluster.id);}});
-      holder.addEventListener('focus',()=>previewCluster(cluster.id));
-      holder.addEventListener('blur',()=>previewCluster(null));
       $('#hulls').append(holder);clusterElements.set(cluster.id,holder);
     });
     D.edges.forEach(edge=>{
@@ -130,12 +119,11 @@
       $('#edges').append(path);edgeElements.set(edge.id,path);
     });
     D.particles.forEach(p=>{
-      const {x,y,r}=positions.get(p.id),color=colors[tone(p)];
+      const {x,y,r}=positions.get(p.id),color=colorFor(p);
       const node=el('g',{class:'node','data-id':p.id,'data-cluster':membership.get(p.id),transform:`translate(${x} ${y})`,role:'button',tabindex:0,'aria-label':p.symbol+' — '+p.ru,style:'--tone:'+color});
       node.append(el('title',{},p.symbol+' · '+p.ru+' · PDG '+p.pdg));
-      node.append(el('circle',{class:'selection-ring',r:r+8,'pointer-events':'none'}));
-      node.append(el('circle',{class:'sphere',r,fill:'url(#sphere-'+tone(p)+')',stroke:color}));
-      node.append(el('ellipse',{class:'shine',cx:-r*.23,cy:-r*.42,rx:r*.19,ry:r*.07,fill:'#fff',transform:'rotate(-25)'}));
+      node.append(el('polygon',{class:'selection-ring',points:hexPoints(r+4),'pointer-events':'none'}));
+      node.append(el('polygon',{class:'sphere hex-cell','data-radius':r,points:hexPoints(r),fill:'url(#tile-'+membership.get(p.id).replace(':','-')+')',stroke:color}));
       node.append(el('text',{x:0,y:0,'font-size':r>=60?54:r>=40?44:p.symbol.length>3?29:34},p.symbol));
       node.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();select(p.id,true);}});
       node.addEventListener('pointerenter',event=>{
@@ -146,7 +134,7 @@
       });
       node.addEventListener('pointerleave',()=>$('#nodeTooltip').hidden=true);
       $('#nodes').append(node);nodeElements.set(p.id,node);
-      const mini=el('circle',{cx:x,cy:y,r:10,fill:color});$('#miniNodes').append(mini);miniElements.set(p.id,mini);
+      const mini=el('polygon',{points:hexPoints(r),transform:`translate(${x} ${y})`,fill:color,'fill-opacity':.75});$('#miniNodes').append(mini);miniElements.set(p.id,mini);
     });
     $('#minimap').setAttribute('viewBox',`0 0 ${world.width} ${world.height}`);
     fitNodeLabels();
@@ -159,7 +147,7 @@
       label.setAttribute('x',0);label.setAttribute('y',0);
       label.style.fontSize=(r>=60?54:r>=40?44:34)+'px';
       const box=label.getBBox();
-      const factor=Math.min(1,r*1.58/(box.width||1),r*.95/(box.height||1));
+      const factor=Math.min(1,r*1.42/(box.width||1),r*.95/(box.height||1));
       let size=parseFloat(label.style.fontSize)*factor;
       for(let pass=0;pass<4;pass++){
         label.style.fontSize=size+'px';label.setAttribute('font-size',size);
@@ -170,62 +158,56 @@
         label.setAttribute('y',-(fitted.y+fitted.height/2));
         const b=label.getBBox();
         const corner=Math.hypot(Math.max(Math.abs(b.x),Math.abs(b.x+b.width)),Math.max(Math.abs(b.y),Math.abs(b.y+b.height)));
-        if(corner<=r*.91)break;
-        size*=r*.9/corner;
+        if(corner<=r*.82)break;
+        size*=r*.81/corner;
       }
     });
-  }
-  function previewCluster(id) {
-    if(hoveredCluster===id)return;
-    hoveredCluster=id;applyState();
   }
   function updateLevel() {
-    const overview=scale<.22,detail=scale>=.65;
+    const overview=scale<.3,detail=scale>=.65;
     svg.classList.toggle('overview',overview);svg.classList.toggle('detail-level',detail);
     regions.forEach(region=>{
-      const title=hullElements.get(region.id).querySelector('.region-title'),top=Math.min(...contours.regions.get(region.id).layers[0][0].map(p=>p.y));
-      title.setAttribute('font-size',Math.max(12/scale,Math.min(48,26/scale)));
-      title.setAttribute('y',['leptons','quarks'].includes(region.id)?top+45:top-18/scale);
+      const title=hullElements.get(region.id).querySelector('.region-title');
+      title.querySelector('.region-count').style.display=region.width*scale<100?'none':'';
+      title.style.fontSize=Math.min(96,(isMobile()?14:20)/scale)+'px';
+      title.setAttribute('y',region.y+48);
+      // Fit the complete heading inside its reserved header, including the count.
+      title.setAttribute('y',0);
+      const box=title.getBBox(),factor=Math.min(1,(region.width-8)/(box.width||1),66/(box.height||1));
+      title.style.fontSize=parseFloat(title.style.fontSize)*factor+'px';
+      const fitted=title.getBBox();title.setAttribute('y',region.y+41-fitted.y-fitted.height/2);
     });
-    $$('.region-summary').forEach(title=>title.setAttribute('font-size',Math.max(8.5/scale,Math.min(18,10/scale))));
     clusterElements.forEach((holder,id)=>{
-      const title=holder.querySelector('.cluster-title'),cluster=clusterMap.get(id);
-      title.style.fontSize=Math.max(12/scale,Math.min(36,18/scale))+'px';
-      holder.querySelector('.cluster-count').style.fontSize=Math.max(9/scale,Math.min(20,11/scale))+'px';
-      holder.querySelector('.cluster-subtitle').style.fontSize=Math.min(17,11/scale)+'px';
-      if(mode!=='graph'||holder.style.display==='none'||holder.dataset.labelScale===String(scale))return;
-      holder.dataset.labelScale=String(scale);
-      const shore=contours.clusters.get(id).layers[0][0];
-      const minY=Math.min(...shore.map(p=>p.y));
-      title.setAttribute('y',0);const box=title.getBBox();
-      for(let y=minY-box.y+10;y<cluster.cy;y+=6){
-        const corners=[{x:box.x,y:y+box.y},{x:box.x+box.width,y:y+box.y},{x:box.x,y:y+box.y+box.height},{x:box.x+box.width,y:y+box.y+box.height}];
-        const clear=cluster.ids.every(id=>{
-          const p=positions.get(id),x=Math.max(box.x,Math.min(box.x+box.width,p.x)),py=Math.max(y+box.y,Math.min(y+box.y+box.height,p.y));
-          return Math.hypot(p.x-x,p.y-py)>p.r+8;
-        });
-        if(clear&&corners.every(p=>window.PARTICLE_CONTOURS.distance(shore,p.x,p.y).d<-6)){
-          title.setAttribute('y',y);holder.querySelector('.cluster-subtitle').setAttribute('y',y+24);break;
-        }
-      }
-      if(title.getAttribute('y')==='0')title.setAttribute('y',cluster.y+25);
+      const cluster=clusterMap.get(id),title=holder.querySelector('.cluster-title');
+      title.style.fontSize=Math.min(28,16/scale)+'px';
+      const width=title.getBBox().width;
+      if(width>cluster.width-8)title.style.fontSize=parseFloat(title.style.fontSize)*(cluster.width-8)/width+'px';
+      holder.style.setProperty('--label-opacity',overview?'0':'1');
+      holder.querySelector('.cluster-subtitle').style.fontSize='12px';
     });
     nodeElements.forEach((node,id)=>{
       const label=node.querySelector('text'),size=Number(label.getAttribute('font-size'));
-      label.style.opacity=selected===id||size*scale>=11?'1':'0';
+      label.style.opacity=selected===id||size*scale>=10?'1':'0';
     });
-    $('#levelInfo').textContent=overview?'Обзор · нажмите на семейство':detail?'Состояния · локальные связи':'Семейства · нажмите, чтобы приблизить';
+    $('#levelInfo').textContent=overview?'Обзор · нажмите название группы':detail?'Соты частиц · выберите частицу для связей':'Подгруппы · нажмите название для приближения';
+  }
+  function focusBox(box,limit=2) {
+    const top=isMobile()?125:100,bottom=105;
+    scale=Math.max(minZoom(),Math.min((wrap.clientWidth-40)/box.width,Math.max(100,wrap.clientHeight-top-bottom)/box.height,limit));
+    tx=wrap.clientWidth/2-(box.x+box.width/2)*scale;
+    ty=top+(wrap.clientHeight-top-bottom)/2-(box.y+box.height/2)*scale;
+    autoFit=false;applyTransform();
+  }
+  function focusRegion(id) {
+    const region=regionMap.get(id);if(!region)return;
+    focusedRegion=id;focusedCluster=null;selected=null;
+    $('#mapPath').textContent=region.label;applyState();focusBox(region);
   }
   function focusCluster(id) {
     const cluster=clusterMap.get(id);if(!cluster)return;
-    focusedCluster=id;selected=null;if(isMobile())hoveredCluster=id;applyState();
-    const top=isMobile()?125:100,bottom=105;
-    const shore=contours.clusters.get(id).layers[0][0];
-    const left=Math.min(...shore.map(p=>p.x)),right=Math.max(...shore.map(p=>p.x));
-    const upper=Math.min(...shore.map(p=>p.y)),lower=Math.max(...shore.map(p=>p.y));
-    scale=Math.min((wrap.clientWidth-60)/(right-left),(wrap.clientHeight-top-bottom)/(lower-upper),1.8);
-    tx=wrap.clientWidth/2-(left+right)/2*scale;ty=top+(wrap.clientHeight-top-bottom)/2-(upper+lower)/2*scale;
-    autoFit=false;$('#mapPath').textContent=cluster.label;applyTransform();
+    focusedRegion=cluster.root;focusedCluster=id;selected=null;
+    $('#mapPath').textContent=regionMap.get(cluster.root).label+' / '+cluster.label;
+    applyState();focusBox(cluster,2);
   }
   function applyState() {
     const hits=filtered(),hitIds=new Set(hits.map(p=>p.id)),rel=selected?neighbors(selected):new Set();
@@ -236,26 +218,24 @@
       node.setAttribute('aria-pressed',String(id===selected));
       node.classList.toggle('selected',id===selected);
       node.classList.toggle('related',rel.has(id)&&id!==selected);
-      node.classList.toggle('dim',selected?!rel.has(id):!!focusedCluster&&membership.get(id)!==focusedCluster);
+      node.classList.toggle('dim',selected?!rel.has(id):focusedCluster?membership.get(id)!==focusedCluster:!!focusedRegion&&clusterMap.get(membership.get(id)).root!==focusedRegion);
       miniElements.get(id).style.opacity=visible.has(id)?(selected&&!rel.has(id)?'.18':'1'):'.04';
     });
     D.edges.forEach(edge=>{
       const path=edgeElements.get(edge.id);if(!path)return;
       const active=selected&&(edge.from===selected||edge.to===selected);
-      const preview=!selected&&hoveredCluster&&(membership.get(edge.from)===hoveredCluster||membership.get(edge.to)===hoveredCluster);
-      path.style.display=enabledEdges.has(edge.kind)&&visible.has(edge.from)&&visible.has(edge.to)&&(active||preview)?'':'none';
-      path.classList.toggle('active',!!active);path.classList.toggle('preview',!!preview);path.classList.remove('dim');
+      path.style.display=enabledEdges.has(edge.kind)&&visible.has(edge.from)&&visible.has(edge.to)&&active?'':'none';
+      path.classList.toggle('active',!!active);
     });
     clusters.forEach(cluster=>{
       const holder=clusterElements.get(cluster.id),show=cluster.ids.some(id=>visible.has(id));
       holder.style.display=show?'':'none';holder.setAttribute('tabindex',show?'0':'-1');
-      holder.classList.toggle('cluster-muted',selected?!cluster.ids.some(id=>rel.has(id)):!!focusedCluster&&cluster.id!==focusedCluster);
+      holder.classList.toggle('cluster-muted',selected?!cluster.ids.some(id=>rel.has(id)):focusedCluster?cluster.id!==focusedCluster:!!focusedRegion&&cluster.root!==focusedRegion);
       holder.classList.toggle('cluster-focused',cluster.id===focusedCluster);
-      holder.classList.toggle('cluster-preview',!selected&&cluster.id===hoveredCluster);
     });
     regions.forEach(region=>{
       const show=region.children.some(c=>c.ids.some(id=>visible.has(id)));
-      hullElements.get(region.id).style.display=show?'':'none';
+      const holder=hullElements.get(region.id);holder.style.display=show?'':'none';holder.setAttribute('tabindex',show?'0':'-1');holder.classList.toggle('region-focused',region.id===focusedRegion);
     });
     updateLevel();
     $('#resultCount').textContent=query?hits.length+' найдено':'';
@@ -266,11 +246,11 @@
     if(mode!=='graph') renderMode();
   }
   function particleChip(p, extra='') {
-    return `<button class="particle-chip ${p.id===selected?'selected':''} ${extra}" data-particle="${escape(p.id)}" style="--c:${colors[tone(p)]}" title="${escape(p.ru)}">${escape(p.symbol)}</button>`;
+    return `<button class="particle-chip ${p.id===selected?'selected':''} ${extra}" data-particle="${escape(p.id)}" style="--c:${colorFor(p)}" title="${escape(p.ru)}">${escape(p.symbol)}</button>`;
   }
   function updateDetails() {
     const p=byId.get(current),group=groups.get(p.group);
-    $('#detailSymbol').textContent=p.symbol;$('#detailSymbol').style.setProperty('--c',colors[tone(p)]);
+    $('#detailSymbol').textContent=p.symbol;$('#detailSymbol').style.setProperty('--c',colorFor(p));
     $('#detailName').textContent=p.name+' · '+p.ru;
     $('#metricStrip').innerHTML=[['Масса',p.mass],['Заряд',p.charge],['Спин J',p.spin]].map(([label,value],i)=>`<div><small>${escape(label)}</small><strong class="${i===0?'mass':''}">${escape(value)}</strong></div>`).join('');
     const rows=[['Символ',p.symbol],['Название',p.ru],['PDG ID',p.pdg],['Класс',group.label],['Чётность P',p.parity],['C-чётность',p.cparity],['Кварковый состав',p.quarks],['Жизнь / ширина',p.lifetime]];
@@ -281,7 +261,7 @@
     D.edges.forEach(e=>{if(e.from===current||e.to===current){const id=e.from===current?e.to:e.from;if(!kinds.has(id))kinds.set(id,new Set());kinds.get(id).add(edgeNames[e.kind]);}});
     $('#related').innerHTML=[...kinds].map(([id,k])=>{
       const related=byId.get(id);
-      return `<button class="related-button" data-particle="${escape(id)}"><i class="dot" style="--c:${colors[tone(related)]}"></i><strong>${escape(related.symbol)}</strong><span>${escape(related.ru)}<small>${escape([...k].join(' · '))}</small></span><span class="chevron">→</span></button>`;
+      return `<button class="related-button" data-particle="${escape(id)}"><i class="dot" style="--c:${colorFor(related)}"></i><strong>${escape(related.symbol)}</strong><span>${escape(related.ru)}<small>${escape([...k].join(' · '))}</small></span><span class="chevron">→</span></button>`;
     }).join('')||'<p class="help">Связи в демонстрационном наборе не указаны.</p>';
   }
   function select(id,open=false) {
@@ -299,7 +279,7 @@
     });
   }
   function setMode(next) {
-    mode=next;hoveredCluster=null;
+    mode=next;
     $$('[data-mode]').forEach(button=>{const active=button.dataset.mode===mode;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));if(active)button.scrollIntoView({block:'nearest',inline:'nearest'});});
     const graph=mode==='graph';svg.toggleAttribute('hidden',!graph);content.hidden=graph;
     content.scrollTop=0;
@@ -328,7 +308,7 @@
       const av=sortKey==='group'?groups.get(a.group).label:a[sortKey],bv=sortKey==='group'?groups.get(b.group).label:b[sortKey];
       return String(av).localeCompare(String(bv),'ru')*sortDirection;
     });
-    return `<h2>Таблица частиц</h2><p class="mode-intro">${hits.length} состояний · Нажмите заголовок для сортировки, символ — для выбора частицы. Поиск и фильтры действуют во всех режимах.</p><div class="table-wrap"><table class="particle-table"><thead><tr>${columns.map(([key,label])=>`<th scope="col" aria-sort="${key===sortKey?(sortDirection===1?'ascending':'descending'):'none'}"><button data-sort="${key}">${label}${key===sortKey?(sortDirection===1?' ↑':' ↓'):''}</button></th>`).join('')}</tr></thead><tbody>${sorted.map(p=>`<tr class="${selected===p.id?'selected':''}">${columns.map(([key])=>`<td>${key==='symbol'?`<button class="table-particle" data-particle="${p.id}" aria-label="${escape(p.symbol+' — '+p.ru)}" style="color:${colors[tone(p)]}">${escape(p.symbol)}</button>`:escape(key==='group'?groups.get(p.group).label:p[key])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    return `<h2>Таблица частиц</h2><p class="mode-intro">${hits.length} состояний · Нажмите заголовок для сортировки, символ — для выбора частицы. Поиск и фильтры действуют во всех режимах.</p><div class="table-wrap"><table class="particle-table"><thead><tr>${columns.map(([key,label])=>`<th scope="col" aria-sort="${key===sortKey?(sortDirection===1?'ascending':'descending'):'none'}"><button data-sort="${key}">${label}${key===sortKey?(sortDirection===1?' ↑':' ↓'):''}</button></th>`).join('')}</tr></thead><tbody>${sorted.map(p=>`<tr class="${selected===p.id?'selected':''}">${columns.map(([key])=>`<td>${key==='symbol'?`<button class="table-particle" data-particle="${p.id}" aria-label="${escape(p.symbol+' — '+p.ru)}" style="color:${colorFor(p)}">${escape(p.symbol)}</button>`:escape(key==='group'?groups.get(p.group).label:p[key])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   }
   function family(ids,title,hits,color) {
     const particles=hits.filter(p=>ids.includes(p.group));
@@ -355,7 +335,7 @@
       return `<button class="component-orb" data-particle="${flavor}" title="${anti?'Антикварк; свойства соответствующего кварка':'Кварк'} ${flavor}" aria-label="${anti?'Антикварк':'Кварк'} ${flavor}, открыть свойства кварка">${escape(token)}</button>`;
     }).join('');
     // Tokenization preserves the stored formula; mixed states are not presented as a single fixed composition.
-    return `<h2>Кварковый состав</h2><p class="mode-intro">Локальное представление состава выбранного состояния из текущей базы.</p>${localPicker(hits,p)}<div class="local-stage" style="--c:${colors[tone(p)]}"><div class="local-parent"><span>${escape(p.symbol)}</span></div><div class="formula">${escape(p.quarks)}</div>${hadron?`<div class="flow-arrow">↓</div><div class="component-orbs">${components}</div><p class="local-caption">${escape(compositionCaption)} ${escape(p.compositionNote||'')}</p>`:`<p class="local-caption">${p.group==='quarks'?'Элементарный кварк. Адроны с этим ароматом в текущем наборе:':'Элементарная частица; кваркового состава нет.'}</p>`}${p.group==='quarks'?`<div class="particle-chips">${D.particles.filter(item=>['light','strange','charm','bottom','baryons'].includes(item.group)&&quarkTokens(item).some(token=>token.replace('ū','u')[0]===p.id)).map(item=>particleChip(item)).join('')}</div>`:''}</div>`;
+    return `<h2>Кварковый состав</h2><p class="mode-intro">Локальное представление состава выбранного состояния из текущей базы.</p>${localPicker(hits,p)}<div class="local-stage" style="--c:${colorFor(p)}"><div class="local-parent"><span>${escape(p.symbol)}</span></div><div class="formula">${escape(p.quarks)}</div>${hadron?`<div class="flow-arrow">↓</div><div class="component-orbs">${components}</div><p class="local-caption">${escape(compositionCaption)} ${escape(p.compositionNote||'')}</p>`:`<p class="local-caption">${p.group==='quarks'?'Элементарный кварк. Адроны с этим ароматом в текущем наборе:':'Элементарная частица; кваркового состава нет.'}</p>`}${p.group==='quarks'?`<div class="particle-chips">${D.particles.filter(item=>['light','strange','charm','bottom','baryons'].includes(item.group)&&quarkTokens(item).some(token=>token.replace('ū','u')[0]===p.id)).map(item=>particleChip(item)).join('')}</div>`:''}</div>`;
   }
   function decayProducts(channel) {
     // Exact symbol matching: absent antiparticles/general channels remain explicit, non-clickable labels.
@@ -365,7 +345,7 @@
     }).join('');
   }
   function renderDecays(hits,p) {
-    return `<h2>Распады ${escape(p.symbol)}</h2><p class="mode-intro">Каналы и доли из базы. Нажмите продукт, чтобы продолжить цепочку; пунктиром отмечены состояния и обобщённые каналы вне набора.</p>${localPicker(hits,p)}<div class="local-stage" style="--c:${colors[tone(p)]}"><div class="local-parent"><span>${escape(p.symbol)}</span></div>${p.decays.length?`<div class="flow-arrow">↓</div>${p.decays.map(([channel,br])=>`<div class="channel-card"><div class="channel-head"><span>${escape(p.symbol)} → ${escape(channel)}</span><small>${escape(br)}</small></div><div class="channel-products">${decayProducts(channel)}</div></div>`).join('')}`:`<div class="stable-message">Каналы в наборе не указаны</div><p class="local-caption">${escape(p.lifetime)}</p>`}</div>`;
+    return `<h2>Распады ${escape(p.symbol)}</h2><p class="mode-intro">Каналы и доли из базы. Нажмите продукт, чтобы продолжить цепочку; пунктиром отмечены состояния и обобщённые каналы вне набора.</p>${localPicker(hits,p)}<div class="local-stage" style="--c:${colorFor(p)}"><div class="local-parent"><span>${escape(p.symbol)}</span></div>${p.decays.length?`<div class="flow-arrow">↓</div>${p.decays.map(([channel,br])=>`<div class="channel-card"><div class="channel-head"><span>${escape(p.symbol)} → ${escape(channel)}</span><small>${escape(br)}</small></div><div class="channel-products">${decayProducts(channel)}</div></div>`).join('')}`:`<div class="stable-message">Каналы в наборе не указаны</div><p class="local-caption">${escape(p.lifetime)}</p>`}</div>`;
   }
   function renderMode() {
     const hits=filtered();
@@ -379,20 +359,25 @@
     });
   }
   function applyTransform() {
+    scale=Math.max(minZoom(),Math.min(maxZoom,scale));
+    // Keep some of the map in reach even after a long drag or minimap jump.
+    const margin=64;
+    tx=Math.max(margin-world.width*scale,Math.min(wrap.clientWidth-margin,tx));
+    ty=Math.max(100-world.height*scale,Math.min(wrap.clientHeight-margin,ty));
     viewport.setAttribute('transform',`translate(${tx} ${ty}) scale(${scale})`);
     $('#reset').textContent=Math.round(scale*100)+'%';
-    const mini=$('#miniViewport');
-    const top=isMobile()?120:94,bottom=100;
+    $('#minus').disabled=scale<=minZoom()+.000001;
+    $('#plus').disabled=scale>=maxZoom-.000001;
+    const mini=$('#miniViewport'),top=isMobile()?120:94,bottom=100;
     Object.entries({x:-tx/scale,y:(top-ty)/scale,width:wrap.clientWidth/scale,height:(wrap.clientHeight-top-bottom)/scale}).forEach(([key,value])=>mini.setAttribute(key,value));
     updateLevel();
   }
   function fit() {
-    const wasFocused=focusedCluster;
     const top=isMobile()?130:100,bottom=110;
-    scale=Math.min((wrap.clientWidth-36)/world.width,Math.max(100,wrap.clientHeight-top-bottom)/world.height);
+    scale=overviewScale();
     tx=(wrap.clientWidth-world.width*scale)/2;ty=top+(wrap.clientHeight-top-bottom-world.height*scale)/2;
-    const wasHovered=hoveredCluster;
-    autoFit=true;focusedCluster=null;hoveredCluster=null;$('#mapPath').textContent='Все семейства';if(wasFocused||wasHovered)applyState();applyTransform();
+    autoFit=true;focusedCluster=null;focusedRegion=null;
+    $('#mapPath').textContent='Все семейства';applyState();applyTransform();
   }
   function focusParticle(id,minScale=.85) {
     const p=positions.get(id);if(!p)return;
@@ -400,7 +385,7 @@
     scale=Math.max(scale,minScale);tx=wrap.clientWidth/2-p.x*scale;ty=Math.max(isMobile()?125:0,available*.45)-p.y*scale;autoFit=false;applyTransform();
   }
   function zoomAt(factor,x,y) {
-    const next=Math.max(minZoom,Math.min(4,scale*factor));
+    const next=Math.max(minZoom(),Math.min(maxZoom,scale*factor));
     tx=x-(x-tx)*next/scale;ty=y-(y-ty)*next/scale;scale=next;autoFit=false;applyTransform();
   }
   function chooseFromSearch(open=false) {
@@ -411,7 +396,7 @@
     else {selected=null;applyState();}
   }
   function clearFilters() {
-    activeGroup='all';charge='all';spin='all';query='';search.value='';selected=null;focusedCluster=null;hoveredCluster=null;
+    activeGroup='all';charge='all';spin='all';query='';search.value='';selected=null;focusedCluster=null;focusedRegion=null;
     $('#chargeFilter').value='all';$('#spinFilter').value='all';
     enabledEdges.clear();Object.keys(edgeColors).forEach(kind=>enabledEdges.add(kind));
     $$('[data-edge]').forEach(input=>input.checked=true);
@@ -437,7 +422,7 @@
     $('#'+(id==='filters'?'closeFilters':'closeDetail')).focus();
   }
   // One gesture state handles mouse, pen and simultaneous touch pointers in CSS pixels.
-  const pointers=new Map();let gesture=null,moved=false,suppressClick=false,pressedNode=null,pressedCluster=null;
+  const pointers=new Map();let gesture=null,moved=false,suppressClick=false,pressedNode=null,pressedCluster=null,pressedRegion=null;
   const distance=points=>Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y);
   function rebaseGesture() {
     const points=[...pointers.values()];
@@ -450,12 +435,11 @@
     const rect=svg.getBoundingClientRect();
     pointers.set(event.pointerId,{x:event.clientX-rect.left,y:event.clientY-rect.top});
     svg.setPointerCapture(event.pointerId);
-    if(pointers.size===1){moved=false;suppressClick=false;pressedNode=event.target.closest('.node')?.dataset.id||null;pressedCluster=event.target.closest('.cluster')?.dataset.cluster||null;}
+    if(pointers.size===1){moved=false;suppressClick=false;pressedNode=event.target.closest('.node')?.dataset.id||null;pressedCluster=event.target.closest('.cluster')?.dataset.cluster||null;pressedRegion=event.target.closest('.region')?.dataset.region||null;}
     if(pointers.size>1){moved=true;suppressClick=true;}
     rebaseGesture();
   });
   svg.addEventListener('pointermove',event=>{
-    if(!pointers.size&&event.pointerType!=='touch')previewCluster(event.target.closest('[data-cluster]')?.dataset.cluster||null);
     if(!pointers.has(event.pointerId)||!gesture)return;
     const rect=svg.getBoundingClientRect();
     pointers.set(event.pointerId,{x:event.clientX-rect.left,y:event.clientY-rect.top});
@@ -464,27 +448,28 @@
     if(Math.hypot(center.x-gesture.x,center.y-gesture.y)>4||points.length>1)moved=true;
     if(!moved)return;
     suppressClick=true;autoFit=false;svg.classList.add('dragging');
-    scale=points.length>1&&gesture.distance?Math.max(minZoom,Math.min(4,gesture.scale*distance(points)/gesture.distance)):gesture.scale;
+    scale=points.length>1&&gesture.distance?Math.max(minZoom(),Math.min(maxZoom,gesture.scale*distance(points)/gesture.distance)):gesture.scale;
     tx=center.x-(gesture.x-gesture.tx)*scale/gesture.scale;ty=center.y-(gesture.y-gesture.ty)*scale/gesture.scale;
     applyTransform();
   });
-  svg.addEventListener('pointerleave',()=>previewCluster(null));
   function endPointer(event) {
     const tap=event.type==='pointerup'&&pointers.size===1&&!moved;
-    const tappedNode=pressedNode,tappedCluster=pressedCluster;
+    const tappedNode=pressedNode,tappedCluster=pressedCluster,tappedRegion=pressedRegion;
     pointers.delete(event.pointerId);if(svg.hasPointerCapture(event.pointerId))svg.releasePointerCapture(event.pointerId);
     rebaseGesture();if(!pointers.size)svg.classList.remove('dragging');
     if(tap&&tappedNode){suppressClick=true;select(tappedNode,true);}
     else if(tap&&tappedCluster){suppressClick=true;focusCluster(tappedCluster);}
-    if(!pointers.size){pressedNode=null;pressedCluster=null;}
+    else if(tap&&tappedRegion){suppressClick=true;focusRegion(tappedRegion);}
+    if(!pointers.size){pressedNode=null;pressedCluster=null;pressedRegion=null;}
   }
   ['pointerup','pointercancel','lostpointercapture'].forEach(type=>svg.addEventListener(type,endPointer));
   svg.addEventListener('click',event=>{
     if(suppressClick){suppressClick=false;return;}
     const node=event.target.closest('.node');
-    const cluster=event.target.closest('.cluster');
+    const cluster=event.target.closest('.cluster'),region=event.target.closest('.region');
     if(node)select(node.dataset.id,true);
     else if(cluster)focusCluster(cluster.dataset.cluster);
+    else if(region)focusRegion(region.dataset.region);
     else {selected=null;applyState();}
   });
   svg.addEventListener('dblclick',event=>{const node=event.target.closest('.node');if(node)focusParticle(node.dataset.id);});
@@ -495,11 +480,11 @@
   });
   const spins=[...new Set(D.particles.map(p=>p.spin))].sort((a,b)=>numeric({spin:a},'spin')-numeric({spin:b},'spin'));
   $('#spinFilter').innerHTML='<option value="all">Все</option>'+spins.map(value=>`<option value="${escape(value)}">${escape(value)}</option>`).join('');
-  $('#groupFilters').innerHTML=D.groups.map(g=>`<button class="filter" data-group="${g.id}" aria-pressed="false"><i class="dot" style="--c:${colors[g.tone]}"></i>${escape(labels[g.id])}<small>${D.particles.filter(p=>p.group===g.id).length}</small></button>`).join('');
+  $('#groupFilters').innerHTML=D.groups.map(g=>`<button class="filter" data-group="${g.id}" aria-pressed="false"><i class="dot" style="--c:${colorFor(D.particles.find(p=>p.group===g.id))}"></i>${escape(labels[g.id])}<small>${D.particles.filter(p=>p.group===g.id).length}</small></button>`).join('');
   $$('.filter').forEach(button=>button.addEventListener('click',()=>{
-    activeGroup=button.dataset.group;selected=null;updateFilterButtons();applyState();
+    activeGroup=button.dataset.group;selected=null;focusedCluster=null;focusedRegion=null;updateFilterButtons();applyState();
     if(mode==='graph'){
-      if(activeGroup==='all')fit();else{const box=layout[activeGroup];scale=Math.min((wrap.clientWidth-40)/(box.rx*2.3),(wrap.clientHeight-160)/(box.ry*2.3));tx=wrap.clientWidth/2-box.cx*scale;ty=wrap.clientHeight*.46-box.cy*scale;autoFit=false;applyTransform();}
+      if(activeGroup==='all')fit();else{focusBox(layout[activeGroup]);}
     }
     closeSheets();
   }));

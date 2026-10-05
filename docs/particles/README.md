@@ -24,18 +24,19 @@ python .github/scripts/build_particle_extension.py
 ```
 
 The browser needs no Python, network API, or third-party rendering library.
-`layout.js` places seeded irregular clouds with collision clearance. `contours.js`
-partitions neighbouring clouds along a shared curved distance bisector, leaving a
-28-unit gap between family shores. Inner rings are Euclidean insets of the finished
-shore, so they remain parallel. Each family is also clipped to a 60-unit inset of
-its enclosing root shore (24 units beyond the innermost root ring). This makes the
-inner and outer hierarchy conform along their neighbouring edges. Positions stay
-stable while filtering and browsing. The layout has a loose hexagonal silhouette:
-mesons and baryons occupy the flanks, quarks cap the top, leptons cap the bottom,
-and bosons connect the centre. A collision-aware docking pass brings the caps
-close to neighbouring regions. No hexagonal frame or uniform cell shape is imposed.
-Connections appear only on family hover/keyboard focus or particle selection; selection
-takes precedence. Label sizes use their rendered glyph bounds after fonts load.
+`layout.js` packs each state into a pointy hexagon on a regular staggered lattice.
+Small gutters separate subgroups and the five root groups. Empty header bands reserve
+space for group and subgroup names; colour is applied to tiles only, with related shades
+within each root. Positions stay deterministic and stable while filtering and browsing.
+Click a root heading to fit its group, a subgroup heading to fit its tiles, or any tile to
+open the existing particle card. Wheel zoom, pan, pinch, search and minimap navigation
+also remain available. Zoom-out stops at the overview scale for the current viewport;
+zoom-in stops at 4x. Dragging is bounded so the map cannot disappear completely.
+Only the selected particle's direct, enabled relationships are drawn. A mask keeps
+connections outside tile interiors and reserved headers; arrow colours and dashed
+styles retain the existing interaction legend. Symbol sizes use rendered glyph bounds
+after fonts load. `contours.js` is retained for its standalone geometry utilities but
+is no longer loaded by the honeycomb map.
 
 Validation:
 
