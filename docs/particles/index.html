@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#050910">
-<title>Карта частиц · NSU FP</title><link rel="stylesheet" href="explorer.css?v=4"><script src="particles.js" defer></script><script src="extra-particles.js?v=1" defer></script><script src="layout.js?v=2" defer></script><script src="explorer.js?v=4" defer></script>
+<title>Карта частиц · NSU FP</title><link rel="stylesheet" href="explorer.css?v=5"><script src="particles.js" defer></script><script src="extra-particles.js?v=1" defer></script><script src="layout.js?v=2" defer></script><script src="contours.js?v=1" defer></script><script src="explorer.js?v=5" defer></script>
 </head>
 <body><div class="app">
 <header class="top">
@@ -24,7 +24,7 @@
 <label class="select-label" for="chargeFilter">Заряд<select id="chargeFilter"><option value="all">Все</option><option value="neutral">Нейтральные</option><option value="positive">Положительный</option><option value="negative">Отрицательный</option></select></label>
 <label class="select-label" for="spinFilter">Спин J<select id="spinFilter"><option value="all">Все</option><option>0</option><option>1/2</option><option>1</option><option>3/2</option><option>2</option></select></label>
 <button id="resetFilters" class="outline full">Сбросить фильтры</button>
-<p class="help">Перетаскивание — двигать карту<br>Колесо / щипок — масштаб<br>Нажатие на семейство — приблизить<br>Выбор частицы — локальные связи</p>
+<p class="help">Перетаскивание — двигать карту<br>Колесо / щипок — масштаб<br>Наведение на семейство — его связи<br>Нажатие на семейство — приблизить<br>Выбор частицы — локальные связи</p>
 <div class="dataset-note">PDG 2024<span>Выборка частиц и резонансов.<br>Числа и каналы из текущей базы.</span></div>
 </aside>
 <main id="canvasWrap" class="canvas-wrap">
@@ -32,7 +32,7 @@
 <div class="mobile-toolbar"><button id="filtersBtn" class="outline" aria-expanded="false" aria-controls="filters">☷ Фильтры</button><button id="detailBtn" class="outline" aria-expanded="false" aria-controls="details">Свойства</button></div>
 <div class="view-status"><span id="viewTitle">Карта взаимодействий</span><span id="visibleCount"></span></div>
 <svg id="world" aria-label="Интерактивная карта частиц"><defs id="worldDefs"></defs><g id="viewport"><g id="bundles"></g><g id="hulls"></g><g id="edges"></g><g id="nodes"></g></g></svg>
-<div id="graphToolbar" class="graph-toolbar"><button id="mapHome" aria-label="Обзор всей карты">⌘</button><span class="breadcrumb-divider">/</span><span id="mapPath">Все семейства</span><button id="edgeViewBtn" aria-pressed="false">Связи по выбору</button></div><div id="nodeTooltip" class="node-tooltip" hidden></div><div id="levelInfo" class="level-info"></div>
+<div id="graphToolbar" class="graph-toolbar"><button id="mapHome" aria-label="Обзор всей карты">⌘</button><span class="breadcrumb-divider">/</span><span id="mapPath">Все семейства</span><span id="edgeHint">Связи при наведении</span></div><div id="nodeTooltip" class="node-tooltip" hidden></div><div id="levelInfo" class="level-info"></div>
 <div id="modeContent" class="mode-content" hidden></div><div id="emptyState" class="empty-state" hidden>Частицы не найдены<button id="clearSearch" class="outline">Сбросить поиск и фильтры</button></div>
 <div id="minimapWrap" class="minimap-wrap"><div>Обзор карты<span>↗</span></div><svg id="minimap" viewBox="0 0 1800 1250" role="img" aria-label="Миникарта; нажмите для перемещения"><g id="miniRegions"></g><g id="miniNodes"></g><rect id="miniViewport" fill="#b9d9ff12" stroke="#b5d9ff" stroke-width="12"/></svg></div>
 <div class="hud"><button id="minus" aria-label="Уменьшить масштаб">−</button><button id="reset" title="Показать всю карту">100%</button><button id="plus" aria-label="Увеличить масштаб">+</button><button id="centerBtn">⌖ Центр</button><button id="showAll" hidden>Снять выбор</button></div>

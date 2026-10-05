@@ -1,5 +1,5 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v67';
+const SHELL_VERSION = 'v68';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
@@ -13,7 +13,7 @@ const CORE = ['index.html', 'app.js?v=14', 'app.css?v=6', 'knowledge.css?v=3', '
   'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=18', 'notebook/outline.js?build=2',
   'pdfjs/viewer.html', 'pdfjs/controls.css?v=11', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png?v=2', 'assets/app-512.png?v=2', 'particles/index.html', 'particles/particles.js',
-  'particles/explorer.css?v=4', 'particles/explorer.js?v=4', 'particles/layout.js?v=2', 'particles/extra-particles.js?v=1'];
+  'particles/explorer.css?v=5', 'particles/explorer.js?v=5', 'particles/layout.js?v=2', 'particles/contours.js?v=1', 'particles/extra-particles.js?v=1'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json', 'search-index/karma-history.json'];
 const absolute = path => new URL(path, BASE).href;
 const local = url => url.origin === BASE.origin && url.pathname.startsWith(ROOT.pathname);

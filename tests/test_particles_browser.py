@@ -96,6 +96,9 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertNotEqual(before, self.page.locator('#viewport').get_attribute('transform'))
         self.page.locator('#centerBtn').click()
         self.assertEqual(before, self.page.locator('#viewport').get_attribute('transform'))
+        self.assertEqual(self.page.locator('.node.selected').count(), 0)
+        self.assertEqual(self.page.locator('.cluster-muted').count(), 0)
+        self.assertEqual(self.page.locator('.node.dim').count(), 0)
         self.page.locator('.filter[data-group="baryons"]').click()
         self.assertEqual(self.page.locator('.node:visible').count(), 29)
         self.assertEqual(self.page.locator('.edge[data-from="pip"]:visible').count(), 0)
@@ -138,12 +141,14 @@ class ParticleExplorerTests(unittest.TestCase):
     def test_family_drilldown_and_connection_density(self):
         self.assertEqual(self.page.locator('.region').count(), 5)
         self.assertEqual(self.page.locator('.cluster').count(), 21)
-        initial_edges = self.page.locator('.edge:visible').count()
-        self.assertLess(initial_edges, 364, 'The overview omits secondary composition edges')
-        self.page.locator('#edgeViewBtn').click()
-        self.assertEqual(self.page.locator('.edge:visible').count(), 364)
-        self.page.locator('#edgeViewBtn').click()
-        self.assertEqual(self.page.locator('.edge:visible').count(), initial_edges)
+        self.assertEqual(self.page.locator('.edge:visible').count(), 0)
+        self.assertEqual(self.page.locator('.bundle:visible').count(), 0)
+        self.page.locator('.cluster[data-cluster="mesons:lightmesons"] .cluster-title').hover()
+        self.assertGreater(self.page.locator('.edge.preview:visible').count(), 0)
+        self.assertTrue(self.page.locator('.edge:visible').evaluate_all('''edges=>edges.every(e=>
+            [e.dataset.from,e.dataset.to].some(id=>document.querySelector('.node[data-id="'+id+'"]').dataset.cluster==='mesons:lightmesons'))'''))
+        self.page.mouse.move(230, 180)
+        self.assertEqual(self.page.locator('.edge:visible').count(), 0)
         before = self.page.locator('#viewport').get_attribute('transform')
         # Keyboard and pointer users can drill down to a family independently of node selection.
         self.page.locator('.cluster[data-cluster="mesons:lightmesons"]').focus()
@@ -156,13 +161,24 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.node.dim').count(), 81)
         self.page.locator('.node[data-id="pip"] .sphere').click()
         self.assertGreater(self.page.locator('.edge.active:visible').count(), 0)
+        self.page.locator('.cluster[data-cluster="mesons:lightmesons"] .cluster-title').hover()
+        self.assertEqual(self.page.locator('.edge.preview:visible').count(), 0)
+        self.assertTrue(self.page.locator('.edge:visible').evaluate_all("edges=>edges.every(e=>e.dataset.from==='pip'||e.dataset.to==='pip')"))
         self.page.locator('#mapHome').click()
         expect(self.page.locator('#mapPath')).to_have_text('Все семейства')
         self.assertEqual(before, self.page.locator('#viewport').get_attribute('transform'))
-        self.assertEqual(self.page.locator('.node.selected').count(), 0)
-        self.assertEqual(self.page.locator('.cluster-muted').count(), 0)
-        self.assertEqual(self.page.locator('.node.dim').count(), 0)
 
+    def test_symbol_fits_every_sphere_after_fonts_load(self):
+        self.page.evaluate('async()=>await document.fonts.ready')
+        failures=self.page.locator('.node').evaluate_all('''nodes=>nodes.flatMap(n=>{
+            const text=n.querySelector('text'),b=text.getBBox(),r=+n.querySelector('.sphere').getAttribute('r');
+            return Math.hypot(Math.max(Math.abs(b.x),Math.abs(b.x+b.width)),Math.max(Math.abs(b.y),Math.abs(b.y+b.height)))>r*.94?[n.dataset.id]:[];
+        })''')
+        self.assertEqual(failures, [], 'Labels including superscripts stay inside their spheres')
+        self.page.locator('#search').fill('9000111')
+        self.page.locator('#search').press('Enter')
+        expect(self.page.locator('.node[data-id="pdg9000111"] text')).to_be_visible()
+        self.assertFalse(self.page.locator('.node[data-id="pdg9000111"] text').get_attribute('textLength'), 'Fit uses font size, without stretching glyphs')
     def test_mobile_overview_and_family_tap(self):
         expect(self.page.locator('#world')).to_have_class(re.compile(r'overview'))
         labels = self.page.locator('.node text').evaluate_all('nodes=>nodes.filter(n=>getComputedStyle(n).opacity !== "0").length')

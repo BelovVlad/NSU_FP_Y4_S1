@@ -4,12 +4,63 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const layout = require('../docs/particles/layout.js');
+const contours = require('../docs/particles/contours.js');
 const context = {window:{}};
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../docs/particles/particles.js'),'utf8'),context);
 const original=JSON.stringify(context.window.PARTICLE_DATA.particles);
 const originalEdges=JSON.stringify(context.window.PARTICLE_DATA.edges);
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../docs/particles/extra-particles.js'),'utf8'),context);
 const data = JSON.parse(JSON.stringify(context.window.PARTICLE_DATA));
+
+test('Neighbouring curved shores follow one bisector with a constant normal gap',()=>{
+  const seeds=[
+    {id:'a',core:contours.cloud({cx:0,cy:0,rx:140,ry:200},.2),reach:95},
+    {id:'b',core:contours.cloud({cx:330,cy:15,rx:140,ry:200},2.1),reach:95}
+  ];
+  const result=contours.territories(seeds,{gap:28,step:5});
+  const a=result.get('a').layers[0][0],b=result.get('b').layers[0][0];
+  const samples=a.flatMap((p,i)=>{
+    const q=a[(i+1)%a.length],n=Math.ceil(Math.hypot(q.x-p.x,q.y-p.y)/4);
+    return Array.from({length:n},(_,j)=>({x:p.x+(q.x-p.x)*j/n,y:p.y+(q.y-p.y)*j/n}));
+  });
+  const shared=samples.filter(p=>p.x>140&&Math.abs(p.y)<130);
+  assert.ok(shared.length>50);
+  assert.ok(Math.max(...shared.map(p=>p.x))-Math.min(...shared.map(p=>p.x))>5,'Shared boundary retains its curves');
+  for(const p of shared){
+    const shore=contours.distance(b,p.x,p.y);
+    assert.ok(shore.d>26&&shore.d<30,`Normal gap: ${shore.d}`);
+    const normal=contours.distance(a,p.x+shore.gx*.5,p.y+shore.gy*.5);
+    assert.ok(normal.gx*shore.gx+normal.gy*shore.gy<-.95,'Opposite shore normals are parallel');
+  }
+});
+
+test('All 99 spheres stay inside coordinated family and root shores',()=>{
+  const diagram=layout.create(data),result=contours.create(diagram);
+  for(const [id,p] of diagram.positions){
+    const family=result.clusters.get(diagram.membership.get(id));
+    const region=result.regions.get(layout.rootFor(data.particles.find(item=>item.id===id)));
+    for(const territory of [family,region]){
+      assert.equal(territory.layers[0].length,1,'Territory is one continuous shape');
+      assert.ok(contours.distance(territory.layers[0][0],p.x,p.y).d<-p.r-10,`Boundary cuts ${id}`);
+    }
+  }
+  for(const [id,territory] of result.clusters){
+    assert.equal(territory.layers.length,3);
+    const root=diagram.clusters.find(c=>c.id===id).root;
+    const parent=result.regions.get(root).layers[0][0];
+    for(const p of territory.layers[0][0])
+      assert.ok(contours.distance(parent,p.x,p.y).d<-57,`Family crosses its enclosing root shore: ${id}`);
+    for(let i=1;i<3;i++)for(const p of territory.layers[i][0]){
+      const inset=-contours.distance(territory.layers[0][0],p.x,p.y).d;
+      assert.ok(Math.abs(inset-i*14)<2,`Inner contour is not parallel: ${id}, ${inset}`);
+    }
+    for(const otherId of territory.neighbours){
+      const other=result.clusters.get(otherId).layers[0][0];
+      for(const point of territory.layers[0][0])
+        assert.ok(contours.distance(other,point.x,point.y).d>23,`Overlapping shores: ${id}, ${otherId}`);
+    }
+  }
+});
 
 function verify(data) {
   const before = JSON.stringify(data);

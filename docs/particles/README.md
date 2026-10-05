@@ -24,8 +24,15 @@ python .github/scripts/build_particle_extension.py
 ```
 
 The browser needs no Python, network API, or third-party rendering library.
-`layout.js` places seeded irregular clouds with collision clearance, allowing their luminous
-outer layers to overlap. Positions stay stable while filtering and browsing the map.
+`layout.js` places seeded irregular clouds with collision clearance. `contours.js`
+partitions neighbouring clouds along a shared curved distance bisector, leaving a
+28-unit gap between family shores. Inner rings are Euclidean insets of the finished
+shore, so they remain parallel. Each family is also clipped to a 60-unit inset of
+its enclosing root shore (24 units beyond the innermost root ring). This makes the
+inner and outer hierarchy conform along their neighbouring edges. Positions stay
+stable while filtering and browsing.
+Connections appear only on family hover/keyboard focus or particle selection; selection
+takes precedence. Label sizes use their rendered glyph bounds after fonts load.
 
 Validation:
 
