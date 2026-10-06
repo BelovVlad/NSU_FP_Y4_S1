@@ -456,7 +456,8 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.locator('.node[data-id="pip"] .sphere').tap()
         self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
         expect(self.page.locator('#details')).not_to_have_class('right open')
-        expect(self.page.locator('#connectionReadout')).to_be_visible()
+        expect(self.page.locator('#mobileRelation')).to_be_visible()
+        expect(self.page.locator('#connectionReadout')).to_be_hidden()
         expect(self.page.locator('#detailSymbol')).to_have_text('π⁺')
         expect(self.page.locator('.cluster[data-cluster="mesons:lightmesons"]')).to_have_class(re.compile('subgroup-lifted'))
         self.assertGreaterEqual(self.page.locator('.node[data-id="pip"] .sphere').bounding_box()['y'],self.page.locator('#hierarchyBand').bounding_box()['y']+self.page.locator('#hierarchyBand').bounding_box()['height'])
@@ -481,7 +482,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
         for _ in range(50):
             if self.page.locator('.node.route-target').get_attribute('data-id')=='c':break
-            self.page.locator('#connectionNext').tap()
+            self.page.locator('#mobileConnectionNext').tap()
             self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
         self.assertEqual(self.page.locator('.node.route-target').get_attribute('data-id'),'c')
         markers=self.page.locator('.endpoint-mark:visible')
@@ -490,6 +491,13 @@ class ParticleExplorerTests(unittest.TestCase):
             self.assertGreaterEqual(marker.bounding_box()['height'],11)
         expect(self.page.locator('#connectionFromAddress')).to_contain_text('Кварки → К2')
         expect(self.page.locator('#connectionToAddress')).to_contain_text('Барионы → Б7')
+        self.page.locator('#mobileRelationDetails').tap()
+        expect(self.page.locator('#connectionReadout')).to_be_visible()
+        self.page.wait_for_function("document.querySelector('#details').getBoundingClientRect().bottom<=innerHeight+1")
+        header=self.page.locator('#detailHeader').bounding_box()
+        body=self.page.locator('#particleDetails').bounding_box()
+        self.assertLessEqual(header['y']+header['height'],body['y']+.5,'The fixed header never overlays scrolling relation controls')
+        expect(self.page.locator('#mapFooter')).to_be_hidden()
         for selector in ['#connectionPrev','#connectionAll','#connectionAll']:
             self.page.locator(selector).tap()
             self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
@@ -529,7 +537,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.locator('#resetFilters').tap()
         self.page.locator('#closeFilters').tap()
         self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
-        self.page.locator('#mapHome').tap()
+        self.page.locator('#centerBtn').tap()
         self.assertNotEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
         expect(self.page.locator('#minus')).to_be_disabled()
 
@@ -557,7 +565,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.wait_for_function("document.querySelector('#details').getBoundingClientRect().top>=innerHeight")
         camera=self.page.locator('#viewport').get_attribute('transform')
         box=self.page.locator('.node[data-id="pip"] .sphere').bounding_box()
-        self.assertLess(box['x']+box['width'],self.page.locator('#connectionReadout').bounding_box()['x'])
+        self.assertLess(box['x']+box['width'],self.page.locator('#hierarchyBand').bounding_box()['x'])
         self.page.locator('.node[data-id="pip"] .sphere').tap()
         self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
         self.page.locator('#detailBtn').tap()
@@ -664,9 +672,10 @@ class ParticleExplorerTests(unittest.TestCase):
         expect(self.page.locator('#detailSymbol')).to_have_text('p')
         self.page.wait_for_function("document.querySelector('#details').getBoundingClientRect().bottom <= innerHeight + 1 && document.querySelector('#filters').getBoundingClientRect().right <= 0")
         before_sheet_pan = self.page.locator('#viewport').get_attribute('transform')
-        self.page.mouse.move(50, 240)
+        map_top=self.page.evaluate("()=>document.querySelector('#canvasWrap').getBoundingClientRect().top+Number(document.querySelector('#mapSurfaceRect').getAttribute('y'))")
+        self.page.mouse.move(50, map_top+10)
         self.page.mouse.down()
-        self.page.mouse.move(90, 265, steps=5)
+        self.page.mouse.move(90, map_top+20, steps=5)
         self.page.mouse.up()
         self.assertNotEqual(before_sheet_pan, self.page.locator('#viewport').get_attribute('transform'), 'The map stays interactive above the bottom sheet')
         self.page.locator('#closeDetail').click()
@@ -699,7 +708,7 @@ class ParticleExplorerTests(unittest.TestCase):
         touch('touchEnd', [])
         expect(self.page.locator('#minus')).to_be_disabled()
         pinch_scale=float(self.page.locator('#viewport').get_attribute('transform').split('scale(')[1].rstrip(')'))
-        self.page.locator('#mapHome').click()
+        self.page.locator('#centerBtn').click()
         overview_scale=float(self.page.locator('#viewport').get_attribute('transform').split('scale(')[1].rstrip(')'))
         self.assertAlmostEqual(pinch_scale,overview_scale,'Pinch-out stops at the full-map overview')
 
@@ -725,6 +734,46 @@ class ParticleExplorerTests(unittest.TestCase):
                 self.assertFalse(self.page.evaluate('document.documentElement.scrollWidth > innerWidth'))
                 self.assertEqual(self.page.locator('tbody tr').count(),200)
                 self.mode('Граф')
+
+    def test_map_panels_have_reserved_space_and_never_overlap(self):
+        for width,height in [(320,740),(390,844),(768,1024),(844,390),(1024,768),(1600,1000)]:
+            with self.subTest(width=width):
+                self.page.set_viewport_size({'width':width,'height':height})
+                self.page.evaluate('()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))')
+                camera=self.page.locator('#viewport').get_attribute('transform')
+                for particle in ['pdg4112','pdg4224','pip']:
+                    self.page.locator(f'.node[data-id="{particle}"]').focus()
+                    self.page.keyboard.press('Enter')
+                    self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
+                    failures=self.page.evaluate('''()=>{
+                        const rect=s=>document.querySelector(s).getBoundingClientRect(),wrap=rect('#canvasWrap'),footer=rect('#mapFooter'),band=rect('#hierarchyBand'),clip=document.querySelector('#mapSurfaceRect');
+                        const map={top:wrap.top+Number(clip.getAttribute('y')),bottom:wrap.top+Number(clip.getAttribute('y'))+Number(clip.getAttribute('height')),right:wrap.left+Number(clip.getAttribute('width'))},bad=[];
+                        const compact=document.querySelector('#canvasWrap').classList.contains('compact-map');
+                        if(footer.top<map.bottom-.5)bad.push('footer covers cells');
+                        if(compact?band.left<map.right-.5:band.bottom>map.top+.5)bad.push('hierarchy covers cells');
+                        const controls=['.hud','.legend','#mobileRelation'].filter(s=>getComputedStyle(document.querySelector(s)).display!=='none').map(s=>[s,rect(s)]);
+                        for(const [s,b] of controls)if(b.top<footer.top-.5||b.bottom>footer.bottom+.5||b.left<footer.left-.5||b.right>footer.right+.5)bad.push(s+' overflows footer');
+                        for(let i=0;i<controls.length;i++)for(let j=i+1;j<controls.length;j++){
+                            const [a,A]=controls[i],[b,B]=controls[j];
+                            if(Math.min(A.right,B.right)-Math.max(A.left,B.left)>.5&&Math.min(A.bottom,B.bottom)-Math.max(A.top,B.top)>.5)bad.push(a+' overlaps '+b);
+                        }
+                        if(innerWidth>900){
+                            const inspector=rect('#connectionReadout'),card=rect('#particleDetails');
+                            if(inspector.left<wrap.right-.5)bad.push('relation inspector covers map');
+                            if(card.bottom>inspector.top+.5)bad.push('particle card overlaps relation inspector');
+                            if(rect('#detailHeader').bottom>card.top+.5)bad.push('fixed header overlaps particle card');
+                        }
+                        return bad;
+                    }''')
+                    self.assertEqual(failures,[])
+                self.page.locator('.region[data-region="mesons"] .region-title').click()
+                index=self.page.locator('#subgroupIndex')
+                self.assertEqual(index.locator('.subgroup-key').count(),8)
+                self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
+                if(width<=900):
+                    index.locator('[data-cluster="mesons:bottomonium"]').click()
+                    expect(self.page.locator('#hierarchyStatus')).to_contain_text('М8')
+                    self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'),'Scrolling to a subgroup moves only the index')
 
     def test_offline_explorer(self):
         self.page.wait_for_function('!!navigator.serviceWorker.controller', timeout=20000)

@@ -24,15 +24,16 @@
   // Temporary height changes (keyboard, browser bars) must not change the zoom floor.
   let cameraViewportHeight=wrap.clientHeight;
   function cameraInsets(){
-    return isMobile()?(wrap.clientWidth>=600&&cameraViewportHeight<430?{top:90,bottom:54}:{top:232,bottom:112}):{top:253,bottom:112};
+    const compact=isMobile()&&wrap.clientWidth>=600&&cameraViewportHeight<430;
+    return isMobile()?(compact?{top:90,bottom:76,right:Math.min(wrap.clientWidth*.4,340)+24}:{top:206,bottom:200,right:0}):{top:253,bottom:86,right:0};
   }
   function mapInsets(){
-    // Panels overlay the map; selection never changes the camera bounds.
-    return isMobile()?(compactMap()?{top:90,bottom:54}:{top:232,bottom:112}):cameraInsets();
+    // Map chrome has reserved space, independent of selection and panel contents.
+    return isMobile()?(compactMap()?{top:90,bottom:76,right:Math.min(wrap.clientWidth*.4,340)+24}:{top:206,bottom:200,right:0}):cameraInsets();
   }
   function overviewScale() {
-    const {top,bottom}=cameraInsets();
-    return Math.min((wrap.clientWidth-36)/(atlasBounds.right-atlasBounds.left),Math.max(80,cameraViewportHeight-top-bottom-20)/(atlasBounds.bottom-atlasBounds.top));
+    const {top,bottom,right}=cameraInsets();
+    return Math.min((wrap.clientWidth-right-36)/(atlasBounds.right-atlasBounds.left),Math.max(80,cameraViewportHeight-top-bottom-20)/(atlasBounds.bottom-atlasBounds.top));
   }
   const minZoom=()=>overviewScale();
   const labels={light:'Лёгкие мезоны',strange:'Странные мезоны',charm:'Charm / charmonium',bottom:'Bottom / bottomonium',bosons:'Бозоны',baryons:'Барионы',leptons:'Лептоны',quarks:'Кварки'};
@@ -59,6 +60,10 @@
   const normalize = value => String(value).toLocaleLowerCase('ru').replace(/ё/g,'е');
   const isMobile = () => matchMedia('(max-width:900px)').matches;
   const compactMap = () => isMobile()&&wrap.clientWidth>=600&&wrap.clientHeight<430;
+  function placeRelationPanel(){
+    const panel=$('#connectionReadout'),host=isMobile()?$('#linksPanel'):$('#details');
+    if(panel.parentElement!==host){if(isMobile())host.prepend(panel);else host.append(panel);}
+  }
   const noise=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);};
   function hexPoints(r) {
     return Array.from({length:6},(_,i)=>{const a=(i*60-90)*Math.PI/180;return `${Math.cos(a)*r},${Math.sin(a)*r}`;}).join(' ');
@@ -285,13 +290,14 @@
     }
   }
   function updateLevel() {
+    placeRelationPanel();
     wrap.classList.toggle('compact-map',compactMap());
     wrap.classList.toggle('particle-selected',!!selected);
     restoreEndpointLabels();
     const overview=scale<.3,detail=scale>=.65;
     svg.classList.toggle('overview',overview);svg.classList.toggle('detail-level',detail);
     const headingOrder=['mesons','quarks','bosons','leptons','baryons'];
-    const slot=(wrap.clientWidth-32)/5,headY=isMobile()?(compactMap()?52:117):88;
+    const slot=(wrap.clientWidth-32)/5,headY=isMobile()?52:88;
     headingOrder.forEach((id,i)=>{
       const region=regionMap.get(id),holder=hullElements.get(id),title=holder.querySelector('.region-title'),hit=holder.querySelector('rect');
       holder.setAttribute('transform','');
@@ -348,12 +354,6 @@
     });
     $$('#worldDefs marker').forEach(marker=>{const size=12*Math.max(1,.8/scale);marker.setAttribute('markerWidth',size);marker.setAttribute('markerHeight',size);});
     updateEndpointMarks();
-    const readout=$('#connectionReadout'),hud=$('.hud');
-    if(isMobile()&&!compactMap()){
-      const legend=$('.legend'),bottom=Math.max(50,legend.offsetHeight+parseFloat(getComputedStyle(legend).bottom)+12);
-      hud.style.bottom=bottom+'px';readout.style.bottom=(bottom+hud.offsetHeight+21)+'px';
-    }else{hud.style.removeProperty('bottom');readout.style.removeProperty('bottom');}
-    $('#levelInfo').style.bottom=(readout.hidden?108:parseFloat(getComputedStyle(readout).bottom)+readout.offsetHeight+5)+'px';
     $('#levelInfo').textContent=selected?'Белая линия: 1 → 2 · тип связи подписан ниже':regionLevel?'Код на карте = код подгруппы выше · нажмите нужную подгруппу':'Толстая граница — семейство · тонкая — подгруппа';
     updateConnectionReadout();updateOutlineHighlights();
   }
@@ -466,7 +466,9 @@
   }
   function updateConnectionReadout(){
     const box=$('#connectionReadout'),target=hoverTarget||routeTarget,targets=connectionTargets(),relation=activeRelation();
-    box.hidden=!selected||mode!=='graph';if(box.hidden)return;
+    box.hidden=!selected||mode!=='graph';
+    $('.mobile-relation-controls').hidden=box.hidden;
+    if(box.hidden){$('#mobileRelationPair').textContent='Коснитесь частицы';$('#mobileRelationKind').textContent='Связи выбранной частицы появятся здесь';return;}
     $('#connectionEnds').hidden=!relation;$('#connectionTypes').replaceChildren();
     if(!relation){$('#connectionPair').textContent=byId.get(selected).symbol+(targets.length?' · все связи':' · связей нет');$('#connectionKind').textContent=targets.length+' связанных частиц';}
     else {
@@ -488,6 +490,10 @@
     $('#connectionPrev').disabled=$('#connectionNext').disabled=targets.length<2;
     $('#connectionAll').disabled=!targets.length;
     $('#connectionAll').setAttribute('aria-pressed',String(!routeTarget));$('#connectionAll').textContent=routeTarget?'Все связи':'По одной';
+    $('#mobileRelationPair').textContent=$('#connectionPair').textContent;
+    $('#mobileRelationKind').textContent=$('#connectionKind').textContent+' · '+$('#connectionPosition').textContent;
+    $('#mobileConnectionPrev').disabled=$('#connectionPrev').disabled;
+    $('#mobileConnectionNext').disabled=$('#connectionNext').disabled;
   }
   function stepConnection(step){
     const targets=connectionTargets();if(!targets.length)return;
@@ -535,6 +541,7 @@
     const graph=mode==='graph';svg.toggleAttribute('hidden',!graph);content.hidden=graph;
     content.scrollTop=0;
     $('#minimapWrap').hidden=!graph;$('.hud').hidden=!graph;$('.legend').hidden=!graph;
+    $('#mapFooter').hidden=!graph;
     $('#viewTitle').textContent=modeNames[mode];$('#graphToolbar').hidden=!graph;$('#levelInfo').hidden=!graph;$('#nodeTooltip').hidden=true;
     closeSheets(false);applyState();
   }
@@ -615,14 +622,14 @@
     const upper=atlasBounds.top,lower=atlasBounds.bottom,insets=mapInsets(),top=insets.top,bottom=wrap.clientHeight-insets.bottom;
     if(!preserveCamera){
       scale=Math.max(minZoom(),Math.min(maxZoom,scale));
-      const bounds=cameraInsets(),cameraBottom=cameraViewportHeight-bounds.bottom,cameraTop=bounds.top;
-      if((right-left)*scale>wrap.clientWidth-48)tx=Math.max(wrap.clientWidth-24-right*scale,Math.min(24-left*scale,tx));
-      else tx=(wrap.clientWidth-(right+left)*scale)/2;
+      const bounds=cameraInsets(),cameraBottom=cameraViewportHeight-bounds.bottom,cameraTop=bounds.top,cameraWidth=wrap.clientWidth-bounds.right;
+      if((right-left)*scale>cameraWidth-48)tx=Math.max(cameraWidth-24-right*scale,Math.min(24-left*scale,tx));
+      else tx=(cameraWidth-(right+left)*scale)/2;
       if((lower-upper)*scale>cameraBottom-cameraTop)ty=Math.max(cameraBottom-lower*scale,Math.min(cameraTop-upper*scale,ty));
       else ty=cameraTop+(cameraBottom-cameraTop-(lower-upper)*scale)/2-upper*scale;
     }
     const surfaceTop=top;
-    Object.entries({x:0,y:surfaceTop,width:wrap.clientWidth,height:Math.max(1,bottom-surfaceTop)}).forEach(([key,value])=>$('#mapSurfaceRect').setAttribute(key,value));
+    Object.entries({x:0,y:surfaceTop,width:wrap.clientWidth-insets.right,height:Math.max(1,bottom-surfaceTop)}).forEach(([key,value])=>$('#mapSurfaceRect').setAttribute(key,value));
     viewport.setAttribute('transform',`translate(${tx} ${ty}) scale(${scale})`);
     $('#reset').textContent=Math.round(scale*100)+'%';
     $('#minus').disabled=scale<=minZoom()+.000001;
@@ -633,8 +640,8 @@
   }
   function centerOverview() {
     scale=overviewScale();
-    const {top,bottom}=cameraInsets();
-    tx=(wrap.clientWidth-(atlasBounds.left+atlasBounds.right)*scale)/2;
+    const {top,bottom,right}=cameraInsets();
+    tx=(wrap.clientWidth-right-(atlasBounds.left+atlasBounds.right)*scale)/2;
     ty=top+(wrap.clientHeight-top-bottom-(atlasBounds.bottom-atlasBounds.top)*scale)/2-atlasBounds.top*scale;
     applyTransform();
   }
@@ -646,7 +653,7 @@
   function focusParticle(id,minScale=.85) {
     const p=positions.get(id);if(!p)return;
     const available=isMobile()&&$('#details').classList.contains('open')?wrap.clientHeight-$('#details').offsetHeight:wrap.clientHeight;
-    scale=Math.max(scale,minScale);tx=wrap.clientWidth/2-p.x*scale;ty=Math.max(mapInsets().top+p.r*scale,available*.45)-p.y*scale;autoFit=false;applyTransform();
+    scale=Math.max(scale,minScale);tx=(wrap.clientWidth-cameraInsets().right)/2-p.x*scale;ty=Math.max(mapInsets().top+p.r*scale,available*.45)-p.y*scale;autoFit=false;applyTransform();
   }
   function zoomAt(factor,x,y) {
     const next=Math.max(minZoom(),Math.min(maxZoom,scale*factor));
@@ -683,6 +690,7 @@
     const trigger=$('#'+(id==='filters'?'filtersBtn':'detailBtn'));
     closeSheets(false);lastSheetTrigger=trigger;
     const sheet=$('#'+id);sheet.classList.add('open');sheet.scrollTop=0;$('#overlay').hidden=false;
+    if(id==='details')$('#particleDetails').scrollTop=0;
     $('#overlay').classList.toggle('detail-overlay',id==='details');
     $('#'+(id==='filters'?'filtersBtn':'detailBtn')).setAttribute('aria-expanded','true');
     $('#'+(id==='filters'?'closeFilters':'closeDetail')).focus({preventScroll:true});
@@ -775,7 +783,7 @@
   });
   content.addEventListener('change',event=>{if(event.target.id==='localParticle')select(event.target.value);});
   $('#related').addEventListener('click',event=>{const button=event.target.closest('[data-particle]');if(button){const p=byId.get(button.dataset.particle);if(!baseVisible(p)||!matches(p)){clearFilters();}select(p.id);}});
-  $('#plus').onclick=()=>zoomAt(1.25,wrap.clientWidth/2,wrap.clientHeight/2);$('#minus').onclick=()=>zoomAt(.8,wrap.clientWidth/2,wrap.clientHeight/2);
+  $('#plus').onclick=()=>zoomAt(1.25,(wrap.clientWidth-cameraInsets().right)/2,wrap.clientHeight/2);$('#minus').onclick=()=>zoomAt(.8,(wrap.clientWidth-cameraInsets().right)/2,wrap.clientHeight/2);
   $('#reset').onclick=fit;$('#centerBtn').onclick=fit;$('#mapHome').onclick=()=>{selected=null;fit();applyState();};$('#showAll').onclick=()=>{selected=null;focusedRegion=null;focusedCluster=null;$('#mapPath').textContent='Все семейства';applyState();};
   $('#focusParticle').onclick=()=>{const id=current;clearFilters();setMode('graph');select(id);focusParticle(id);};
   $('#openComposition').onclick=()=>{selected=current;setMode('composition');};$('#openDecays').onclick=()=>{selected=current;setMode('decays');};
@@ -814,6 +822,13 @@
   $('#connectionTypes').addEventListener('click',event=>{const b=event.target.closest('[data-kind]');if(b){routeKind=b.dataset.kind;highlightRoutes(null);}});
   $('#connectionPrev').onclick=()=>stepConnection(-1);
   $('#connectionNext').onclick=()=>stepConnection(1);
+  $('#mobileConnectionPrev').onclick=()=>stepConnection(-1);
+  $('#mobileConnectionNext').onclick=()=>stepConnection(1);
+  $('#mobileRelationDetails').onclick=()=>{
+    setDetailTab('links');openSheet('details');
+    const body=$('#particleDetails'),panel=$('#connectionReadout');
+    body.scrollTop=Math.max(0,panel.getBoundingClientRect().top-body.getBoundingClientRect().top-8);
+  };
   $('#connectionAll').onclick=()=>{routeTarget=routeTarget?null:connectionTargets()[0]||null;highlightRoutes(null);};
   buildGraph();updateDetails();applyState();fit();
   if('serviceWorker' in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{});
