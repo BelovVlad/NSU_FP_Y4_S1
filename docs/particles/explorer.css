@@ -166,3 +166,15 @@
 .outline-casing{stroke:#02060c;stroke-width:6.5}.outline-ink{stroke:#69deed;stroke-width:2.2}.cluster-outline.chosen .outline-ink{stroke:#ffd582;stroke-width:2.5}
 .node.family-preview-outside .sphere,.node.subgroup-preview-outside .sphere{fill-opacity:.22;stroke-opacity:.25}
 .subgroup-tag.tag-preview rect{stroke:#69deed;stroke-width:1.6}.hierarchy-band:has(.subgroup-key:hover){border-color:#5ebbc7}
+/* A readable input also prevents Safari from zooming the page when search gets focus. */
+@media(max-width:900px){.top .search input{font-size:16px}}
+/* Short phone screens keep the map usable beside its information panels. */
+@media(max-width:900px){
+  .particle-selected .level-info{display:none}
+  .compact-map .view-status,.compact-map .graph-toolbar,.compact-map .legend,.compact-map .level-info{display:none}
+  .compact-map .hierarchy-band{top:90px;left:auto;right:12px;width:min(40%,340px);max-height:calc(100% - 150px);overflow-y:auto}
+  .compact-map.particle-selected .hierarchy-band{display:none}
+  .compact-map #subgroupIndex{grid-template-columns:1fr}
+  .compact-map .connection-readout{left:auto;right:12px;bottom:58px;width:min(40%,340px);max-height:calc(100% - 148px);overflow-y:auto}
+  .compact-map .hud{bottom:max(12px,env(safe-area-inset-bottom))}
+}
