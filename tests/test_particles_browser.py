@@ -270,6 +270,54 @@ class ParticleExplorerTests(unittest.TestCase):
         expect(self.page.locator('#mapPath')).to_have_text('Барионы')
         self.assertEqual(self.page.locator('#subgroupIndex .subgroup-key').count(),8)
 
+    def test_family_hover_preview_without_selection_or_zoom(self):
+        before=self.page.locator('#viewport').get_attribute('transform')
+        self.page.locator('.region[data-region="mesons"]').hover()
+        expect(self.page.locator('#hierarchyStatus')).to_contain_text('Наведение · М · Мезоны')
+        self.assertEqual(self.page.locator('#subgroupIndex .subgroup-key').count(),8)
+        self.assertEqual(self.page.locator('.cluster-outline.preview:visible').count(),8)
+        self.assertEqual(self.page.locator('.node.selected').count(),0)
+        self.assertEqual(before,self.page.locator('#viewport').get_attribute('transform'))
+        # Each patch is a closed ring with visible space from the shared ribs.
+        gaps=self.page.locator('.cluster-outline.preview:visible').evaluate_all('''groups=>groups.map(g=>{
+            const id=g.dataset.cluster,ink=g.querySelector('.outline-ink'),base=document.querySelector('.cluster[data-cluster="'+id+'"] .subgroup-boundary');
+            const points=d=>[...d.matchAll(/[ML](-?[0-9.e+]+) (-?[0-9.e+]+)/g)].map(m=>({x:+m[1],y:+m[2]}));
+            const polygon=points(base.getAttribute('d')),ring=points(ink.getAttribute('d'));
+            const distance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy)));return Math.hypot(p.x-a.x-t*dx,p.y-a.y-t*dy);};
+            const nearest=p=>Math.min(...polygon.map((a,i)=>distance(p,a,polygon[(i+1)%polygon.length])));
+            return {id,closed:ink.getAttribute('d').trim().endsWith('Z'),gap:Math.min(...ring.map((a,i)=>{const b=ring[(i+1)%ring.length];return nearest({x:(a.x+b.x)/2,y:(a.y+b.y)/2});}))*ink.getScreenCTM().a};
+        })''')
+        self.assertTrue(all(g['closed'] and g['gap']>4.8 for g in gaps),gaps)
+        # The entire first row is still below the names; hover doesn't crop the rings.
+        surface=self.page.locator('#mapSurfaceRect')
+        top=self.page.locator('#canvasWrap').bounding_box()['y']+float(surface.get_attribute('y'))
+        for outline in self.page.locator('.cluster-outline.preview:visible').all():
+            self.assertGreaterEqual(outline.bounding_box()['y'],top)
+        self.page.locator('#subgroupIndex [data-cluster="mesons:lightmesons"]').hover()
+        self.assertEqual(self.page.locator('.cluster-outline.preview:visible').count(),1)
+        self.assertEqual(before,self.page.locator('#viewport').get_attribute('transform'))
+        self.page.mouse.move(1,1)
+        expect(self.page.locator('.cluster-outline.preview:visible')).to_have_count(0)
+        expect(self.page.locator('#hierarchyStatus')).not_to_contain_text('Наведение')
+        self.page.locator('.node[data-id="u"]').focus();self.page.keyboard.press('Enter')
+        self.page.locator('.region[data-region="mesons"]').hover()
+        self.assertEqual(self.page.locator('.node.selected').get_attribute('data-id'),'u')
+        self.page.mouse.move(1,1)
+        expect(self.page.locator('.cluster-outline.chosen:visible')).to_have_count(1)
+        expect(self.page.locator('#hierarchyStatus')).to_contain_text('К1 · Лёгкие')
+
+    def test_map_drag_never_selects_text(self):
+        self.page.locator('.node[data-id="u"]').focus();self.page.keyboard.press('Enter')
+        self.page.mouse.move(700,450);self.page.mouse.down();self.page.mouse.move(950,560,steps=8);self.page.mouse.up()
+        self.assertEqual(self.page.evaluate('getSelection().toString()'),'')
+        self.page.locator('#mapHome').click()
+        self.page.mouse.move(280,178);self.page.mouse.down();self.page.mouse.move(1250,790,steps=8);self.page.mouse.up()
+        self.assertEqual(self.page.evaluate('getSelection().toString()'),'')
+        self.page.locator('.region[data-region="mesons"] .region-title').dblclick()
+        self.assertEqual(self.page.evaluate('getSelection().toString()'),'')
+        self.page.locator('#search').fill('протон');self.page.locator('#search').press('Control+A')
+        self.assertEqual(self.page.locator('#search').evaluate('e=>e.selectionEnd-e.selectionStart'),6)
+
     def test_explicit_route_pair_and_cycle(self):
         self.page.locator('.node[data-id="pip"] .sphere').click()
         expect(self.page.locator('#connectionReadout')).to_be_visible()

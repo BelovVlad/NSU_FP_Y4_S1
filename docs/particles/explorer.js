@@ -23,7 +23,7 @@
   const maxZoom=4;
   function mapInsets(){
     const band=$('#hierarchyBand'),box=band.getBoundingClientRect(),canvas=wrap.getBoundingClientRect();
-    const top=Math.max(isMobile()?164:132,box.bottom-canvas.top+16);
+    const top=Math.max(isMobile()?164:253,box.bottom-canvas.top+16);
     const readout=$('#connectionReadout'),bottom=readout.hidden?112:112+readout.offsetHeight+18;
     return {top,bottom};
   }
@@ -44,6 +44,8 @@
   const atlasBounds={left:Math.min(...[...positions.values()].map(p=>p.x-p.r*Math.sqrt(3)/2)),right:Math.max(...[...positions.values()].map(p=>p.x+p.r*Math.sqrt(3)/2)),top:Math.min(...[...positions.values()].map(p=>p.y-p.r)),bottom:Math.max(...[...positions.values()].map(p=>p.y+p.r))};
 
   let focusedCluster=null,focusedRegion=null,routeTarget=null,hoverTarget=null,routeKind=null;
+  let previewRegion=null,previewCluster=null,previewTimer=null;
+  const boundaryLoops=new Map(),outlineElements=new Map();
   let mode='graph', selected=null, current='pip', activeGroup='all', detailTab='properties';
   let query='', charge='all', spin='all', scale=1, tx=0, ty=0, autoFit=true;
   let sortKey='pdg', sortDirection=1, lastSheetTrigger=null;
@@ -88,6 +90,58 @@
     });
     return related;
   }
+  function closedPath(loops){
+    return loops.map(points=>points.map((p,i)=>(i?'L':'M')+p.x+' '+p.y).join(' ')+' Z').join(' ');
+  }
+  function insetLoop(points,padding){
+    // Each directed shore keeps its own cells on the right, including holes.
+    return points.map((b,i)=>{
+      const a=points[(i+points.length-1)%points.length],c=points[(i+1)%points.length];
+      const u={x:b.x-a.x,y:b.y-a.y},v={x:c.x-b.x,y:c.y-b.y},ul=Math.hypot(u.x,u.y),vl=Math.hypot(v.x,v.y);
+      const first={x:b.x-u.y/ul*padding,y:b.y+u.x/ul*padding},second={x:b.x-v.y/vl*padding,y:b.y+v.x/vl*padding};
+      const cross=u.x*v.y-u.y*v.x;
+      if(Math.abs(cross)<.001)return first;
+      const t=((second.x-first.x)*v.y-(second.y-first.y)*v.x)/cross;
+      return {x:first.x+t*u.x,y:first.y+t*u.y};
+    });
+  }
+  function updateOutlineHighlights(){
+    const active=selected?membership.get(selected):focusedCluster;
+    clusters.forEach(c=>{
+      const holder=outlineElements.get(c.id);if(!holder)return;
+      const preview=c.id===previewCluster||(!previewCluster&&c.root===previewRegion);
+      const chosen=!previewRegion&&!previewCluster&&c.id===active;
+      holder.style.display=(preview||chosen)&&c.ids.some(id=>nodeElements.get(id).style.display!=='none')?'':'none';
+      holder.classList.toggle('chosen',chosen);holder.classList.toggle('preview',preview);
+      clusterElements.get(c.id).classList.toggle('cluster-preview',c.id===previewCluster);
+      if(preview||chosen){
+        const d=closedPath(boundaryLoops.get(c.id).map(loop=>insetLoop(loop,Math.min(12,5/scale))));
+        holder.querySelectorAll('path').forEach(path=>path.setAttribute('d',d));
+      }
+    });
+    nodeElements.forEach((node,id)=>{
+      const cluster=membership.get(id);
+      node.classList.toggle('family-preview-outside',!!previewRegion&&clusterMap.get(cluster).root!==previewRegion);
+      node.classList.toggle('subgroup-preview-outside',!!previewCluster&&cluster!==previewCluster);
+    });
+    regions.forEach(r=>$('#groupBorders').querySelector('.group-border[data-region='+r.id+']').classList.toggle('group-preview',r.id===previewRegion));
+    $$('.subgroup-tag').forEach(tag=>tag.classList.toggle('tag-preview',tag.dataset.cluster===previewCluster||(!previewCluster&&clusterMap.get(tag.dataset.cluster).root===previewRegion)));
+  }
+  function refreshPreview(){
+    updateHierarchy();updateLevel();
+    const {top,bottom}=mapInsets();
+    $('#mapSurfaceRect').setAttribute('y',top);$('#mapSurfaceRect').setAttribute('height',Math.max(1,wrap.clientHeight-top-bottom));
+  }
+  function showFamilyPreview(id){
+    clearTimeout(previewTimer);if(previewRegion===id)return;
+    previewRegion=id;previewCluster=null;refreshPreview();
+  }
+  function schedulePreviewClear(){
+    clearTimeout(previewTimer);previewTimer=setTimeout(()=>{previewRegion=null;previewCluster=null;refreshPreview();},180);
+  }
+  function showClusterPreview(id){
+    if(id)clearTimeout(previewTimer);previewCluster=id;updateOutlineHighlights();
+  }
   function buildGraph() {
     const defs=$('#worldDefs');
     const cosmos=$('#cosmos');
@@ -96,17 +150,27 @@
       const marker=el('marker',{id:'arrow-'+kind,markerWidth:12,markerHeight:12,refX:8,refY:4.5,orient:'auto',markerUnits:'userSpaceOnUse',viewBox:'0 0 9 9'});
       marker.append(el('path',{d:'M0 0 L9 4.5 L0 9 L2 4.5 Z',fill:'#ffffff',stroke:'#070b12','stroke-width':.7,'paint-order':'stroke'}));defs.append(marker);
     });
-    function boundary(ids){
-      const segments=new Map();
+    function traceBoundary(ids){
+      const segments=new Map(),key=p=>p.x.toFixed(4)+','+p.y.toFixed(4);
       ids.forEach(id=>{
         const points=window.PARTICLE_ROUTES.vertices(positions.get(id));
         points.forEach((a,i)=>{
-          const b=points[(i+1)%6],key=[a,b].map(p=>p.x.toFixed(4)+','+p.y.toFixed(4)).sort().join('|');
-          if(segments.has(key))segments.delete(key);else segments.set(key,[a,b]);
+          const b=points[(i+1)%6],edge=[key(a),key(b)].sort().join('|');
+          if(segments.has(edge))segments.delete(edge);else segments.set(edge,[a,b]);
         });
       });
-      return [...segments.values()].map(([a,b])=>`M${a.x} ${a.y} L${b.x} ${b.y}`).join(' ');
+      const outgoing=new Map([...segments.values()].map(([a,b])=>[key(a),[a,b]])),loops=[];
+      while(outgoing.size){
+        const start=outgoing.keys().next().value,loop=[];let current=start;
+        do{
+          const edge=outgoing.get(current);if(!edge)throw new Error('Open subgroup boundary');
+          loop.push(edge[0]);outgoing.delete(current);current=key(edge[1]);
+        }while(current!==start);
+        loops.push(loop);
+      }
+      return loops;
     }
+    const boundary=ids=>closedPath(traceBoundary(ids));
     regions.forEach(region=>{
       const holder=el('g',{class:'region','data-region':region.id,style:'--tone:'+colors[region.tone],role:'button',tabindex:0,'aria-label':region.label+' — '+region.count+' состояний. Приблизить группу.'});
       const {x,y,width,height}=region.header;
@@ -117,11 +181,13 @@
       $('#mapHeadings').append(holder);hullElements.set(region.id,holder);
       $('#groupBorders').append(el('path',{d:boundary(region.children.flatMap(c=>c.ids)),class:'group-cut','data-region':region.id}));
       $('#groupBorders').append(el('path',{d:boundary(region.children.flatMap(c=>c.ids)),class:'group-border','data-region':region.id,stroke:colors[region.tone]}));
-      holder.addEventListener('pointerenter',()=>{$('#groupBorders').querySelector('.group-border[data-region='+region.id+']').classList.add('group-preview');});
-      holder.addEventListener('pointerleave',()=>{$('#groupBorders').querySelector('.group-border[data-region='+region.id+']').classList.remove('group-preview');});
+      holder.addEventListener('pointerenter',event=>{if(event.pointerType!=='touch')showFamilyPreview(region.id);});
+      holder.addEventListener('pointerleave',schedulePreviewClear);
     });
     clusters.forEach(cluster=>{
-      const color=tileColors.get(cluster.id),outline=boundary(cluster.ids);
+      const color=tileColors.get(cluster.id),loops=traceBoundary(cluster.ids),outline=closedPath(loops);boundaryLoops.set(cluster.id,loops);
+      const focus=el('g',{class:'cluster-outline','data-cluster':cluster.id,'pointer-events':'none',style:'display:none'});
+      focus.append(el('path',{class:'outline-casing'}),el('path',{class:'outline-ink'}));$('#clusterOutlines').append(focus);outlineElements.set(cluster.id,focus);
       const gradient=el('linearGradient',{id:'tile-'+cluster.id.replace(':','-'),x1:'0%',y1:'0%',x2:'70%',y2:'100%'});
       [['0%',.57],['100%',.28]].forEach(([offset,opacity])=>gradient.append(el('stop',{offset,'stop-color':color,'stop-opacity':opacity})));defs.append(gradient);
       const holder=el('g',{class:'cluster','data-cluster':cluster.id,style:'--tone:'+color,role:'button',tabindex:0,'aria-label':cluster.label+' — '+cluster.ids.length+' состояний. Приблизить подгруппу.'});
@@ -202,15 +268,15 @@
     });
   }
   function updateHierarchy(){
-    const band=$('#hierarchyBand'),root=selected?clusterMap.get(membership.get(selected)).root:focusedRegion;
+    const band=$('#hierarchyBand'),root=previewRegion||(selected?clusterMap.get(membership.get(selected)).root:focusedRegion);
     band.hidden=mode!=='graph';if(band.hidden)return;
-    const active=selected?membership.get(selected):focusedCluster;
+    const active=previewRegion?null:selected?membership.get(selected):focusedCluster;
     const status=$('#hierarchyStatus'),index=$('#subgroupIndex');
     if(!root){
       status.textContent='Выберите семейство → подгруппу → частицу';index.innerHTML='';band.dataset.level='overview';
     }else{
       const region=regionMap.get(root);band.dataset.level=active?'particles':'families';
-      status.textContent=rootCodes[root]+' · '+region.label+' / '+(active?'Подгруппа '+clusterCodes.get(active)+' · '+clusterName(clusterMap.get(active)):region.children.length+' подгрупп');
+      status.textContent=(previewRegion?'Наведение · ':'')+rootCodes[root]+' · '+region.label+' / '+(active?'Подгруппа '+clusterCodes.get(active)+' · '+clusterName(clusterMap.get(active)):region.children.length+' подгрупп');
       const entries=active?[clusterMap.get(active)]:region.children;
       index.innerHTML=entries.map(c=>`<button class="subgroup-key ${active===c.id?'active':''}" data-cluster="${escape(c.id)}" aria-pressed="${active===c.id}" style="--tone:${tileColors.get(c.id)}"><b>${escape(clusterCodes.get(c.id))}</b><span>${escape(clusterName(c))}</span><small>${c.ids.length}</small></button>`).join('')+(active?`<button class="all-subgroups" data-region="${root}">Все ${region.children.length} подгрупп</button>`:'');
     }
@@ -236,21 +302,21 @@
     });
     restoreTaggedLabels();
     $$('.subgroup-tag').forEach(tag=>tag.remove());
-    const regionLevel=!!focusedRegion&&!focusedCluster&&!selected;
+    const regionLevel=!!previewRegion||!!focusedRegion&&!focusedCluster&&!selected;
     const codedLevel=scale>=.55||regionLevel;
     if(codedLevel){
       clusters.forEach(c=>{
-        if(regionLevel&&c.root!==focusedRegion)return;
+        if(regionLevel&&c.root!==(previewRegion||focusedRegion))return;
         const p=c.ids.map(id=>({...positions.get(id),id})).filter(p=>nodeElements.get(p.id).style.display!=='none').sort((a,b)=>a.y-b.y||a.x-b.x)[0];
         if(!p)return;
-        const compact=scale<.75;
+        const compact=scale<.75&&!selected;
         const tag=el('g',{class:'subgroup-tag','data-cluster':c.id,transform:`translate(${p.x} ${p.y+(compact?0:-18)})`,role:'button',tabindex:0,'aria-label':clusterCodes.get(c.id)+' · '+regionMap.get(c.root).label+' / '+clusterName(c)});
         tag.append(el('rect',{x:compact?-25:-20,y:compact?-12:-6,width:compact?50:40,height:compact?24:13,rx:3,fill:'#070e18',stroke:'#b6c5d8'}));
         const text=el('text',{'text-anchor':'middle',y:compact?6:3,fill:'#fff',style:'font:700 '+(compact?22:11)+'px system-ui'},clusterCodes.get(c.id));tag.append(text);
         tag.append(el('title',{},clusterCodes.get(c.id)+' · '+regionMap.get(c.root).label+' / '+clusterName(c)+' · '+c.ids.length+' состояний'));
         tag.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();focusCluster(c.id);}});
-        tag.addEventListener('pointerenter',()=>clusterElements.get(c.id).classList.add('cluster-preview'));
-        tag.addEventListener('pointerleave',()=>clusterElements.get(c.id).classList.remove('cluster-preview'));
+        tag.addEventListener('pointerenter',()=>showClusterPreview(c.id));
+        tag.addEventListener('pointerleave',()=>showClusterPreview(null));
         $('#subgroupTags').append(tag);
         const label=nodeElements.get(p.id).querySelector('.particle-label'),parts=[...label.querySelectorAll('tspan')];
         taggedLabels.set(p.id,[label,...parts].map(item=>[item,Object.fromEntries(['x','y','transform'].map(key=>[key,item.getAttribute(key)]))]));
@@ -263,7 +329,7 @@
       });
     }
     $('#rootLandmarks').replaceChildren();
-    if(scale<.55&&!focusedRegion&&!selected){
+    if(scale<.55&&!focusedRegion&&!selected&&!previewRegion){
       regions.forEach(r=>{
         const points=r.children.flatMap(c=>c.ids.map(id=>positions.get(id))),point=points.slice().sort((a,b)=>Math.hypot(a.x-r.cx,a.y-r.cy)-Math.hypot(b.x-r.cx,b.y-r.cy))[0];
         const label=el('g',{class:'root-landmark','data-region':r.id,transform:`translate(${point.x} ${point.y})`,role:'button',tabindex:0,'aria-label':r.label});
@@ -279,7 +345,7 @@
     updateEndpointMarks();
     const readout=$('#connectionReadout');$('#levelInfo').style.bottom=(readout.hidden?108:112+readout.offsetHeight+5)+'px';
     $('#levelInfo').textContent=selected?'Белая линия: 1 → 2 · тип связи подписан ниже':regionLevel?'Код на карте = код подгруппы выше · нажмите нужную подгруппу':'Толстая граница — семейство · тонкая — подгруппа';
-    updateConnectionReadout();
+    updateConnectionReadout();updateOutlineHighlights();
   }
   function focusBox(box,limit=2) {
     const {top,bottom}=mapInsets();
@@ -300,7 +366,7 @@
     applyState();focusBox(cluster,2);
   }
   function applyState() {
-    hoverTarget=null;updateHierarchy();
+    clearTimeout(previewTimer);previewRegion=null;previewCluster=null;hoverTarget=null;updateHierarchy();
     if(!selected)routeTarget=null;
     else if(routeTarget&&!connectionTargets().includes(routeTarget))routeTarget=connectionTargets()[0]||null;
     const hits=filtered(),hitIds=new Set(hits.map(p=>p.id)),rel=selected?neighbors(selected):new Set();
@@ -428,8 +494,10 @@
   function ensureRouteInView(){
     if(!selected)return;
     if(!routeTarget){focusParticle(selected,1.1);return;}
-    const a=positions.get(selected),b=positions.get(routeTarget),pad=65;
-    focusBox({x:Math.min(a.x,b.x)-pad,y:Math.min(a.y,b.y)-pad,width:Math.abs(a.x-b.x)+pad*2,height:Math.abs(a.y-b.y)+pad*2},Math.min(Math.max(scale,1.1),1.5));
+    const cluster=clusterMap.get(membership.get(selected)),target=positions.get(routeTarget),pad=22;
+    const left=Math.min(cluster.x,target.x-target.r),top=Math.min(cluster.y,target.y-target.r);
+    const right=Math.max(cluster.x+cluster.width,target.x+target.r),bottom=Math.max(cluster.y+cluster.height,target.y+target.r);
+    focusBox({x:left-pad,y:top-pad,width:right-left+pad*2,height:bottom-top+pad*2},Math.min(Math.max(scale,1.1),1.5));
   }
   function particleChip(p, extra='') {
     return `<button class="particle-chip ${p.id===selected?'selected':''} ${extra}" data-particle="${escape(p.id)}" style="--c:${colorFor(p)}" title="${escape(p.ru)}">${escape(p.symbol)}</button>`;
@@ -628,6 +696,7 @@
   }
   svg.addEventListener('pointerdown',event=>{
     if(event.button>0)return;
+    document.getSelection()?.removeAllRanges();
     const rect=svg.getBoundingClientRect();
     pointers.set(event.pointerId,{x:event.clientX-rect.left,y:event.clientY-rect.top});
     svg.setPointerCapture(event.pointerId);
@@ -729,12 +798,15 @@
     previousSize=next;if(!isMobile())closeSheets(false);
   }).observe(wrap);
   $('#datasetVersion').textContent='PDG 2024 · '+D.particles.length+' состояний';$('#totalCount').textContent=D.particles.length;
+  $('#hierarchyBand').addEventListener('pointerenter',()=>clearTimeout(previewTimer));
+  $('#hierarchyBand').addEventListener('pointerleave',()=>{if(previewRegion)schedulePreviewClear();else showClusterPreview(null);});
+  wrap.addEventListener('selectstart',event=>event.preventDefault());
   $('#subgroupIndex').addEventListener('click',event=>{
     const button=event.target.closest('button');if(!button)return;
     if(button.dataset.cluster)focusCluster(button.dataset.cluster);else if(button.dataset.region)focusRegion(button.dataset.region);
   });
-  $('#subgroupIndex').addEventListener('pointerover',event=>{const c=event.target.closest('[data-cluster]');if(c)clusterElements.get(c.dataset.cluster).classList.add('cluster-preview');});
-  $('#subgroupIndex').addEventListener('pointerout',event=>{const c=event.target.closest('[data-cluster]');if(c)clusterElements.get(c.dataset.cluster).classList.remove('cluster-preview');});
+  $('#subgroupIndex').addEventListener('pointerover',event=>{const c=event.target.closest('[data-cluster]');if(c)showClusterPreview(c.dataset.cluster);});
+  $('#subgroupIndex').addEventListener('pointerout',event=>{const c=event.target.closest('[data-cluster]');if(c)showClusterPreview(null);});
   $('#connectionTypes').addEventListener('click',event=>{const b=event.target.closest('[data-kind]');if(b){routeKind=b.dataset.kind;highlightRoutes(null);}});
   $('#connectionPrev').onclick=()=>stepConnection(-1);
   $('#connectionNext').onclick=()=>stepConnection(1);

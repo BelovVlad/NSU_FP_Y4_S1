@@ -157,3 +157,12 @@
 @media(max-width:900px){.hierarchy-band{top:153px;left:12px;right:12px;padding:6px 7px}#subgroupIndex{grid-template-columns:repeat(2,minmax(0,1fr))}.subgroup-key,.all-subgroups{font-size:11px;min-height:26px;gap:5px;padding:3px 5px}.subgroup-key b{font-size:10px}.hierarchy-band[data-level=overview] #hierarchyStatus{font-size:10px}.connection-readout{padding:7px 8px;gap:5px 7px}.connection-description strong{font-size:14px}.connection-description span{font-size:10px}.connection-ends{gap:8px;padding-top:5px}.connection-ends strong{font-size:10px;line-height:15px}.connection-ends span{font-size:9px;line-height:13px}.connection-controls button{font-size:10px;padding:5px}.connection-types{max-width:150px;flex-wrap:wrap}.legend{font-size:8px;gap:8px 12px}.level-info{font-size:9px}}
 
 .node,.cluster,.subgroup-tag,.region,.root-landmark{-webkit-tap-highlight-color:transparent}
+
+/* Non-selectable map chrome and independent, closed subgroup highlights. */
+.app,.app *{-webkit-user-select:none;user-select:none}.app input,.app textarea{-webkit-user-select:text;user-select:text}
+.subgroup-lifted .subgroup-rim,.cluster-preview .subgroup-rim{stroke:#a6b4c7;stroke-width:.8;stroke-opacity:.6}
+.subgroup-lifted .subgroup-boundary,.cluster-preview .subgroup-boundary{stroke-width:5}
+.cluster-outline path{fill:none;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round;pointer-events:none}
+.outline-casing{stroke:#02060c;stroke-width:6.5}.outline-ink{stroke:#69deed;stroke-width:2.2}.cluster-outline.chosen .outline-ink{stroke:#ffd582;stroke-width:2.5}
+.node.family-preview-outside .sphere,.node.subgroup-preview-outside .sphere{fill-opacity:.22;stroke-opacity:.25}
+.subgroup-tag.tag-preview rect{stroke:#69deed;stroke-width:1.6}.hierarchy-band:has(.subgroup-key:hover){border-color:#5ebbc7}
