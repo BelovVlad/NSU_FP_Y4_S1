@@ -77,7 +77,13 @@ class ParticleExplorerTests(unittest.TestCase):
         self.context.close()
         self.assertEqual(self.errors, [], 'Browser JavaScript errors')
 
+    def reveal(self, edge):
+        if self.page.viewport_size['width']>900:
+            self.page.mouse.move(self.page.viewport_size['width']/2 if edge=='top' else 1,1 if edge=='top' else 180)
+            self.page.wait_for_function("document.querySelector("+repr('#mainMenu' if edge=='top' else '#filters')+").getBoundingClientRect()."+('top' if edge=='top' else 'left')+">=-.5")
+
     def mode(self, name):
+        self.reveal('top')
         self.page.get_by_role('button', name=name, exact=True).click()
 
     def test_graph_selection_filters_and_zoom(self):
@@ -89,8 +95,10 @@ class ParticleExplorerTests(unittest.TestCase):
         expect(self.page.locator('.node[data-id="pip"]')).to_have_attribute('aria-pressed', 'true')
         self.assertGreater(self.page.locator('.edge.active').count(), 0)
         self.assertGreater(self.page.locator('.node.dim').count(), 21)
+        self.reveal('left')
         self.page.locator('[data-edge="weak"]').uncheck()
         self.assertEqual(self.page.locator('.edge[data-kind="weak"]:visible').count(), 0)
+        self.reveal('left')
         self.page.locator('[data-edge="family"]').uncheck()
         self.assertEqual(self.page.locator('.edge[data-kind="family"]:visible').count(), 0)
         self.page.locator('#showAll').click()
@@ -104,6 +112,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.node.selected').count(), 0)
         self.assertEqual(self.page.locator('.cluster-muted').count(), 0)
         self.assertEqual(self.page.locator('.node.dim').count(), 0)
+        self.reveal('left')
         self.page.locator('.filter[data-group="baryons"]').click()
         self.assertEqual(self.page.locator('.node:visible').count(), 66)
         self.assertEqual(self.page.locator('.edge[data-from="pip"]:visible').count(), 0)
@@ -114,6 +123,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.locator('#plus').click()
         self.page.locator('#plus').click()
         rect = self.page.locator('#miniViewport').get_attribute('x')
+        self.reveal('left')
         self.page.locator('#minimap').click(position={'x': 20, 'y': 20})
         self.assertNotEqual(rect, self.page.locator('#miniViewport').get_attribute('x'))
 
@@ -240,25 +250,17 @@ class ParticleExplorerTests(unittest.TestCase):
             self.page.locator(f'.region[data-region="{root}"]').focus()
             self.page.keyboard.press('Enter')
             keys=self.page.locator('#subgroupIndex .subgroup-key')
-            tags=self.page.locator('.subgroup-tag')
-            self.assertEqual(keys.count(),tags.count())
+            self.assertGreater(keys.count(),0)
+            self.assertEqual(self.page.locator('.subgroup-tag,.root-landmark,#nodeTooltip,.node title').count(),0)
             for key in keys.all():
                 cluster=key.get_attribute('data-cluster')
                 code=key.locator('b').inner_text()
-                tag=self.page.locator(f'.subgroup-tag[data-cluster="{cluster}"]')
-                self.assertEqual(tag.locator('text').text_content(),code)
-                self.assertIn(key.locator('span').inner_text(),tag.get_attribute('aria-label'))
+                name=key.locator('span').inner_text()
                 key.hover()
                 expect(self.page.locator(f'.cluster[data-cluster="{cluster}"]')).to_have_class(re.compile('cluster-preview'))
+                expect(self.page.locator('#hierarchyStatus')).to_contain_text(code+' · '+name)
+                expect(key).to_have_class(re.compile('preview'))
             self.page.mouse.move(1,1)
-            collisions=self.page.evaluate('''()=>{
-                const labels=[...document.querySelectorAll('.particle-label')].filter(t=>getComputedStyle(t).opacity==='1');
-                return [...document.querySelectorAll('.subgroup-tag rect')].flatMap(tag=>{
-                    const a=tag.getBoundingClientRect();
-                    return labels.filter(t=>{const b=t.getBoundingClientRect();return Math.min(a.right,b.right)-Math.max(a.left,b.left)>.5&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>.5;}).map(t=>t.closest('.node').dataset.id);
-                });
-            }''')
-            self.assertEqual(collisions,[],root+': subgroup codes never cover particle glyphs')
         self.page.locator('.region[data-region="baryons"]').focus()
         self.page.keyboard.press('Enter')
         self.page.locator('#subgroupIndex [data-cluster="baryons:charmedbaryons"]').click()
@@ -269,6 +271,59 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.locator('#subgroupIndex .all-subgroups').click()
         expect(self.page.locator('#mapPath')).to_have_text('Барионы')
         self.assertEqual(self.page.locator('#subgroupIndex .subgroup-key').count(),8)
+
+    def test_particle_hover_names_stay_above_map_and_restore_selection(self):
+        self.page.locator('.node[data-id="pip"]').focus();self.page.keyboard.press('Enter')
+        before=self.page.locator('#viewport').get_attribute('transform')
+        labels=self.page.locator('.particle-label').evaluate_all("nodes=>nodes.map(n=>n.outerHTML)")
+        self.page.locator('.node[data-id="u"] .sphere').hover()
+        expect(self.page.locator('#hierarchyStatus')).to_contain_text('Наведение · К · Кварки / Подгруппа К1 · Лёгкие')
+        expect(self.page.locator('#mapInspection')).to_contain_text('u ·')
+        expect(self.page.locator('.region[data-region="quarks"]')).to_have_class(re.compile('region-preview'))
+        expect(self.page.locator('.cluster-outline.preview:visible')).to_have_count(1)
+        self.assertEqual(self.page.locator('.node.selected').get_attribute('data-id'),'pip')
+        self.assertEqual(self.page.locator('.subgroup-tag,.root-landmark,#nodeTooltip,.node title').count(),0)
+        box=self.page.locator('#hierarchyBand').bounding_box()
+        top=self.page.locator('#canvasWrap').bounding_box()['y']+float(self.page.locator('#mapSurfaceRect').get_attribute('y'))
+        self.assertLessEqual(box['y']+box['height'],top)
+        self.page.mouse.move(600,940)
+        expect(self.page.locator('#hierarchyStatus')).to_contain_text('М1 · Лёгкие')
+        expect(self.page.locator('#hierarchyStatus')).not_to_contain_text('Наведение')
+        expect(self.page.locator('#mapInspection')).to_contain_text('π⁺ ·')
+        expect(self.page.locator('.cluster-outline.chosen:visible')).to_have_count(1)
+        self.assertEqual(labels,self.page.locator('.particle-label').evaluate_all("nodes=>nodes.map(n=>n.outerHTML)"))
+        self.assertEqual(before,self.page.locator('#viewport').get_attribute('transform'))
+        self.page.locator('.cluster[data-cluster="bosons:weakboson"]').focus()
+        self.assertEqual(self.page.locator('.cluster[data-cluster="bosons:weakboson"]').evaluate("e=>getComputedStyle(e).outlineStyle"),'none')
+
+    def test_desktop_edge_menus_hover_focus_and_camera(self):
+        camera=self.page.locator('#viewport').get_attribute('transform')
+        canvas=self.page.locator('#canvasWrap').bounding_box()
+        self.assertLessEqual(self.page.locator('#mainMenu').bounding_box()['y']+78,1)
+        self.assertLessEqual(self.page.locator('#filters').bounding_box()['x']+230,1)
+        # Actual screen edges also reveal the panels, with no click.
+        self.page.mouse.move(700,1)
+        expect(self.page.locator('#topReveal')).to_have_attribute('aria-expanded','true')
+        self.page.wait_for_function("document.querySelector('#mainMenu').getBoundingClientRect().top>=-.5")
+        self.page.locator('#search').click();self.page.locator('#search').fill('')
+        self.page.mouse.move(600,500);self.page.wait_for_timeout(350)
+        expect(self.page.locator('#topReveal')).to_have_attribute('aria-expanded','true')
+        self.page.locator('#search').press('Escape')
+        expect(self.page.locator('#topReveal')).to_have_attribute('aria-expanded','false')
+        self.page.mouse.move(1,300)
+        expect(self.page.locator('#leftReveal')).to_have_attribute('aria-expanded','true')
+        self.page.wait_for_function("document.querySelector('#filters').getBoundingClientRect().left>=-.5")
+        self.page.locator('#filters .panel-heading').first.hover()
+        self.page.wait_for_timeout(350)
+        expect(self.page.locator('#leftReveal')).to_have_attribute('aria-expanded','true')
+        self.page.mouse.move(600,500)
+        expect(self.page.locator('#leftReveal')).to_have_attribute('aria-expanded','false')
+        self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
+        self.assertEqual(canvas,self.page.locator('#canvasWrap').bounding_box())
+        self.page.locator('#search').focus()
+        expect(self.page.locator('#topReveal')).to_have_attribute('aria-expanded','true')
+        self.page.keyboard.press('Escape')
+        self.assertEqual(self.page.evaluate('document.activeElement.id'),'topReveal')
 
     def test_family_hover_preview_without_selection_or_zoom(self):
         before=self.page.locator('#viewport').get_attribute('transform')
@@ -327,7 +382,7 @@ class ParticleExplorerTests(unittest.TestCase):
         highlighted=self.page.locator('.edge.route-highlight:visible')
         self.assertGreater(highlighted.count(),0)
         self.assertTrue(highlighted.evaluate_all("edges=>edges.every(e=>[e.dataset.from,e.dataset.to].includes('pip'))"))
-        self.assertIn(self.page.locator('.node.route-target title').text_content().split(' · ')[0],self.page.locator('#connectionPair').inner_text())
+        self.assertIn(self.page.locator('.node.route-target').get_attribute('aria-label').split(' — ')[0],self.page.locator('#connectionPair').inner_text())
         self.assertTrue(self.page.locator('.edge.route-muted:visible').evaluate_all('edges=>edges.every(e=>+getComputedStyle(e).opacity<.05)'))
         self.page.locator('#connectionNext').click()
         self.assertNotEqual(target,self.page.locator('.node.route-target').get_attribute('data-id'))
@@ -342,7 +397,10 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.edge.route-muted:visible').count(),0)
         self.assertEqual(self.page.locator('.node.route-target').count(),0)
         for kind in ['strong','em','weak','composition','mixing','family']:
+            self.reveal('left')
             self.page.locator(f'[data-edge="{kind}"]').uncheck()
+        self.page.mouse.move(600,940)
+        expect(self.page.locator('#leftReveal')).to_have_attribute('aria-expanded','false')
         self.page.locator('.node[data-id="pip"] .sphere').click()
         self.assertEqual(self.page.locator('.edge:visible').count(),0)
         expect(self.page.locator('#connectionPair')).to_contain_text('связей нет')
@@ -381,6 +439,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.locator('#related [data-particle="u"]').click()
         expect(self.page.locator('#detailSymbol')).to_have_text('u')
         self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
+        self.reveal('left')
         self.page.locator('.filter[data-group="baryons"]').click()
         self.page.locator('#resetFilters').click()
         self.assertEqual(camera,self.page.locator('#viewport').get_attribute('transform'))
@@ -402,7 +461,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.node.route-from').get_attribute('data-id'),source)
         self.assertEqual(self.page.locator('.node.route-to').get_attribute('data-id'),destination)
         for suffix,particle in [('From',source),('To',destination)]:
-            symbol=self.page.locator(f'.node[data-id="{particle}"] title').text_content().split(' · ')[0]
+            symbol=self.page.locator(f'.node[data-id="{particle}"]').get_attribute('aria-label').split(' — ')[0]
             expect(self.page.locator('#connection'+suffix+'Symbol')).to_contain_text(symbol)
             expect(self.page.locator('#connection'+suffix+'Address')).to_contain_text('Мезоны → М1 Лёгкие')
         self.assertEqual(self.page.locator('.endpoint-mark:visible').count(),2)
@@ -650,6 +709,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.locator('.channel-products [data-particle="d0"]').first.click()
         expect(self.page.locator('.local-parent')).to_have_text('D⁰')
         self.mode('Таблица')
+        self.reveal('left')
         self.page.locator('.filter[data-group="bottom"]').click()
         self.assertEqual(self.page.locator('tbody tr').count(),23)
         self.page.locator('#resetFilters').click()
@@ -662,6 +722,7 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.locator('#filtersBtn').click()
         expect(self.page.locator('#filters')).to_have_class('left open')
         expect(self.page.locator('#filtersBtn')).to_have_attribute('aria-expanded', 'true')
+        self.reveal('left')
         self.page.locator('.filter[data-group="baryons"]').click()
         expect(self.page.locator('#overlay')).to_be_hidden()
         self.page.locator('#plus').click()
@@ -688,9 +749,9 @@ class ParticleExplorerTests(unittest.TestCase):
         self.page.locator('#plus').click()
         self.page.locator('#plus').click()
         before = self.page.locator('#viewport').get_attribute('transform')
-        self.page.mouse.move(100, 240)
+        self.page.mouse.move(100, map_top+30)
         self.page.mouse.down()
-        self.page.mouse.move(150, 290, steps=5)
+        self.page.mouse.move(150, map_top+80, steps=5)
         self.page.mouse.up()
         self.assertNotEqual(before, self.page.locator('#viewport').get_attribute('transform'))
         # CDP delivers real two-finger input through the browser's Pointer Events pipeline.
