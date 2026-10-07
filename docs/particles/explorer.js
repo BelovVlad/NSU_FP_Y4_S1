@@ -24,12 +24,12 @@
   // Temporary height changes (keyboard, browser bars) must not change the zoom floor.
   let cameraViewportHeight=wrap.clientHeight;
   function cameraInsets(){
-    const compact=isMobile()&&wrap.clientWidth>=600&&cameraViewportHeight<430;
-    return isMobile()?(compact?{top:90,bottom:76,right:Math.min(wrap.clientWidth*.4,340)+24}:{top:206,bottom:200,right:0}):{top:253,bottom:86,right:0};
+    const compact=isMobile()&&wrap.clientWidth>=600&&cameraViewportHeight<500;
+    return isMobile()?(compact?{top:80,bottom:72,right:Math.min(wrap.clientWidth*.4,340)+24}:{top:156,bottom:112,right:0}):{top:253,bottom:86,right:0};
   }
   function mapInsets(){
     // Map chrome has reserved space, independent of selection and panel contents.
-    return isMobile()?(compactMap()?{top:90,bottom:76,right:Math.min(wrap.clientWidth*.4,340)+24}:{top:206,bottom:200,right:0}):cameraInsets();
+    return isMobile()?(compactMap()?{top:80,bottom:72,right:Math.min(wrap.clientWidth*.4,340)+24}:{top:156,bottom:112,right:0}):cameraInsets();
   }
   function overviewScale() {
     const {top,bottom,right}=cameraInsets();
@@ -58,8 +58,8 @@
   const routes=window.PARTICLE_ROUTES.create(diagram);
   const escape = value => String(value ?? '—').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const normalize = value => String(value).toLocaleLowerCase('ru').replace(/ё/g,'е');
-  const isMobile = () => matchMedia('(max-width:900px)').matches;
-  const compactMap = () => isMobile()&&wrap.clientWidth>=600&&wrap.clientHeight<430;
+  const isMobile = () => matchMedia('(max-width:900px), (hover:none) and (pointer:coarse)').matches;
+  const compactMap = () => isMobile()&&wrap.clientWidth>=600&&wrap.clientHeight<500;
   function placeRelationPanel(){
     const panel=$('#connectionReadout'),host=isMobile()?$('#linksPanel'):$('#details');
     if(panel.parentElement!==host){if(isMobile())host.prepend(panel);else host.append(panel);}
@@ -307,7 +307,7 @@
     const overview=scale<.3,detail=scale>=.65;
     svg.classList.toggle('overview',overview);svg.classList.toggle('detail-level',detail);
     const headingOrder=['mesons','quarks','bosons','leptons','baryons'];
-    const slot=(wrap.clientWidth-32)/5,headY=isMobile()?52:88;
+    const slot=(wrap.clientWidth-32)/5,headY=isMobile()?44:88;
     headingOrder.forEach((id,i)=>{
       const region=regionMap.get(id),holder=hullElements.get(id),title=holder.querySelector('.region-title'),hit=holder.querySelector('rect');
       holder.setAttribute('transform','');
@@ -648,6 +648,7 @@
   }
   function closeSheets(restoreFocus=true) {
     $('#filters').classList.remove('open');$('#details').classList.remove('open');$('#overlay').hidden=true;
+    $('#mainMenu').classList.remove('open');if(isMobile())$('#topReveal').setAttribute('aria-expanded','false');
     $('#overlay').classList.remove('detail-overlay');
     $('#filtersBtn').setAttribute('aria-expanded','false');$('#detailBtn').setAttribute('aria-expanded','false');
     if(restoreFocus&&lastSheetTrigger?.isConnected)lastSheetTrigger.focus({preventScroll:true});
@@ -656,13 +657,13 @@
   function openSheet(id) {
     if(!isMobile())return;
     // Returning to search would reopen the phone keyboard after closing the card.
-    const trigger=$('#'+(id==='filters'?'filtersBtn':'detailBtn'));
+    const trigger=$('#'+(id==='details'?'detailBtn':'topReveal'));
     closeSheets(false);lastSheetTrigger=trigger;
     const sheet=$('#'+id);sheet.classList.add('open');sheet.scrollTop=0;$('#overlay').hidden=false;
     if(id==='details')$('#particleDetails').scrollTop=0;
     $('#overlay').classList.toggle('detail-overlay',id==='details');
-    $('#'+(id==='filters'?'filtersBtn':'detailBtn')).setAttribute('aria-expanded','true');
-    $('#'+(id==='filters'?'closeFilters':'closeDetail')).focus({preventScroll:true});
+    $('#'+(id==='mainMenu'?'topReveal':id==='filters'?'filtersBtn':'detailBtn')).setAttribute('aria-expanded','true');
+    $('#'+(id==='mainMenu'?'closeMenu':id==='filters'?'closeFilters':'closeDetail')).focus({preventScroll:true});
   }
   // One gesture state handles mouse, pen and simultaneous touch pointers in CSS pixels.
   const pointers=new Map();let gesture=null,moved=false,suppressClick=false,pressedNode=null,pressedCluster=null,pressedRegion=null;
@@ -758,6 +759,7 @@
   $('#openComposition').onclick=()=>{selected=current;setMode('composition');};$('#openDecays').onclick=()=>{selected=current;setMode('decays');};
   $('#filtersBtn').onclick=()=>openSheet('filters');$('#detailBtn').onclick=()=>openSheet('details');
   $('#closeFilters').onclick=()=>closeSheets();$('#closeDetail').onclick=()=>{closeSheets();if(!isMobile()){selected=null;applyState();}};
+  $('#closeMenu').onclick=()=>closeSheets();
   $('#overlay').onclick=()=>closeSheets();
   // Menus overlay the desktop edges; opening them never resizes the map or its camera.
   let keyboardNavigation=false;
@@ -777,7 +779,10 @@
     });
     panel.addEventListener('focusin',()=>{if(!isMobile()){clearTimeout(timer);setOpen(true);}});
     panel.addEventListener('focusout',leave);
-    handle.onclick=()=>{if(!isMobile()){clearTimeout(timer);setOpen(!panel.classList.contains('peek-open'));}};
+    handle.onclick=()=>{
+      if(isMobile()){if(panel.id==='mainMenu')panel.classList.contains('open')?closeSheets():openSheet('mainMenu');}
+      else{clearTimeout(timer);setOpen(!panel.classList.contains('peek-open'));}
+    };
     return {handle,panel,enter,outside:()=>{if(pointerInside)leave();},close:()=>{clearTimeout(timer);pointerInside=false;setOpen(false);}};
   });
   document.addEventListener('pointermove',event=>{
@@ -789,7 +794,7 @@
       if(!atEdge&&!menu.panel.contains(event.target)&&!menu.handle.contains(event.target))menu.outside();
     });
   });
-  matchMedia('(max-width:900px)').addEventListener('change',()=>edgeMenus.forEach(menu=>menu.close()));
+  matchMedia('(max-width:900px), (hover:none) and (pointer:coarse)').addEventListener('change',()=>edgeMenus.forEach(menu=>menu.close()));
   // Keep the minimap with the filters instead of floating over the expanded map.
   $('#filters').append($('#minimapWrap'));
   document.addEventListener('keydown',event=>{
@@ -801,7 +806,7 @@
       });
     }
     if(event.key==='Tab'&&isMobile()&&!$('#overlay').hidden){
-      const sheet=$('#filters.open')||$('#details.open');const controls=[...sheet.querySelectorAll('button,input,select,a')].filter(item=>!item.disabled&&item.getClientRects().length);
+      const sheet=$('#filters.open')||$('#details.open')||$('#mainMenu.open');const controls=[...sheet.querySelectorAll('button,input,select,a')].filter(item=>!item.disabled&&item.getClientRects().length);
       const first=controls[0],last=controls.at(-1);
       if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
     }
