@@ -58,6 +58,7 @@
   const routes=window.PARTICLE_ROUTES.create(diagram);
   const escape = value => String(value ?? '—').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const normalize = value => String(value).toLocaleLowerCase('ru').replace(/ё/g,'е');
+  const spinLabel = value => value==='?'?'Не установлен':String(value).replace('>=','≥').replace('2++ or 4','2 или 4');
   const isMobile = () => matchMedia('(max-width:900px), (hover:none) and (pointer:coarse)').matches;
   const compactMap = () => isMobile()&&wrap.clientWidth>=600&&wrap.clientHeight<500;
   function placeRelationPanel(){
@@ -295,7 +296,7 @@
       $('#hierarchyStatus').textContent=(hovering?'Наведение · ':'')+rootCodes[root]+' · '+regionMap.get(root).label+' / '+(c?'Подгруппа '+clusterCodes.get(c.id)+' · '+clusterName(c):regionMap.get(root).children.length+' подгрупп');
     }
     const p=byId.get(inspectedParticle||(!previewRegion&&!previewCluster?selected:null));
-    $('#mapInspection').textContent=p?p.symbol+' · '+p.ru+(isMobile()?'':' · PDG '+p.pdg):hovering?(previewRegion&&!previewCluster?'Голубые контуры — подгруппы семейства':'Голубой контур показывает подгруппу'):c?'Подгруппа выделена золотым контуром':'Названия сверху · выбор не меняет масштаб';
+    $('#mapInspection').textContent=p?p.symbol+' · '+p.ru:hovering?(previewRegion&&!previewCluster?'Голубые контуры — подгруппы семейства':'Голубой контур показывает подгруппу'):c?'Подгруппа выделена золотым контуром':'Названия сверху · выбор не меняет масштаб';
     regions.forEach(r=>hullElements.get(r.id).classList.toggle('region-preview',hovering&&r.id===root));
     $$('#subgroupIndex .subgroup-key').forEach(key=>key.classList.toggle('preview',key.dataset.cluster===previewCluster));
   }
@@ -476,17 +477,16 @@
     const p=byId.get(current),group=groups.get(p.group);
     $('#detailSymbol').textContent=p.symbol;$('#detailSymbol').style.setProperty('--c',colorFor(p));
     $('#detailName').textContent=p.name+' · '+p.ru;
-    $('#metricStrip').innerHTML=[['Масса',p.mass],['Заряд',p.charge],['Спин J',p.spin]].map(([label,value],i)=>`<div><small>${escape(label)}</small><strong class="${i===0?'mass':''}">${escape(value)}</strong></div>`).join('');
-    const rows=[['Символ',p.symbol],['Название',p.ru],['PDG ID',p.pdg],['Класс',group.label],['Чётность P',p.parity],['C-чётность',p.cparity],['Кварковый состав',p.quarks],['Жизнь / ширина',p.lifetime]];
+    $('#metricStrip').innerHTML=[['Масса',p.mass],['Заряд',p.charge],['Спин J',spinLabel(p.spin)]].map(([label,value],i)=>`<div><small>${escape(label)}</small><strong class="${i===0?'mass':''}">${escape(value)}</strong></div>`).join('');
+    const rows=[['Символ',p.symbol],['Название',p.ru],['Код частицы',p.pdg],['Класс',group.label],['Чётность P',p.parity],['C-чётность',p.cparity],['Кварковый состав',p.quarks],['Жизнь / ширина',p.lifetime]];
     $('#props').innerHTML=rows.map(([name,value])=>`<dt>${escape(name)}</dt><dd>${escape(value)}</dd>`).join('');
-    $('#dataSource').innerHTML=p.source?'<a href="https://pdg.lbl.gov/2024/api/index.html" target="_blank" rel="noopener">PDG 2024 · '+escape(p.source.particle)+'</a>':'Исходная выборка · PDG 2024';
     $('#decays').innerHTML=p.decays.length?p.decays.map(([channel,br])=>`<div class="decay-row"><span>${escape(channel)}</span><small>${escape(br)}</small></div>`).join(''):'<p class="help">'+escape(p.lifetime)+'<br>Каналы распада в наборе не указаны.</p>';
     const kinds=new Map();
     D.edges.forEach(e=>{if(e.from===current||e.to===current){const id=e.from===current?e.to:e.from;if(!kinds.has(id))kinds.set(id,new Set());kinds.get(id).add(edgeNames[e.kind]);}});
     $('#related').innerHTML=[...kinds].map(([id,k])=>{
       const related=byId.get(id);
       return `<button class="related-button" data-particle="${escape(id)}"><i class="dot" style="--c:${colorFor(related)}"></i><strong>${escape(related.symbol)}</strong><span>${escape(related.ru)}<small>${escape([...k].join(' · '))}</small></span><span class="chevron">→</span></button>`;
-    }).join('')||'<p class="help">Связи в демонстрационном наборе не указаны.</p>';
+    }).join('')||'<p class="help">Связи этой частицы не указаны.</p>';
   }
   function select(id,open=false) {
     if(!byId.has(id)) return;
@@ -519,13 +519,13 @@
     if(key==='pdg')return p.pdg;
     if(key==='mass'&&Number.isFinite(p.massValue))return p.massValue;
     if(key==='spin'||key==='charge'){
-      const text=p[key].replace('−','-');const [a,b]=text.split('/').map(Number);return b?a/b:a;
+      const text=p[key].replace('−','-');const [a,b]=text.split('/').map(Number),value=b?a/b:a;return Number.isFinite(value)?value:null;
     }
     const match=p.mass.match(/\d+(?:\.\d+)?/);if(!match)return null;
     return Number(match[0])*(p.mass.includes('GeV')?1000:p.mass.includes('keV')?.001:1);
   }
   function renderTable(hits) {
-    const columns=[['symbol','Частица'],['ru','Название'],['pdg','PDG ID'],['group','Семейство'],['mass','Масса'],['charge','Заряд'],['spin','Спин J'],['quarks','Состав'],['lifetime','Жизнь / ширина']];
+    const columns=[['symbol','Частица'],['ru','Название'],['pdg','Код частицы'],['group','Семейство'],['mass','Масса'],['charge','Заряд'],['spin','Спин J'],['quarks','Состав'],['lifetime','Жизнь / ширина']];
     const sorted=[...hits].sort((a,b)=>{
       if(['mass','charge','spin','pdg'].includes(sortKey)){
         const av=numeric(a,sortKey),bv=numeric(b,sortKey);
@@ -535,7 +535,7 @@
       const av=sortKey==='group'?groups.get(a.group).label:a[sortKey],bv=sortKey==='group'?groups.get(b.group).label:b[sortKey];
       return String(av).localeCompare(String(bv),'ru')*sortDirection;
     });
-    return `<h2>Таблица частиц</h2><p class="mode-intro">${hits.length} состояний · Нажмите заголовок для сортировки, символ — для выбора частицы. Поиск и фильтры действуют во всех режимах.</p><div class="table-wrap"><table class="particle-table"><thead><tr>${columns.map(([key,label])=>`<th scope="col" aria-sort="${key===sortKey?(sortDirection===1?'ascending':'descending'):'none'}"><button data-sort="${key}">${label}${key===sortKey?(sortDirection===1?' ↑':' ↓'):''}</button></th>`).join('')}</tr></thead><tbody>${sorted.map(p=>`<tr class="${selected===p.id?'selected':''}">${columns.map(([key])=>`<td>${key==='symbol'?`<button class="table-particle" data-particle="${p.id}" aria-label="${escape(p.symbol+' — '+p.ru)}" style="color:${colorFor(p)}">${escape(p.symbol)}</button>`:escape(key==='group'?groups.get(p.group).label:p[key])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    return `<h2>Таблица частиц</h2><p class="mode-intro">${hits.length} состояний · Нажмите заголовок для сортировки, символ — для выбора частицы. Поиск и фильтры действуют во всех режимах.</p><div class="table-wrap"><table class="particle-table"><thead><tr>${columns.map(([key,label])=>`<th scope="col" aria-sort="${key===sortKey?(sortDirection===1?'ascending':'descending'):'none'}"><button data-sort="${key}">${label}${key===sortKey?(sortDirection===1?' ↑':' ↓'):''}</button></th>`).join('')}</tr></thead><tbody>${sorted.map(p=>`<tr class="${selected===p.id?'selected':''}">${columns.map(([key])=>`<td>${key==='symbol'?`<button class="table-particle" data-particle="${p.id}" aria-label="${escape(p.symbol+' — '+p.ru)}" style="color:${colorFor(p)}">${escape(p.symbol)}</button>`:escape(key==='group'?groups.get(p.group).label:key==='spin'?spinLabel(p.spin):p[key])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   }
   function family(ids,title,hits,color) {
     const particles=hits.filter(p=>ids.includes(p.group));
@@ -551,6 +551,10 @@
   function quarkTokens(p) {
     return p.quarks.replace(/\bmixture\b/g,'').match(/[udscbtū]̄?/g)||[];
   }
+  function constituentFor(token){
+    const flavor=token==='ū'?'u':token[0],anti=token==='ū'||token.includes('̄');
+    return byPdg.get({u:2,d:1,s:3,c:4,b:5,t:6}[flavor]*(anti?-1:1));
+  }
   function renderComposition(hits,p) {
     const hadron=['light','strange','charm','bottom','baryons'].includes(p.group);
     const tokens=hadron?quarkTokens(p):[];
@@ -558,21 +562,21 @@
     const compositionCaption=!tokens.length?'Однозначный валентный состав в этой выборке не указан.':mixed?'Смешанное состояние: показаны компоненты сохранённой формулы, а не один фиксированный набор кварков.':'Кнопки компонентов открывают свойства соответствующего кваркового аромата. Черта обозначает антикварк.';
     const components=tokens.map(token=>{
       const anti=token==='ū'||token.includes('̄');
-      const flavor=token==='ū'?'u':token[0];
-      return `<button class="component-orb" data-particle="${flavor}" title="${anti?'Антикварк; свойства соответствующего кварка':'Кварк'} ${flavor}" aria-label="${anti?'Антикварк':'Кварк'} ${flavor}, открыть свойства кварка">${escape(token)}</button>`;
+      const component=constituentFor(token);
+      return `<button class="component-orb" data-particle="${component.id}" title="${escape(component.ru)}" aria-label="${escape(component.ru)}, открыть свойства">${escape(token)}</button>`;
     }).join('');
     // Tokenization preserves the stored formula; mixed states are not presented as a single fixed composition.
-    return `<h2>Кварковый состав</h2><p class="mode-intro">Локальное представление состава выбранного состояния из текущей базы.</p>${localPicker(hits,p)}<div class="local-stage" style="--c:${colorFor(p)}"><div class="local-parent"><span>${escape(p.symbol)}</span></div><div class="formula">${escape(p.quarks)}</div>${hadron?`<div class="flow-arrow">↓</div><div class="component-orbs">${components}</div><p class="local-caption">${escape(compositionCaption)} ${escape(p.compositionNote||'')}</p>`:`<p class="local-caption">${p.group==='quarks'?'Элементарный кварк. Адроны с этим ароматом в текущем наборе:':'Элементарная частица; кваркового состава нет.'}</p>`}${p.group==='quarks'?`<div class="particle-chips">${D.particles.filter(item=>['light','strange','charm','bottom','baryons'].includes(item.group)&&quarkTokens(item).some(token=>token.replace('ū','u')[0]===p.id)).map(item=>particleChip(item)).join('')}</div>`:''}</div>`;
+    return `<h2>Кварковый состав</h2><p class="mode-intro">Локальное представление состава выбранного состояния.</p>${localPicker(hits,p)}<div class="local-stage" style="--c:${colorFor(p)}"><div class="local-parent"><span>${escape(p.symbol)}</span></div><div class="formula">${escape(p.quarks)}</div>${hadron?`<div class="flow-arrow">↓</div><div class="component-orbs">${components}</div><p class="local-caption">${escape(compositionCaption)} ${escape(p.compositionNote||'')}</p>`:`<p class="local-caption">${p.group==='quarks'?'Адроны, содержащие выбранный кварк или антикварк:':'Элементарная частица; кваркового состава нет.'}</p>`}${p.group==='quarks'?`<div class="particle-chips">${D.particles.filter(item=>['light','strange','charm','bottom','baryons'].includes(item.group)&&quarkTokens(item).some(token=>constituentFor(token)?.id===p.id)).map(item=>particleChip(item)).join('')}</div>`:''}</div>`;
   }
   function decayProducts(channel) {
-    // Exact symbol matching: absent antiparticles/general channels remain explicit, non-clickable labels.
+    // Exact symbols and aliases resolve states; generic channel labels stay non-clickable.
     return channel.split(/\s+/).filter(Boolean).map(token=>{
-      const p=D.particles.find(item=>item.symbol===token||((item.id==='nue')&&token==='νe'));
-      return p?particleChip(p):`<span class="external-chip" title="Состояние или обобщённый канал вне демонстрационного набора">${escape(token)}</span>`;
+      const p=D.particles.find(item=>item.symbol===token||item.aliases?.includes(token)||((item.id==='nue')&&token==='νe'));
+      return p?particleChip(p):`<span class="external-chip" title="Обобщённый канал или состояние вне карты">${escape(token)}</span>`;
     }).join('');
   }
   function renderDecays(hits,p) {
-    return `<h2>Распады ${escape(p.symbol)}</h2><p class="mode-intro">Каналы и доли из базы. Нажмите продукт, чтобы продолжить цепочку; пунктиром отмечены состояния и обобщённые каналы вне набора.</p>${localPicker(hits,p)}<div class="local-stage" style="--c:${colorFor(p)}"><div class="local-parent"><span>${escape(p.symbol)}</span></div>${p.decays.length?`<div class="flow-arrow">↓</div>${p.decays.map(([channel,br])=>`<div class="channel-card"><div class="channel-head"><span>${escape(p.symbol)} → ${escape(channel)}</span><small>${escape(br)}</small></div><div class="channel-products">${decayProducts(channel)}</div></div>`).join('')}`:`<div class="stable-message">Каналы в наборе не указаны</div><p class="local-caption">${escape(p.lifetime)}</p>`}</div>`;
+    return `<h2>Распады ${escape(p.symbol)}</h2><p class="mode-intro">Каналы распада и их доли. Нажмите продукт, чтобы продолжить цепочку; пунктиром отмечены состояния и обобщённые каналы вне карты.</p>${localPicker(hits,p)}<div class="local-stage" style="--c:${colorFor(p)}"><div class="local-parent"><span>${escape(p.symbol)}</span></div>${p.decays.length?`<div class="flow-arrow">↓</div>${p.decays.map(([channel,br])=>`<div class="channel-card"><div class="channel-head"><span>${escape(p.symbol)} → ${escape(channel)}</span><small>${escape(br)}</small></div><div class="channel-products">${decayProducts(channel)}</div></div>`).join('')}`:`<div class="stable-message">Каналы в наборе не указаны</div><p class="local-caption">${escape(p.lifetime)}</p>`}</div>`;
   }
   function renderMode() {
     const hits=filtered();
@@ -722,8 +726,8 @@
     const point=new DOMPoint(event.clientX,event.clientY).matrixTransform($('#minimap').getScreenCTM().inverse());
     tx=wrap.clientWidth/2-point.x*scale;ty=wrap.clientHeight/2-point.y*scale;autoFit=false;applyTransform();
   });
-  const spins=[...new Set(D.particles.map(p=>p.spin))].sort((a,b)=>numeric({spin:a},'spin')-numeric({spin:b},'spin'));
-  $('#spinFilter').innerHTML='<option value="all">Все</option>'+spins.map(value=>`<option value="${escape(value)}">${escape(value)}</option>`).join('');
+  const spins=[...new Set(D.particles.map(p=>p.spin))].sort((a,b)=>(numeric({spin:a},'spin')??Infinity)-(numeric({spin:b},'spin')??Infinity)||a.localeCompare(b));
+  $('#spinFilter').innerHTML='<option value="all">Все</option>'+spins.map(value=>`<option value="${escape(value)}">${escape(spinLabel(value))}</option>`).join('');
   $('#groupFilters').innerHTML=D.groups.map(g=>`<button class="filter" data-group="${g.id}" aria-pressed="false"><i class="dot" style="--c:${colorFor(D.particles.find(p=>p.group===g.id))}"></i>${escape(labels[g.id])}<small>${D.particles.filter(p=>p.group===g.id).length}</small></button>`).join('');
   $$('.filter').forEach(button=>button.addEventListener('click',()=>{
     activeGroup=button.dataset.group;selected=null;focusedCluster=null;focusedRegion=null;updateFilterButtons();applyState();
@@ -822,7 +826,7 @@
     }
     previousSize=next;if(!isMobile())closeSheets(false);
   }).observe(wrap);
-  $('#datasetVersion').textContent='PDG 2024 · '+D.particles.length+' состояний';$('#totalCount').textContent=D.particles.length;
+  $('#datasetVersion').textContent=D.particles.length+' частиц и резонансов';$('#totalCount').textContent=D.particles.length;
   $('#hierarchyBand').addEventListener('pointerenter',()=>clearTimeout(previewTimer));
   $('#hierarchyBand').addEventListener('pointerleave',()=>{if(previewRegion)schedulePreviewClear();else {showClusterPreview(null);updateHierarchy();}});
   wrap.addEventListener('selectstart',event=>event.preventDefault());

@@ -1,8 +1,11 @@
 # Particle Explorer
 
 `particles.js` contains the original 49 records and 104 relationships, preserved without edits.
-`extra-particles.js` adds 151 distinct states, making 200 in total, and their composition,
-family, kaon-mixing and explicitly named decay-product relationships.
+`extra-particles.js` adds the initial 151 distinct states. `remaining-particles.js` adds
+the other 416 MC-numbered entries from the same database, including antiparticles,
+for a total of 616 states. Composition, family, kaon-mixing and explicitly named
+decay-product relationships remain available. Provenance is retained in the data
+and this document; it is not displayed in the interaction UI.
 
 The added masses, widths, lifetimes, charges and J/P/C quantum numbers come from the official
 **PDG 2024** database bundled with `pdg==0.1.4`. Each added record stores the corresponding
@@ -21,9 +24,15 @@ To reproduce the extension:
 ```sh
 python -m pip install pdg==0.1.4
 python .github/scripts/build_particle_extension.py
+python .github/scripts/complete_particle_catalogue.py
 ```
 
 The browser needs no Python, network API, or third-party rendering library.
+Missing measurements remain explicitly unknown; masses are never inferred from
+the particle name. The complete import does not reuse a particle's decay channels
+for its antiparticle when the shared table does not identify the antiparticle
+parent. Exotic π₁ states have no definite valence assignment. Antiquark components
+open the corresponding antiquark, and named antineutrino products are selectable.
 `layout.js` partitions one regular hexagonal lattice into five touching root territories,
 then subdivides each root into compact family patches. Every tile shares complete ribs
 with its neighbours. Tile colours carry root identity and family shades; thicker root

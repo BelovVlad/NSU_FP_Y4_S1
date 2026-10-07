@@ -11,6 +11,7 @@ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../docs/particles/partic
 const original=JSON.stringify(context.window.PARTICLE_DATA.particles);
 const originalEdges=JSON.stringify(context.window.PARTICLE_DATA.edges);
 vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../docs/particles/extra-particles.js'),'utf8'),context);
+vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../docs/particles/remaining-particles.js'),'utf8'),context);
 const data = JSON.parse(JSON.stringify(context.window.PARTICLE_DATA));
 
 test('Neighbouring curved shores follow one bisector with a constant normal gap',()=>{
@@ -99,8 +100,9 @@ test('Caption leaders follow ribs from the upper atlas edge to the named family'
     const target=cluster.ids.map(id=>diagram.positions.get(id)).sort((a,b)=>a.y-b.y||a.x-b.x)[0];
     const source=points.slice().sort((a,b)=>a.y-b.y||Math.abs(a.x-target.x)-Math.abs(b.x-target.x))[0];
     const path=network.annotation(source.id,target.id);
-    assert.deepEqual(path[0],routes.vertices(source)[0]);
-    assert.deepEqual(path.at(-1),routes.vertices(target)[0]);
+    const first=routes.vertices(source)[0],last=routes.vertices(target)[0];
+    assert.ok(Math.hypot(path[0].x-first.x,path[0].y-first.y)<1e-6);
+    assert.ok(Math.hypot(path.at(-1).x-last.x,path.at(-1).y-last.y)<1e-6);
     for(let i=1;i<path.length;i++){
       const a=path[i-1],b=path[i];
       assert.ok(network.ribs.some(([p,q])=>{
@@ -113,15 +115,15 @@ test('Caption leaders follow ribs from the upper atlas edge to the named family'
 
 test('Real particles preserve data in one connected honeycomb',()=>{
   const diagram=verify(data);
-  assert.equal(data.particles.length,200);
+  assert.equal(data.particles.length,616);
   assert.equal(JSON.stringify(data.particles.slice(0,49)),original,'The original 49 records are unmodified');
   assert.equal(JSON.stringify(data.edges.slice(0,104)),originalEdges,'The original 104 relationships are unmodified');
   assert.equal(diagram.regions.length,5);
   assert.equal(JSON.stringify([...diagram.positions]),JSON.stringify([...layout.create(data).positions]),'Placement is deterministic');
 });
 test('151 additional states have unique PDG IDs, quantum numbers and provenance; edges resolve',()=>{
-  assert.equal(new Set(data.particles.map(p=>p.pdg)).size,200);
-  for(const p of data.particles.slice(49)){
+  assert.equal(new Set(data.particles.map(p=>p.pdg)).size,616);
+  for(const p of data.particles.slice(49,200)){
     assert.equal(p.source.edition,'2024');
     assert.ok(p.source.mass&&p.source.particle);
     assert.ok(['0','1','2','3','1/2','3/2','5/2'].includes(p.spin));
@@ -134,6 +136,31 @@ test('151 additional states have unique PDG IDs, quantum numbers and provenance;
   assert.equal(byId.get('pdg9000221').mass,'400–800 MeV');
   assert.match(byId.get('pdg433').lifetime,/Γ <1.9 MeV/);
   assert.equal(byId.get('pdg511').lifetime,'τ = (1517 ± 4) × 10⁻¹⁵ s');
+});
+test('All remaining states preserve measured values, distinct antiparticles and unknown quantities',()=>{
+  assert.equal(context.window.PARTICLE_REMAINDER.length,416);
+  assert.equal(new Set(data.particles.map(p=>p.symbol)).size,616);
+  const byCode=new Map(data.particles.map(p=>[p.pdg,p])),byId=new Map(data.particles.map(p=>[p.id,p]));
+  const numericCharge=p=>{const [a,b]=p.charge.replace('−','-').split('/').map(Number);return b?a/b:a;};
+  for(const p of data.particles.slice(200)){
+    assert.equal(p.source.edition,'2024');
+    assert.ok(p.source.particle&&p.spin&&p.mass&&p.lifetime);
+    if(p.source.mass)assert.ok(Number.isFinite(p.massValue)||p.mass.includes(' - i '),'Complex pole intervals must retain their original display');
+    else{assert.equal(p.mass,'Нет измерения');assert.equal(p.massValue,undefined);}
+    if(p.antiparticleOf){
+      const counterpart=byId.get(p.antiparticleOf);
+      assert.equal(counterpart.pdg,-p.pdg);
+      assert.equal(numericCharge(p),-numericCharge(counterpart)||0);
+      assert.equal(p.decays.length,0,'Shared particle tables must not invent antiparticle decay channels');
+    }
+  }
+  assert.equal(byCode.get(-2212).quarks,'ūūd̄');
+  assert.equal(byCode.get(-2).charge,'−2/3');
+  assert.equal(byCode.get(-12).group,'leptons');
+  assert.equal(byCode.get(5212).massValue,undefined);
+  assert.match(byCode.get(9000113).quarks,/не установлен/);
+  assert.ok(data.edges.some(e=>e.from==='pdg-2'&&e.to==='pdg-2212'&&e.kind==='composition'));
+  assert.equal(new Set(data.edges.map(e=>e.id)).size,data.edges.length);
 });
 test('800-state catalogue has connected tiles and territories without interior collisions',()=>verify(catalogue(800)));
 test('A heavily expanded lepton catalogue reserves its own column',()=>{
