@@ -50,6 +50,8 @@ class SiteTests(unittest.TestCase):
         for relative in ['docs/index.html', 'docs/knowledge.css', 'docs/search-worker.js', 'docs/pdfjs/viewer.html', 'docs/pdfjs/controls.css',
                          'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/notebook/outline.js', 'docs/giscus-config.json',
                          'docs/app.js', 'docs/app.css', 'docs/sw.js', 'docs/manifest.webmanifest',
+                         'docs/particles/index.html', 'docs/particles/particles.js',
+                         'docs/particles/explorer.js', 'docs/particles/explorer.css', 'docs/particles/layout.js', 'docs/particles/routes.js', 'docs/particles/contours.js', 'docs/particles/extra-particles.js',
                          'Overseer/overseer.js', 'Overseer/overseer.css',
                          'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
                          'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
