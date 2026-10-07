@@ -400,7 +400,7 @@ window.PARTICLE_REMAINDER = [
       "decays": []
     },
     "antiparticleOf": "pdg215",
-    "massValue": 1318.20292649998
+    "massValue": 1318.2029264999803
   },
   {
     "id": "pdg9000113",
@@ -2720,7 +2720,7 @@ window.PARTICLE_REMAINDER = [
         "M082.1/2024"
       ]
     },
-    "massValue": 2231.14385093753
+    "massValue": 2231.1438509375303
   },
   {
     "id": "pdg9080221",
@@ -3990,7 +3990,7 @@ window.PARTICLE_REMAINDER = [
         "M023.8/2024"
       ]
     },
-    "massValue": 1773.02507831344
+    "massValue": 1773.0250783134397
   },
   {
     "id": "pdg-10315",
@@ -4023,7 +4023,7 @@ window.PARTICLE_REMAINDER = [
       "decays": []
     },
     "antiparticleOf": "pdg10315",
-    "massValue": 1773.02507831344
+    "massValue": 1773.0250783134397
   },
   {
     "id": "pdg10325",
@@ -4067,7 +4067,7 @@ window.PARTICLE_REMAINDER = [
         "M023.8/2024"
       ]
     },
-    "massValue": 1773.02507831344
+    "massValue": 1773.0250783134397
   },
   {
     "id": "pdg-10325",
@@ -4100,7 +4100,7 @@ window.PARTICLE_REMAINDER = [
       "decays": []
     },
     "antiparticleOf": "pdg10325",
-    "massValue": 1773.02507831344
+    "massValue": 1773.0250783134397
   },
   {
     "id": "pdg-317",
@@ -6557,7 +6557,7 @@ window.PARTICLE_REMAINDER = [
     "group": "baryons",
     "family": "nucleon",
     "r": 26,
-    "mass": "1.007276466621 ± 0.000000000053 u",
+    "mass": "938.272088164 ± 4.93691874283 × 10⁻⁸ MeV",
     "charge": "−1",
     "spin": "1/2",
     "parity": "−1",
@@ -6579,7 +6579,7 @@ window.PARTICLE_REMAINDER = [
       "decays": []
     },
     "antiparticleOf": "p",
-    "massValue": 1.007276466621
+    "massValue": 938.2720881639173
   },
   {
     "id": "pdg-2112",
@@ -6590,7 +6590,7 @@ window.PARTICLE_REMAINDER = [
     "group": "baryons",
     "family": "nucleon",
     "r": 26,
-    "mass": "1.0086649160 ± 0.0000000005 u",
+    "mass": "939.565420572 ± 4.6574705121 × 10⁻⁷ MeV",
     "charge": "0",
     "spin": "1/2",
     "parity": "−1",
@@ -6612,7 +6612,7 @@ window.PARTICLE_REMAINDER = [
       "decays": []
     },
     "antiparticleOf": "n",
-    "massValue": 1.00866491595
+    "massValue": 939.56542052539
   },
   {
     "id": "pdg-12112",
@@ -12033,7 +12033,7 @@ window.PARTICLE_REMAINDER = [
       "decays": []
     },
     "antiparticleOf": "xi0",
-    "massValue": 1314.86077645008
+    "massValue": 1314.8607764500803
   },
   {
     "id": "pdg-3312",
@@ -12132,7 +12132,7 @@ window.PARTICLE_REMAINDER = [
       "decays": []
     },
     "antiparticleOf": "pdg3324",
-    "massValue": 1531.8009426359
+    "massValue": 1531.8009426358997
   },
   {
     "id": "pdg203312",
@@ -13076,7 +13076,7 @@ window.PARTICLE_REMAINDER = [
       "decays": []
     },
     "antiparticleOf": "pdg4114",
-    "massValue": 2518.47784272359
+    "massValue": 2518.4778427235897
   },
   {
     "id": "pdg4214",

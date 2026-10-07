@@ -10,6 +10,7 @@ import sqlite3
 from pathlib import Path
 
 import pdg
+from pdg.units import convert
 
 ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('initial_catalogue', Path(__file__).with_name('build_particle_extension.py'))
@@ -129,6 +130,20 @@ def conjugate_quarks(text):
     return re.sub(r'([udscbt])(̄?)', lambda m:m[1] if m[2] else m[1]+'̄', text)
 
 
+def mass_display(value):
+    text = initial.display(value)
+    if not value or value.get('unit_text')!='u':
+        return text
+    # Atomic mass units are energy-equivalent units, not MeV sorting keys.
+    def number(match):
+        converted = format(convert(float(match[0]), 'u', 'MeV'), '.12g')
+        if 'e' in converted:
+            mantissa, exponent = converted.split('e')
+            return mantissa+' × 10'+str(int(exponent)).translate(str.maketrans('-0123456789','⁻⁰¹²³⁴⁵⁶⁷⁸⁹'))
+        return converted
+    return re.sub(r'\d+(?:\.\d+)?',number,text.removesuffix(' u'))+' MeV'
+
+
 def build():
     api = pdg.connect()
     old = old_records()
@@ -170,7 +185,7 @@ def build():
         if group=='quarks':
             charge_text = ('+' if charge>0 else '−')+('2/3' if abs(code) in (2,4,6) else '1/3')
         item = dict(id='pdg'+str(code), pdg=code, symbol=symbol, name=name, ru=ru,
-            group=group, family=family, r=26, mass=initial.display(mass) if mass else 'Нет измерения',
+            group=group, family=family, r=26, mass=mass_display(mass) if mass else 'Нет измерения',
             charge=charge_text, spin=p.quantum_J or '—', parity={'+':'+1','-':'−1'}.get(p.quantum_P,'—'),
             cparity={'+':'+1','-':'−1'}.get(p.quantum_C,'—'), quarks=quarks,
             lifetime=('τ = '+initial.display(life)) if life else ('Γ = '+initial.display(width)) if width else 'Нет измерения',
@@ -181,7 +196,7 @@ def build():
         if abs(code) in (12,14,16):
             item['aliases'] += [{12:'ν̄e',14:'ν̄μ',16:'ν̄τ'}[abs(code)], 'anti-'+{12:'nu_e',14:'nu_mu',16:'nu_tau'}[abs(code)]]
         if mass and mass.get('value') is not None:
-            item['massValue'] = mass['value']*({'GeV':1000,'keV':.001}.get(mass.get('unit_text'),1))
+            item['massValue'] = convert(mass['value'],mass.get('unit_text'),'MeV')
         item['lifetime'] = item['lifetime'].replace('= <','<').replace('= >','>')
         items.append(item)
     all_items = old+items

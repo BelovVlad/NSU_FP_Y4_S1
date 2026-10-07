@@ -155,6 +155,9 @@ test('All remaining states preserve measured values, distinct antiparticles and 
     }
   }
   assert.equal(byCode.get(-2212).quarks,'ūūd̄');
+  assert.ok(Math.abs(byCode.get(-2212).massValue-938.272088)<.00001,'Atomic mass units are converted to MeV');
+  assert.match(byCode.get(-2212).mass,/ MeV$/);
+  assert.ok(Math.abs(byCode.get(-2112).massValue-939.565421)<.00001);
   assert.equal(byCode.get(-2).charge,'−2/3');
   assert.equal(byCode.get(-12).group,'leptons');
   assert.equal(byCode.get(5212).massValue,undefined);
