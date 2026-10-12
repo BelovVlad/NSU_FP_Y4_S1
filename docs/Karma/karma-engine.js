@@ -42,15 +42,26 @@
     const times=new Set([...snapshots.map(s=>s.time),now]);
     for(let t=firstDayEnd;t<=now;t+=DAY)times.add(t);
     let snapshot=0,counts={},level=0,stableSince=begin,fullSince=null;
-    let shield=false,protectedUntil=null,rows=[],hadDebt=false,lastFlowerDay=null;
+    let shield=false,protectedUntil=null,rows=[],rewardDay=null,gainedToday=false,allSectionsInDebt=false,lastFlowerDay=null;
+    const allInDebt=rows=>rows.every(row=>row.actual<row.due);
     const changes=[{at:begin,type:'initial',level}];
     for(const time of [...times].sort((a,b)=>a-b)){
+      const day=dayStart(time-rules.deadlineHour*3600000,rules);
+      const previousRows=status(rules,counts,time);
+      if(day!==rewardDay){
+        rewardDay=day;gainedToday=false;allSectionsInDebt=false;
+      }
+      // Compare counts at the same deadline: passage of time is never repayment.
+      if(snapshot>0&&allInDebt(previousRows))allSectionsInDebt=true;
+      const hasBaseline=snapshot>0;
       // Uploads at 09:00 count before that day's assessment.
       while(snapshot<snapshots.length&&snapshots[snapshot].time<=time)counts=snapshots[snapshot++].counts;
       rows=status(rules,counts,time);
       const debt=rows.some(row=>row.actual<row.due);
-      const day=dayStart(time-rules.deadlineHour*3600000,rules);
-      if(hadDebt&&!debt&&lastFlowerDay!==day){
+      const repaid=hasBaseline&&rows.some((row,i)=>
+        Math.max(0,previousRows[i].due-previousRows[i].actual)>Math.max(0,row.due-row.actual));
+      if(allInDebt(rows))allSectionsInDebt=true;
+      if(repaid&&allSectionsInDebt&&!debt&&lastFlowerDay!==day){
         shield=true;protectedUntil=null;lastFlowerDay=day;
         changes.push({at:time,type:'reinforced',level});
       }
@@ -66,7 +77,11 @@
             shield=false;protectedUntil=time+DAY;
             changes.push({at:time,type:'protected',level});
           }else level=Math.max(0,level-1);
-        }else if(level<8)level++;
+        }
+      }
+      if(repaid&&!gainedToday){
+        gainedToday=true;
+        if(level<8)level++;
         else if(level===8&&fullSince!==null&&time-fullSince>=7*DAY)level=9;
       }
       if(level!==before){
@@ -75,7 +90,6 @@
         if(level===8)fullSince=time;
         else if(level<8)fullSince=null;
       }
-      hadDebt=debt;
     }
     return {level,raw:rows.filter(row=>row.complete).length,rows,shield,protectedUntil,
       stableSince,fullSince,changes,observedFrom:begin,nextDeadline:graceEnd(now,rules),

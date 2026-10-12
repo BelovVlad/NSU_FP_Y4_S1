@@ -931,7 +931,7 @@ function updateContinuousCurrentPage(){
   const vr=viewer.getBoundingClientRect();
   if(vr.width<2||vr.height<2)return;
   const clientY=vr.top+Math.min(28,Math.max(8,vr.height*.08));
-  const anchor=continuousAnchorFromClient(clientY);
+  const anchor=continuousReadingAnchor(clientY);
   if(!anchor)return;
   lastStableAnchor={page:anchor.page,fraction:anchor.fraction};
   const next=validPage(anchor.page,pageNum);
@@ -962,6 +962,15 @@ function continuousAnchorFromClient(clientY){
     clientY
   };
 }
+function continuousReadingAnchor(clientY){
+  // A short final page cannot reach the top of the viewport at maximum scroll.
+  const last=continuousRoot?.lastElementChild;
+  if(last&&viewer.scrollHeight>viewer.clientHeight+1&&
+     viewer.scrollTop+viewer.clientHeight>=viewer.scrollHeight-1){
+    clientY=Math.max(clientY,last.getBoundingClientRect().top);
+  }
+  return continuousAnchorFromClient(clientY);
+}
 function restoreContinuousAnchor(anchor){
   if(!anchor||!continuousRoot)return;
   const el=continuousRoot.querySelector('[data-page="'+anchor.page+'"]');
@@ -982,7 +991,7 @@ function captureReaderPosition({measure=true}={}){
     const canMeasure=measure&&!readerSuspended&&!document.hidden&&r.width>=2&&r.height>=2;
     if(canMeasure){
       const clientY=r.top+Math.min(28,Math.max(8,r.height*.08));
-      const anchor=continuousAnchorFromClient(clientY);
+      const anchor=continuousReadingAnchor(clientY);
       if(anchor){
         lastStableAnchor={page:anchor.page,fraction:anchor.fraction};
         suspendedReaderAnchor={...lastStableAnchor};
@@ -1090,9 +1099,12 @@ async function renderContinuous(targetPage=pageNum,anchor=null){
     continuousRoot.appendChild(el);
   }
   setupContinuousObserver();
+  const renderedRoot=continuousRoot;
   requestAnimationFrame(()=>{
+    if(continuousRoot!==renderedRoot)return;
+    lockReaderChrome();
     if(anchor)restoreContinuousAnchor(anchor);
-    else continuousRoot?.querySelector('[data-page="'+pageNum+'"]')?.scrollIntoView({block:'start'});
+    else continuousRoot?.querySelector('[data-page="'+targetPage+'"]')?.scrollIntoView({block:'start'});
     updateContinuousCurrentPage();
     savePage();
   });
