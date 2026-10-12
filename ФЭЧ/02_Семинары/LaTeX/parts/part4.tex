@@ -1,0 +1,283 @@
+% !TeX root = part4.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+\practice{4}{24.09.2026}{Взаимодействие фотонов с веществом. Детектор Belle}
+
+\rtheory{Рождение электрон-позитронной пары}
+
+Фотон может превратиться в пару $e^-e^+$ в поле ядра:
+\begin{equation*}
+    \gamma+Z \longrightarrow e^-+e^++Z.
+\end{equation*}
+Ядро принимает импульс отдачи. Рождение пары одним фотоном в вакууме
+невозможно из-за законов сохранения энергии и импульса.
+
+\subsection*{Порог процесса}
+
+Из кинематики реакции на неподвижной мишени для налетающей частицы
+с нулевой массой следует
+\begin{equation*}
+    E_{\text{пор}}=\frac{M^2-M_{\text{я}}^2}{2M_{\text{я}}}c^2.
+\end{equation*}
+На пороге суммарная масса конечной системы минимальна:
+\begin{equation*}
+    M=M_{\text{я}}+2m_e.
+\end{equation*}
+Следовательно,
+\begin{align*}
+    E_\gamma^{\min}
+    &=\frac{(M_{\text{я}}+2m_e)^2-M_{\text{я}}^2}
+    {2M_{\text{я}}}c^2 \\
+    &=2m_ec^2\left(1+\frac{m_e}{M_{\text{я}}}\right).
+\end{align*}
+Для тяжёлого ядра $M_{\text{я}}\gg m_e$ порог близок к
+$2m_ec^2\simeq1.022\,\text{МэВ}$, но \rnote{немного превышает его}
+из-за отдачи ядра.
+
+\subsection*{Сечение рождения пары}
+
+В приближении, использованном на семинаре, при неполном экранировании
+\begin{equation*}
+    2m_ec^2\ll E_\gamma\ll\frac{m_ec^2}{\alpha Z^{1/3}}
+\end{equation*}
+сечение на одно ядро оценивается как
+\begin{equation*}
+    \sigma_{\mathrm p}\simeq
+    \frac79\frac{A}{N_AX_0}
+    \frac{\ln\!\left(\dfrac{2E_\gamma}{m_ec^2}\right)-2.6}
+    {\ln\!\left(183Z^{-1/3}\right)}.
+\end{equation*}
+Здесь $\alpha\simeq1/137$, $N_A$ --- постоянная Авогадро,
+$A$ --- молярная масса в $\text{г}/\text{моль}$,
+а $X_0$ --- радиационная длина в $\text{г}/\text{см}^2$.
+Непосредственно у порога это выражение неприменимо.
+
+В пределе полного экранирования,
+\begin{equation*}
+    E_\gamma\gg\frac{m_ec^2}{\alpha Z^{1/3}},
+    \qquad
+    \sigma_{\mathrm p}\simeq\frac79\frac{A}{N_AX_0}.
+\end{equation*}
+Сечение выходит на плато; соответствующая массовая длина свободного
+пробега фотона по рождению пар равна $9X_0/7$.
+
+\rtheory{Полное сечение и ослабление пучка фотонов}
+
+В рассматриваемом приближении учитываем фотоэффект, рождение пар
+и комптоновское рассеяние:
+\begin{equation*}
+    \sigma_{\text{атом}}
+    =\sigma_{\mathrm{ph}}+\sigma_{\mathrm p}+Z\sigma_{\mathrm C}.
+\end{equation*}
+Здесь $\sigma_{\mathrm{ph}}$ и $\sigma_{\mathrm p}$ относятся к одному атому,
+а $\sigma_{\mathrm C}$ --- к одному электрону.
+Если комптоновское сечение уже дано на атом, множитель $Z$ повторно не нужен.
+
+\begin{rbox}[left=16pt,right=16pt,top=12pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[>=Latex,every node/.style={text=rtext}]
+        \draw[->,rtext] (0,0)--(9.0,0) node[right] {$E_\gamma$};
+        \draw[->,rtext] (0,0)--(0,4.1) node[above] {$\sigma$};
+        \draw[rc3,thick,densely dashed]
+            (0.5,3.1)..controls(0.9,1.3)and(1.6,0.25)..(3.8,0.10);
+        \draw[p3,thick,dash dot]
+            (0.5,2.1)..controls(3.0,2.0)and(5.0,0.65)..(8.4,0.17);
+        \draw[red3,thick,dashed]
+            (3.4,0.02)..controls(4.5,0.08)and(4.9,1.25)..(6.1,1.43)
+            ..controls(7.0,1.48)and(7.6,1.48)..(8.4,1.48);
+        \draw[rtext,line width=1.3pt]
+            (0.5,3.7)..controls(1.2,2.6)and(2.2,2.1)..(3.8,1.75)
+            ..controls(5.2,1.6)and(6.0,1.6)..(8.4,1.66);
+        \node[rc3] at (1.1,0.8) {$\sigma_{\mathrm{ph}}$};
+        \node[p3] at (4.0,1.05) {$Z\sigma_{\mathrm C}$};
+        \node[red3] at (7.5,1.1) {$\sigma_{\mathrm p}$};
+        \node at (6.8,2.15) {$\sigma_{\text{атом}}$};
+    \end{tikzpicture}
+    \captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+    \captionof{figure}{Качественная зависимость сечений от энергии фотона.
+    Шкалы условные; при больших энергиях полное сечение приближается к плато.}
+    \label{fig:photon_cross_sections_sem4}
+\end{rbox}
+
+Для \rassumption{узкого моноэнергетического пучка}, из которого удаляются
+взаимодействовавшие фотоны, закон ослабления имеет вид
+\begin{equation*}
+    N=N_0e^{-\mu X},\qquad
+    \mu=\frac{N_A}{A}\sigma_{\text{атом}},\qquad
+    X=\rho\ell.
+\end{equation*}
+$X$ --- массовая толщина, $\ell$ --- геометрическая толщина,
+$\rho$ --- плотность. Коэффициент $\mu$ здесь является
+\rconcept{массовым коэффициентом ослабления}, его единица ---
+$\text{см}^2/\text{г}$. Линейный коэффициент равен $\rho\mu$.
+
+\task[1]{Взаимодействие фотонов с алюминием}
+\label{task:al_photons_sem4}
+
+\condition
+Оценить сечения взаимодействия фотонов с энергией $E_\gamma=5\,\text{МэВ}$
+в алюминии. Дано:
+\begin{equation*}
+    Z=13,\qquad A=27\,\text{г}/\text{моль},\qquad
+    X_0=24.01\,\text{г}/\text{см}^2.
+\end{equation*}
+
+\solution
+Характерная энергия экранирования равна
+\begin{equation*}
+    \frac{m_ec^2}{\alpha Z^{1/3}}\simeq30\,\text{МэВ}.
+\end{equation*}
+
+\subsection*{Рождение пары}
+
+Подставляя параметры алюминия в семинарскую формулу, получаем
+\begin{equation*}
+    \sigma_{\mathrm p}\simeq
+    \frac79\frac{27}{6.022\cdot10^{23}\cdot24.01}
+    \frac{\ln(2\cdot5/0.511)-2.6}{\ln(183\cdot13^{-1/3})}
+    \simeq1.25\cdot10^{-25}\,\text{см}^2.
+\end{equation*}
+Поскольку $1\,\text{мбн}=10^{-27}\,\text{см}^2$, это примерно
+$125\,\text{мбн}$. При $5\,\text{МэВ}$ используемая формула даёт
+лишь приближённую оценку.
+
+\subsection*{Фотоэффект}
+
+Используем оценки для $K$-оболочки из предыдущего занятия, явно задавая
+безразмерную энергию $\varepsilon=E_\gamma/(1\,\text{МэВ})$:
+\begin{equation*}
+    (\sigma_{\mathrm{ph}})_K\simeq
+    \begin{cases}
+        10^{-33}\dfrac{Z^5}{\varepsilon^{3.5}}\,\text{см}^2,
+        & E_K\ll E_\gamma\ll m_ec^2,\\[0.7em]
+        1.4\cdot10^{-33}\dfrac{Z^5}{\varepsilon}\,\text{см}^2,
+        & E_\gamma\gg m_ec^2.
+    \end{cases}
+\end{equation*}
+Полное сечение фотоэффекта оцениваем как $\sigma_{\mathrm{ph}}\simeq
+\tfrac54(\sigma_{\mathrm{ph}})_K$. При $E_\gamma=5\,\text{МэВ}$:
+\begin{equation*}
+    \sigma_{\mathrm{ph}}\simeq
+    \frac54\cdot1.4\cdot10^{-33}\frac{13^5}{5}
+    =1.30\cdot10^{-28}\,\text{см}^2
+    \simeq0.13\,\text{мбн}.
+\end{equation*}
+
+\subsection*{Комптоновское рассеяние}
+
+Используем $\sigma_{\mathrm C}=86\,\text{мбн}$.
+Это сечение на один электрон. Поэтому на атом алюминия приходится
+\begin{equation*}
+    Z\sigma_{\mathrm C}=13\cdot86=1118\,\text{мбн}.
+\end{equation*}
+
+\answer
+По выписанным приближениям
+\begin{equation*}
+    \sigma_{\text{атом}}\simeq0.13+125+1118
+    \simeq1243\,\text{мбн}\simeq1.24\,\text{бн}.
+\end{equation*}
+Основной вклад даёт
+\rresult{комптоновское рассеяние}.
+
+\task[2]{Слой половинного ослабления в углероде}
+\label{task:carbon_half_layer_sem4}
+
+\condition
+Найти толщину углерода, уменьшающую число фотонов вдвое.
+Длина волны фотонов $\lambda=0.2\,\text{нм}$;
+$Z=6$, $A=12\,\text{г}/\text{моль}$.
+Для перевода в геометрическую толщину принимаем
+\rassumption{плотность графита $\rho\simeq2.2\,\text{г}/\text{см}^3$}.
+
+\solution
+Энергия фотона равна
+\begin{equation*}
+    E_\gamma=\frac{hc}{\lambda}
+    \simeq\frac{1.24\,\text{кэВ}\cdot\text{нм}}{0.2\,\text{нм}}
+    \simeq6.2\,\text{кэВ}.
+\end{equation*}
+Для оценки используем округление до $6\,\text{кэВ}$.
+При такой энергии рождение пары невозможно, а фотоэффект преобладает
+над комптоновским рассеянием:
+\begin{equation*}
+    \sigma_{\text{атом}}\simeq\sigma_{\mathrm{ph}}
+    \gg Z\sigma_{\mathrm C}.
+\end{equation*}
+Так как $E_K\sim14Z^2\,\text{эВ}\simeq0.50\,\text{кэВ}$,
+используем низкоэнергетическую оценку с $\varepsilon=0.006$:
+\begin{equation*}
+    \sigma_{\mathrm{ph}}\simeq
+    \frac54\cdot10^{-33}\frac{6^5}{(0.006)^{3.5}}
+    \simeq5.8\cdot10^{-22}\,\text{см}^2.
+\end{equation*}
+Из закона ослабления
+\begin{equation*}
+    \frac{N}{N_0}=\frac12=e^{-\mu X_{1/2}}
+\end{equation*}
+получаем
+\begin{equation*}
+    X_{1/2}=\frac{\ln2}{\mu}
+    =\frac{A\ln2}{N_A\sigma_{\text{атом}}},\qquad
+    \ell_{1/2}=\frac{X_{1/2}}{\rho}.
+\end{equation*}
+Подставляем найденное сечение:
+\begin{equation*}
+    X_{1/2}\simeq
+    \frac{12\ln2}{6.022\cdot10^{23}\cdot5.8\cdot10^{-22}}
+    \simeq2.4\cdot10^{-2}\,\text{г}/\text{см}^2,
+    \qquad
+    \ell_{1/2}\simeq0.11\,\text{мм}.
+\end{equation*}
+
+\answer
+\rresult{Толщина половинного ослабления около $0.11\,\text{мм}$}.
+
+\clearpage
+\rtheory{Детектор Belle}
+
+\subsection*{Подсистемы детектора}
+
+\begin{itemize}
+    \item \rconcept{Трековая система}: SVD (Silicon Vertex Detector)
+    измеряет вершины рождения и распада; CDC (Central Drift Chamber)
+    измеряет параметры треков заряженных частиц.
+    \item \rconcept{Измерение энергии}: ECL (Electromagnetic Calorimeter)
+    измеряет энергию фотонов и электронов.
+    \item \rconcept{Идентификация частиц}: ACC (Aerogel Cherenkov Counter)
+    использует черенковский порог; TOF (Time of Flight) измеряет время пролёта;
+    CDC измеряет удельные ионизационные потери $dE/dx$.
+    По скорости и измеренному импульсу определяют тип частицы.
+    \item \rconcept{Соленоид} создаёт магнитное поле, в котором по кривизне
+    трека определяют импульс заряженной частицы.
+    \item \rconcept{KLM} --- система регистрации долгоживущих нейтральных
+    каонов $K_L^0$ и мюонов.
+\end{itemize}
+
+\subsection*{Асимметричный коллайдер KEKB}
+
+Энергии встречных пучков в рассматриваемом режиме:
+\begin{equation*}
+    E_{e^-}=8\,\text{ГэВ},\qquad E_{e^+}=3.5\,\text{ГэВ}.
+\end{equation*}
+В приближении $m_e\simeq0$ для лобового столкновения
+\begin{equation*}
+    s=(E_{e^-}+E_{e^+})^2-(E_{e^-}-E_{e^+})^2
+    =4E_{e^-}E_{e^+}.
+\end{equation*}
+Следовательно,
+\begin{equation*}
+    E_{\text{с.ц.м.}}=\sqrt{s}
+    =2\sqrt{8\cdot3.5}\simeq10.58\,\text{ГэВ}.
+\end{equation*}
+Эта энергия соответствует резонансу $\Upsilon(4S)$:
+\begin{equation*}
+    e^-e^+\longrightarrow\Upsilon(4S)\longrightarrow B\overline B.
+\end{equation*}
+Возможны пары $B^+B^-$ и $B^0\overline B{}^0$.
+Из-за разных энергий пучков система центра масс движется в лабораторной
+системе; это увеличивает измеримый пробег $B$-мезонов вдоль пучка.
+
+\end{document}

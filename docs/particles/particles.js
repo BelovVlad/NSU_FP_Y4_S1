@@ -1,0 +1,81 @@
+window.PARTICLE_DATA = {
+  version: 'PDG 2024 · демонстрационный набор',
+  groups: [
+    {id:'light', label:'Лёгкие мезоны', short:'Мезоны', cx:360, cy:270, rx:300, ry:220, tone:'rose'},
+    {id:'strange', label:'Странные мезоны', short:'Strange', cx:360, cy:700, rx:300, ry:225, tone:'orange'},
+    {id:'charm', label:'Charm / charmonium', short:'Charm', cx:420, cy:1060, rx:270, ry:170, tone:'violet'},
+    {id:'bosons', label:'Переносчики / Хиггс', short:'Бозоны', cx:900, cy:650, rx:235, ry:300, tone:'gold', bridge:true},
+    {id:'baryons', label:'Лёгкие барионы', short:'Барионы', cx:1450, cy:380, rx:330, ry:310, tone:'blue'},
+    {id:'leptons', label:'Лептоны', short:'Лептоны', cx:1460, cy:900, rx:300, ry:245, tone:'green'},
+    {id:'quarks', label:'Кварки', short:'Кварки', cx:970, cy:1080, rx:320, ry:165, tone:'purple'}
+  ],
+  particles: [
+    {id:'pi0',symbol:'π⁰',name:'neutral pion',ru:'нейтральный пион',pdg:111,group:'light',x:360,y:270,r:38,mass:'134.9768 MeV',charge:'0',spin:'0',parity:'−1',cparity:'+1',quarks:'(uū − dd̄)/√2',lifetime:'≈ 8.4 × 10⁻¹⁷ s',aliases:['pion0','pi0','пион'],decays:[['γ γ','≈ 98.8%'],['e⁺ e⁻ γ','≈ 1.17%']]},
+    {id:'pip',symbol:'π⁺',name:'positive pion',ru:'положительный пион',pdg:211,group:'light',x:250,y:255,r:34,mass:'139.57039 MeV',charge:'+1',spin:'0',parity:'−1',quarks:'u d̄',lifetime:'≈ 2.60 × 10⁻⁸ s',aliases:['pi+','pion+'],decays:[['μ⁺ νμ','≈ 99.99%']]},
+    {id:'pim',symbol:'π⁻',name:'negative pion',ru:'отрицательный пион',pdg:-211,group:'light',x:470,y:255,r:34,mass:'139.57039 MeV',charge:'−1',spin:'0',parity:'−1',quarks:'d ū',lifetime:'≈ 2.60 × 10⁻⁸ s',aliases:['pi-','pion-'],decays:[['μ⁻ ν̄μ','≈ 99.99%']]},
+    {id:'rho0',symbol:'ρ⁰',name:'rho(770)0',ru:'ро-мезон',pdg:113,group:'light',x:360,y:145,r:32,mass:'≈ 775.3 MeV',charge:'0',spin:'1',parity:'−1',cparity:'−1',quarks:'(uū − dd̄)/√2',lifetime:'Γ ≈ 149 MeV',aliases:['rho0','rho'],decays:[['π⁺ π⁻','≈ 100%']]},
+    {id:'rhop',symbol:'ρ⁺',name:'rho(770)+',ru:'ро-плюс',pdg:213,group:'light',x:245,y:145,r:28,mass:'≈ 775 MeV',charge:'+1',spin:'1',parity:'−1',quarks:'u d̄',lifetime:'Γ ≈ 149 MeV',aliases:['rho+'],decays:[['π⁺ π⁰','≈ 100%']]},
+    {id:'rhom',symbol:'ρ⁻',name:'rho(770)-',ru:'ро-минус',pdg:-213,group:'light',x:475,y:145,r:28,mass:'≈ 775 MeV',charge:'−1',spin:'1',parity:'−1',quarks:'d ū',lifetime:'Γ ≈ 149 MeV',aliases:['rho-'],decays:[['π⁻ π⁰','≈ 100%']]},
+    {id:'eta',symbol:'η',name:'eta',ru:'эта-мезон',pdg:221,group:'light',x:285,y:365,r:30,mass:'547.862 MeV',charge:'0',spin:'0',parity:'−1',cparity:'+1',quarks:'uū, dd̄, ss̄ mixture',lifetime:'≈ 5.0 × 10⁻¹⁹ s',aliases:['eta'],decays:[['γ γ','≈ 39%'],['3π⁰','≈ 33%']]},
+    {id:'etap',symbol:'η′',name:'eta prime',ru:'эта-штрих',pdg:331,group:'light',x:435,y:365,r:30,mass:'957.78 MeV',charge:'0',spin:'0',parity:'−1',cparity:'+1',quarks:'uū, dd̄, ss̄ mixture',lifetime:'Γ ≈ 0.20 MeV',aliases:['eta prime','eta\''],decays:[['π⁺ π⁻ η','≈ 43%'],['ρ⁰ γ','≈ 30%']]},
+
+    {id:'k0',symbol:'K⁰',name:'K0',ru:'нейтральный каон',pdg:311,group:'strange',x:360,y:700,r:37,mass:'497.611 MeV',charge:'0',spin:'0',parity:'−1',quarks:'d s̄',lifetime:'смешивается в Kₛ / Kₗ',aliases:['K0','kaon0'],decays:[['Kₛ / Kₗ','mixing']]},
+    {id:'k0b',symbol:'K̄⁰',name:'anti-K0',ru:'антикаон',pdg:-311,group:'strange',x:360,y:810,r:31,mass:'497.611 MeV',charge:'0',spin:'0',parity:'−1',quarks:'s d̄',lifetime:'смешивается в Kₛ / Kₗ',aliases:['anti-K0','Kbar0'],decays:[['Kₛ / Kₗ','mixing']]},
+    {id:'kp',symbol:'K⁺',name:'K+',ru:'положительный каон',pdg:321,group:'strange',x:245,y:665,r:33,mass:'493.677 MeV',charge:'+1',spin:'0',parity:'−1',quarks:'u s̄',lifetime:'≈ 1.24 × 10⁻⁸ s',aliases:['K+','kaon+'],decays:[['μ⁺ νμ','≈ 63.6%'],['π⁺ π⁰','≈ 20.7%']]},
+    {id:'km',symbol:'K⁻',name:'K-',ru:'отрицательный каон',pdg:-321,group:'strange',x:475,y:665,r:33,mass:'493.677 MeV',charge:'−1',spin:'0',parity:'−1',quarks:'s ū',lifetime:'≈ 1.24 × 10⁻⁸ s',aliases:['K-','kaon-'],decays:[['μ⁻ ν̄μ','≈ 63.6%'],['π⁻ π⁰','≈ 20.7%']]},
+    {id:'kst0',symbol:'K*⁰',name:'K*(892)0',ru:'векторный каон',pdg:313,group:'strange',x:250,y:785,r:29,mass:'≈ 895.5 MeV',charge:'0',spin:'1',parity:'−1',quarks:'d s̄',lifetime:'Γ ≈ 47 MeV',aliases:['K*0','Kstar0'],decays:[['K π','≈ 100%']]},
+    {id:'kstp',symbol:'K*⁺',name:'K*(892)+',ru:'векторный каон',pdg:323,group:'strange',x:470,y:785,r:29,mass:'≈ 891.7 MeV',charge:'+1',spin:'1',parity:'−1',quarks:'u s̄',lifetime:'Γ ≈ 51 MeV',aliases:['K*+','Kstar+'],decays:[['K π','≈ 100%']]},
+    {id:'phi',symbol:'ϕ',name:'phi(1020)',ru:'фи-мезон',pdg:333,group:'strange',x:360,y:575,r:34,mass:'1019.461 MeV',charge:'0',spin:'1',parity:'−1',cparity:'−1',quarks:'s s̄',lifetime:'Γ ≈ 4.25 MeV',aliases:['phi'],decays:[['K⁺ K⁻','≈ 49%'],['K⁰ K̄⁰','≈ 34%']]},
+
+    {id:'jpsi',symbol:'J/ψ',name:'J/psi(1S)',ru:'джей-пси',pdg:443,group:'charm',x:420,y:1015,r:39,mass:'3096.900 MeV',charge:'0',spin:'1',parity:'−1',cparity:'−1',quarks:'c c̄',lifetime:'Γ ≈ 92.6 keV',aliases:['J/psi','Jpsi','443'],decays:[['e⁺ e⁻','≈ 6%'],['μ⁺ μ⁻','≈ 6%']]},
+    {id:'d0',symbol:'D⁰',name:'D0',ru:'D-ноль',pdg:421,group:'charm',x:305,y:1080,r:32,mass:'1864.84 MeV',charge:'0',spin:'0',parity:'−1',quarks:'c ū',lifetime:'≈ 4.10 × 10⁻¹³ s',aliases:['D0'],decays:[['K⁻ π⁺','≈ 3.9%']]},
+    {id:'dp',symbol:'D⁺',name:'D+',ru:'D-плюс',pdg:411,group:'charm',x:420,y:1135,r:32,mass:'1869.66 MeV',charge:'+1',spin:'0',parity:'−1',quarks:'c d̄',lifetime:'≈ 1.03 × 10⁻¹² s',aliases:['D+'],decays:[['K⁻ π⁺ π⁺','≈ 9%']]},
+    {id:'dsp',symbol:'Dₛ⁺',name:'Ds+',ru:'D_s-плюс',pdg:431,group:'charm',x:535,y:1080,r:32,mass:'1968.35 MeV',charge:'+1',spin:'0',parity:'−1',quarks:'c s̄',lifetime:'≈ 5.0 × 10⁻¹³ s',aliases:['Ds+','D_s+'],decays:[['ϕ π⁺','характерный канал']]},
+
+    {id:'g',symbol:'g',name:'gluon',ru:'глюон',pdg:21,group:'bosons',x:900,y:385,r:36,mass:'0',charge:'0',spin:'1',parity:'—',quarks:'элементарная',lifetime:'стабилен как поле; конфайнмент',aliases:['gluon','глюон'],decays:[]},
+    {id:'gamma',symbol:'γ',name:'photon',ru:'фотон',pdg:22,group:'bosons',x:900,y:545,r:42,mass:'0',charge:'0',spin:'1',parity:'—',quarks:'элементарная',lifetime:'стабилен',aliases:['photon','gamma','фотон'],decays:[]},
+    {id:'wm',symbol:'W⁻',name:'W-',ru:'W- бозон',pdg:-24,group:'bosons',x:790,y:690,r:37,mass:'≈ 80.37 GeV',charge:'−1',spin:'1',parity:'—',quarks:'элементарная',lifetime:'Γ ≈ 2.1 GeV',aliases:['W-'],decays:[['ℓ⁻ ν̄','лептонные'],['q q̄′','адронные']]},
+    {id:'z0',symbol:'Z⁰',name:'Z boson',ru:'Z-бозон',pdg:23,group:'bosons',x:900,y:700,r:42,mass:'91.1876 GeV',charge:'0',spin:'1',parity:'—',quarks:'элементарная',lifetime:'Γ ≈ 2.50 GeV',aliases:['Z0','Z boson'],decays:[['ℓ⁺ ℓ⁻','лептонные'],['ν ν̄','невидимые'],['q q̄','адронные']]},
+    {id:'wp',symbol:'W⁺',name:'W+',ru:'W+ бозон',pdg:24,group:'bosons',x:1010,y:690,r:37,mass:'≈ 80.37 GeV',charge:'+1',spin:'1',parity:'—',quarks:'элементарная',lifetime:'Γ ≈ 2.1 GeV',aliases:['W+'],decays:[['ℓ⁺ ν','лептонные'],['q q̄′','адронные']]},
+    {id:'h',symbol:'H',name:'Higgs boson',ru:'бозон Хиггса',pdg:25,group:'bosons',x:900,y:845,r:38,mass:'≈ 125.2 GeV',charge:'0',spin:'0',parity:'+1',cparity:'+1',quarks:'элементарная',lifetime:'Γ ≈ 4 MeV',aliases:['Higgs','H'],decays:[['b b̄','доминирующий'],['W W*',''],['γ γ','редкий']]},
+
+    {id:'p',symbol:'p',name:'proton',ru:'протон',pdg:2212,group:'baryons',x:1370,y:280,r:37,mass:'938.272 MeV',charge:'+1',spin:'1/2',parity:'+1',quarks:'uud',lifetime:'стабилен (эксп. предел)',aliases:['proton','протон'],decays:[]},
+    {id:'n',symbol:'n',name:'neutron',ru:'нейтрон',pdg:2112,group:'baryons',x:1530,y:280,r:37,mass:'939.565 MeV',charge:'0',spin:'1/2',parity:'+1',quarks:'udd',lifetime:'≈ 880 s (свободный)',aliases:['neutron','нейтрон'],decays:[['p e⁻ ν̄e','β-распад']]},
+    {id:'lambda',symbol:'Λ⁰',name:'Lambda0',ru:'лямбда-гиперон',pdg:3122,group:'baryons',x:1450,y:410,r:37,mass:'1115.683 MeV',charge:'0',spin:'1/2',parity:'+1',quarks:'uds',lifetime:'≈ 2.63 × 10⁻¹⁰ s',aliases:['Lambda','Lambda0'],decays:[['p π⁻','≈ 64%'],['n π⁰','≈ 36%']]},
+    {id:'sigp',symbol:'Σ⁺',name:'Sigma+',ru:'сигма-плюс',pdg:3222,group:'baryons',x:1300,y:420,r:31,mass:'1189.37 MeV',charge:'+1',spin:'1/2',parity:'+1',quarks:'uus',lifetime:'≈ 8.0 × 10⁻¹¹ s',aliases:['Sigma+'],decays:[['p π⁰','≈ 52%'],['n π⁺','≈ 48%']]},
+    {id:'sig0',symbol:'Σ⁰',name:'Sigma0',ru:'сигма-ноль',pdg:3212,group:'baryons',x:1450,y:520,r:31,mass:'1192.642 MeV',charge:'0',spin:'1/2',parity:'+1',quarks:'uds',lifetime:'≈ 7 × 10⁻²⁰ s',aliases:['Sigma0'],decays:[['Λ⁰ γ','≈ 100%']]},
+    {id:'sigm',symbol:'Σ⁻',name:'Sigma-',ru:'сигма-минус',pdg:3112,group:'baryons',x:1600,y:420,r:31,mass:'1197.449 MeV',charge:'−1',spin:'1/2',parity:'+1',quarks:'dds',lifetime:'≈ 1.48 × 10⁻¹⁰ s',aliases:['Sigma-'],decays:[['n π⁻','≈ 100%']]},
+    {id:'xi0',symbol:'Ξ⁰',name:'Xi0',ru:'кси-ноль',pdg:3322,group:'baryons',x:1350,y:585,r:31,mass:'1314.86 MeV',charge:'0',spin:'1/2',parity:'+1',quarks:'uss',lifetime:'≈ 2.9 × 10⁻¹⁰ s',aliases:['Xi0'],decays:[['Λ⁰ π⁰','≈ 100%']]},
+    {id:'xim',symbol:'Ξ⁻',name:'Xi-',ru:'кси-минус',pdg:3312,group:'baryons',x:1550,y:585,r:31,mass:'1321.71 MeV',charge:'−1',spin:'1/2',parity:'+1',quarks:'dss',lifetime:'≈ 1.64 × 10⁻¹⁰ s',aliases:['Xi-'],decays:[['Λ⁰ π⁻','≈ 100%']]},
+    {id:'omega',symbol:'Ω⁻',name:'Omega-',ru:'омега-минус',pdg:3334,group:'baryons',x:1450,y:665,r:32,mass:'1672.45 MeV',charge:'−1',spin:'3/2',parity:'+1',quarks:'sss',lifetime:'≈ 8.2 × 10⁻¹¹ s',aliases:['Omega-'],decays:[['Λ⁰ K⁻','≈ 68%']]},
+
+    {id:'em',symbol:'e⁻',name:'electron',ru:'электрон',pdg:11,group:'leptons',x:1325,y:820,r:34,mass:'0.510999 MeV',charge:'−1',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'стабилен',aliases:['electron','электрон'],decays:[]},
+    {id:'ep',symbol:'e⁺',name:'positron',ru:'позитрон',pdg:-11,group:'leptons',x:1595,y:820,r:34,mass:'0.510999 MeV',charge:'+1',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'стабилен',aliases:['positron','позитрон'],decays:[]},
+    {id:'mum',symbol:'μ⁻',name:'muon',ru:'мюон',pdg:13,group:'leptons',x:1325,y:920,r:35,mass:'105.658 MeV',charge:'−1',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'≈ 2.20 μs',aliases:['muon','mu-','мюон'],decays:[['e⁻ ν̄e νμ','≈ 100%']]},
+    {id:'mup',symbol:'μ⁺',name:'antimuon',ru:'антимюон',pdg:-13,group:'leptons',x:1595,y:920,r:35,mass:'105.658 MeV',charge:'+1',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'≈ 2.20 μs',aliases:['mu+','antimuon'],decays:[['e⁺ νe ν̄μ','≈ 100%']]},
+    {id:'taum',symbol:'τ⁻',name:'tau',ru:'тау-лептон',pdg:15,group:'leptons',x:1325,y:1020,r:33,mass:'1776.86 MeV',charge:'−1',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'≈ 2.90 × 10⁻¹³ s',aliases:['tau-','tau'],decays:[['μ⁻ ν̄μ ντ','≈ 17%'],['e⁻ ν̄e ντ','≈ 18%']]},
+    {id:'taup',symbol:'τ⁺',name:'antitau',ru:'антитау',pdg:-15,group:'leptons',x:1595,y:1020,r:33,mass:'1776.86 MeV',charge:'+1',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'≈ 2.90 × 10⁻¹³ s',aliases:['tau+'],decays:[['μ⁺ νμ ν̄τ','≈ 17%'],['e⁺ νe ν̄τ','≈ 18%']]},
+    {id:'nue',symbol:'νₑ',name:'electron neutrino',ru:'электронное нейтрино',pdg:12,group:'leptons',x:1460,y:780,r:28,mass:'очень мала',charge:'0',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'стабильно в SM',aliases:['nu_e','νe'],decays:[]},
+    {id:'numu',symbol:'νμ',name:'muon neutrino',ru:'мюонное нейтрино',pdg:14,group:'leptons',x:1460,y:900,r:28,mass:'очень мала',charge:'0',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'стабильно в SM',aliases:['nu_mu','νmu'],decays:[]},
+    {id:'nutau',symbol:'ντ',name:'tau neutrino',ru:'тау-нейтрино',pdg:16,group:'leptons',x:1460,y:1020,r:28,mass:'очень мала',charge:'0',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'стабильно в SM',aliases:['nu_tau','νtau'],decays:[]},
+
+    {id:'u',symbol:'u',name:'up quark',ru:'u-кварк',pdg:2,group:'quarks',x:760,y:1070,r:31,mass:'≈ 2 MeV',charge:'+2/3',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'конфайнмент',aliases:['up quark','u quark'],decays:[]},
+    {id:'d',symbol:'d',name:'down quark',ru:'d-кварк',pdg:1,group:'quarks',x:840,y:1150,r:31,mass:'≈ 5 MeV',charge:'−1/3',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'конфайнмент',aliases:['down quark','d quark'],decays:[]},
+    {id:'s',symbol:'s',name:'strange quark',ru:'s-кварк',pdg:3,group:'quarks',x:940,y:1070,r:31,mass:'≈ 93 MeV',charge:'−1/3',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'слабый распад адронов',aliases:['strange quark','s quark'],decays:[]},
+    {id:'c',symbol:'c',name:'charm quark',ru:'c-кварк',pdg:4,group:'quarks',x:1040,y:1150,r:31,mass:'≈ 1.27 GeV',charge:'+2/3',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'адронизуется',aliases:['charm quark','c quark'],decays:[]},
+    {id:'b',symbol:'b',name:'bottom quark',ru:'b-кварк',pdg:5,group:'quarks',x:1140,y:1070,r:31,mass:'≈ 4.18 GeV',charge:'−1/3',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'адронизуется',aliases:['bottom quark','b quark'],decays:[]},
+    {id:'t',symbol:'t',name:'top quark',ru:'t-кварк',pdg:6,group:'quarks',x:1230,y:1150,r:31,mass:'≈ 173 GeV',charge:'+2/3',spin:'1/2',parity:'—',quarks:'элементарная',lifetime:'≈ 5 × 10⁻²⁵ s',aliases:['top quark','t quark'],decays:[['W⁺ b','≈ 100%']]}
+  ],
+  edges: [
+    ['rho0','pip','strong'],['rho0','pim','strong'],['rhop','pip','strong'],['rhop','pi0','strong'],['rhom','pim','strong'],['rhom','pi0','strong'],
+    ['pi0','gamma','em'],['eta','gamma','em'],['etap','rho0','em'],['pip','mup','weak'],['pip','numu','weak'],['pim','mum','weak'],['pim','numu','weak'],
+    ['phi','kp','strong'],['phi','km','strong'],['phi','k0','strong'],['phi','k0b','strong'],['kst0','kp','strong'],['kst0','pim','strong'],['kstp','kp','strong'],['kstp','pi0','strong'],
+    ['kp','mup','weak'],['kp','numu','weak'],['km','mum','weak'],['km','numu','weak'],['k0','k0b','mixing'],
+    ['jpsi','em','em'],['jpsi','ep','em'],['jpsi','mum','em'],['jpsi','mup','em'],['d0','km','weak'],['d0','pip','weak'],['dp','km','weak'],['dp','pip','weak'],['dsp','phi','weak'],['dsp','pip','weak'],
+    ['n','p','weak'],['n','em','weak'],['n','nue','weak'],['lambda','p','weak'],['lambda','pim','weak'],['sig0','lambda','em'],['sig0','gamma','em'],['sigp','p','weak'],['sigp','pi0','weak'],['sigm','n','weak'],['sigm','pim','weak'],['xi0','lambda','weak'],['xi0','pi0','weak'],['xim','lambda','weak'],['xim','pim','weak'],['omega','lambda','weak'],['omega','km','weak'],
+    ['mum','em','weak'],['mum','numu','weak'],['mum','nue','weak'],['mup','ep','weak'],['mup','numu','weak'],['mup','nue','weak'],['taum','mum','weak'],['taum','nutau','weak'],['taup','mup','weak'],['taup','nutau','weak'],
+    ['gamma','ep','em'],['gamma','em','em'],['z0','em','weak'],['z0','mum','weak'],['z0','nue','weak'],['wm','em','weak'],['wm','nue','weak'],['wp','ep','weak'],['wp','nue','weak'],['h','gamma','em'],['g','u','strong'],['g','d','strong'],['g','s','strong'],['g','c','strong'],['g','b','strong'],['g','t','strong'],
+    ['u','pip','composition'],['d','pip','composition'],['u','p','composition'],['d','p','composition'],['d','n','composition'],['s','lambda','composition'],['s','omega','composition'],['s','phi','composition'],['c','jpsi','composition'],['c','d0','composition'],['c','dp','composition'],['c','dsp','composition'],['t','wp','weak'],['t','b','weak'],
+    ['p','n','family'],['sigp','sig0','family'],['sig0','sigm','family'],['xi0','xim','family'],['em','ep','family'],['mum','mup','family'],['taum','taup','family'],['pip','pi0','family'],['pi0','pim','family'],['kp','k0','family'],['k0b','km','family']
+  ].map((e,i)=>({id:'e'+i,from:e[0],to:e[1],kind:e[2]}))
+};

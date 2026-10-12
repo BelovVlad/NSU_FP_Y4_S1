@@ -1,0 +1,427 @@
+% !TeX root = part5.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+\practice{5}{03.10.2026}{Рассеяние упругой волны на примеси.
+Квантование колебаний одномерной цепочки}
+\captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+
+\begingroup
+\renewcommand{\thesection}{4.\arabic{section}}
+
+\task[4]{Рассеяние упругой волны на атоме другой массы}
+
+\condition
+Рассмотреть бесконечную одномерную цепочку атомов массы $m$
+с расстоянием $a$ между соседними узлами и жёсткостью пружин $\alpha$.
+В узле $n=0$ находится примесный атом массы $M$.
+Решить задачу о рассеянии падающей волны $e^{ikna}$:
+найти амплитуды отражения и прохождения и исследовать связь
+полюса амплитуды с локализованным состоянием.
+
+\solution
+
+\subsection*{Уравнения движения и падающая волна}
+
+Для обычных атомов и примеси соответственно
+\begin{align*}
+    m\ddot u_n&=\alpha(u_{n+1}+u_{n-1}-2u_n),\qquad n\ne0,\\
+    M\ddot u_0&=\alpha(u_1+u_{-1}-2u_0).
+\end{align*}
+Ищем стационарное решение $u_n(t)=U_ne^{-i\omega t}$.
+Частота падающей волны удовлетворяет дисперсионному соотношению
+идеальной цепочки:
+\[
+    \omega^2(k)=\frac{4\alpha}{m}\sin^2\frac{ka}{2}.
+\]
+При \rassumption{$0<k<\pi/a$} волна $e^{ikna-i\omega t}$
+распространяется вправо. Обозначим
+\[
+    U_n=
+    \begin{cases}
+        e^{ikna}+R e^{-ikna},& n<0,\\
+        T e^{ikna},& n\ge0.
+    \end{cases}
+\]
+Здесь $R$ и $T$ --- комплексные амплитуды отражённой и прошедшей волн.
+Падающая амплитуда принята равной единице.
+
+\subsection*{Согласование в узлах около примеси}
+
+Уравнение обычного атома в узле $n=-1$ требует
+$U_0=1+R$, а уравнение в узле $n=1$ --- $U_0=T$.
+Поэтому
+\[
+    T=1+R.
+\]
+Положим $\theta=ka$ и $\gamma=M/m$. Тогда
+\[
+    U_1=T e^{i\theta},\qquad
+    U_{-1}=e^{-i\theta}+R e^{i\theta}.
+\]
+Подстановка в уравнение примеси даёт
+\begin{align*}
+    -M\omega^2T
+       &=\alpha\bigl[T e^{i\theta}+e^{-i\theta}
+                         +(T-1)e^{i\theta}-2T\bigr]\\
+       &=\alpha\bigl[2T(e^{i\theta}-1)
+                         +e^{-i\theta}-e^{i\theta}\bigr].
+\end{align*}
+Следовательно,
+\[
+    T\bigl[M\omega^2+2\alpha(e^{i\theta}-1)\bigr]
+       =2i\alpha\sin\theta.
+\]
+
+\subsection*{Амплитуды прохождения и отражения}
+
+Используя дисперсию, получаем
+\begin{align*}
+    T&=\frac{2i\alpha\sin\theta}
+             {4\alpha\gamma\sin^2(\theta/2)
+                  +2\alpha(e^{i\theta}-1)}\\
+     &=\frac{i\cos(\theta/2)}
+             {\gamma\sin(\theta/2)+i e^{i\theta/2}}\\
+     &=\frac{i\cos(\theta/2)}
+             {(\gamma-1)\sin(\theta/2)+i\cos(\theta/2)}
+       =\frac1{1-i(\gamma-1)\tan(\theta/2)},\\
+    R&=T-1
+       =\frac{i(\gamma-1)\tan(\theta/2)}
+             {1-i(\gamma-1)\tan(\theta/2)}.
+\end{align*}
+При $M=m$ примесь отсутствует: $T=1$, $R=0$.
+
+\subsection*{Коэффициенты по потоку энергии}
+
+Среды слева и справа одинаковы, поэтому групповые скорости
+падающей и прошедшей волн совпадают. Коэффициенты прохождения
+и отражения по потоку равны
+\begin{align*}
+    \mathcal T&=|T|^2
+       =\frac1{1+(\gamma-1)^2\tan^2(ka/2)},\\
+    \mathcal R&=|R|^2
+       =\frac{(\gamma-1)^2\tan^2(ka/2)}
+             {1+(\gamma-1)^2\tan^2(ka/2)}.
+\end{align*}
+Отсюда \rresult{$\mathcal R+\mathcal T=1$}.
+Для длинных волн $ka\ll1$
+\[
+    \mathcal R\simeq\frac{(\gamma-1)^2(ka)^2}{4},\qquad
+    \mathcal T\longrightarrow1.
+\]
+При $ka\to\pi$ и $M\ne m$ получаем $\mathcal T\to0$.
+Эти предельные значения понимаются как пределы изнутри фононной зоны.
+
+\begin{rbox}[breakable=false,left=16pt,right=16pt,top=14pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[x=8cm,y=3cm,
+        every node/.style={text=rtext,font=\small}]
+        \draw[rtext,-{Stealth[length=2mm]}] (0,0)--(1.07,0)
+            node[right] {$ka/\pi$};
+        \draw[rtext,-{Stealth[length=2mm]}] (0,0)--(0,1.15)
+            node[above] {$\mathcal T$};
+        \draw[rtext!40,dashed] (1,0)--(1,1);
+        \node[below=4pt] at (0,0) {$0$};
+        \node[below=4pt] at (1,0) {$1$};
+        \node[left=4pt] at (0,1) {$1$};
+        \draw[rtext!65,line width=1pt] (0,1)--(1,1);
+        \draw[red3,line width=1.3pt,domain=0:0.995,samples=130]
+            plot (\x,{1/(1+0.25*tan(90*\x)^2)});
+        \draw[p3,line width=1.3pt,domain=0:0.995,samples=130]
+            plot (\x,{1/(1+tan(90*\x)^2)});
+        \node[above] at (0.5,1) {$M=m$};
+        \node[red3,right] at (0.58,0.78) {$M=m/2$};
+        \node[p3,right] at (0.12,0.58) {$M=2m$};
+    \end{tikzpicture}
+    \captionof{figure}{Прохождение упругой волны через массовую примесь.
+    Длинные волны проходят почти без отражения;
+    около границы зоны массовый дефект отражает волну.}
+    \label{fig:fksv5_transmission}
+\end{rbox}
+
+\subsection*{Полюс амплитуды и локализованная мода}
+
+Аналитически продолжим $T(k)$ на комплексные значения $k$.
+Его знаменатель обращается в нуль при
+\[
+    \gamma\sin\frac{ka}{2}+i e^{ika/2}=0.
+\]
+Умножая на $2i e^{-ika/2}$, получаем
+\[
+    \gamma(1-e^{-ika})-2=0,\qquad
+    e^{-ika}=1-\frac2\gamma.
+\]
+Для затухания справа от примеси выбираем
+\[
+    k=\frac\pi a+i\chi,\qquad \chi>0,
+    \qquad e^{-ika}=-e^{\chi a}.
+\]
+Следовательно,
+\[
+    e^{\chi a}=\frac2\gamma-1=\frac{2m}{M}-1,\qquad
+    \chi a=\ln\left(\frac{2m}{M}-1\right).
+\]
+Условие $\chi>0$ при положительных массах выполняется только для $M<m$.
+Профиль локализованной моды и её частота имеют вид
+\[
+    U_n=U_0(-1)^n e^{-\chi a|n|},\qquad
+    \omega_{\mathrm{loc}}^2
+       =\frac{4\alpha}{m\gamma(2-\gamma)}
+       =\frac{4\alpha m}{M(2m-M)}.
+\]
+Для $0<\gamma<1$ произведение $\gamma(2-\gamma)<1$, поэтому
+\[
+    \omega_{\mathrm{loc}}^2>\frac{4\alpha}{m}
+       =\omega_{\max}^2.
+\]
+Полюс амплитуды воспроизводит локализованное состояние,
+найденное ранее непосредственно из уравнений движения.
+
+\answer
+\[
+    T=\frac1{1-i(M/m-1)\tan(ka/2)},\qquad R=T-1,
+    \qquad \mathcal R+\mathcal T=1.
+\]
+\rresult{Локализованная мода существует при $M<m$} и лежит выше
+фононной полосы идеальной цепочки.
+
+\clearpage
+\task[18]{Квантование упругой цепочки}
+
+\condition
+Построить гамильтониан одномерной упругой цепочки
+в представлении нормальных координат и в приближении вторичного
+квантования. Рассмотреть $N$ одинаковых атомов массы $m$,
+соединённых пружинами жёсткости $\alpha$, с периодическими
+граничными условиями. Обсудить роль ангармонических членов
+третьего и четвёртого порядков.
+
+\solution
+
+\subsection*{Гамильтониан и канонические операторы}
+
+Обозначим смещение атома в узле $r$ через $\hat q_r$,
+а сопряжённый импульс --- через $\hat p_r$.
+В \rassumption{гармоническом приближении}
+\[
+    \hat H=\sum_{r=0}^{N-1}
+       \left[\frac{\hat p_r^2}{2m}
+             +\frac\alpha2(\hat q_{r+1}-\hat q_r)^2\right],
+    \qquad \hat q_{r+N}=\hat q_r.
+\]
+Операторы смещения и импульса эрмитовы и удовлетворяют соотношениям
+\[
+    [\hat q_r,\hat p_s]=i\hbar\delta_{rs},\qquad
+    [\hat q_r,\hat q_s]=[\hat p_r,\hat p_s]=0.
+\]
+
+\subsection*{Преобразование Фурье}
+
+Здесь используем \rassumption{безразмерное волновое число}
+$k=2\pi j/N$, $j=0,\ldots,N-1$, с выбором представителей
+в зоне $[-\pi,\pi)$. Физический волновой вектор равен $k/a$.
+Все равенства волновых чисел, в том числе в символах Кронекера,
+понимаются по модулю $2\pi$.
+\begin{align*}
+    \hat q_r&=\frac1{\sqrt N}\sum_k\hat Q_k e^{ikr},
+        &\hat Q_k&=\frac1{\sqrt N}\sum_r\hat q_r e^{-ikr},\\
+    \hat p_r&=\frac1{\sqrt N}\sum_k\hat P_k e^{-ikr},
+        &\hat P_k&=\frac1{\sqrt N}\sum_r\hat p_r e^{ikr}.
+\end{align*}
+Основное соотношение ортогональности
+\[
+    \sum_{r=0}^{N-1}e^{i(k-k')r}=N\delta_{kk'}
+\]
+следует из суммы геометрической прогрессии.
+В частности,
+\[
+    \sum_r e^{i(k+k')r}=N\delta_{k,-k'}.
+\]
+Из эрмитовости $\hat q_r$ и $\hat p_r$ получаем
+\[
+    \hat Q_k^\dagger=\hat Q_{-k},\qquad
+    \hat P_k^\dagger=\hat P_{-k}.
+\]
+Например,
+\[
+    \hat q_r^\dagger
+       =\frac1{\sqrt N}\sum_k\hat Q_k^\dagger e^{-ikr}
+       =\frac1{\sqrt N}\sum_k\hat Q_{-k}^\dagger e^{ikr}
+       =\hat q_r.
+\]
+
+\subsection*{Кинетическая энергия}
+
+Подставим преобразование Фурье:
+\begin{align*}
+    \sum_r\frac{\hat p_r^2}{2m}
+       &=\frac1{2mN}\sum_{k,k'}\hat P_k\hat P_{k'}
+           \sum_r e^{-i(k+k')r}\\
+       &=\frac1{2m}\sum_k\hat P_k\hat P_{-k}.
+\end{align*}
+В классическом лагранжиане тот же переход даёт
+\[
+    E_{\mathrm{kin}}=\frac m2\sum_k\dot Q_k\dot Q_{-k}.
+\]
+
+\subsection*{Потенциальная энергия}
+
+Разность соседних смещений равна
+\[
+    \hat q_{r+1}-\hat q_r
+       =\frac1{\sqrt N}\sum_k\hat Q_k(e^{ik}-1)e^{ikr}.
+\]
+Следовательно,
+\begin{align*}
+    \hat V&=\frac\alpha{2N}\sum_{k,k'}
+       \hat Q_k\hat Q_{k'}(e^{ik}-1)(e^{ik'}-1)
+       \sum_r e^{i(k+k')r}\\
+       &=\frac\alpha2\sum_k\hat Q_k\hat Q_{-k}
+           (e^{ik}-1)(e^{-ik}-1)\\
+       &=\alpha\sum_k(1-\cos k)\hat Q_k\hat Q_{-k}.
+\end{align*}
+Введём частоты нормальных мод:
+\[
+    \omega_k^2=\frac{2\alpha}{m}(1-\cos k)
+       =\frac{4\alpha}{m}\sin^2\frac k2,
+    \qquad \omega_k=\omega_{-k}.
+\]
+
+\subsection*{Лагранжиан и сопряжённые импульсы}
+
+Классический лагранжиан в нормальных координатах имеет вид
+\[
+    L=\frac m2\sum_k\dot Q_k\dot Q_{-k}
+       -\frac m2\sum_k\omega_k^2Q_kQ_{-k}.
+\]
+При дифференцировании кинетической части учитываем оба члена
+с индексами $k$ и $-k$:
+\[
+    P_k=\frac{\partial L}{\partial\dot Q_k}=m\dot Q_{-k},
+    \qquad \dot Q_k=\frac{P_{-k}}m.
+\]
+Поэтому импульс, канонически сопряжённый $Q_k$, связан
+с производной координаты противоположного волнового числа.
+Это согласуется с обратным преобразованием:
+\[
+    p_r=m\dot q_r
+       =\frac m{\sqrt N}\sum_k\dot Q_ke^{ikr}
+       =\frac1{\sqrt N}\sum_k P_{-k}e^{ikr}
+       =\frac1{\sqrt N}\sum_k P_ke^{-ikr}.
+\]
+После преобразования Лежандра и квантования
+\[
+    \hat H=\sum_k\left[
+       \frac{\hat P_k\hat P_{-k}}{2m}
+       +\frac{m\omega_k^2}{2}\hat Q_k\hat Q_{-k}\right].
+\]
+
+\subsection*{Коммутаторы нормальных координат}
+
+Непосредственно из определений
+\begin{align*}
+    [\hat Q_k,\hat P_{k'}]
+       &=\frac1N\sum_{r,s}e^{-ikr+ik's}[\hat q_r,\hat p_s]\\
+       &=\frac{i\hbar}N\sum_{r,s}e^{-ikr+ik's}\delta_{rs}\\
+       &=\frac{i\hbar}N\sum_r e^{i(k'-k)r}
+         =i\hbar\delta_{kk'}.
+\end{align*}
+Кроме того,
+\[
+    [\hat Q_k,\hat Q_{k'}]=0,\qquad
+    [\hat P_k,\hat P_{k'}]=0.
+\]
+Таким образом, выбранные преобразования сохраняют
+\rresult{канонические коммутационные соотношения}.
+
+\subsection*{Операторы рождения и уничтожения фононов}
+
+Для $k\ne0$, когда $\omega_k>0$, определим
+\begin{align*}
+    \hat b_k&=\sqrt{\frac{m\omega_k}{2\hbar}}\hat Q_k
+       +\frac{i}{\sqrt{2m\hbar\omega_k}}\hat P_{-k},\\
+    \hat b_k^\dagger&=\sqrt{\frac{m\omega_k}{2\hbar}}\hat Q_{-k}
+       -\frac{i}{\sqrt{2m\hbar\omega_k}}\hat P_k.
+\end{align*}
+Канонические коммутаторы дают
+\[
+    [\hat b_k,\hat b_{k'}^\dagger]=\delta_{kk'},\qquad
+    [\hat b_k,\hat b_{k'}]=[\hat b_k^\dagger,\hat b_{k'}^\dagger]=0.
+\]
+Обратные формулы
+\begin{align*}
+    \hat Q_k&=\sqrt{\frac{\hbar}{2m\omega_k}}
+          (\hat b_k+\hat b_{-k}^\dagger),\\
+    \hat P_k&=-i\sqrt{\frac{m\hbar\omega_k}{2}}
+          (\hat b_{-k}-\hat b_k^\dagger).
+\end{align*}
+Подстановка в гамильтониан диагонализует колебательную часть:
+\[
+    \hat H_{\mathrm{vib}}
+       =\sum_{k\ne0}\hbar\omega_k
+          \left(\hat b_k^\dagger\hat b_k+\frac12\right).
+\]
+Оператор $\hat n_k=\hat b_k^\dagger\hat b_k$ имеет собственные значения
+$n_k=0,1,2,\ldots$.
+\rconcept{Фонон} --- квант нормального колебания с энергией
+$\hbar\omega_k$. В гармоническом приближении моды независимы.
+
+\subsection*{Нулевая мода}
+
+При $k=0$ все атомы смещаются одинаково, пружины не растягиваются
+и $\omega_0=0$. Это свободное движение центра масс, а не осциллятор.
+Если $P_{\mathrm{tot}}=\sum_r p_r$, то
+\[
+    P_0=\frac{P_{\mathrm{tot}}}{\sqrt N},\qquad
+    \hat H_{\mathrm{cm}}=\frac{\hat P_0^2}{2m}
+       =\frac{\hat P_{\mathrm{tot}}^2}{2Nm}.
+\]
+При фиксированном центре масс нулевую моду исключают из
+колебательной суммы.
+
+\subsection*{Роль ангармонических членов}
+
+Разложение энергии одной связи по относительному смещению
+$\Delta q_r=q_{r+1}-q_r$ имеет вид
+\[
+    U(\Delta q_r)=\frac\alpha2(\Delta q_r)^2
+       +\frac{g_3}{3!}(\Delta q_r)^3
+       +\frac{g_4}{4!}(\Delta q_r)^4+\ldots.
+\]
+Члены третьего и четвёртого порядков дают добавки
+\[
+    \hat H_3=\frac{g_3}{3!}\sum_r(\Delta\hat q_r)^3,
+    \qquad \hat H_4=\frac{g_4}{4!}\sum_r(\Delta\hat q_r)^4.
+\]
+С $D_k=e^{ik}-1$ их выражения в нормальных координатах равны
+\begin{align*}
+    \hat H_3&=\frac{g_3}{3!\sqrt N}
+       \sum_{k_1,k_2,k_3}\delta_{k_1+k_2+k_3,0}
+         \prod_{j=1}^3(D_{k_j}\hat Q_{k_j}),\\
+    \hat H_4&=\frac{g_4}{4!N}
+       \sum_{k_1,k_2,k_3,k_4}\delta_{k_1+k_2+k_3+k_4,0}
+         \prod_{j=1}^4(D_{k_j}\hat Q_{k_j}).
+\end{align*}
+После замены $Q_k$ на операторы $b_k$ и $b_k^\dagger$ эти члены
+\rconcept{связывают разные фононные моды}.
+Кубическая добавка описывает трёхфононные процессы, в том числе
+распад одного фонона на два и обратное слияние, если это допускают
+законы сохранения. Добавка четвёртого порядка содержит четырёхфононные
+процессы. Квазиимпульс сохраняется с точностью до вектора обратной
+решётки; при реальном рассеянии сохраняется также энергия.
+Ангармонизм приводит к взаимодействию фононов и температурной
+зависимости их частот и времени жизни.
+
+\answer
+\[
+    \hat H=\frac{\hat P_{\mathrm{tot}}^2}{2Nm}
+       +\sum_{k\ne0}\hbar\omega_k\left(\hat n_k+\frac12\right),
+    \qquad \omega_k=2\sqrt{\frac\alpha m}\left|\sin\frac k2\right|.
+\]
+При фиксированном центре масс остаётся только фононная сумма.
+Члены третьего и четвёртого порядков нарушают независимость нормальных мод
+гармонической цепочки.
+
+\endgroup
+\end{document}
