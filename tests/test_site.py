@@ -651,13 +651,17 @@ class SiteTests(unittest.TestCase):
         from urllib.parse import quote
         self.pwa_ready()
         url='../'+quote(self.nb)+'?v=one'
+        notebook_request=('GET','/'+quote(self.nb))
         read='async url=>{const r=await fetch(url);return {ok:r.ok,text:await r.text()}}'
         self.assertTrue(self.page.evaluate(read,url)['ok'])
-        count=len(self.requests)
+        count=self.requests.count(notebook_request)
+        self.assertEqual(count,1)
+        # Background requests for other resources must not look like notebook downloads.
+        self.assertTrue(self.page.evaluate(read,'search-index/files.json?test=background')['ok'])
         self.assertTrue(self.page.evaluate(read,url)['ok'])
-        self.assertEqual(len(self.requests),count,'A versioned notebook should not be downloaded twice')
+        self.assertEqual(self.requests.count(notebook_request),count,'A versioned notebook should not be downloaded twice')
         self.assertTrue(self.page.evaluate(read,url.replace('one','two'))['ok'])
-        self.assertGreater(len(self.requests),count,'A new content version must reach the server')
+        self.assertEqual(self.requests.count(notebook_request),count+1,'A new content version must reach the server')
         self.context.set_offline(True)
         self.page.reload()
         self.page.wait_for_function('FILES.length===2')
