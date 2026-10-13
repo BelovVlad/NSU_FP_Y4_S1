@@ -17,10 +17,10 @@ test('initial snapshot and debt-free days never earn karma or flowers',()=>{
     assert.equal(r.changes.filter(c=>c.type==='increase').length,0);
   }
 });
-test('partial repayment raises karma immediately, once per assessment day',()=>{
+test('only repayment of the last outstanding debt raises karma',()=>{
   const c=counts(0);c[rules.series[0].id]=1;
   const h=history(snapshot('2026-09-08T09:00:00',0),snapshot('2026-09-08T12:00:00',c));
-  assert.equal(run(h,'2026-09-08T12:00:00').level,1);
+  assert.equal(run(h,'2026-09-08T12:00:00').level,0);
   assert.equal(run(h,'2026-09-08T12:00:00').shield,false);
   h.snapshots.push(snapshot('2026-09-08T18:00:00',1));
   const r=run(h,'2026-09-08T18:00:00');
@@ -28,7 +28,7 @@ test('partial repayment raises karma immediately, once per assessment day',()=>{
   assert.equal(run(h,'2026-09-09T09:00:00').level,1);
   assert.equal(run(h,'2026-09-14T09:00:00').level,1);
 });
-test('repaying a single subject gives karma but no flower',()=>{
+test('clearing all debt when only one subject owed gives karma but no flower',()=>{
   const c=counts(1);c[rules.series[0].id]=0;
   const h=history(snapshot('2026-09-08T09:00:00',c),snapshot('2026-09-08T12:00:00',1));
   const r=run(h,'2026-09-08T12:00:00');
@@ -49,9 +49,18 @@ test('flower requires all eight sections initially in debt and fully repaid',()=
     const remaining=counts(1);remaining[section.id]=0;
     const partial=history(snapshot('2026-09-08T09:00:00',0),snapshot('2026-09-08T12:00:00',remaining));
     assert.equal(run(partial,'2026-09-08T12:00:00').shield,false);
+    assert.equal(run(partial,'2026-09-08T12:00:00').level,0);
     partial.snapshots.push(snapshot('2026-09-08T18:00:00',1));
     assert.equal(run(partial,'2026-09-08T18:00:00').shield,true);
   }
+});
+test('reducing backlog in every section still gives no karma until nothing is owed',()=>{
+  const h=history(snapshot('2026-09-15T09:00:00',0),snapshot('2026-09-15T12:00:00',1));
+  assert.equal(run(h,'2026-09-15T12:00:00').level,0);
+  h.snapshots.push(snapshot('2026-09-15T18:00:00',2));
+  const r=run(h,'2026-09-15T18:00:00');
+  assert.equal(r.level,1);assert.equal(r.shield,true);
+  assert.equal(r.changes.find(c=>c.type==='increase').at,at('2026-09-15T18:00:00'));
 });
 test('repayment spread across assessment days does not earn a flower',()=>{
   const c=counts(0);c[rules.series[0].id]=1;

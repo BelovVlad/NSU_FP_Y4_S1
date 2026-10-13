@@ -79,7 +79,7 @@
           }else level=Math.max(0,level-1);
         }
       }
-      if(repaid&&!gainedToday){
+      if(repaid&&!debt&&!gainedToday){
         gainedToday=true;
         if(level<8)level++;
         else if(level===8&&fullSince!==null&&time-fullSince>=7*DAY)level=9;
