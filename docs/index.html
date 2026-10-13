@@ -63,6 +63,7 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .repo-link{display:flex;align-items:center;justify-content:space-between;color:#8d969f;text-decoration:none;font-size:12px}
 .repo-link .ui-icon{width:14px;height:14px}
 .repo-link:hover{color:var(--cream)}
+.sidebar-bottom button.repo-link{width:100%;padding:0;margin-bottom:12px;border:0;background:transparent;cursor:pointer;text-align:left}
 .app{min-height:100vh;margin-left:var(--sideW)}
 .topbar{
   position:relative;top:auto;z-index:30;height:68px;display:grid;grid-template-columns:minmax(250px,680px) 1fr auto;
@@ -1132,6 +1133,7 @@ body{
       <audio id="siteMusic" preload="none" loop></audio>
     </div>
     <div class="sidebar-bottom">
+      <button id="appSettings" class="repo-link" type="button">Приложение и данные</button>
       <button id="offlineFiles" type="button" hidden>Сохранённые PDF</button>
       <a class="repo-link" href="https://github.com/BelovVlad/NSU_FP_Y4_S1" target="_blank" rel="noopener"><span>GitHub</span><span data-icon="external" aria-hidden="true"></span></a>
     </div>
