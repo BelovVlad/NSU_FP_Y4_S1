@@ -4,6 +4,10 @@
 
 
 \input{style/style}
+% Отдельная печатная версия использует те же исходники и нумерацию.
+\ifdefined\FihamPrintVersion
+    \input{style/print}
+\fi
 
 \begin{document}
 
@@ -64,6 +68,8 @@
 \subfile{parts/part4}
 \clearpage
 \subfile{parts/part5}
+\clearpage
+\subfile{parts/part6}
 \clearpage
 
 
