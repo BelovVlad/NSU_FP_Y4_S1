@@ -1090,9 +1090,10 @@ body{
 
 </style>
 <link rel="stylesheet" href="knowledge.css?v=3">
-<link rel="stylesheet" href="app.css?v=6">
+<link rel="stylesheet" href="app.css?v=7">
 <link rel="stylesheet" href="../Overseer/overseer.css?v=2">
-<script defer src="app.js?v=14"></script>
+<script defer src="annotations-store.js?v=1"></script>
+<script defer src="app.js?v=15"></script>
 <script defer src="../Overseer/overseer.js?v=19"></script>
 </head>
 <body>
@@ -1143,7 +1144,7 @@ body{
       <button id="menuBtn" class="menu-btn" type="button" title="Меню" aria-label="Открыть меню"><span data-icon="menu" aria-hidden="true"></span></button>
       <div class="searchbox"><span class="glass" data-icon="search" aria-hidden="true"></span><input id="globalSearch" type="search" autocomplete="off" placeholder="Поиск по лекциям, задачам, формулам…"><span class="kbd">Ctrl + K</span></div>
       <div class="top-meta">NSU · Physics</div>
-      <button id="homeBtn" class="ghost-btn" title="Главная" aria-label="Главная"><span data-icon="home" aria-hidden="true"></span></button>
+      <div class="topbar-actions"><button id="homeBtn" class="ghost-btn" title="Главная" aria-label="Главная"><span data-icon="home" aria-hidden="true"></span></button><button id="appSettings" class="ghost-btn" type="button" title="Приложение и данные" aria-label="Приложение и данные"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m9 3-.6 2.2-2 .9-2-.6-2 3.5 1.6 1.6v2.8L2.4 15l2 3.5 2-.6 2 .9L9 21h4l.6-2.2 2-.9 2 .6 2-3.5-1.6-1.6v-2.8l1.6-1.6-2-3.5-2 .6-2-.9L13 3Z"/><circle cx="11" cy="12" r="3"/></svg></button></div>
     </header>
     <main id="main" class="main"></main>
   </div>
@@ -1563,7 +1564,10 @@ function hidePdfOverlay(){
 
 async function openPdfFullscreen(url,title='PDF'){
   if(!url)return;
-  if(pdfFullscreen.classList.contains('open'))persistOpenPdfPosition();
+  if(pdfFullscreen.classList.contains('open')){
+    try{if(pdfFullscreenFrame.contentWindow?.nsuFlushAnnotations&&!await pdfFullscreenFrame.contentWindow.nsuFlushAnnotations())return;}catch{}
+    persistOpenPdfPosition();
+  }
   recordOpenedUrl(url);
   const themed=new URL(url,location.href);
   const theme=currentPdfTheme();
@@ -1598,6 +1602,7 @@ async function openPdfFullscreen(url,title='PDF'){
 
 async function closePdfFullscreen(fromHistory=false){
   if(!pdfFullscreen.classList.contains('open'))return;
+  try{if(pdfFullscreenFrame.contentWindow?.nsuFlushAnnotations&&!await pdfFullscreenFrame.contentWindow.nsuFlushAnnotations())return;}catch{}
   const popOverlayState=!fromHistory&&pdfHistoryArmed&&history.state?.nsuPdfOverlay;
   // Hide first. Even if Android is still draining an old iframe history entry,
   // the user must never see the previous PDF.
@@ -1609,15 +1614,12 @@ async function closePdfFullscreen(fromHistory=false){
 window.addEventListener('popstate',()=>{
   if(!pdfFullscreen.classList.contains('open'))return;
   pdfHistoryArmed=false;
-  hidePdfOverlay();
+  void closePdfFullscreen(true);
 });
 
 window.nsuHandleAndroidBack=()=>{
   if(!pdfFullscreen.classList.contains('open'))return false;
-  const popOverlayState=pdfHistoryArmed&&history.state?.nsuPdfOverlay;
-  pdfHistoryArmed=false;
-  hidePdfOverlay();
-  if(popOverlayState)history.back();
+  void closePdfFullscreen();
   return true;
 };
 document.addEventListener('click',e=>{
@@ -2433,7 +2435,7 @@ function enableMobileImmersiveMode(){
 }
 function firstMobileImmersiveGesture(event){
   document.removeEventListener('pointerup',firstMobileImmersiveGesture,true);
-  if(event.target.closest('#installApp,#offlineFiles,.app-dialog') || window.matchMedia('(display-mode: standalone)').matches)return;
+  if(event.target.closest('#installApp,#offlineFiles,#appSettings,.app-dialog') || window.matchMedia('(display-mode: standalone)').matches)return;
   enableMobileImmersiveMode();
 }
 document.addEventListener('pointerup',firstMobileImmersiveGesture,true);

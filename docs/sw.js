@@ -1,17 +1,17 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v81';
+const SHELL_VERSION = 'v82';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
-const CORE = ['index.html', 'app.js?v=14', 'app.css?v=6', 'knowledge.css?v=3', 'manifest.webmanifest?v=7',
+const CORE = ['index.html', 'app.js?v=15', 'app.css?v=7', 'annotations-store.js?v=1', 'offline-resources.json', 'knowledge.css?v=3', 'manifest.webmanifest?v=7',
   '../Overseer/overseer.js?v=19', '../Overseer/overseer.css?v=2',
   '../Overseer/assets/Circle20.png', '../Overseer/assets/GuidancePebbles.png',
   '../Overseer/assets/miscDangerSymbol.png', '../Overseer/assets/keyArrowA.png', '../Overseer/assets/keyXA.png', '../Overseer/assets/noise.png',
   'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=18', 'notebook/outline.js?build=2',
-  'pdfjs/viewer.html', 'pdfjs/controls.css?v=11', 'assets/nsu-fp-emblem.webp',
+  'pdfjs/viewer.html', 'pdfjs/controls.css?v=12', 'pdfjs/notes.js?v=1', 'pdfjs/notes.css?v=1', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png?v=2', 'assets/app-512.png?v=2', 'particles/index.html', 'particles/particles.js',
   'particles/explorer.css?v=16', 'particles/explorer.js?v=16', 'particles/layout.js?v=5', 'particles/routes.js?v=2', 'particles/extra-particles.js?v=2', 'particles/remaining-particles.js?v=2'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json', 'search-index/karma-history.json'];
@@ -19,6 +19,7 @@ const absolute = path => new URL(path, BASE).href;
 const local = url => url.origin === BASE.origin && url.pathname.startsWith(ROOT.pathname);
 const pdfUrl = url => /\.pdf$/i.test(url.pathname) && (local(url) ||
   url.origin === 'https://media.githubusercontent.com' && url.pathname.startsWith('/media/BelovVlad/NSU_FP_Y4_S1/main/'));
+const notebookUrl = url => local(url) && /\.ipynb$/i.test(url.pathname);
 const library = url => url.origin === 'https://cdn.jsdelivr.net' &&
   /^\/npm\/(pdfjs-dist@4\.10\.38|mathjax@3\.2\.2|marked@12\.0\.2|dompurify@3\.1\.6|highlight\.js@11\.9\.0)\//.test(url.pathname) ||
   url.origin === 'https://cdnjs.cloudflare.com' && url.pathname.startsWith('/ajax/libs/highlight.js/11.9.0/');
@@ -72,9 +73,10 @@ async function readRange(response, range) {
     'Content-Type':'application/pdf','Content-Range':`bytes ${start}-${end}/${size}`,
     'Content-Length':String(end-start+1),'Accept-Ranges':'bytes'}});
 }
-async function material(request) {
+async function material(request,event) {
   const saved = await (await caches.open(PDFS)).match(request.url);
   if(saved) return readRange(saved,request.headers.get('range'));
+  if(notebookUrl(new URL(request.url)))return resource(request,event);
   // Never turn a PDF.js range request into an unsolicited full download.
   return fetch(request);
 }
@@ -126,19 +128,46 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  if(pdfUrl(url)) event.respondWith(material(event.request));
+  if(pdfUrl(url)||notebookUrl(url)) event.respondWith(material(event.request,event));
   else if(cacheable(url) || url.href === BASE.href ||
     url.origin === BASE.origin && url.pathname === new URL('particles/',BASE).pathname) event.respondWith(resource(event.request,event));
 });
 
+let preparing=new Map();
+async function prepareLibrary(types=['pdf','ipynb']) {
+  const response=await (await caches.open(SHELL)).match(absolute('offline-resources.json'));
+  if(!response)throw new Error('Нет списка ресурсов просмотрщика. Обновите приложение.');
+  const manifest=await response.json();
+  const urls=[...new Set(types.flatMap(type=>manifest[type]||[]))];
+  const cache=await caches.open(DATA);
+  let cursor=0;
+  await Promise.all(Array.from({length:6},async()=>{
+    while(cursor<urls.length){
+      const href=absolute(urls[cursor++]);
+      if(!cacheable(new URL(href)))throw new Error('Неподдерживаемый ресурс просмотрщика.');
+      if(await cache.match(keyFor(href)))continue;
+      if(!preparing.has(href)){
+        const pending=(async()=>{
+          const resource=await fetch(href,{signal:AbortSignal.timeout(90000)});
+          if(!resource.ok)throw new Error('Не удалось подготовить офлайн-просмотрщик. Проверьте сеть и повторите.');
+          await cache.put(keyFor(href),resource);
+        })().finally(()=>preparing.delete(href));
+        preparing.set(href,pending);
+      }
+      await preparing.get(href);
+    }
+  }));
+  return true;
+}
 async function savePdf(message) {
-  const url = new URL(message.url);
+  let url = new URL(message.url);
+  const isNotebook=notebookUrl(url);
   const viewer = new URL(message.viewer);
-  if(!pdfUrl(url) || viewer.origin !== BASE.origin || viewer.pathname !== new URL('pdfjs/viewer.html',BASE).pathname)
-    throw new Error('Некорректная ссылка на PDF.');
+  if(!(pdfUrl(url)||isNotebook) || viewer.origin !== BASE.origin || viewer.pathname !== new URL(isNotebook?'notebook/viewer.html':'pdfjs/viewer.html',BASE).pathname)
+    throw new Error('Некорректная ссылка на материал.');
   viewer.searchParams.delete('embed');
   viewer.searchParams.delete('full');
-  const response = await fetch(url.href,{cache:'no-cache',signal:AbortSignal.timeout(180000)});
+  let response = await fetch(url.href,{cache:'no-cache',signal:AbortSignal.timeout(180000)});
   if(response.status !== 200) throw new Error('Не удалось скачать PDF. Проверьте подключение.');
   const limit = 150*1024*1024;
   if(Number(response.headers.get('content-length')) > limit) {
@@ -154,31 +183,71 @@ async function savePdf(message) {
     if(length > limit) { await reader.cancel(); throw new Error('Файл больше 150 МБ. Скачайте его через кнопку «Файл».'); }
     chunks.push(value);
   }
-  const blob=new Blob(chunks,{type:'application/pdf'});
-  if(!(await blob.slice(0,1024).text()).includes('%PDF-')) throw new Error('Вместо PDF сервер вернул другой файл. Повторите попытку позже.');
+  let blob=new Blob(chunks,{type:isNotebook?'application/json':'application/pdf'});
+  if(!isNotebook&&(await blob.slice(0,200).text()).startsWith('version https://git-lfs.github.com/spec/v1')){
+    const relative=decodeURIComponent(url.pathname.slice(ROOT.pathname.length));
+    url=new URL('https://media.githubusercontent.com/media/BelovVlad/NSU_FP_Y4_S1/main/'+relative.split('/').map(encodeURIComponent).join('/'));
+    const version=new URL(message.url).searchParams.get('v');if(version)url.searchParams.set('v',version);
+    viewer.searchParams.set('lfs','1');
+    return savePdf({...message,url:url.href,viewer:viewer.href,alias:message.url});
+  }
+  if(isNotebook){
+    try{const notebook=JSON.parse(await blob.text());if(!Array.isArray(notebook.cells)||!notebook.nbformat)throw new Error();}
+    catch{throw new Error('Вместо Notebook сервер вернул другой файл.');}
+  }else if(!(await blob.slice(0,1024).text()).includes('%PDF-')) throw new Error('Вместо PDF сервер вернул другой файл. Повторите попытку позже.');
+  await prepareLibrary([isNotebook?'ipynb':'pdf']);
   const cache=await caches.open(PDFS);
-  await cache.put(url.href,new Response(blob,{headers:{'Content-Type':'application/pdf',
+  const stored=new Response(blob,{headers:{'Content-Type':isNotebook?'application/json':'application/pdf',
     'Content-Length':String(length),'Accept-Ranges':'bytes',
     'X-NSU-Title':encodeURIComponent(String(message.title).slice(0,300)),
-    'X-NSU-Viewer':encodeURIComponent(viewer.href)}}));
-  return {bytes:length};
+    'X-NSU-Viewer':encodeURIComponent(viewer.href),'X-NSU-Alias':encodeURIComponent(message.alias||''),
+    'X-NSU-Canonical':encodeURIComponent(url.href)}});
+  await cache.put(url.href,stored.clone());
+  if(message.alias)await cache.put(message.alias,stored.clone());
+  // Only prune obsolete versions after the replacement has actually been stored.
+  for(const request of await cache.keys()){
+    const old=new URL(request.url);
+    if(old.origin===url.origin&&old.pathname===url.pathname&&old.href!==url.href)await cache.delete(old.href);
+  }
+  return {bytes:length,url:url.href};
 }
 async function listPdfs() {
   const cache=await caches.open(PDFS);
-  return Promise.all((await cache.keys()).map(async request=>{
+  const files=await Promise.all((await cache.keys()).map(async request=>{
     const response=await cache.match(request);
+    const canonical=decodeURIComponent(response.headers.get('X-NSU-Canonical')||request.url);
+    if(canonical!==request.url)return null;
     return {url:request.url,title:decodeURIComponent(response.headers.get('X-NSU-Title')||'PDF'),
+      alias:decodeURIComponent(response.headers.get('X-NSU-Alias')||''),
       viewer:decodeURIComponent(response.headers.get('X-NSU-Viewer')||''),bytes:Number(response.headers.get('Content-Length'))};
   }));
+  return files.filter(Boolean);
+}
+async function removeMaterial(href) {
+  const cache=await caches.open(PDFS),response=await cache.match(href);
+  const urls=[href,...['X-NSU-Alias','X-NSU-Canonical'].map(name=>decodeURIComponent(response?.headers.get(name)||''))].filter(Boolean).map(value=>new URL(value));
+  const sameFile=href=>{const url=new URL(href);return urls.some(target=>target.origin===url.origin&&target.pathname===url.pathname);};
+  for(const request of await cache.keys())if(sameFile(request.url))await cache.delete(request);
+  // Notebook may also have been cached by an ordinary earlier online visit.
+  const data=await caches.open(DATA);
+  for(const request of await data.keys())if(notebookUrl(new URL(request.url))&&sameFile(request.url))await data.delete(request);
+  return true;
+}
+async function clearMaterials() {
+  await caches.delete(PDFS);
+  const data=await caches.open(DATA);
+  for(const request of await data.keys())if(notebookUrl(new URL(request.url)))await data.delete(request);
+  return true;
 }
 self.addEventListener('message',event=>{
   const message=event.data||{};
   const action=async()=>{
     if(message.type==='ACTIVATE') return self.skipWaiting();
-    if(message.type==='SAVE_PDF') return savePdf(message);
-    if(message.type==='LIST_PDFS') return listPdfs();
-    if(message.type==='REMOVE_PDF') return (await caches.open(PDFS)).delete(message.url);
-    if(message.type==='CLEAR_PDFS') return caches.delete(PDFS);
+    if(message.type==='SAVE_PDF'||message.type==='SAVE_MATERIAL') return savePdf(message);
+    if(message.type==='PREPARE_LIBRARY') return prepareLibrary(message.types);
+    if(message.type==='LIST_PDFS'||message.type==='LIST_MATERIALS') return listPdfs();
+    if(message.type==='REMOVE_PDF'||message.type==='REMOVE_MATERIAL') return removeMaterial(message.url);
+    if(message.type==='CLEAR_PDFS'||message.type==='CLEAR_MATERIALS') return clearMaterials();
     if(message.type==='WARM') {
       // Recover resources loaded before the first worker acquired control (including a direct reader link).
       await Promise.allSettled((message.urls||[]).slice(0,120).filter(href=>cacheable(new URL(href))).map(async href=>{

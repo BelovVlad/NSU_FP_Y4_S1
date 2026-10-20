@@ -27,10 +27,14 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.ValueCallback;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends Activity {
     private static final String START_URL = "https://belovvlad.github.io/NSU_FP_Y4_S1/";
@@ -44,6 +48,9 @@ public class MainActivity extends Activity {
     private TextView stateView;
     private long updateDownloadId = -1L;
     private BroadcastReceiver downloadReceiver;
+    private static final int PICK_NOTES = 2201, SAVE_NOTES = 2202;
+    private ValueCallback<Uri[]> notesFileCallback;
+    private String pendingNotesBackup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,6 +157,25 @@ public class MainActivity extends Activity {
         cookies.setAcceptThirdPartyCookies(webView, true);
 
         webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback,
+                                             FileChooserParams params) {
+                if (notesFileCallback != null) notesFileCallback.onReceiveValue(null);
+                notesFileCallback = callback;
+                try {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"application/json", "text/plain"});
+                    startActivityForResult(intent, PICK_NOTES);
+                } catch (Exception error) {
+                    notesFileCallback.onReceiveValue(null);
+                    notesFileCallback = null;
+                    Toast.makeText(MainActivity.this, "Не удалось открыть выбор файла", Toast.LENGTH_LONG).show();
+                }
+                return true;
+            }
+
             @Override
             public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
                 closeAuthWebView(false);
@@ -306,6 +332,30 @@ public class MainActivity extends Activity {
 
     private final class NativeBridge {
         @JavascriptInterface
+        public void saveNotesBackup(String json) {
+            if (json == null || json.length() > 50 * 1024 * 1024) return;
+            try {
+                org.json.JSONObject backup = new org.json.JSONObject(json);
+                if (!"nsu-pdf-annotations".equals(backup.optString("format"))) return;
+            } catch (Exception error) { return; }
+            runOnUiThread(() -> {
+                if (pendingNotesBackup != null || webView == null ||
+                    !INTERNAL_HOST.equalsIgnoreCase(Uri.parse(webView.getUrl()).getHost())) return;
+                pendingNotesBackup = json;
+                try {
+                    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("application/json");
+                    intent.putExtra(Intent.EXTRA_TITLE, "nsu-notes-backup.json");
+                    startActivityForResult(intent, SAVE_NOTES);
+                } catch (Exception error) {
+                    pendingNotesBackup = null;
+                    Toast.makeText(MainActivity.this, "Не удалось открыть сохранение файла", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @JavascriptInterface
         public int getVersionCode() {
             return BuildConfig.VERSION_CODE;
         }
@@ -339,6 +389,34 @@ public class MainActivity extends Activity {
             } catch (Exception error) {
                 return "error:" + (error.getMessage() == null ? "Не удалось начать обновление." : error.getMessage());
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_NOTES) {
+            if (notesFileCallback != null) {
+                notesFileCallback.onReceiveValue(resultCode == RESULT_OK && data != null && data.getData() != null
+                        ? new Uri[]{data.getData()} : null);
+                notesFileCallback = null;
+            }
+        } else if (requestCode == SAVE_NOTES) {
+            String json = pendingNotesBackup;
+            pendingNotesBackup = null;
+            if (resultCode != RESULT_OK || data == null || data.getData() == null || json == null) return;
+            Uri destination = data.getData();
+            new Thread(() -> {
+                String message;
+                try (OutputStream stream = getContentResolver().openOutputStream(destination, "wt")) {
+                    if (stream == null) throw new java.io.IOException("Нет доступа к файлу");
+                    stream.write(json.getBytes(StandardCharsets.UTF_8));
+                    stream.flush();
+                    message = "Резервная копия сохранена";
+                } catch (Exception error) { message = "Не удалось сохранить резервную копию"; }
+                String result = message;
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show());
+            }, "notes-backup").start();
         }
     }
 
@@ -437,6 +515,8 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (notesFileCallback != null) { notesFileCallback.onReceiveValue(null); notesFileCallback = null; }
+        pendingNotesBackup = null;
         closeAuthWebView(false);
         if (downloadReceiver != null) {
             try { unregisterReceiver(downloadReceiver); } catch (Exception ignored) {}

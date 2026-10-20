@@ -70,9 +70,11 @@ body.continuous-mode .canvas-wrap{display:none!important}
 .view-mode-btn.active{border-color:var(--accent);background:var(--accent-soft)}
 
 </style>
-<link rel="stylesheet" href="controls.css?v=11">
-<link rel="stylesheet" href="../app.css?v=6">
-<script defer src="../app.js?v=13"></script>
+<link rel="stylesheet" href="controls.css?v=12">
+<link rel="stylesheet" href="notes.css?v=1">
+<link rel="stylesheet" href="../app.css?v=7">
+<script defer src="../annotations-store.js?v=1"></script>
+<script defer src="../app.js?v=15"></script>
 </head>
 <body>
 <svg class="pdf-tone-filters" aria-hidden="true" focusable="false">
@@ -96,6 +98,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
     <button id="toolsToggle" class="btn icon tools-toggle" type="button" title="Настройки чтения" aria-label="Настройки чтения" aria-expanded="false" aria-controls="readerControls"><span data-viewer-icon="settings"></span></button>
   </div>
   <div class="reader-actions">
+    <button id="notesToggle" class="btn rail-button" type="button" aria-label="Режим заметок" aria-pressed="false" disabled>✎<span class="tool-caption">Заметки</span></button>
     <button id="outlineToggle" class="btn icon" type="button" title="Оглавление" aria-label="Оглавление" aria-expanded="false" aria-controls="outlinePanel"><span data-viewer-icon="outline"></span></button>
     <button id="searchToggle" class="btn icon" type="button" title="Поиск по PDF" aria-label="Поиск по PDF" aria-expanded="false" aria-controls="searchPanel"><span data-viewer-icon="search"></span></button>
     <button id="expandViewer" class="btn icon expand-viewer" type="button" title="Развернуть документ" aria-label="Развернуть документ"><span data-viewer-icon="expand"></span></button>
@@ -178,6 +181,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
 
 <script type="module">
 import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
+import {ReaderNotes} from './notes.js?v=1';
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
 
 const OWNER='BelovVlad',REPO='NSU_FP_Y4_S1',BRANCH='main';
@@ -316,6 +320,8 @@ applyPdfTone(rememberedTone(),false);
 toneButtons.forEach(btn=>btn.addEventListener('click',()=>applyPdfTone(btn.dataset.tone)));
 
 const CSS_UNITS=96/72;
+const notes=new ReaderNotes(viewer,document.getElementById('notesToggle'));
+const textTasks=new WeakMap();
 let pdf=null,pageNum=1,scale=1,renderTask=null,fitWidth=false,pdfUrl='',renderSerial=0,preloadSerial=0,continuousMode=false,continuousObserver=null,continuousRoot=null,continuousRenderSerial=0,gestureActive=false;
 let readerSuspended=document.hidden,suspendedReaderAnchor=null,resumeAnchorToken=0;
 let lastStablePage=1,lastStableAnchor=null,lastSavedAt=0;
@@ -397,6 +403,7 @@ function persistReaderPosition(notifyParent=true){
   return position;
 }
 window.nsuPersistReaderPosition=()=>persistReaderPosition(false);
+window.nsuFlushAnnotations=async()=>{notes.cancelGesture();await notes.flush();return !notes.pending.length;};
 function updateOutlineActive(){if(!outlineEntries.length)return;let best=null;for(const e of outlineEntries){if(!e.page)continue;e.button.classList.remove('active');if(e.page<=pageNum&&(!best||e.page>best.page))best=e}if(best)best.button.classList.add('active')}
 function updateControls(){
   pageInput.value=pageNum;total.textContent=`/ ${pdf?pdf.numPages:'—'}`;zoomLabel.value=String(Math.round(scale*100));
@@ -433,7 +440,7 @@ function clearHighlights(layer=null){
   continuousRoot?.querySelectorAll('.highlight-layer').forEach(node=>node.replaceChildren());
 }
 function clearAnnotations(){annotationLayer.replaceChildren()}
-function clearTextLayer(layer=textLayer){if(layer)layer.replaceChildren()}
+function clearTextLayer(layer=textLayer){if(layer){textTasks.get(layer)?.cancel();textTasks.delete(layer);layer.replaceChildren()}}
 function findMatches(text,q){const hits=[];if(!q)return hits;let from=0;while(true){const i=text.indexOf(q,from);if(i<0)break;hits.push(i);from=i+Math.max(1,q.length)}return hits}
 
 function resolvePdfUrl(path,lfs=params.get('lfs')==='1'){
@@ -444,7 +451,10 @@ function resolvePdfUrl(path,lfs=params.get('lfs')==='1'){
   return url.href;
 }
 async function loadPdfDocument(url){
-  const task=pdfjsLib.getDocument({url,disableRange:false,disableStream:true,disableAutoFetch:true,rangeChunkSize:262144});
+  const options={disableRange:false,disableStream:true,disableAutoFetch:true,rangeChunkSize:262144,
+    cMapUrl:'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/cmaps/',cMapPacked:true,
+    standardFontDataUrl:'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/standard_fonts/'};
+  const task=pdfjsLib.getDocument({url,...options});
   task.onProgress=p=>{if(p.total&&p.loaded)loadingText.textContent=`Загрузка: ${Math.min(100,Math.round(p.loaded/p.total*100))}%`};
   try{return await task.promise}
   catch(error){
@@ -461,7 +471,7 @@ async function loadPdfDocument(url){
     if(!pointer)throw error;
     await task.destroy();
     pdfUrl=resolvePdfUrl(raw,true);direct.href=pdfUrl;
-    return pdfjsLib.getDocument({url:pdfUrl,disableRange:false,disableStream:true,disableAutoFetch:true,rangeChunkSize:262144}).promise;
+    return pdfjsLib.getDocument({url:pdfUrl,...options}).promise;
   }
 }
 
@@ -593,28 +603,15 @@ async function drawSearchHighlights(page,viewport,layer=highlightLayer,targetPag
 
 async function renderSelectableText(page,viewport,layer=textLayer){
   if(!layer)return;
-  layer.replaceChildren();
-  layer.style.width=`${viewport.width}px`;layer.style.height=`${viewport.height}px`;
+  clearTextLayer(layer);
+  const pending={cancel(){}};textTasks.set(layer,pending);
+  layer.style.setProperty('--scale-factor',viewport.scale);
   try{
     const content=await page.getTextContent();
-    for(const item of content.items||[]){
-      if(!item.str)continue;
-      const tx=pdfjsLib.Util.transform(viewport.transform,item.transform);
-      const angle=Math.atan2(tx[1],tx[0]);
-      const fontHeight=Math.max(1,Math.hypot(tx[2],tx[3]));
-      const span=document.createElement('span');
-      span.textContent=item.str;
-      span.style.left=tx[4]+'px';
-      span.style.top=(tx[5]-fontHeight)+'px';
-      span.style.fontSize=fontHeight+'px';
-      span.style.fontFamily='sans-serif';span.style.lineHeight='1';
-      const estimated=Math.max(1,item.str.length*fontHeight*.5);
-      const desired=Math.max(1,(item.width||0)*viewport.scale);
-      const sx=desired/estimated;
-      span.style.transform=(Math.abs(angle)>.001?`rotate(${angle}rad) `:'')+`scaleX(${sx})`;
-      layer.appendChild(span);
-    }
-  }catch{}
+    if(!layer.isConnected||textTasks.get(layer)!==pending)return;
+    const task=new pdfjsLib.TextLayer({textContentSource:content,container:layer,viewport});
+    textTasks.set(layer,task);await task.render();
+  }catch(error){if(error?.name!=='AbortException')console.warn('PDF text layer:',error);}
 }
 
 async function getPageAnnotations(page){
@@ -638,10 +635,10 @@ async function destinationPage(dest){
 async function followInternalLink(dest){const n=await destinationPage(dest);if(!n)return;pageNum=n;await renderPage()}
 function followNamedAction(action){if(!pdf)return;if(action==='NextPage')return go(1);if(action==='PrevPage')return go(-1);if(action==='FirstPage'){pageNum=1;return renderPage()}if(action==='LastPage'){pageNum=pdf.numPages;return renderPage()}}
 
-async function renderAnnotations(page,viewport){
-  clearAnnotations();annotationLayer.style.width=`${viewport.width}px`;annotationLayer.style.height=`${viewport.height}px`;
+async function renderAnnotations(page,viewport,layer=annotationLayer){
+  layer.replaceChildren();layer.style.width=`${viewport.width}px`;layer.style.height=`${viewport.height}px`;
   let annotations=[];try{annotations=await getPageAnnotations(page)}catch{return}
-  if(page.pageNumber!==pageNum)return;
+  if(layer===annotationLayer&&page.pageNumber!==pageNum)return;
   for(const a of annotations){
     if(a.subtype!=='Link'||!Array.isArray(a.rect))continue;
     const rect=viewport.convertToViewportRectangle(a.rect),left=Math.min(rect[0],rect[2]),top=Math.min(rect[1],rect[3]),width=Math.abs(rect[0]-rect[2]),height=Math.abs(rect[1]-rect[3]);
@@ -650,7 +647,7 @@ async function renderAnnotations(page,viewport){
     if(a.url){link.href=a.url;link.target='_blank';link.rel='noopener noreferrer';link.title=a.url}
     else if(a.dest){link.href='#';link.title='Перейти к разделу';link.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();void followInternalLink(a.dest)})}
     else if(a.action){link.href='#';link.title='Перейти';link.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();followNamedAction(a.action)})}
-    else continue;annotationLayer.appendChild(link);
+    else continue;layer.appendChild(link);
   }
 }
 
@@ -815,6 +812,7 @@ renderQuality.addEventListener('change',async()=>{
 });
 async function renderPage(options={}){
   if(!pdf)return;
+  notes.cancelGesture();void notes.flush();
   if(continuousMode){await renderContinuous(pageNum);return}
   pageNum=validPage(pageNum);
   const target=pageNum,serial=++renderSerial;
@@ -837,10 +835,10 @@ async function renderPage(options={}){
     if(serial!==renderSerial)return;
     renderTask=null;
     canvas.width=width;canvas.height=height;
-    canvas.style.width=`${Math.floor(viewport.width)}px`;canvas.style.height=`${Math.floor(viewport.height)}px`;
+    canvas.style.width=`${viewport.width}px`;canvas.style.height=`${viewport.height}px`;
     ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(buffer,0,0);
-    highlightLayer.style.width=textLayer.style.width=annotationLayer.style.width=`${Math.floor(viewport.width)}px`;
-    highlightLayer.style.height=textLayer.style.height=annotationLayer.style.height=`${Math.floor(viewport.height)}px`;
+    highlightLayer.style.width=textLayer.style.width=annotationLayer.style.width=`${viewport.width}px`;
+    highlightLayer.style.height=textLayer.style.height=annotationLayer.style.height=`${viewport.height}px`;
     canvasWrap.classList.remove('rendering');warmedPages.add(target);updateControls();savePage();hideLoading();
     if(options.anchor){
       const r=canvasWrap.getBoundingClientRect(),a=options.anchor;
@@ -849,6 +847,7 @@ async function renderPage(options={}){
       viewer.scrollTo({top:0,left:Math.max(0,(canvas.clientWidth-viewer.clientWidth)/2)});
     }
     trimPageCache(target);
+    notes.mount(canvasWrap,viewport,target);
     await Promise.allSettled([drawSearchHighlights(page,viewport),renderSelectableText(page,viewport),renderAnnotations(page,viewport)]);
     void preloadAround(target);
   }catch(err){
@@ -877,19 +876,20 @@ async function renderContinuousPage(el,n,force=false){
     const ratio=canvasRenderRatio(viewport,{continuous:true});
     const cnv=document.createElement('canvas');
     cnv.width=Math.max(1,Math.floor(viewport.width*ratio));cnv.height=Math.max(1,Math.floor(viewport.height*ratio));
-    cnv.style.width=Math.floor(viewport.width)+'px';cnv.style.height=Math.floor(viewport.height)+'px';
+    cnv.style.width=viewport.width+'px';cnv.style.height=viewport.height+'px';
     const ctx2=cnv.getContext('2d',{alpha:false});
     const task=page.render({canvasContext:ctx2,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0],background:'#fff'});
     await task.promise;
     if(!continuousMode||!el.isConnected||el.dataset.renderToken!==token)return;
     const hl=document.createElement('div');hl.className='highlight-layer';
     const tl=document.createElement('div');tl.className='text-layer';
-    el.style.width=Math.floor(viewport.width)+'px';el.style.height=Math.floor(viewport.height)+'px';
-    el.replaceChildren(cnv,hl,tl);
+    const al=document.createElement('div');al.className='annotation-layer';
+    el.style.width=viewport.width+'px';el.style.height=viewport.height+'px';
+    el.replaceChildren(cnv,hl,tl,al);notes.mount(el,viewport,n);
     el.dataset.rendered='1';el.dataset.stale='0';
     await Promise.allSettled([
       drawSearchHighlights(page,viewport,hl,n),
-      renderSelectableText(page,viewport,tl)
+      renderSelectableText(page,viewport,tl),renderAnnotations(page,viewport,al)
     ]);
   }catch{
     if(el?.isConnected&&el.dataset.renderToken===token)el.dataset.rendered='0';
@@ -919,7 +919,9 @@ function setupContinuousObserver(){
       }else if(el.dataset.rendered==='1'&&el.dataset.rendering!=='1'&&el.dataset.queued!=='1'){
         const r=el.getBoundingClientRect();
         if(r.bottom<vr.top-1100||r.top>vr.bottom+1100){
+          const n=Number(el.dataset.page);clearTextLayer(el.querySelector('.text-layer'));
           el.replaceChildren();el.dataset.rendered='0';el.dataset.stale='0';
+          try{pageCache.get(n)?.cleanup();}catch{}pageCache.delete(n);warmedPages.delete(n);annotationCache.delete(n);
         }
       }
     }
@@ -930,7 +932,7 @@ function updateContinuousCurrentPage(){
   if(readerSuspended||document.hidden||!continuousMode||!continuousRoot)return;
   const vr=viewer.getBoundingClientRect();
   if(vr.width<2||vr.height<2)return;
-  const clientY=vr.top+Math.min(28,Math.max(8,vr.height*.08));
+  const clientY=continuousReadingClientY(vr);
   const anchor=continuousAnchorFromClient(clientY);
   if(!anchor)return;
   lastStableAnchor={page:anchor.page,fraction:anchor.fraction};
@@ -943,6 +945,13 @@ function updateContinuousCurrentPage(){
   }else{
     lastStablePage=next;
   }
+}
+function continuousReadingClientY(rect){
+  const inset=Math.min(28,Math.max(8,rect.height*.08));
+  // At the end of a fitted document the final page may be too short to reach
+  // the top edge. Keep its page number instead of reverting to the preceding one.
+  return viewer.scrollTop>1&&viewer.scrollHeight-viewer.clientHeight-viewer.scrollTop<2
+    ?rect.bottom-inset:rect.top+inset;
 }
 function continuousAnchorFromClient(clientY){
   if(!continuousRoot)return null;
@@ -981,7 +990,7 @@ function captureReaderPosition({measure=true}={}){
     const r=viewer.getBoundingClientRect();
     const canMeasure=measure&&!readerSuspended&&!document.hidden&&r.width>=2&&r.height>=2;
     if(canMeasure){
-      const clientY=r.top+Math.min(28,Math.max(8,r.height*.08));
+      const clientY=continuousReadingClientY(r);
       const anchor=continuousAnchorFromClient(clientY);
       if(anchor){
         lastStableAnchor={page:anchor.page,fraction:anchor.fraction};
@@ -1057,6 +1066,7 @@ function commitContinuousScale(nextScale,anchor=continuousCenterAnchor(),keepFit
     }
     const tl=el.querySelector('.text-layer');
     if(tl){tl.style.pointerEvents='none';tl.style.visibility='hidden'}
+    const al=el.querySelector('.annotation-layer');if(al)al.style.visibility='hidden';
   }
   if(anchor)restoreContinuousAnchor(anchor);
   setupContinuousObserver();
@@ -1090,12 +1100,16 @@ async function renderContinuous(targetPage=pageNum,anchor=null){
     continuousRoot.appendChild(el);
   }
   setupContinuousObserver();
-  requestAnimationFrame(()=>{
+  lockReaderChrome(700);
+  const root=continuousRoot;
+  await new Promise(resolve=>requestAnimationFrame(()=>{
+    if(!continuousMode||continuousRoot!==root){resolve();return;}
     if(anchor)restoreContinuousAnchor(anchor);
     else continuousRoot?.querySelector('[data-page="'+pageNum+'"]')?.scrollIntoView({block:'start'});
     updateContinuousCurrentPage();
     savePage();
-  });
+    resolve();
+  }));
   updateControls();hideLoading();
 }
 async function setContinuousMode(on){
@@ -1124,7 +1138,7 @@ function updateReaderChrome(){
   const y=viewer.scrollTop,delta=y-readerChromeLastScroll;
   readerChromeLastScroll=y;
   if(performance.now()<readerChromeLockUntil||gestureActive||!landscapePhoneQuery.matches||!compactQuery.matches||
-     document.body.classList.contains('tools-open')||
+    document.body.classList.contains('tools-open')||notes.enabled||
      document.body.classList.contains('search-open')||
      document.body.classList.contains('outline-open')){
     readerChromeDirection=0;setReaderChromeHidden(false);return;
@@ -1152,14 +1166,15 @@ portraitPhoneQuery.addEventListener('change',event=>{
 
 async function open(){
   if(!raw){fail('В ссылке не указан файл.');return}
+  lockReaderChrome(1000);
   title.textContent=titleParam||raw.split('/').pop();document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Открываю документ…');
   try{
     pdfUrl=resolvePdfUrl(raw);direct.href=pdfUrl;
-    pdf=await loadPdfDocument(pdfUrl);document.getElementById('saveOffline').disabled=false;pageNum=validPage(pageParam||rememberedPage());lastStablePage=pageNum;searchPage=pageNum;scale=1;fitWidth=embedParam||compactQuery.matches;updateControls();if(phoneStripQuery.matches&&!searchPreviewParam)await setContinuousMode(true);else await renderPage();window.NSUApp?.warm();notifyParentPdfReady();if(pendingNavigation)await applyNavigation();else if(findParam.trim())runExternalFind(findParam)
+    pdf=await loadPdfDocument(pdfUrl);await notes.open(pdf,raw,titleParam||raw.split('/').pop(),versionParam);document.getElementById('saveOffline').disabled=false;pageNum=validPage(pageParam||rememberedPage());lastStablePage=pageNum;searchPage=pageNum;scale=1;fitWidth=embedParam||compactQuery.matches;updateControls();if(phoneStripQuery.matches&&!searchPreviewParam)await setContinuousMode(true);else await renderPage();window.NSUApp?.warm();notifyParentPdfReady();if(pendingNavigation)await applyNavigation();else if(findParam.trim())runExternalFind(findParam)
   }catch(err){fail(err?.message||String(err))}
 }
 
-function go(delta){if(!pdf)return;const n=pageNum+delta;if(n<1||n>pdf.numPages)return;pageNum=n;savePage();if(continuousMode)continuousRoot?.querySelector('[data-page="'+pageNum+'"]')?.scrollIntoView({block:'start',behavior:'smooth'});else renderPage()}
+function go(delta){if(!pdf)return;const n=pageNum+delta;if(n<1||n>pdf.numPages)return;pageNum=n;savePage();if(continuousMode)continuousRoot?.querySelector('[data-page="'+pageNum+'"]')?.scrollIntoView({block:'start',behavior:'auto'});else renderPage()}
 let pendingNavigation=null,navigationSerial=0;
 async function applyNavigation(){
   if(!pdf||!pendingNavigation)return;
@@ -1182,7 +1197,8 @@ window.addEventListener('message',event=>{
   if(url.origin!==location.origin||url.pathname!==location.pathname||currentMaterialPath(url.searchParams.get('file'))!==raw||url.searchParams.get('v')!==params.get('v'))return;
   pendingNavigation=url;void applyNavigation();
 });
-back.onclick=()=>{
+back.onclick=async()=>{
+  if(!await window.nsuFlushAnnotations())return;
   const position=persistReaderPosition();
   if(window.parent!==window){
     window.parent.postMessage({type:'nsu-close-pdf',file:position.file,page:position.page},location.origin);
@@ -1235,7 +1251,7 @@ expandViewer.onclick=()=>{
   else document.documentElement.requestFullscreen?.().catch?.(()=>{});
 };
 searchToggle.onclick=openSearch;searchClose.onclick=closeSearch;searchNext.onclick=()=>searchStep(1);searchPrev.onclick=()=>searchStep(-1);searchInput.oninput=resetSearch;searchInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchStep(e.shiftKey?-1:1)}});
-window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();openSearch();return}if(e.key==='Escape'){if(document.body.classList.contains('tools-open'))closeTools(true);else if(pageJump.classList.contains('open'))closePageJump();else if(outlinePanel.classList.contains('open'))closeOutline();else if(searchPanel.classList.contains('open'))closeSearch();else back.click();return}if(document.activeElement===searchInput||document.activeElement===pageInput||document.activeElement===pageJumpInput||document.activeElement===zoomLabel)return;if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)});
+window.addEventListener('keydown',e=>{if(e.target.closest('dialog,textarea,select'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();openSearch();return}if(e.key==='Escape'){if(document.body.classList.contains('tools-open'))closeTools(true);else if(pageJump.classList.contains('open'))closePageJump();else if(outlinePanel.classList.contains('open'))closeOutline();else if(searchPanel.classList.contains('open'))closeSearch();else if(notes.enabled){notes.button.click();}else back.click();return}if(document.activeElement===searchInput||document.activeElement===pageInput||document.activeElement===pageJumpInput||document.activeElement===zoomLabel||e.target.closest('input'))return;if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)});
 let wheelZoomTimer=0,wheelZoomStartScale=0,wheelZoomTargetScale=0,wheelZoomAnchor=null,wheelZoomContinuous=false;
 function finishWheelZoom(){
   if(!wheelZoomTargetScale)return;

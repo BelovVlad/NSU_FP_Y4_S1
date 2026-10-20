@@ -1,0 +1,35 @@
+/* PDF.js 4.10 TextLayer layout; keep these rules scoped to the reader. */
+.text-layer{--scale-factor:1;text-align:initial;text-size-adjust:none;-webkit-text-size-adjust:none;forced-color-adjust:none;transform-origin:0 0;caret-color:CanvasText}
+.text-layer :is(span,br){color:transparent;position:absolute;white-space:pre;cursor:text;transform-origin:0 0}
+.text-layer span.markedContent{top:0;height:0}
+.text-layer span[role=img]{user-select:none;cursor:default}
+.text-layer br::selection{background:transparent}
+.text-layer[data-main-rotation="90"]{transform:rotate(90deg) translateY(-100%)}
+.text-layer[data-main-rotation="180"]{transform:rotate(180deg) translate(-100%,-100%)}
+.text-layer[data-main-rotation="270"]{transform:rotate(270deg) translateX(-100%)}
+.user-notes{position:absolute;inset:0;z-index:5;pointer-events:none;line-height:1}
+.user-notes>svg{display:block;width:100%;height:100%;overflow:hidden;pointer-events:none}
+.notes-drawing .user-notes>svg{pointer-events:auto;touch-action:none;cursor:crosshair}
+.notes-drawing .user-notes [data-note-id]{pointer-events:visiblePainted}
+.note-pin{position:absolute;transform:translate(-50%,-50%);width:26px;height:26px;padding:0;border:1px solid #9d7213;border-radius:50%;background:#ffdc65;color:#342509;pointer-events:auto;cursor:pointer;font:18px/1 system-ui}
+.notes-tools,.notes-status,.notes-recovery,.notes-selection{position:fixed;z-index:48;border:1px solid var(--line);border-radius:10px;background:var(--bar);color:var(--text);padding:8px;box-shadow:0 4px 18px #0005;font:12px/1.4 system-ui}
+.notes-tools{left:calc(var(--reader-rail) + 8px);right:8px;bottom:calc(var(--reader-bottom) + 8px);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;max-height:28dvh;overflow:auto}
+.notes-tools label{display:flex;align-items:center;gap:4px;font-size:11px}
+.notes-tools input[type=range]{width:65px}.notes-tools input[type=color]{width:32px;height:30px;padding:0;border:0;background:transparent}
+.notes-tools select{max-width:185px;min-width:0}
+.notes-tools button,.notes-tools select,.notes-selection button,.notes-status button,.notes-recovery :is(button,select),.note-editor button{min-height:32px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--text);font:inherit;cursor:pointer;padding:4px 8px}
+.notes-tools button:disabled{opacity:.4;cursor:default}
+.notes-status{left:calc(var(--reader-rail) + 8px);right:8px;top:calc(var(--reader-head) + 8px);width:fit-content;max-width:calc(100% - var(--reader-rail) - 16px);pointer-events:auto}
+.notes-status button{margin-left:8px}
+.notes-recovery{left:calc(var(--reader-rail) + 8px);right:8px;top:calc(var(--reader-head) + 48px);max-height:40dvh;overflow:auto}
+.notes-recovery summary{cursor:pointer}.notes-recovery p{max-width:600px}.notes-recovery select{max-width:100%}
+.notes-selection{display:flex;gap:5px;z-index:51}
+.notes-tools[hidden],.notes-status[hidden],.notes-selection[hidden]{display:none}
+.notes-mode .viewer{padding-bottom:110px}
+.notes-mode .pdf-link{pointer-events:none}
+.note-editor{width:min(440px,calc(100vw - 24px));border:1px solid var(--line);border-radius:12px;background:var(--bar);color:var(--text);padding:16px}
+.note-editor textarea{display:block;width:100%;min-height:140px;max-height:50dvh;margin-bottom:12px;background:var(--panel);color:var(--text);border:1px solid var(--line);font:16px/1.5 system-ui;padding:8px;resize:vertical}
+.note-editor button{margin:3px}.note-editor::backdrop{background:#0008}
+#notesToggle{font-size:10px}.compact-view #notesToggle{order:5;font-size:10px;width:44px}.compact-view .tools-toggle{order:6}
+.notes-mode.reader-chrome-hidden .toolbar,.notes-mode.reader-chrome-hidden .mobile-nav{transform:none;opacity:1;pointer-events:auto}
+@media(max-width:390px){.notes-tools{justify-content:flex-start;gap:4px}.notes-tools label{font-size:10px}.notes-tools select{max-width:155px}.compact-view .title{font-size:11px}}

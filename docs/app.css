@@ -59,6 +59,17 @@
 .app-manager-status{min-height:18px;margin-top:7px;color:#9eabb4;font-size:11px;line-height:1.45}
 .app-manager-storage{font-variant-numeric:tabular-nums}
 
+.topbar-actions{display:flex;align-items:center;gap:7px;justify-self:end}
+.topbar-actions .ghost-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.topbar-actions .has-update{box-shadow:0 0 0 2px var(--accent)}
+.app-manager-body{max-height:calc(85dvh - 75px);overflow:auto}
+.app-dialog .app-downloads{max-height:50dvh;overflow:auto}
+.app-dialog .app-downloads small{display:block;color:var(--muted,#9eabb4)}
+.app-manager input[type=file]{max-width:100%}
+.app-dialog{background:var(--panel,#101920);color:var(--text,#eef1f5);border-color:var(--line,#34414d)}
+.app-dialog .app-manager-btn{background:var(--bg,#142029);color:var(--text,#e7ebee);border-color:var(--line,#34414d)}
+.app-dialog .app-manager-btn.danger{color:#e8a9ad}
+
 @media(max-width:520px){
   .app-dialog.app-manager{width:calc(100% - 18px);max-height:88dvh;border-radius:14px}
   .app-manager .app-dialog-head{padding:15px 14px 12px}

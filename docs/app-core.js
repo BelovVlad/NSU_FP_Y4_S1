@@ -78,7 +78,7 @@
       ? new URL('https://media.githubusercontent.com/media/BelovVlad/NSU_FP_Y4_S1/main/'+encPath(file.path))
       : new URL('../'+encPath(file.path),base);
     if(file.version)direct.searchParams.set('v',file.version);
-    const viewer=new URL('pdfjs/viewer.html',base);
+    const viewer=new URL(file.type==='ipynb'?'notebook/viewer.html':'pdfjs/viewer.html',base);
     viewer.searchParams.set('file',file.path);
     viewer.searchParams.set('subject',file.subject||fileSubject(file.path));
     viewer.searchParams.set('title',file.title||file.path.split('/').pop().replace(/\.pdf$/i,''));
@@ -168,40 +168,110 @@
     }
   }
 
+  let bulkRunning=false,bulkStop=false;
   async function downloadAllPdfs(status,progress,button){
-    button.disabled=true;
-    button.textContent='Скачиваю…';
+    if(bulkRunning){bulkStop=true;button.textContent='Завершаю текущий файл…';return;}
+    bulkRunning=true;bulkStop=false;button.disabled=true;status.textContent='Проверяю каталог и сохранённые версии…';
     try{
       const response=await fetch(new URL('search-index/files.json',base),{cache:'no-cache'});
       if(!response.ok)throw new Error('Не удалось получить список материалов.');
       const catalogue=await response.json();
-      const pdfs=(catalogue.files||[]).filter(file=>file.type==='pdf');
-      const totalBytes=pdfs.reduce((sum,file)=>sum+(Number(file.size)||0),0);
-      const saved=await request('LIST_PDFS');
-      const savedUrls=new Set(saved.map(file=>file.url));
-      let done=0,downloaded=0,failed=0,skipped=0;
+      const files=(catalogue.files||[]).filter(file=>['pdf','ipynb'].includes(file.type));
+      const totalBytes=files.reduce((sum,file)=>sum+(Number(file.size)||0),0);
+      const saved=await request('LIST_MATERIALS');
+      const savedUrls=new Set(saved.flatMap(file=>[file.url,file.alias].filter(Boolean)));
+      const remaining=files.filter(file=>!savedUrls.has(offlineUrls(file).direct));
+      const needed=remaining.reduce((sum,file)=>sum+(Number(file.size)||0),0);
+      const estimate=await navigator.storage?.estimate?.().catch(()=>null);
+      const available=estimate?.quota?estimate.quota-(estimate.usage||0):null;
+      const summary=files.length+' файлов · около '+fmtBytes(totalBytes)+'. Осталось '+remaining.length+' · около '+fmtBytes(needed)+
+        '. Дополнительно будут сохранены шрифты и ресурсы просмотрщиков.'+(available!==null?' Свободно около '+fmtBytes(available)+'.':'');
+      status.textContent=summary;
+      if(available!==null&&needed>available)throw new Error('Недостаточно места. '+summary);
+      if(!confirm('Сохранить все материалы? '+summary))return;
+      button.disabled=false;button.textContent='Остановить загрузку';
+      status.textContent='Подготавливаю PDF.js, шрифты и просмотр Notebook…';
+      await request('PREPARE_LIBRARY',{types:[...new Set(files.map(f=>f.type))]});
+      let done=files.length-remaining.length,downloaded=0,savedBytes=files.filter(file=>savedUrls.has(offlineUrls(file).direct)).reduce((sum,file)=>sum+(Number(file.size)||0),0);
+      const failed=[];
       progress.hidden=false;
       const bar=progress.querySelector('span');
-      for(const file of pdfs){
+      bar.style.width=(files.length?done/files.length*100:100)+'%';
+      for(const file of remaining){
+        if(bulkStop||!status.isConnected)break;
         const urls=offlineUrls(file);
-        if(savedUrls.has(urls.direct)){skipped++;done++;bar.style.width=(done/pdfs.length*100)+'%';continue;}
-        status.textContent='Скачиваю '+(done+1)+' / '+pdfs.length+': '+(file.title||file.path);
+        status.textContent='Сохранено '+done+' / '+files.length+' · '+fmtBytes(savedBytes)+' / ≈'+fmtBytes(totalBytes)+' · '+(file.title||file.path);
         try{
-          const result=await request('SAVE_PDF',{url:urls.direct,viewer:urls.viewer,title:file.title||file.path});
-          downloaded+=Number(result?.bytes)||0;
-        }catch{failed++}
-        done++;
-        bar.style.width=(done/pdfs.length*100)+'%';
+          const result=await request('SAVE_MATERIAL',{url:urls.direct,viewer:urls.viewer,title:file.title||file.path});
+          downloaded+=Number(result?.bytes)||0;savedBytes+=Number(result?.bytes)||0;done++;
+        }catch(error){failed.push((file.title||file.path)+': '+error.message);}
+        bar.style.width=(files.length?done/files.length*100:100)+'%';
+        if(!navigator.onLine){bulkStop=true;break;}
       }
-      status.textContent='Готово: '+(pdfs.length-failed)+' / '+pdfs.length+
-        ' PDF · добавлено '+fmtBytes(downloaded)+(skipped?' · уже было '+skipped:'')+
-        (failed?' · ошибок '+failed:'')+'. Всего в каталоге около '+fmtBytes(totalBytes)+'.';
+      const verified=await request('LIST_MATERIALS');
+      const verifiedUrls=new Set(verified.flatMap(file=>[file.url,file.alias].filter(Boolean)));
+      const actual=files.filter(file=>verifiedUrls.has(offlineUrls(file).direct)).length;
+      status.textContent=(actual===files.length?'Библиотека сохранена. ':'Загрузка не завершена. ')+actual+' / '+files.length+
+        ' файлов · добавлено '+fmtBytes(downloaded)+(failed.length?' · ошибок '+failed.length+'. '+failed.join('; '):'')+
+        (actual<files.length?' Нажмите «Продолжить / повторить»: сохранённые версии будут пропущены.':'');
       navigator.storage?.persist?.().catch(()=>{});
-    }catch(error){
-      status.textContent=error.message||'Не удалось скачать материалы.';
-    }finally{
-      button.disabled=false;button.textContent='Скачать все PDF';
-    }
+    }catch(error){status.textContent=error.message||'Не удалось скачать материалы.';}
+    finally{bulkRunning=false;button.disabled=false;button.textContent='Продолжить / повторить';}
+  }
+  async function annotationStore(){
+    if(!window.NSUAnnotations)await import(new URL('annotations-store.js?v=1',base).href);
+    return window.NSUAnnotations;
+  }
+  async function openMyNotes(){
+    const panel=dialog('Мои заметки');
+    const status=paragraph(panel,'Читаю заметки…');
+    try{
+      const store=await annotationStore(),backup=await store.backup();
+      const list=document.createElement('ul');list.className='app-downloads';panel.append(list);
+      for(const doc of backup.documents){
+        const objects=backup.objects.filter(a=>a.docId===doc.docId&&a.revision===doc.revision);
+        if(!objects.length)continue;
+        const row=document.createElement('li'),links=document.createElement('div');
+        const title=document.createElement('strong');title.textContent=doc.title+' · '+objects.length;links.append(title);
+        for(const page of [...new Set(objects.map(a=>a.page))].sort((a,b)=>a-b)){
+          const link=document.createElement('a');const url=offlineUrls({path:doc.path,title:doc.title}).viewer;
+          const target=new URL(url);target.searchParams.set('page',page);
+          link.href=target.href;link.textContent='Стр. '+page+' ';links.append(document.createElement('br'),link);
+        }
+        const info=document.createElement('small');info.textContent='Версия '+doc.revision.slice(0,12)+' · '+new Date(doc.updatedAt).toLocaleString('ru-RU');links.append(info);
+        row.append(links);list.append(row);
+      }
+      status.textContent=list.children.length?'Заметки хранятся только на этом устройстве. Для прежней версии PDF используйте восстановление в просмотрщике.':'Пока нет заметок.';
+    }catch(error){status.textContent=error.message;}
+  }
+  function addNotesSettings(body){
+    const section=document.createElement('section');section.className='app-manager-section';
+    section.innerHTML='<h3>Заметки</h3><div class="app-manager-actions"></div>';
+    const actions=section.querySelector('div'),status=document.createElement('div');status.className='app-manager-status';
+    function action(label,callback){const button=document.createElement('button');button.type='button';button.className='app-manager-btn';button.textContent=label;button.onclick=async()=>{try{await callback();}catch(error){status.textContent=error.message;}};actions.append(button);return button;}
+    action('Мои заметки',openMyNotes);
+    action('Экспорт резервной копии',async()=>{
+      const backup=await (await annotationStore()).backup();const json=JSON.stringify(backup,null,2);
+      if(nativeBridge?.saveNotesBackup){nativeBridge.saveNotesBackup(json);status.textContent='Выберите место для резервной копии.';return;}
+      const url=URL.createObjectURL(new Blob([json],{type:'application/json'})),link=document.createElement('a');
+      link.href=url;link.download='nsu-notes-'+new Date().toISOString().slice(0,10)+'.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+      if(nativeAndroid){
+        const text=document.createElement('textarea');text.value=json;text.setAttribute('aria-label','Резервная копия JSON');text.style.width='100%';section.append(text);
+        status.textContent='Если загрузка JSON недоступна в этой версии APK, скопируйте текст и сохраните его в файл.';
+      }else status.textContent='Резервная копия подготовлена для скачивания.';
+    });
+    const input=document.createElement('input');input.type='file';input.accept='.json,application/json';input.hidden=true;
+    const importJson=async text=>{
+      const store=await annotationStore(),backup=store.validate(JSON.parse(text));
+      if(!confirm('Импортировать '+backup.objects.length+' аннотаций? Более новые записи на устройстве сохранятся.'))return;
+      await store.import(backup);status.textContent='Резервная копия восстановлена: '+backup.objects.length+' аннотаций.';
+    };
+    input.onchange=async()=>{try{const file=input.files[0];if(!file)return;if(file.size>50*1024*1024)throw new Error('Резервная копия больше 50 МБ.');await importJson(await file.text());}catch(error){status.textContent='Импорт не выполнен: '+error.message;}finally{input.value='';}};
+    action('Импорт резервной копии',()=>input.click());section.append(input);
+    if(nativeAndroid&&!nativeBridge?.saveNotesBackup)action('Вставить JSON резервной копии',async()=>{const text=prompt('Вставьте JSON резервной копии');if(text)await importJson(text);});
+    const clear=action('Удалить все аннотации',async()=>{if(!confirm('Удалить ВСЕ заметки без возможности отмены? Сначала экспортируйте резервную копию. Офлайн-файлы останутся.'))return;await (await annotationStore()).clear();status.textContent='Все аннотации удалены.';});clear.classList.add('danger');
+    const note=document.createElement('p');note.className='app-manager-note';note.textContent='Заметки не удаляются при очистке библиотеки и обновлении приложения. Очистка данных браузера или APK удаляет их. Сохраняйте резервные копии.';
+    section.append(status,note);body.append(section);
   }
   async function openManager(){
     const panel=dialog('Приложение и данные');
@@ -215,7 +285,7 @@
     storage.textContent=await storageText();
 
     const appSection=document.createElement('section');appSection.className='app-manager-section';
-    appSection.innerHTML='<h3>'+(nativeAndroid?'Приложение':'Обновления')+'</h3><div class="app-manager-actions"></div>';
+    appSection.innerHTML='<h3>Приложение</h3><div class="app-manager-actions"></div>';
     const appActions=appSection.querySelector('.app-manager-actions');
     const update=document.createElement('button');update.type='button';update.className='app-manager-btn';
     const updateStatus=document.createElement('div');updateStatus.className='app-manager-status';
@@ -231,30 +301,32 @@
         await checkForUpdate(updateStatus,update);
       };
     }
-    appActions.append(update);appSection.append(updateStatus);body.append(appSection);
+    appActions.append(update);appSection.append(updateStatus);paragraph(appSection,'Версия оболочки: 82 · формат заметок: 1');body.append(appSection);
 
     const dataSection=document.createElement('section');dataSection.className='app-manager-section';
-    dataSection.innerHTML='<h3>Офлайн-данные</h3><div class="app-manager-actions"></div>';
+    dataSection.innerHTML='<h3>Офлайн-библиотека</h3><div class="app-manager-actions"></div>';
     const dataActions=dataSection.querySelector('.app-manager-actions');
-    const saved=document.createElement('button');saved.type='button';saved.className='app-manager-btn';saved.textContent='Сохранённые PDF';
+    const saved=document.createElement('button');saved.type='button';saved.className='app-manager-btn';saved.textContent='Сохранённые материалы';
     saved.onclick=()=>downloadsButton?.click();
-    const all=document.createElement('button');all.type='button';all.className='app-manager-btn primary';all.textContent='Скачать все PDF';
-    const clear=document.createElement('button');clear.type='button';clear.className='app-manager-btn danger';clear.textContent='Удалить сохранённые PDF';
+    const all=document.createElement('button');all.type='button';all.className='app-manager-btn primary';all.textContent='Сохранить все материалы';
+    const clear=document.createElement('button');clear.type='button';clear.className='app-manager-btn danger';clear.textContent='Удалить загруженные материалы';
     const status=document.createElement('div');status.className='app-manager-status';
     const progress=document.createElement('div');progress.className='app-manager-progress';progress.hidden=true;progress.innerHTML='<span></span>';
     all.onclick=()=>downloadAllPdfs(status,progress,all);
     clear.onclick=async()=>{
-      if(!confirm('Удалить все PDF, сохранённые для офлайн-доступа на этом устройстве?'))return;
-      clear.disabled=true;status.textContent='Удаляю сохранённые PDF…';
-      try{await request('CLEAR_PDFS');status.textContent='Сохранённые PDF удалены.';storage.textContent=await storageText();}
+      if(bulkRunning){status.textContent='Сначала остановите загрузку и дождитесь завершения текущего файла.';return;}
+      if(!confirm('Удалить все загруженные материалы? Заметки останутся на устройстве.'))return;
+      clear.disabled=true;status.textContent='Удаляю загруженные материалы…';
+      try{await request('CLEAR_MATERIALS');status.textContent='Загруженные материалы удалены. Заметки сохранены.';storage.textContent=await storageText();}
       catch(error){status.textContent=error.message}
       finally{clear.disabled=false}
     };
     dataActions.append(saved,all,clear);
     dataSection.append(progress,status);
     const note=document.createElement('p');note.className='app-manager-note';
-    note.textContent='«Скачать все PDF» загружает материалы целиком. Сейчас каталог занимает примерно 250 МБ; фактический объём может меняться после обновлений.';
-    dataSection.append(note);body.append(dataSection);
+    note.textContent='PDF и Notebook сохраняются целиком (до 150 МБ на файл). Объём вычисляется по текущему каталогу. При остановке текущий файл завершается; продолжение пропускает уже сохранённые версии.';
+    dataSection.append(note);body.append(dataSection);addNotesSettings(body);
+    panel.addEventListener('close',()=>{bulkStop=true;});
   }
   settingsButton?.addEventListener('click',()=>{void openManager()});
   installButton?.addEventListener('click',async()=>{
@@ -272,18 +344,18 @@
     if(!supported)paragraph(panel,'Установка и офлайн-режим доступны на опубликованном сайте с HTTPS.');
   });
   downloadsButton?.addEventListener('click',async()=>{
-    const panel=dialog('Сохранённые PDF');
+    const panel=dialog('Сохранённые материалы');
     paragraph(panel,'Эти файлы доступны без интернета в этом браузере и установленном через него приложении. При очистке данных сайта они удалятся.');
     const state=paragraph(panel,'Проверяю сохранённые файлы…');
     try {
       const files=await request('LIST_PDFS');
-      state.textContent=files.length?`Сохранено: ${files.length} · ${(files.reduce((sum,file)=>sum+file.bytes,0)/1048576).toFixed(1)} МБ`:'Пока нет сохранённых PDF. Откройте документ и нажмите «Без интернета» в настройках чтения.';
+      state.textContent=files.length?`Сохранено: ${files.length} · ${(files.reduce((sum,file)=>sum+file.bytes,0)/1048576).toFixed(1)} МБ`:'Пока нет сохранённых материалов. В настройках выберите «Сохранить все материалы».';
       const list=document.createElement('ul');list.className='app-downloads';panel.append(list);
       for(const file of files) {
         const row=document.createElement('li'),link=document.createElement('a'),remove=document.createElement('button');
         link.href=file.viewer;link.textContent=file.title;
         remove.type='button';remove.textContent='Удалить';remove.setAttribute('aria-label','Удалить сохранённый файл '+file.title);
-        remove.onclick=async()=>{try{await request('REMOVE_PDF',{url:file.url});row.remove();state.textContent='Файл удалён с устройства.';}catch(error){notice(error.message);}};
+        remove.onclick=async()=>{if(!confirm('Удалить загруженный файл? Заметки останутся.'))return;try{await request('REMOVE_MATERIAL',{url:file.url});row.remove();state.textContent='Файл удалён с устройства.';}catch(error){notice(error.message);}};
         row.append(link,remove);list.append(row);
       }
     }catch(error){state.textContent=error.message;}

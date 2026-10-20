@@ -1,0 +1,290 @@
+"""Notes persistence, PDF-space geometry, recovery, backup and explicit offline library."""
+import json
+import unittest
+from pathlib import Path
+from urllib.parse import quote, urlencode
+
+import test_site as fixtures
+
+
+class AnnotationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        fixtures.SiteTests.setUpClass.__func__(cls)
+
+    @classmethod
+    def tearDownClass(cls):
+        fixtures.SiteTests.tearDownClass.__func__(cls)
+
+    setUp = fixtures.SiteTests.setUp
+    tearDown = fixtures.SiteTests.tearDown
+    pdf = fixtures.SiteTests.pdf
+    home = fixtures.SiteTests.home
+    pwa_ready = fixtures.SiteTests.pwa_ready
+
+    def saved_count(self, count):
+        self.page.wait_for_function('async count=>(await NSUAnnotations.backup()).objects.length===count', arg=count)
+
+    def draw(self, offset=0):
+        layer=self.page.locator('.canvas-wrap .user-notes>svg')
+        box=layer.bounding_box()
+        x,y=box['x']+80,box['y']+100+offset
+        self.page.mouse.move(x,y)
+        self.page.mouse.down()
+        self.page.mouse.move(x+70,y+15,steps=12)
+        self.page.mouse.up()
+
+    def test_notes_persist_zoom_modes_undo_redo_and_eraser(self):
+        self.pdf()
+        self.page.locator('#notesToggle').click()
+        self.draw()
+        self.saved_count(1)
+        original=self.page.evaluate('(async()=> (await NSUAnnotations.backup()).objects[0])()')
+        self.page.locator('#noteUndo').click();self.saved_count(0)
+        self.page.locator('#noteRedo').click();self.saved_count(1)
+        self.draw(60);self.saved_count(2)
+        self.page.locator('#noteTool').select_option('eraser')
+        self.page.locator('.canvas-wrap .user-notes path').first.click(position={'x':5,'y':2},force=True)
+        self.saved_count(1)
+        self.page.locator('#noteUndo').click();self.saved_count(2)
+        self.page.locator('#notesToggle').click()
+        self.page.locator('#zoom').fill('250');self.page.locator('#zoom').dispatch_event('change')
+        self.page.wait_for_function("document.querySelector('.canvas-wrap .user-notes g')?.getAttribute('transform').includes('3.333')")
+        self.assertEqual(self.page.evaluate('(async()=> (await NSUAnnotations.backup()).objects.find(a=>a.id===%s).points)()'%json.dumps(original['id'])),original['points'])
+        self.page.locator('#viewMode').click()
+        self.page.wait_for_function("document.querySelectorAll('.continuous-page .user-notes path').length>=2")
+        self.page.locator('#viewMode').click()
+        self.page.reload()
+        self.page.wait_for_function("document.querySelectorAll('.canvas-wrap .user-notes path').length===2")
+        self.assertEqual(self.page.locator('#notesToggle').get_attribute('aria-pressed'),'false')
+
+    def test_text_selection_copy_highlight_and_note_editing(self):
+        self.context.grant_permissions(['clipboard-read','clipboard-write'])
+        self.pdf()
+        self.page.wait_for_selector('.text-layer span')
+        self.page.evaluate("""() => {const span=document.querySelector('.text-layer span');const range=document.createRange();range.selectNodeContents(span);getSelection().removeAllRanges();getSelection().addRange(range);}""")
+        self.page.locator('.notes-selection').wait_for(state='visible')
+        self.page.locator('.notes-selection button').first.click()
+        self.assertIn('alpha',self.page.evaluate('navigator.clipboard.readText()'))
+        self.page.locator('.notes-selection button').nth(1).click();self.saved_count(1)
+        self.assertEqual(self.page.locator('.user-notes polygon').count(),1)
+        self.page.locator('#notesToggle').click();self.page.locator('#noteTool').select_option('note')
+        self.page.locator('.canvas-wrap .user-notes>svg').click(position={'x':130,'y':200})
+        self.page.locator('.note-editor textarea').fill('Формула: E = mc²')
+        self.page.get_by_role('button',name='Сохранить',exact=True).click();self.saved_count(2)
+        self.page.locator('#notesToggle').click()
+        self.page.locator('.note-pin').click()
+        self.page.locator('.note-editor textarea').fill('Изменённая заметка')
+        self.page.get_by_role('button',name='Сохранить',exact=True).click()
+        self.page.wait_for_function("async()=>(await NSUAnnotations.backup()).objects.some(a=>a.text==='Изменённая заметка')")
+        self.page.reload();self.page.locator('.note-pin').wait_for()
+        self.page.locator('.note-pin').click()
+        self.assertEqual(self.page.locator('.note-editor textarea').input_value(),'Изменённая заметка')
+
+    def test_notes_failed_write_is_visible_and_retry_preserves_action(self):
+        self.pdf();self.page.locator('#notesToggle').click()
+        self.page.evaluate("() => {window.savedWriter=NSUAnnotations.save;NSUAnnotations.save=()=>Promise.reject(new DOMException('full','QuotaExceededError'));}")
+        self.draw()
+        self.page.wait_for_function("document.querySelector('.notes-status').textContent.includes('Не сохранено')")
+        self.assertEqual(self.page.locator('.user-notes path').count(),1)
+        self.assertEqual(self.page.evaluate('(async()=> (await NSUAnnotations.backup()).objects.length)()'),0)
+        self.page.evaluate('() => {NSUAnnotations.save=savedWriter;}')
+        self.page.locator('.notes-status button').click();self.saved_count(1)
+
+    def test_notes_backup_validation_merge_and_version_recovery(self):
+        self.pdf('&v=old');self.page.locator('#notesToggle').click();self.draw();self.saved_count(1)
+        backup=self.page.evaluate('NSUAnnotations.backup()')
+        self.page.evaluate('NSUAnnotations.clear()');self.saved_count(0)
+        self.page.evaluate('data=>NSUAnnotations.import(data)',backup);self.saved_count(1)
+        invalid=json.loads(json.dumps(backup));invalid['objects'][0]['points']=[['bad',1]]
+        self.assertTrue(self.page.evaluate("async data=>{try{await NSUAnnotations.import(data);return false;}catch{return true;}}",invalid))
+        self.saved_count(1)
+        if not fixtures.REAL_PDFJS:
+            self.pdf('&v=new')
+            self.page.locator('.notes-recovery summary').click()
+            self.assertEqual(self.page.locator('.canvas-wrap .user-notes path').count(),0)
+            self.page.once('dialog',lambda d:d.accept())
+            self.page.get_by_role('button',name='Восстановить в текущем PDF').click()
+            self.saved_count(2)
+            self.assertEqual(self.page.locator('.canvas-wrap .user-notes path').count(),1)
+
+    def test_notes_settings_backup_ui_and_responsive_layout(self):
+        self.pdf();self.page.locator('#notesToggle').click();self.draw();self.saved_count(1)
+        self.home()
+        for width in [320,390,768,1440]:
+            self.page.set_viewport_size({'width':width,'height':900})
+            settings=self.page.locator('#appSettings').bounding_box()
+            search=self.page.locator('#globalSearch').bounding_box()
+            self.assertGreaterEqual(settings['x'],search['x']+search['width'])
+            self.assertLessEqual(settings['x']+settings['width'],width)
+        self.page.locator('#appSettings').click()
+        with self.page.expect_download() as download:
+            self.page.get_by_role('button',name='Экспорт резервной копии',exact=True).click()
+        backup=Path(download.value.path()).read_text(encoding='utf-8')
+        self.assertEqual(len(json.loads(backup)['objects']),1)
+        self.page.once('dialog',lambda d:d.accept())
+        self.page.get_by_role('button',name='Удалить все аннотации',exact=True).click();self.saved_count(0)
+        self.page.once('dialog',lambda d:d.accept())
+        self.page.locator('input[type=file]').set_input_files({'name':'backup.json','mimeType':'application/json','buffer':backup.encode()})
+        self.saved_count(1)
+        self.page.get_by_role('button',name='Мои заметки',exact=True).click()
+        self.page.locator('.app-downloads a').first.wait_for()
+        self.assertIn('page=1',self.page.locator('.app-downloads a').first.get_attribute('href'))
+
+    def test_mobile_notes_rotation_and_two_finger_cancel(self):
+        self.page.set_viewport_size({'width':390,'height':844});self.pdf()
+        self.page.locator('#notesToggle').click()
+        self.page.wait_for_selector('.continuous-page .user-notes svg')
+        self.page.evaluate("""() => {const el=document.querySelector('.continuous-page .user-notes svg');
+          el.dispatchEvent(new PointerEvent('pointerdown',{pointerId:21,pointerType:'touch',clientX:60,clientY:180,bubbles:true,button:0}));
+          el.dispatchEvent(new PointerEvent('pointerdown',{pointerId:22,pointerType:'touch',clientX:180,clientY:180,bubbles:true,button:0}));
+          el.dispatchEvent(new PointerEvent('pointerup',{pointerId:21,pointerType:'touch',bubbles:true}));
+          el.dispatchEvent(new PointerEvent('pointerup',{pointerId:22,pointerType:'touch',bubbles:true}));}""")
+        self.saved_count(0)
+        # A completed touch stroke must survive orientation and fit-width changes.
+        self.page.evaluate("""() => {const el=document.querySelector('.continuous-page .user-notes svg'),r=el.getBoundingClientRect();
+          const send=(type,x,y)=>el.dispatchEvent(new PointerEvent(type,{pointerId:31,pointerType:'touch',clientX:r.left+x,clientY:r.top+y,bubbles:true,button:0,pressure:.6}));
+          send('pointerdown',60,100);send('pointermove',120,130);send('pointerup',120,130);}""")
+        self.saved_count(1)
+        points=self.page.evaluate('(async()=>(await NSUAnnotations.backup()).objects[0].points)()')
+        for width,height in [(320,800),(390,844),(844,390),(768,1024),(1440,900)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            tools=self.page.locator('.notes-tools').bounding_box()
+            self.assertGreaterEqual(tools['x'],0)
+            self.assertLessEqual(tools['x']+tools['width'],width)
+        self.assertEqual(self.page.evaluate('(async()=>(await NSUAnnotations.backup()).objects[0].points)()'),points)
+        self.page.reload()
+        self.page.locator('.user-notes path').wait_for()
+
+    @unittest.skipUnless(fixtures.REAL_PDFJS,'Actual TextLayer geometry requires NSU_REAL_PDFJS=1')
+    def test_real_textlayer_multiline_cyrillic_and_rotated_page(self):
+        import pymupdf
+        fonts=[Path('C:/Windows/Fonts/arial.ttf'),Path('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf')]
+        font=next((p for p in fonts if p.exists()),None)
+        if not font:self.skipTest('No Cyrillic test font installed')
+        path='text-geometry.pdf'
+        with pymupdf.open() as doc:
+            for width,height,rotation in [(595,842,0),(842,595,90)]:
+                page=doc.new_page(width=width,height=height)
+                page.insert_text((72,90),'Кириллица and Latin',fontname='testfont',fontfile=str(font),fontsize=24)
+                page.insert_text((72,130),'Second line: alpha beta',fontname='testfont',fontfile=str(font),fontsize=14)
+                page.insert_text((72,170),'E = mc',fontsize=20)
+                page.insert_text((134,160),'2',fontsize=10)
+                page.set_rotation(rotation)
+            doc.save(self.root/path)
+        self.context.grant_permissions(['clipboard-read','clipboard-write'])
+        self.page.goto(self.base+'pdfjs/viewer.html?'+urlencode({'file':path}))
+        self.page.wait_for_function("document.querySelector('.text-layer')?.textContent.includes('Кириллица')")
+        for zoom in [35,250,400]:
+            self.page.locator('#zoom').fill(str(zoom));self.page.locator('#zoom').blur()
+            self.page.wait_for_function("z=>{const t=document.querySelector('.canvas-wrap .text-layer');return Math.abs(parseFloat(t?.style.getPropertyValue('--scale-factor'))-z/100*96/72)<1e-8&&t.textContent.includes('Кириллица')}",arg=zoom)
+            geometry=self.page.evaluate("""() => {const span=[...document.querySelectorAll('.canvas-wrap .text-layer span')].find(s=>s.textContent.includes('Кириллица'));
+              const r=span.getBoundingClientRect(),p=document.querySelector('.canvas-wrap').getBoundingClientRect();
+              return {left:r.left-p.left,top:r.top-p.top,scale:parseFloat(document.querySelector('.canvas-wrap .text-layer').style.getPropertyValue('--scale-factor'))};}""")
+            self.assertAlmostEqual(geometry['left'],72*geometry['scale'],delta=1)
+            self.assertLess(abs(geometry['top']-(90-24)*geometry['scale']),7*geometry['scale'])
+        self.page.evaluate("""() => {const spans=[...document.querySelectorAll('.canvas-wrap .text-layer span')];const r=document.createRange();
+          r.setStart(spans[0].firstChild,0);r.setEnd(spans[1].firstChild,spans[1].textContent.length);getSelection().removeAllRanges();getSelection().addRange(r);}""")
+        self.page.locator('.notes-selection button').first.click()
+        copied=self.page.evaluate('navigator.clipboard.readText()')
+        self.assertIn('Кириллица and Latin',copied);self.assertIn('Second line: alpha beta',copied)
+        self.page.locator('.notes-selection button').nth(1).click();self.saved_count(1)
+        self.assertGreaterEqual(self.page.locator('.user-notes polygon').count(),2)
+        self.page.locator('#page').fill('2');self.page.locator('#page').blur()
+        self.page.wait_for_function("document.querySelector('.canvas-wrap .text-layer')?.dataset.mainRotation==='90'")
+        self.assertIn('Кириллица',self.page.locator('.canvas-wrap .text-layer').text_content())
+
+    @unittest.skipIf(fixtures.REAL_PDFJS,'Large-document virtualization uses a deterministic 200-page fixture')
+    def test_notes_virtualization_keeps_only_nearby_canvases(self):
+        stub=fixtures.PDF_STUB.replace('numPages:2,','numPages:200,').replace('n>2)','n>200)')
+        self.context.route('https://cdn.jsdelivr.net/npm/pdfjs-dist@*/build/pdf.min.mjs',
+            lambda route:route.fulfill(body=stub,content_type='text/javascript',headers={'Access-Control-Allow-Origin':'*'}))
+        self.page.goto(self.base+'pdfjs/viewer.html?'+urlencode({'file':self.a}))
+        self.page.wait_for_function("document.querySelector('#total').textContent==='/ 200'")
+        self.page.locator('#notesToggle').click();self.draw();self.saved_count(1)
+        self.page.locator('#notesToggle').click();self.page.locator('#viewMode').click()
+        self.page.wait_for_function("document.querySelector('.continuous-page .user-notes path')")
+        self.page.locator('#page').fill('150');self.page.locator('#page').dispatch_event('change')
+        self.page.wait_for_function("document.querySelector('.continuous-page[data-page=\"150\"] canvas')")
+        self.page.wait_for_function("document.querySelectorAll('.continuous-page canvas').length<=6")
+        self.page.locator('#page').fill('1');self.page.locator('#page').dispatch_event('change')
+        self.page.wait_for_function("document.querySelector('.continuous-page[data-page=\"1\"] .user-notes path')")
+        self.saved_count(1)
+
+    def test_notes_fullscreen_iframe_close_and_reopen(self):
+        self.home()
+        self.page.evaluate('openPdfFullscreen(viewerUrl(FILES[0]))')
+        frame=self.page.frame_locator('#pdfFullscreenFrame')
+        frame.locator('#notesToggle').click()
+        box=frame.locator('.canvas-wrap .user-notes svg').bounding_box()
+        self.page.mouse.move(box['x']+100,box['y']+140);self.page.mouse.down()
+        self.page.mouse.move(box['x']+200,box['y']+170,steps=10);self.page.mouse.up()
+        self.saved_count(1)
+        frame.locator('#back').click()
+        self.page.wait_for_function("!document.querySelector('#pdfFullscreen').classList.contains('open')")
+        self.page.evaluate('openPdfFullscreen(viewerUrl(FILES[0]))')
+        frame.locator('.canvas-wrap .user-notes path').wait_for()
+        self.saved_count(1)
+
+    def test_pwa_notes_survive_library_clear_and_shell_update(self):
+        import re,time
+        self.pwa_ready();self.pdf();self.page.locator('#notesToggle').click();self.draw();self.saved_count(1)
+        self.page.evaluate("args=>NSUApp.request('SAVE_MATERIAL',args)",{'url':self.base+'../'+quote(self.a),'viewer':self.page.url,'title':'Saved'})
+        self.page.evaluate("NSUApp.request('CLEAR_MATERIALS')");self.saved_count(1)
+        self.assertEqual(self.page.evaluate("NSUApp.request('LIST_MATERIALS')"),[])
+        worker=self.root/'docs/sw.js';original=worker.read_text(encoding='utf-8')
+        try:
+            worker.write_text(re.sub(r"SHELL_VERSION = '[^']+'","SHELL_VERSION = 'notes-update'",original),encoding='utf-8')
+            import os;os.utime(worker,(time.time()+2,time.time()+2))
+            self.page.evaluate('async()=>{const r=await NSUApp.ready;await r.update()}')
+            self.page.wait_for_function("async()=>(await caches.keys()).some(n=>n.endsWith('shell-notes-update'))")
+            self.page.reload();self.page.locator('.canvas-wrap .user-notes path').wait_for();self.saved_count(1)
+        finally:worker.write_text(original,encoding='utf-8')
+
+    def test_pwa_bulk_library_pause_resume_versions_and_notebook(self):
+        catalogue=self.root/'docs/search-index/files.json';original=catalogue.read_text(encoding='utf-8')
+        data=json.loads(original);data['files'].append({'path':self.nb,'type':'ipynb','version':'nb1','size':1000})
+        catalogue.write_text(json.dumps(data),encoding='utf-8')
+        try:
+            self.page.goto(self.base)
+            self.page.wait_for_function('FILES.length===3')
+            self.page.evaluate('NSUApp.ready.then(()=>true)')
+            self.page.wait_for_function('!!navigator.serviceWorker.controller')
+            self.page.on('dialog',lambda d:d.accept())
+            self.page.locator('#appSettings').click()
+            self.delayed_paths['/'+quote(self.a)]=.8
+            self.page.get_by_role('button',name='Сохранить все материалы',exact=True).click()
+            self.page.wait_for_function("document.querySelector('#appDialog .app-manager-progress').hidden===false")
+            self.page.get_by_role('button',name='Остановить загрузку',exact=True).click()
+            self.page.wait_for_function("document.querySelector('#appDialog').textContent.includes('Загрузка не завершена.')")
+            self.assertLess(len(self.page.evaluate("NSUApp.request('LIST_MATERIALS')")),3)
+            self.page.get_by_role('button',name='Продолжить / повторить',exact=True).click()
+            self.page.wait_for_function("document.querySelector('#appDialog').textContent.includes('Библиотека сохранена.')")
+            files=self.page.evaluate("NSUApp.request('LIST_MATERIALS')")
+            self.assertEqual(len(files),3)
+            pdf_requests=len([p for method,p in self.requests if p.endswith('.pdf')])
+            self.page.get_by_role('button',name='Продолжить / повторить',exact=True).click()
+            self.page.wait_for_function("document.querySelector('#appDialog').textContent.includes('Библиотека сохранена.')")
+            self.assertEqual(pdf_requests,len([p for method,p in self.requests if p.endswith('.pdf')]))
+            data['files'][1]['version']='updated-pdf'
+            catalogue.write_text(json.dumps(data),encoding='utf-8')
+            self.page.get_by_role('button',name='Продолжить / повторить',exact=True).click()
+            self.page.wait_for_function("document.querySelector('#appDialog').textContent.includes('Библиотека сохранена.')")
+            self.assertEqual(pdf_requests+1,len([p for method,p in self.requests if p.endswith('.pdf')]))
+            files=self.page.evaluate("NSUApp.request('LIST_MATERIALS')")
+            self.assertEqual(len(files),3)
+            self.context.set_offline(True)
+            for file in files:
+                result=self.page.evaluate('async url=>{const r=await fetch(url);return {ok:r.ok,size:(await r.arrayBuffer()).byteLength}}',file['url'])
+                self.assertTrue(result['ok']);self.assertGreater(result['size'],0)
+            self.context.set_offline(False)
+            notebook=next(file for file in files if '.ipynb' in file['url'])
+            # An ordinary earlier visit must not leave a second cached copy after deletion.
+            self.page.evaluate("async file=>{const cache=await caches.open((await caches.keys()).find(n=>n.endsWith('data-v1')));await cache.put(file.url,new Response('old notebook'));}",notebook)
+            self.page.evaluate("file=>NSUApp.request('REMOVE_MATERIAL',{url:file.url})",notebook)
+            self.assertEqual(len(self.page.evaluate("NSUApp.request('LIST_MATERIALS')")),2)
+            self.assertFalse(self.page.evaluate("async file=>(await caches.match(file.url))!==undefined",notebook))
+        finally:catalogue.write_text(original,encoding='utf-8')
+
+
+if __name__=='__main__':unittest.main()

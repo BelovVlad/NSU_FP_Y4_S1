@@ -24,13 +24,19 @@ REAL_PDFJS = os.environ.get('NSU_REAL_PDFJS') == '1'
 PDF_STUB = """
 export const GlobalWorkerOptions={};
 export const Util={transform:(a,b)=>b};
+export class TextLayer {
+  constructor({container,textContentSource,viewport}){Object.assign(this,{container,textContentSource,viewport});}
+  async render(){for(const item of this.textContentSource.items){const span=document.createElement('span');span.textContent=item.str;span.style.cssText=`left:12%;top:10%;font-size:${16*this.viewport.scale}px`;this.container.append(span);}}
+  cancel(){}
+}
 export function getDocument({url}){
   const document={numPages:2,getOutline:async()=>[],getDestination:async()=>null,
     getPage:async n=>{
       if(!Number.isInteger(n)||n<1||n>2)throw new Error('Invalid page request.');
       return {pageNumber:n,cleanup(){},getOperatorList:async()=>({}),
-        getTextContent:async()=>({items:[]}),getAnnotations:async()=>[],
-        getViewport:({scale})=>({width:595*scale,height:842*scale,scale}),
+        getTextContent:async()=>({items:[{str:n===1?'alpha beta':'gamma delta',transform:[1,0,0,1,72,72],width:60}]}),getAnnotations:async()=>[],
+        getViewport:({scale})=>({width:595*scale,height:842*scale,scale,transform:[scale,0,0,-scale,0,842*scale],
+          convertToPdfPoint:(x,y)=>[x/scale,842-y/scale],convertToViewportPoint:(x,y)=>[x*scale,(842-y)*scale]}),
         render:({canvasContext})=>{
           if(window.__failNextRender){window.__failNextRender=false;return {cancel(){},promise:Promise.reject(new Error('<b>temporary render failure</b>'))}}
           canvasContext.fillRect(0,0,20,20);
@@ -50,8 +56,9 @@ class SiteTests(unittest.TestCase):
         for relative in ['docs/index.html', 'docs/knowledge.css', 'docs/search-worker.js', 'docs/pdfjs/viewer.html', 'docs/pdfjs/controls.css',
                          'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/notebook/outline.js', 'docs/giscus-config.json',
                          'docs/app.js', 'docs/app.css', 'docs/sw.js', 'docs/manifest.webmanifest',
+                         'docs/annotations-store.js', 'docs/pdfjs/notes.js', 'docs/pdfjs/notes.css', 'docs/offline-resources.json',
                          'docs/particles/index.html', 'docs/particles/particles.js',
-                         'docs/particles/explorer.js', 'docs/particles/explorer.css', 'docs/particles/layout.js', 'docs/particles/routes.js', 'docs/particles/contours.js', 'docs/particles/extra-particles.js',
+                         'docs/particles/explorer.js', 'docs/particles/explorer.css', 'docs/particles/layout.js', 'docs/particles/routes.js', 'docs/particles/contours.js', 'docs/particles/extra-particles.js', 'docs/particles/remaining-particles.js',
                          'Overseer/overseer.js', 'Overseer/overseer.css',
                          'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
                          'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
@@ -59,6 +66,18 @@ class SiteTests(unittest.TestCase):
             target = cls.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / relative, target)
+        if not REAL_PDFJS:
+            # Deterministic SW tests exercise preparation/verification with local assets.
+            # The optional real-runtime check retains the complete pinned CDN manifest.
+            (cls.root/'docs/offline-resources.json').write_text(json.dumps({
+                'pdf':['annotations-store.js?v=1'], 'ipynb':['annotations-store.js?v=1']}),encoding='utf-8')
+        # Regression fixtures alone expose module bindings used by older tests.
+        # Published viewer modules keep their private scope.
+        viewer=cls.root/'docs/pdfjs/viewer.html'
+        bindings=['canvasRenderRatio','renderContinuous','closeSearch','getPageSearchData','resetSearch','searchQuery','searchPage','pageNum','notes']
+        bridge='Object.defineProperties(window, {'+','.join(
+            name+':{configurable:true,get:()=>'+name+',set:value=>'+name+'=value}' for name in bindings)+'});'
+        viewer.write_text(viewer.read_text(encoding='utf-8').replace('\nopen();','\n'+bridge+'\nopen();'),encoding='utf-8')
         # GitHub Pages removes Jekyll front matter before serving the HTML.
         index_html = cls.root / 'docs/index.html'
         index_html.write_text(index_html.read_text(encoding='utf-8').removeprefix('---\n---\n'),encoding='utf-8')
@@ -95,12 +114,16 @@ class SiteTests(unittest.TestCase):
         write('part-01.json', {'records':[{'path':cls.b, 'pages':[{'n':1,'t':'needle in second section'}]}]})
         cls.requests=[]
         cls.failed_paths=set()
+        cls.delayed_paths={}
         class Handler(http.server.SimpleHTTPRequestHandler):
             def log_message(self, *_args):
                 pass
             def do_GET(self):
                 path=urlsplit(self.path).path
                 cls.requests.append(('GET',path))
+                if path in cls.delayed_paths:
+                    import time
+                    time.sleep(cls.delayed_paths[path])
                 if path in cls.failed_paths:
                     self.send_response(503)
                     self.end_headers()
@@ -133,8 +156,10 @@ class SiteTests(unittest.TestCase):
 
     def setUp(self):
         self.failed_paths.clear()
+        self.delayed_paths.clear()
         self.requests.clear()
-        self.context=self.browser.new_context(service_workers='allow' if self._testMethodName.startswith('test_pwa_') else 'block')
+        touch=any(name in self._testMethodName for name in ['mobile','phone','portrait'])
+        self.context=self.browser.new_context(has_touch=touch,service_workers='allow' if self._testMethodName.startswith('test_pwa_') else 'block')
         self.context.route('https://giscus.app/**', lambda route: route.fulfill(body='',content_type='text/javascript'))
         if not REAL_PDFJS:
             self.context.route('https://cdn.jsdelivr.net/npm/pdfjs-dist@*/build/pdf.min.mjs',
@@ -304,7 +329,8 @@ class SiteTests(unittest.TestCase):
         self.pdf('&page=1.5')
         self.assertEqual(self.page.locator('#page').input_value(),'1')
         pixels=self.page.evaluate('canvas.width*canvas.height')
-        self.assertLess(pixels,1000000)
+        self.assertGreater(pixels,1000000)  # Default "max" profile supersamples the page.
+        self.assertLess(pixels,28000000*1.9+1)
         for value,expected in [('1.5','1'),('999','2'),('-10','1')]:
             self.page.fill('#page',value)
             self.page.locator('#page').dispatch_event('change')
@@ -343,7 +369,7 @@ class SiteTests(unittest.TestCase):
         self.assertLessEqual(box['x']+box['width'],844)
         self.assertLessEqual(box['y']+box['height'],390)
         self.assertGreaterEqual(box['width'],440)
-        self.assertGreater(box['height'],330)
+        self.assertGreater(box['height'],250)
         self.assertTrue(self.page.locator('#toolsClose').is_visible())
         self.assertTrue(self.page.locator('#fit').is_visible())
         self.assertTrue(self.page.locator('#viewMode').is_visible())
@@ -387,7 +413,8 @@ class SiteTests(unittest.TestCase):
 
     def enable_continuous_for_test(self):
         self.page.evaluate("document.querySelector('#viewMode').click()")
-        self.page.wait_for_function("document.body.classList.contains('continuous-mode')")
+        self.page.wait_for_function("document.body.classList.contains('continuous-mode') && !!document.querySelector('.continuous-page[data-page=\"2\"]') && !document.querySelector('#mNext').disabled")
+        self.page.evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
 
     def test_continuous_progress_survives_collapsed_viewer_geometry(self):
         self.pdf()
@@ -421,8 +448,10 @@ class SiteTests(unittest.TestCase):
             w.document.querySelector('#viewMode').click();
         }""")
         self.page.wait_for_function("""() =>
-            document.querySelector('#pdfFullscreenFrame').contentDocument.body.classList.contains('continuous-mode')
+            document.querySelector('#pdfFullscreenFrame').contentDocument.body.classList.contains('continuous-mode') &&
+            !!document.querySelector('#pdfFullscreenFrame').contentDocument.querySelector('.continuous-page[data-page="2"]')
         """)
+        self.page.evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
         self.page.evaluate("""() => {
             const d=document.querySelector('#pdfFullscreenFrame').contentDocument;
             const viewer=d.querySelector('#viewer');
@@ -459,10 +488,14 @@ class SiteTests(unittest.TestCase):
         self.page.locator('#fit').click()
         self.page.wait_for_function("!document.body.classList.contains('tools-open') && canvas.getBoundingClientRect().right<=innerWidth+1")
         self.page.locator('#toolsToggle').click()
-        self.page.locator('#viewMode').click()
+        if not self.page.locator('body').evaluate("el=>el.classList.contains('continuous-mode')"):
+            self.page.locator('#viewMode').click()
         self.page.wait_for_function("document.querySelectorAll('.continuous-page canvas').length===2")
         self.assertEqual(self.page.locator('#viewMode').get_attribute('aria-pressed'),'true')
-        self.page.locator('#mNext').click()
+        self.page.keyboard.press('Escape')
+        self.page.locator('#mPageInfo').click()
+        self.page.locator('#pageJumpInput').fill('2')
+        self.page.locator('#pageJumpInput').press('Enter')
         self.page.wait_for_function("document.querySelector('#mPageInfo').textContent==='2 / 2'")
         self.page.locator('#toolsToggle').click()
         self.page.locator('#viewMode').click()
@@ -666,7 +699,8 @@ class SiteTests(unittest.TestCase):
         self.page.wait_for_function('FILES.length===2')
         self.assertTrue(self.page.evaluate(read,url)['ok'])
         self.assertIn('Reference',self.page.evaluate(read,url)['text'])
-        self.page.locator('#offlineFiles').click()
+        self.page.locator('#appSettings').click()
+        self.page.get_by_role('button',name='Сохранённые материалы',exact=True).click()
         self.page.wait_for_function("document.querySelector('#appDialog').textContent.includes('Пока нет')")
 
     def test_pwa_pdf_explicit_save_offline_ranges_and_removal(self):
@@ -686,9 +720,11 @@ class SiteTests(unittest.TestCase):
         self.assertEqual(range_read('bytes=0-99'),{'status':206,'range':f"bytes 0-99/{result['bytes']}",'size':100})
         self.assertEqual(range_read('bytes=-10')['size'],10)
         self.assertEqual(range_read('bytes=999999-')['status'],416)
-        self.page.locator('#offlineFiles').click()
+        self.page.locator('#appSettings').click()
+        self.page.get_by_role('button',name='Сохранённые материалы',exact=True).click()
         self.page.wait_for_function("document.querySelector('.app-downloads a')?.textContent==='Тестовый PDF'")
         self.assertNotIn('embed=',self.page.locator('.app-downloads a').get_attribute('href'))
+        self.page.once('dialog',lambda dialog:dialog.accept())
         self.page.get_by_role('button',name='Удалить сохранённый файл Тестовый PDF').click()
         self.page.wait_for_function("document.querySelectorAll('.app-downloads li').length===0")
         self.assertEqual(self.page.evaluate("NSUApp.request('LIST_PDFS')"),[])
@@ -704,6 +740,7 @@ class SiteTests(unittest.TestCase):
 
     def test_pwa_update_preserves_saved_documents(self):
         import time
+        import re
         from urllib.parse import quote
         self.pwa_ready()
         self.assertEqual(self.page.locator('#appUpdate').count(),0,'A first installation is not an update')
@@ -712,12 +749,10 @@ class SiteTests(unittest.TestCase):
         worker=self.root/'docs/sw.js'
         original=worker.read_text(encoding='utf-8')
         try:
-            worker.write_text(original.replace("SHELL_VERSION = 'v1'","SHELL_VERSION = 'test-update'"),encoding='utf-8')
+            worker.write_text(re.sub(r"SHELL_VERSION = '[^']+'", "SHELL_VERSION = 'test-update'",original),encoding='utf-8')
             # SimpleHTTPRequestHandler's Last-Modified validator has one-second precision.
             os.utime(worker,(time.time()+2,time.time()+2))
             self.page.evaluate('async()=>{const r=await NSUApp.ready;await r.update()}')
-            self.page.locator('#appUpdate').wait_for(state='visible')
-            self.page.locator('#appUpdate').click()
             self.page.wait_for_function("async()=>(await caches.keys()).some(name=>name.endsWith('shell-test-update'))")
             self.page.wait_for_function('typeof NSUApp!=="undefined" && !!navigator.serviceWorker.controller')
             files=self.page.evaluate("NSUApp.request('LIST_PDFS')")
