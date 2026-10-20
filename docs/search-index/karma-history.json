@@ -194,7 +194,7 @@
       "commit": "69934d9d492bf9bc81f165176cc0262d1395d7db"
     },
     {
-      "at": "2026-10-14T06:24:17.454350+00:00",
+      "at": "2026-10-14T06:25:40+00:00",
       "counts": {
         "ovf-lectures": 5,
         "tdisf-lectures": 5,
@@ -205,7 +205,7 @@
         "fiham-lectures": 4,
         "fiham-seminars": 6
       },
-      "source": "index-build"
+      "commit": "21044440f9de0de6085120964c24b11508439dd1"
     }
   ],
   "currentCounts": {
@@ -218,5 +218,5 @@
     "fiham-lectures": 4,
     "fiham-seminars": 6
   },
-  "indexGeneratedAt": "2026-10-14T06:20:52.913573+00:00"
+  "indexGeneratedAt": "2026-10-14T06:26:12.856048+00:00"
 }
