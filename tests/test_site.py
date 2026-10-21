@@ -3,6 +3,7 @@
 Default: deterministic PDF.js stub for navigation/error scenarios, no CDN required.
 NSU_REAL_PDFJS=1: exercise the same synthetic PDF with the actual CDN PDF.js build.
 PLAYWRIGHT_CHANNEL=msedge: use an existing Edge installation locally.
+PLAYWRIGHT_BROWSER=webkit: check Safari's engine with Playwright WebKit.
 """
 import ast
 import functools
@@ -141,9 +142,10 @@ class SiteTests(unittest.TestCase):
         cls.base=f'http://127.0.0.1:{cls.server.server_port}/docs/'
         cls.playwright=sync_playwright().start()
         options={'headless':True}
-        if os.environ.get('PLAYWRIGHT_CHANNEL'):
+        browser_name=os.environ.get('PLAYWRIGHT_BROWSER','chromium')
+        if browser_name=='chromium' and os.environ.get('PLAYWRIGHT_CHANNEL'):
             options['channel']=os.environ['PLAYWRIGHT_CHANNEL']
-        cls.browser=cls.playwright.chromium.launch(**options)
+        cls.browser=getattr(cls.playwright,browser_name).launch(**options)
 
     @classmethod
     def tearDownClass(cls):

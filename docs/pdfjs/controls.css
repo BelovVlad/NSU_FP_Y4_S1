@@ -614,6 +614,28 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 }
 
 
+/* Touch reading keeps a stable page surface while its controls slide away. */
+.reader-reveal{display:none}
+@media(pointer:coarse){
+  .compact-view .viewer,.compact-view.outline-open .viewer{top:0;padding-top:var(--reader-head);scroll-padding-top:var(--reader-head)}
+  .compact-view.search-open .viewer{top:0;padding-top:calc(var(--reader-head) + var(--search-height));scroll-padding-top:calc(var(--reader-head) + var(--search-height))}
+  .compact-view .toolbar,.compact-view .mobile-nav{transition:transform .16s ease,opacity .16s ease}
+  .compact-view.reader-chrome-hidden .toolbar{transform:translateY(-100%);opacity:0;pointer-events:none;visibility:hidden}
+  .compact-view.reader-chrome-hidden .mobile-nav{transform:translateY(calc(100% + env(safe-area-inset-bottom,0px) + 16px));opacity:0;pointer-events:none;visibility:hidden}
+  .compact-view.reader-chrome-hidden .reader-reveal{display:grid;place-items:center;position:fixed;z-index:46;top:calc(env(safe-area-inset-top,0px) + 6px);right:max(8px,env(safe-area-inset-right,0px));width:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--bar);color:var(--muted);box-shadow:0 2px 8px #0002;cursor:pointer}
+}
+@media(pointer:coarse) and (min-width:600px) and (min-height:600px){
+  .compact-view{--reader-head:calc(48px + env(safe-area-inset-top,0px))}
+  .compact-view .toolbar{gap:2px;padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+  .compact-view .title{font-size:12px;font-weight:500}
+  .compact-view.continuous-mode{--reader-bottom:0px}
+  .compact-view.continuous-mode .mobile-nav{left:auto;right:max(8px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 6px);width:auto;height:44px;padding:0;border:0;border-radius:12px;background:transparent}
+  .compact-view.continuous-mode .m-page-info{min-width:72px;height:44px;padding:0 10px;font-size:11px;font-weight:500;background:var(--bar);border:1px solid var(--line);box-shadow:0 2px 8px #0002}
+  .compact-view .reader-controls,.compact-view .page-jump{bottom:calc(env(safe-area-inset-bottom,0px) + 60px)}
+  .compact-view .stage,.compact-view.continuous-mode .stage{padding:8px}
+}
+@media(prefers-reduced-motion:reduce){.compact-view .toolbar,.compact-view .mobile-nav{transition:none}}
+
 /* Site-wide search preview: the parent card owns navigation and actions.
    Render only the matched document page here; never stack a second toolbar,
    search field or mobile page bar over the result. */

@@ -49,6 +49,17 @@ iframe/fullscreen, ошибка записи, два касания, вирту�
 pinch и последующее рисование), единый Undo ластика и штриха между страницами.
 Проверка ленты также контролирует сохранение DOM уже нарисованных линий во
 время следующего штриха и откладывание перерисовки активной страницы.
+Для Pencil проверяются потеря захвата указателя, сохранение штриха при
+`pointercancel`, точное завершение линии с давлением, ладонь до касания пера,
+резервный ввод через `Touch.touchType=stylus` / `force` и отсутствие двойных
+штрихов при совместных Pointer/Touch Events. На планшете проверяется компактная
+панель, скрытие при прокрутке вниз, возврат вверх и неизменность области PDF.
+Safari/WebKit: `python -m playwright install webkit`, затем переменная
+`PLAYWRIGHT_BROWSER=webkit`. Тест с CDP требует Chromium/Edge; Pencil-сценарии
+`test_mobile_pencil_capture_loss_endpoint_and_resting_finger`,
+`test_mobile_safari_pencil_touch_fallback_and_no_duplicate_ink` и
+`test_mobile_tablet_chrome_hides_without_moving_document` работают в WebKit.
+Физический Apple Pencil эти проверки не эмулируют.
 `check_pwa_offline.py` закрывает все вкладки перед повторным офлайн-запуском и
 проверяет PDF с аннотацией и ранее не открывавшийся Notebook с формулами.
 

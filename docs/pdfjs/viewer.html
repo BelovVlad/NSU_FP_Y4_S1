@@ -70,11 +70,11 @@ body.continuous-mode .canvas-wrap{display:none!important}
 .view-mode-btn.active{border-color:var(--accent);background:var(--accent-soft)}
 
 </style>
-<link rel="stylesheet" href="controls.css?v=13">
-<link rel="stylesheet" href="notes.css?v=2">
+<link rel="stylesheet" href="controls.css?v=14">
+<link rel="stylesheet" href="notes.css?v=3">
 <link rel="stylesheet" href="../app.css?v=8">
 <script defer src="../annotations-store.js?v=1"></script>
-<script defer src="../app.js?v=16"></script>
+<script defer src="../app.js?v=17"></script>
 </head>
 <body>
 <svg class="pdf-tone-filters" aria-hidden="true" focusable="false">
@@ -181,7 +181,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
 
 <script type="module">
 import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
-import {ReaderNotes} from './notes.js?v=2';
+import {ReaderNotes} from './notes.js?v=3';
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
 
 const OWNER='BelovVlad',REPO='NSU_FP_Y4_S1',BRANCH='main';
@@ -1135,8 +1135,14 @@ async function setContinuousMode(on){
   else{destroyContinuous();canvasWrap.hidden=false;await renderPage()}
 }
 let readerChromeLastScroll=viewer.scrollTop,readerChromeDirection=0,readerChromeLockUntil=0;
+const showReaderControls=document.createElement('button');
+showReaderControls.className='reader-reveal';showReaderControls.type='button';
+showReaderControls.setAttribute('aria-label','Показать панели PDF');
+showReaderControls.innerHTML='<svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+document.body.append(showReaderControls);
+showReaderControls.onclick=()=>{lockReaderChrome(1200);document.getElementById('notesToggle').focus({preventScroll:true});};
 function setReaderChromeHidden(hidden){
-  document.body.classList.toggle('reader-chrome-hidden',!!hidden&&landscapePhoneQuery.matches&&compactQuery.matches);
+  document.body.classList.toggle('reader-chrome-hidden',!!hidden&&phoneStripQuery.matches&&compactQuery.matches);
 }
 function lockReaderChrome(ms=650){
   readerChromeLockUntil=Math.max(readerChromeLockUntil,performance.now()+ms);
@@ -1147,8 +1153,9 @@ function lockReaderChrome(ms=650){
 function updateReaderChrome(){
   const y=viewer.scrollTop,delta=y-readerChromeLastScroll;
   readerChromeLastScroll=y;
-  if(performance.now()<readerChromeLockUntil||gestureActive||!landscapePhoneQuery.matches||!compactQuery.matches||
-    document.body.classList.contains('tools-open')||notes.enabled||
+  if(performance.now()<readerChromeLockUntil||gestureActive||!phoneStripQuery.matches||!compactQuery.matches||
+    document.body.classList.contains('tools-open')||notes.draft||notes.eraser||notes.panel.querySelector('details').open||
+    pageJump.classList.contains('open')||!notes.selectionMenu.hidden||
      document.body.classList.contains('search-open')||
      document.body.classList.contains('outline-open')){
     readerChromeDirection=0;setReaderChromeHidden(false);return;
@@ -1164,6 +1171,9 @@ viewer.addEventListener('scroll',()=>{
   if(!readerSuspended&&!document.hidden&&continuousMode)requestAnimationFrame(updateContinuousCurrentPage);
   requestAnimationFrame(updateReaderChrome);
 },{passive:true});
+viewer.addEventListener('notesmodechange',()=>lockReaderChrome(800));
+viewer.addEventListener('notesgesturestart',()=>lockReaderChrome(650));
+document.addEventListener('focusin',e=>{if(e.target.closest('.toolbar,.notes-tools,.mobile-nav,.reader-reveal'))lockReaderChrome(800);});
 landscapePhoneQuery.addEventListener('change',()=>{
   lockReaderChrome(1000);
   closeTools();
@@ -1324,7 +1334,7 @@ function paintPinchPreview(){
   else canvasWrap.style.transform=transform;
 }
 viewer.addEventListener('touchstart',e=>{
-  if(!pdf||e.touches.length!==2||notes.penActive)return;
+  if(!pdf||e.touches.length!==2||notes.rejectPalm()||[...e.touches].some(t=>t.touchType==='stylus'))return;
   notes.cancelGesture();
   e.preventDefault();closePageJump();fitWidth=false;gestureActive=true;lockReaderChrome(1000);
   const mid=touchMidpoint(e.touches),distance=touchDistance(e.touches);
@@ -1349,7 +1359,7 @@ viewer.addEventListener('touchstart',e=>{
   canvasWrap.style.transformOrigin=(mid.x-rect.left)+'px '+(mid.y-rect.top)+'px';
 },{passive:false});
 viewer.addEventListener('touchmove',e=>{
-  if(!pinchState||e.touches.length<2)return;
+  if(!pinchState||e.touches.length<2||notes.rejectPalm())return;
   e.preventDefault();
   const distance=touchDistance(e.touches);if(distance<8)return;
   pinchState.mid=touchMidpoint(e.touches);

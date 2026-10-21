@@ -3,6 +3,7 @@ import '../annotations-store.js?v=1';
 const svgNS='http://www.w3.org/2000/svg';
 const clone=value=>structuredClone(value);
 const uid=()=>crypto.randomUUID();
+const penPressure=(value,fallback=.35)=>Number.isFinite(value)&&value>0?Math.min(1,value):fallback;
 function svg(tag,attrs={}){const el=document.createElementNS(svgNS,tag);for(const [key,value] of Object.entries(attrs))el.setAttribute(key,value);return el;}
 const icons={
   select:'M8 13V6a2 2 0 0 1 4 0v6-8a2 2 0 0 1 4 0v8-5a2 2 0 0 1 4 0v8c0 4-2 6-6 6h-1c-2 0-3-1-4-2l-5-5a2 2 0 0 1 3-3l1 1',
@@ -64,12 +65,34 @@ export class ReaderNotes {
     this.panel.querySelector('#noteUndo').onclick=()=>this.undo();this.panel.querySelector('#noteRedo').onclick=()=>this.redo();
     this.panel.querySelector('#noteHighlight').onclick=()=>this.highlightSelection();
     button.onclick=()=>{this.cancelGesture();this.enabled=!this.enabled;this.syncMode();void this.flush();};
-    viewer.addEventListener('pointerdown',e=>{if(this.penActive&&e.pointerType==='touch')return;if(e.pointerType==='pen'){this.pointers.clear();this.penActive=e.pointerId;this.multi=false;}this.pointers.add(e.pointerId);if(this.pointers.size>1){this.multi=true;this.cancelGesture();}},{capture:true});
-    const release=e=>{this.up(e);this.pointers.delete(e.pointerId);if(this.penActive===e.pointerId)this.penActive=null;if(!this.pointers.size)this.multi=false;};
-    window.addEventListener('pointerup',release);window.addEventListener('pointercancel',e=>{if(!(this.penActive&&e.pointerType==='touch'))this.cancelGesture();this.pointers.delete(e.pointerId);if(this.penActive===e.pointerId)this.penActive=null;if(!this.pointers.size)this.multi=false;});
-    window.addEventListener('blur',()=>{this.cancelGesture();this.pointers.clear();this.penActive=null;this.multi=false;});
-    viewer.addEventListener('touchstart',e=>{if(!this.penActive&&e.touches.length>1)this.cancelGesture();},{capture:true,passive:true});
-    viewer.addEventListener('pointermove',e=>{if(this.pan?.id!==e.pointerId)return;e.preventDefault();viewer.scrollBy(this.pan.x-e.clientX,this.pan.y-e.clientY);this.pan={id:e.pointerId,x:e.clientX,y:e.clientY};},{passive:false});
+    viewer.addEventListener('pointerdown',e=>{
+      if(e.pointerType==='touch'&&this.rejectPalm())return;
+      if(e.pointerType==='pen'){
+        // A resting finger must not keep panning while Pencil writes.
+        this.cancelGesture();this.pointers.clear();this.pan=null;this.touchPenId=null;this.penActive=e.pointerId;this.multi=false;
+      }
+      this.pointers.add(e.pointerId);if(this.pointers.size>1){this.multi=true;this.cancelGesture();}
+    },{capture:true});
+    // Listen outside the SVG too: Safari can lose pointer capture mid-stroke.
+    // Losing capture is not a pen-up; only up/cancel finishes the gesture.
+    window.addEventListener('pointermove',e=>{
+      if(e.pointerType==='touch'&&this.rejectPalm())return;
+      if(this.pan?.id===e.pointerId){e.preventDefault();viewer.scrollBy(this.pan.x-e.clientX,this.pan.y-e.clientY);this.pan={id:e.pointerId,x:e.clientX,y:e.clientY};return;}
+      if(this.draft?.pointerId===e.pointerId||this.eraser?.id===e.pointerId){e.preventDefault();this.move(e,this.draft?.layer);}
+    },{passive:false});
+    const release=e=>{
+      if(e.pointerType==='pen')this.up(e); // Retain received ink even if Safari cancels the pointer.
+      else if(e.type==='pointerup')this.up(e);
+      else if(this.pointers.has(e.pointerId))this.cancelGesture();
+      this.pointers.delete(e.pointerId);
+      if(this.penActive===e.pointerId){this.penActive=null;this.palmUntil=performance.now()+180;}
+      if(!this.pointers.size)this.multi=false;
+    };
+    window.addEventListener('pointerup',release);window.addEventListener('pointercancel',release);
+    window.addEventListener('blur',()=>{this.cancelGesture();this.pointers.clear();this.penActive=null;this.pencilTouchId=null;this.touchPenId=null;this.multi=false;});
+    // Some iPad Safari versions expose Pencil through Touch Events only. Prefer
+    // Pointer Events when present, and use touchType/force as a fallback stream.
+    for(const type of ['touchstart','touchmove','touchend','touchcancel'])viewer.addEventListener(type,e=>this.pencilTouch(e),{capture:true,passive:false});
     viewer.addEventListener('contextmenu',e=>{if(this.enabled&&this.tool!=='select')e.preventDefault();});
     document.addEventListener('pointerdown',e=>{if(!this.panel.contains(e.target))this.panel.querySelector('details').open=false;});
     document.addEventListener('selectionchange',()=>{clearTimeout(this.selectionTimer);this.selectionTimer=setTimeout(()=>this.showSelection(),180);});
@@ -88,8 +111,34 @@ export class ReaderNotes {
     });
     this.syncMode();
   }
+  rejectPalm(){return this.penActive!=null||this.pencilTouchId!=null||performance.now()<(this.palmUntil||0);}
+  pencilTouch(e){
+    if(!this.enabled||this.tool==='select')return;
+    const pencil=[...e.changedTouches].find(t=>t.touchType==='stylus'||t.identifier===this.pencilTouchId);
+    if(pencil){
+      e.preventDefault();
+      if(e.type==='touchstart'){
+        this.pencilTouchId=pencil.identifier;
+        if(this.penActive==null){
+          const layer=this.layerAt(pencil);
+          if(layer){
+            this.cancelGesture();this.pointers.clear();this.multi=false;
+            this.touchPenId='pencil-'+pencil.identifier;this.penActive=this.touchPenId;this.pointers.add(this.touchPenId);
+            this.down(this.pencilEvent(pencil,'pointerdown'),layer);
+          }
+        }
+      }else if(this.touchPenId!=null){
+        const event=this.pencilEvent(pencil,e.type==='touchmove'?'pointermove':e.type==='touchend'?'pointerup':'pointercancel');
+        if(e.type==='touchmove')this.move(event,this.draft?.layer);
+        else{this.up(event);this.pointers.delete(this.touchPenId);this.touchPenId=null;this.penActive=null;}
+      }
+      if(e.type==='touchend'||e.type==='touchcancel'){this.pencilTouchId=null;this.palmUntil=performance.now()+180;}
+    }else if(this.rejectPalm())e.preventDefault();
+    else if(e.type==='touchstart'&&e.touches.length>1)this.cancelGesture();
+  }
+  pencilEvent(touch,type){return{type,pointerId:this.touchPenId,pointerType:'pen',button:0,clientX:touch.clientX,clientY:touch.clientY,pressure:touch.force,preventDefault(){}};}
   message(text,error=false){
-    this.status.hidden=!text;this.status.replaceChildren(document.createTextNode(text));
+    this.status.hidden=!text;this.status.dataset.error=String(error);this.status.replaceChildren(document.createTextNode(text));
     if(error){const retry=document.createElement('button');retry.textContent='Повторить сохранение';retry.onclick=()=>void this.flush();this.status.append(retry);}
   }
   async open(pdf,path,title,version){
@@ -136,6 +185,7 @@ export class ReaderNotes {
     this.panel.querySelector('#noteFinger').checked=this.fingerDrawing;
     this.panel.querySelector('#noteUndo').disabled=!this.history.length;
     this.panel.querySelector('#noteRedo').disabled=!this.future.length;
+    this.viewer.dispatchEvent(new CustomEvent('notesmodechange'));
   }
   mount(container,viewport,page){
     for(const layer of this.layers)if(!layer.root.isConnected)this.layers.delete(layer);
@@ -143,12 +193,8 @@ export class ReaderNotes {
     const root=document.createElement('div');root.className='user-notes';
     const drawing=svg('svg',{viewBox:`0 0 ${viewport.width} ${viewport.height}`,preserveAspectRatio:'none','aria-label':'Аннотации страницы '+page});
     const group=svg('g',{transform:`matrix(${viewport.transform.join(' ')})`}),draftGroup=svg('g',{transform:`matrix(${viewport.transform.join(' ')})`,'class':'notes-draft'});drawing.append(group,draftGroup);root.append(drawing);container.append(root);
-    const layer={root,drawing,group,draftGroup,viewport,page};this.layers.add(layer);this.paint(layer);
+    const layer={root,drawing,group,draftGroup,viewport,page,rendered:new Map()};this.layers.add(layer);this.paint(layer);
     drawing.addEventListener('pointerdown',e=>this.down(e,layer));
-    drawing.addEventListener('pointermove',e=>this.move(e,layer));
-    drawing.addEventListener('pointerup',e=>this.up(e));
-    drawing.addEventListener('pointercancel',e=>{if(!(this.penActive&&e.pointerType==='touch'))this.cancelGesture();});
-    drawing.addEventListener('lostpointercapture',e=>{if(this.draft?.pointerId===e.pointerId||this.eraser?.id===e.pointerId)this.up(e);});
   }
   toPdf(e,layer){
     const rect=layer.drawing.getBoundingClientRect();
@@ -156,7 +202,7 @@ export class ReaderNotes {
   }
   base(type,page){const now=Date.now();return{docId:this.doc.docId,revision:this.doc.revision,id:uid(),page,type,color:this.color,width:this.width,opacity:type==='pen'?1:.32,formatVersion:1,createdAt:now,updatedAt:now};}
   down(e,layer){
-    if(!this.doc||!this.enabled||this.tool==='select'||this.multi||this.pointers.size>1||e.button!==0||this.penActive&&e.pointerType==='touch')return;
+    if(!this.doc||!this.enabled||this.tool==='select'||this.multi||this.pointers.size>1||e.button!==0||e.pointerType==='touch'&&this.rejectPalm())return;
     e.preventDefault();
     if(e.pointerType==='pen'&&this.fingerDrawing){this.fingerDrawing=false;this.syncMode();}
     try{layer.drawing.setPointerCapture(e.pointerId);}catch{}
@@ -166,9 +212,9 @@ export class ReaderNotes {
     }
     const point=this.toPdf(e,layer);
     if(this.tool==='note'){this.editNote({...this.base('note',layer.page),opacity:1,point,text:''},true);return;}
-    const a={...this.base(this.tool,layer.page),brushVersion:2,points:[[...point,e.pointerType==='pen'?e.pressure||.2:.5]]};
+    const a={...this.base(this.tool,layer.page),brushVersion:2,points:[[...point,e.pointerType==='pen'?penPressure(e.pressure):.5]]};
     if(this.tool==='marker')a.width*=5;
-    this.draft={a,layer,pointerId:e.pointerId,strokes:[{a,layer}]};this.paintDraft();
+    this.draft={a,layer,pointerId:e.pointerId,strokes:[{a,layer}]};this.paintDraft();this.viewer.dispatchEvent(new CustomEvent('notesgesturestart'));
   }
   layerAt(e,fallback){
     if(fallback?.root.isConnected){const r=fallback.drawing.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)return fallback;}
@@ -178,17 +224,22 @@ export class ReaderNotes {
   move(e,layer){
     if(this.eraser?.id===e.pointerId){const current=this.layerAt(e,layer);if(current)this.eraseAt(e,current);return;}
     if(!this.draft||this.draft.pointerId!==e.pointerId||this.multi)return;
-    const samples=e.getCoalescedEvents?.()||[];
-    for(const sample of samples.length?samples:[e]){
+    let samples=[];
+    try{samples=e.getCoalescedEvents?.()||[];}catch{} // Unavailable in older/HTTP Safari builds.
+    // Include the actual endpoint even when the coalesced batch stops short.
+    if(!samples.length||samples.at(-1).clientX!==e.clientX||samples.at(-1).clientY!==e.clientY)samples=[...samples,e];
+    for(const sample of samples){
       const current=this.layerAt(sample,this.draft.layer);
       if(!current){this.draft.penUp=true;continue;}
-      const point=this.toPdf(sample,current),pressure=e.pointerType==='pen'?sample.pressure||.2:.5;
+      const point=this.toPdf(sample,current),pressure=e.pointerType==='pen'?penPressure(sample.pressure,this.draft.a.points.at(-1)[2]):.5;
       if(current!==this.draft.layer||this.draft.penUp){
         const a={...this.draft.a,id:uid(),page:current.page,points:[[...point,pressure]]};
         this.draft.a=a;this.draft.layer=current;this.draft.strokes.push({a,layer:current});this.draft.penUp=false;
       }else{
         const last=this.draft.a.points.at(-1);
-        if(Math.hypot(point[0]-last[0],point[1]-last[1])>.2)this.draft.a.points.push([last[0]+(point[0]-last[0])*.72,last[1]+(point[1]-last[1])*.72,pressure]);
+        // Keep Pencil ink under the tip. Smooth its rendered curve, not input positions.
+        const smoothing=e.pointerType==='pen'?1:.72;
+        if(Math.hypot(point[0]-last[0],point[1]-last[1])>.15/current.viewport.scale)this.draft.a.points.push([last[0]+(point[0]-last[0])*smoothing,last[1]+(point[1]-last[1])*smoothing,pressure]);
       }
     }
     if(!this.paintFrame)this.paintFrame=requestAnimationFrame(()=>{this.paintFrame=0;this.paintDraft();});
@@ -220,15 +271,21 @@ export class ReaderNotes {
   cancelGesture(){const changed=this.draft||this.eraser;this.draft=null;this.eraser=null;this.pan=null;this.clearDraft();if(changed){this.paintAll();this.gestureEnded();}}
   paintAll(){for(const layer of this.layers){if(layer.root.isConnected)this.paint(layer);else this.layers.delete(layer);}}
   paint(layer){
-    layer.group.replaceChildren();layer.root.querySelectorAll('.note-pin').forEach(n=>n.remove());
     const objects=[...this.items.values()].filter(a=>a.page===layer.page&&!this.eraser?.removed.has(a.id));
+    const visible=new Set(objects.map(a=>a.id));
+    for(const [id,cached] of layer.rendered)if(!visible.has(id)){cached.element.remove();layer.rendered.delete(id);}
     for(const a of objects){
+      const cached=layer.rendered.get(a.id);
+      if(cached?.object===a)continue;
+      const serialized=JSON.stringify(a);
+      if(cached?.serialized===serialized){cached.object=a;continue;}
+      cached?.element.remove();
       let element;
       if(a.type==='note'){
         const pin=document.createElement('button');pin.className='note-pin';pin.textContent='✎';pin.type='button';pin.dataset.noteId=a.id;
         pin.setAttribute('aria-label','Заметка: '+a.text.slice(0,80));pin.title=a.text;
         const [x,y]=layer.viewport.convertToViewportPoint(...a.point);pin.style.left=x/layer.viewport.width*100+'%';pin.style.top=y/layer.viewport.height*100+'%';
-        pin.onclick=()=>this.editNote(a);layer.root.append(pin);continue;
+        pin.onclick=()=>this.editNote(a);layer.root.append(pin);layer.rendered.set(a.id,{element:pin,object:a,serialized});continue;
       }
       if(a.type==='highlight'){
         element=svg('g');for(const quad of a.quads)element.append(svg('polygon',{points:quad.map(p=>p.join(',')).join(' '),fill:a.color}));
@@ -236,6 +293,7 @@ export class ReaderNotes {
         element=this.strokeElement(a);
       }
       element.setAttribute('opacity',a.opacity);element.dataset.noteId=a.id;layer.group.append(element);
+      layer.rendered.set(a.id,{element,object:a,serialized});
     }
   }
   strokeElement(a){const element=svg('path',{'stroke-linecap':'round','stroke-linejoin':'round'});this.updateStroke(element,a);return element;}

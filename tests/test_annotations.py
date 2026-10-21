@@ -201,6 +201,7 @@ class AnnotationTests(unittest.TestCase):
         self.page.evaluate("window.savedStroke=document.querySelector('.continuous-page .user-notes g path')")
         self.page.mouse.move(x,a['y']+a['height']-45);self.page.mouse.down()
         self.page.mouse.move(x+10,a['y']+a['height']-10,steps=6)
+        self.page.evaluate('notes.reload()')
         self.assertTrue(self.page.evaluate("savedStroke===document.querySelector('.continuous-page .user-notes g path')"))
         self.page.evaluate("renderContinuousPage(document.querySelector('.continuous-page'),1,true)")
         self.assertTrue(self.page.evaluate("savedStroke===document.querySelector('.continuous-page .user-notes g path')"))
@@ -259,9 +260,99 @@ class AnnotationTests(unittest.TestCase):
         self.assertFalse(self.page.locator('#noteFinger').is_checked())
         self.page.locator('.notes-options summary').click()
         before=self.page.locator('#viewer').evaluate('el=>el.scrollTop')
+        self.page.wait_for_timeout(200) # Let the post-Pencil palm rejection window expire.
         self.page.evaluate("""() => {const el=document.querySelector('.continuous-page .user-notes svg'),r=el.getBoundingClientRect();
           for(const [type,y] of [['pointerdown',300],['pointermove',220],['pointerup',220]])el.dispatchEvent(new PointerEvent(type,{pointerId:61,pointerType:'touch',clientX:r.left+120,clientY:r.top+y,bubbles:true,button:0}));}""")
         self.assertGreater(self.page.locator('#viewer').evaluate('el=>el.scrollTop'),before+50);self.saved_count(1)
+
+    def test_mobile_pencil_capture_loss_endpoint_and_resting_finger(self):
+        self.page.set_viewport_size({'width':820,'height':1180});self.pdf();self.page.locator('#notesToggle').click()
+        self.page.locator('.continuous-page .user-notes svg').first.wait_for()
+        result=self.page.evaluate("""() => {
+          const el=document.querySelector('.continuous-page .user-notes svg'),r=el.getBoundingClientRect();
+          const send=(target,type,id,pointerType,x,y,pressure,extra={})=>{
+            const event=new PointerEvent(type,{pointerId:id,pointerType,clientX:r.left+x,clientY:r.top+y,pressure,bubbles:true,button:0,cancelable:true});
+            Object.assign(event,extra);target.dispatchEvent(event);
+          };
+          notes.fingerDrawing=false;
+          send(el,'pointerdown',101,'touch',140,240,.5);
+          const before=document.querySelector('#viewer').scrollTop;
+          send(el,'pointerdown',102,'pen',100,140,.2);
+          send(el,'pointermove',101,'touch',140,180,.5);
+          send(el,'lostpointercapture',102,'pen',100,140,.2);
+          const stillWriting=!!notes.draft;
+          send(window,'pointermove',102,'pen',200,180,.8,{getCoalescedEvents:()=>[{clientX:r.left+150,clientY:r.top+160,pressure:.4}]});
+          send(window,'pointerup',102,'pen',240,200,0);
+          send(el,'pointerup',101,'touch',140,180,.5);
+          const object=[...notes.items.values()][0],last=object.points.at(-1);
+          const expected=[...notes.layers][0].viewport.convertToPdfPoint(240,200);
+          return {stillWriting,scrollDelta:document.querySelector('#viewer').scrollTop-before,last,expected,points:object.points.length};
+        }""")
+        self.saved_count(1)
+        self.assertTrue(result['stillWriting']);self.assertEqual(result['scrollDelta'],0)
+        self.assertEqual(result['points'],4)
+        self.assertAlmostEqual(result['last'][0],result['expected'][0],delta=.01)
+        self.assertAlmostEqual(result['last'][1],result['expected'][1],delta=.01)
+        self.assertAlmostEqual(result['last'][2],.8,places=4)
+        # A browser cancellation saves the received ink rather than dropping a word.
+        self.page.evaluate("""() => {const el=document.querySelector('.continuous-page .user-notes svg'),r=el.getBoundingClientRect();
+          for(const [type,x] of [['pointerdown',100],['pointermove',180],['pointercancel',180]])el.dispatchEvent(new PointerEvent(type,{pointerId:103,pointerType:'pen',clientX:r.left+x,clientY:r.top+240,pressure:.5,bubbles:true,button:0}));}""")
+        self.saved_count(2)
+
+    def test_mobile_safari_pencil_touch_fallback_and_no_duplicate_ink(self):
+        self.page.set_viewport_size({'width':820,'height':1180});self.pdf();self.page.locator('#notesToggle').click()
+        self.page.locator('.continuous-page .user-notes svg').first.wait_for()
+        self.page.evaluate("""() => {
+          const el=document.querySelector('.continuous-page .user-notes svg'),r=el.getBoundingClientRect();
+          const touch=(type,x,force)=>{
+            const t={identifier:7,touchType:'stylus',clientX:r.left+x,clientY:r.top+180,force};
+            const event=new Event(type,{bubbles:true,cancelable:true});
+            Object.defineProperties(event,{changedTouches:{value:[t]},touches:{value:type==='touchend'?[]:[t]}});el.dispatchEvent(event);
+          };
+          touch('touchstart',100,.2);touch('touchmove',140,.5);touch('touchmove',190,.9);touch('touchend',220,0);
+          window.sendPencilTouch=touch;
+        }""")
+        self.saved_count(1)
+        self.assertFalse(self.page.evaluate('notes.fingerDrawing'))
+        data=self.page.evaluate('(async()=>(await NSUAnnotations.backup()).objects[0])()')
+        self.assertEqual(len(data['points']),4);self.assertAlmostEqual(data['points'][-1][2],.9,places=4)
+        self.page.evaluate("""() => {
+          const el=document.querySelector('.continuous-page .user-notes svg'),r=el.getBoundingClientRect();
+          const send=(type,x)=>el.dispatchEvent(new PointerEvent(type,{pointerId:8,pointerType:'pen',clientX:r.left+x,clientY:r.top+180,pressure:.6,bubbles:true,button:0}));
+          send('pointerdown',280);sendPencilTouch('touchstart',280,.6);
+          send('pointermove',340);sendPencilTouch('touchmove',340,.6);
+          send('pointerup',380);sendPencilTouch('touchend',380,0);
+        }""")
+        self.saved_count(2)
+        self.page.reload();self.page.locator('.continuous-page .user-notes g:not(.notes-draft) path').first.wait_for()
+        self.saved_count(2)
+
+    def test_mobile_tablet_chrome_hides_without_moving_document(self):
+        self.page.set_viewport_size({'width':820,'height':1180});self.pdf()
+        self.page.locator('.continuous-page .user-notes svg').first.wait_for()
+        self.assertLessEqual(self.page.locator('.toolbar').bounding_box()['height'],48)
+        self.assertGreaterEqual(self.page.locator('.continuous-page').first.bounding_box()['y'],self.page.locator('.toolbar').bounding_box()['height']-1)
+        self.assertLess(self.page.locator('.mobile-nav').bounding_box()['width'],100)
+        surface=self.page.locator('#viewer').bounding_box()
+        self.page.wait_for_timeout(1100)
+        self.page.locator('#viewer').evaluate('el=>el.scrollTop=140')
+        self.page.wait_for_function("document.body.classList.contains('reader-chrome-hidden')")
+        self.assertEqual(surface,self.page.locator('#viewer').bounding_box())
+        self.page.get_by_role('button',name='Показать панели PDF').click()
+        self.assertFalse(self.page.evaluate("document.body.classList.contains('reader-chrome-hidden')"))
+        self.page.locator('#notesToggle').click();self.page.wait_for_timeout(900)
+        self.page.locator('#viewer').evaluate('el=>el.scrollTop=280')
+        self.page.wait_for_function("document.body.classList.contains('reader-chrome-hidden')")
+        self.assertTrue(self.page.evaluate('notes.enabled'))
+        self.assertFalse(self.page.locator('.notes-tools').is_visible())
+        self.page.locator('#viewer').evaluate('el=>el.scrollTop=220')
+        self.page.wait_for_function("!document.body.classList.contains('reader-chrome-hidden')")
+        self.assertTrue(self.page.locator('.notes-tools').is_visible())
+        self.assertEqual(surface,self.page.locator('#viewer').bounding_box())
+        self.page.locator('.notes-options summary').click();self.page.wait_for_timeout(900)
+        self.page.locator('#viewer').evaluate('el=>el.scrollTop=340')
+        self.page.wait_for_timeout(200)
+        self.assertFalse(self.page.evaluate("document.body.classList.contains('reader-chrome-hidden')"))
 
     @unittest.skipUnless(fixtures.REAL_PDFJS,'Actual TextLayer geometry requires NSU_REAL_PDFJS=1')
     def test_real_textlayer_multiline_cyrillic_and_rotated_page(self):
