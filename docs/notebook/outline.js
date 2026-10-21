@@ -5,7 +5,7 @@
   const toggle=document.getElementById('tocToggle');
   const close=document.getElementById('tocClose');
   const backdrop=document.getElementById('tocBackdrop');
-  const narrow=matchMedia('(max-width:1100px)');
+  const narrow=matchMedia('(max-width:1100px), (pointer:coarse)');
   const reduced=matchMedia('(prefers-reduced-motion:reduce)');
   let entries=[],active=null,scheduled=false;
   function setOpen(open,restoreFocus=false){

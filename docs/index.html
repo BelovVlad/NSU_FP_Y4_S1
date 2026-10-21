@@ -220,7 +220,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
   .workspace{display:block}.preview-panel{position:static;margin-top:12px}.hero-art{width:320px;opacity:.62}.hero-copy{max-width:calc(100% - 300px)}
   .preview-frame-wrap{height:calc(100vh - 170px);min-height:520px}.home-grid{grid-template-columns:1fr}
 }
-@media(max-width:720px){
+@media(max-width:720px), (pointer:coarse){
   .sidebar{transform:translateX(-100%);transition:transform .18s ease;box-shadow:22px 0 50px rgba(0,0,0,.5)}
   .sidebar.open{transform:none}.mobile-overlay{position:fixed;z-index:40;inset:0;background:rgba(0,0,0,.5)}.mobile-overlay.show{display:block}
   .app{margin-left:0}.topbar{position:sticky;top:0;z-index:35;height:58px;grid-template-columns:auto 1fr auto;padding:0 10px;gap:8px;box-shadow:0 6px 18px rgba(0,0,0,.18)}.menu-btn{display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);border-radius:8px;background:#0d141b;color:#d9d1c8}
@@ -309,7 +309,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 @media(max-width:900px){
   .search-pro-layout{grid-template-columns:minmax(320px,1fr) minmax(330px,.9fr)}
 }
-@media(max-width:720px){
+@media(max-width:720px), (pointer:coarse){
   .hero{min-height:154px}.hero-art{display:block;width:100%;opacity:.72}.hero-art img{object-position:78% 50%}
   .hero-copy{max-width:86%}.hero-people{gap:5px}.person-chip{font-size:9px;padding:4px 7px}
   .search-pro-head{display:block}.search-pro-filters{margin-top:12px}.search-filter-row{display:block}.search-filter-label{display:block;width:auto;margin-bottom:5px}
@@ -592,7 +592,7 @@ body.music-na19x .search-preview-frame{background:#272d32!important;border-color
 
 
 /* Mobile immersive pass */
-@media(max-width:720px){
+@media(max-width:720px), (pointer:coarse){
   html,body,.shell,.app{min-height:100dvh}
   .sidebar{
     height:100dvh;min-height:100dvh;
@@ -716,7 +716,7 @@ body.music-na19x::after{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
   mix-blend-mode:screen
 }
-@media(max-width:720px){
+@media(max-width:720px), (pointer:coarse){
   body.music-na19x::after{display:none}
   .music-toggle.playing .music-pearl-shell{filter:none!important}
 }
@@ -748,7 +748,7 @@ body.music-na19x::after{
 .feedback-setup a:hover,.feedback-retry:hover{border-color:var(--accent);color:var(--cream)}
 body.music-active .feedback-panel{border-color:color-mix(in srgb,var(--line) 78%,var(--accent) 22%)}
 body.music-active .feedback-kicker{color:var(--accent)}
-@media(max-width:720px){
+@media(max-width:720px), (pointer:coarse){
   .feedback-head{padding:15px 13px 12px}
   .feedback-title{font-size:19px}
   .feedback-desc{font-size:10.5px}
@@ -838,7 +838,7 @@ body.music-na19x .pdf-fullscreen-loader{
 
 
 /* Mobile sidebar: no edge glow */
-@media(max-width:720px){
+@media(max-width:720px), (pointer:coarse){
   .sidebar,.sidebar.open{
     box-shadow:none!important;
     filter:none!important;
@@ -961,7 +961,7 @@ body.music-na19x .pdf-fullscreen-loader{
   .subject-list-col{padding-right:0}
   .preview-panel{position:static;margin-top:10px}
 }
-@media(max-width:720px){
+@media(max-width:720px), (pointer:coarse){
   .tabs{height:36px}.tab{height:36px}
   .file-name{font-size:13px}
   .file-desc,.file-date,.file-size{font-size:12px}
@@ -1029,7 +1029,7 @@ body.music-na19x .pdf-fullscreen-loader{
 }
 
 /* iPhone / iOS PWA safe areas: keep controls below the status bar / Dynamic Island. */
-@media(max-width:720px){
+@media(max-width:720px), (pointer:coarse){
   .topbar{
     height:calc(58px + env(safe-area-inset-top,0px));
     min-height:calc(58px + env(safe-area-inset-top,0px));
@@ -1090,10 +1090,10 @@ body{
 
 </style>
 <link rel="stylesheet" href="knowledge.css?v=3">
-<link rel="stylesheet" href="app.css?v=7">
+<link rel="stylesheet" href="app.css?v=8">
 <link rel="stylesheet" href="../Overseer/overseer.css?v=2">
 <script defer src="annotations-store.js?v=1"></script>
-<script defer src="app.js?v=15"></script>
+<script defer src="app.js?v=16"></script>
 <script defer src="../Overseer/overseer.js?v=19"></script>
 </head>
 <body>
@@ -1144,7 +1144,7 @@ body{
       <button id="menuBtn" class="menu-btn" type="button" title="Меню" aria-label="Открыть меню"><span data-icon="menu" aria-hidden="true"></span></button>
       <div class="searchbox"><span class="glass" data-icon="search" aria-hidden="true"></span><input id="globalSearch" type="search" autocomplete="off" placeholder="Поиск по лекциям, задачам, формулам…"><span class="kbd">Ctrl + K</span></div>
       <div class="top-meta">NSU · Physics</div>
-      <div class="topbar-actions"><button id="homeBtn" class="ghost-btn" title="Главная" aria-label="Главная"><span data-icon="home" aria-hidden="true"></span></button><button id="appSettings" class="ghost-btn" type="button" title="Приложение и данные" aria-label="Приложение и данные"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m9 3-.6 2.2-2 .9-2-.6-2 3.5 1.6 1.6v2.8L2.4 15l2 3.5 2-.6 2 .9L9 21h4l.6-2.2 2-.9 2 .6 2-3.5-1.6-1.6v-2.8l1.6-1.6-2-3.5-2 .6-2-.9L13 3Z"/><circle cx="11" cy="12" r="3"/></svg></button></div>
+      <div class="topbar-actions"><button id="homeBtn" class="ghost-btn" title="Главная" aria-label="Главная"><span data-icon="home" aria-hidden="true"></span></button><button id="appSettings" class="ghost-btn" type="button" title="Приложение и данные" aria-label="Приложение и данные"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><polygon points="20.912,10.747 20.912,13.253 18.986,13.742 18.172,15.708 19.188,17.416 17.416,19.188 15.708,18.172 13.742,18.986 13.253,20.912 10.747,20.912 10.258,18.986 8.292,18.172 6.584,19.188 4.812,17.416 5.828,15.708 5.014,13.742 3.088,13.253 3.088,10.747 5.014,10.258 5.828,8.292 4.812,6.584 6.584,4.812 8.292,5.828 10.258,5.014 10.747,3.088 13.253,3.088 13.742,5.014 15.708,5.828 17.416,4.812 19.188,6.584 18.172,8.292 18.986,10.258"/><circle cx="12" cy="12" r="3.2"/></svg></button></div>
     </header>
     <main id="main" class="main"></main>
   </div>
@@ -1221,7 +1221,7 @@ function isNewDate(v){if(!v)return false;const d=new Date(v);return Number.isFin
 
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function encPath(p){return p.split('/').map(encodeURIComponent).join('/')}
-function isPhoneLayout(){return matchMedia('(max-width:720px), (orientation:landscape) and (max-height:600px) and (pointer:coarse)').matches}
+function isPhoneLayout(){return matchMedia('(max-width:720px), (pointer:coarse)').matches}
 function subjectOf(f){const p=f.path.split('/');return p[0]==='База'&&p[1]==='КМ'?'КМ':p[0]}
 function rawSection(f){
   const parts=f.path.split('/');
@@ -2426,7 +2426,7 @@ document.addEventListener('keydown',e=>{
 });
 
 function enableMobileImmersiveMode(){
-  if(!window.matchMedia('(max-width:720px), (orientation:landscape) and (max-height:600px) and (pointer:coarse)').matches)return;
+  if(!window.matchMedia('(max-width:720px), (pointer:coarse)').matches)return;
   if(document.fullscreenElement||!document.documentElement.requestFullscreen)return;
   try{
     const result=document.documentElement.requestFullscreen({navigationUI:'hide'});

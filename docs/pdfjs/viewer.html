@@ -70,11 +70,11 @@ body.continuous-mode .canvas-wrap{display:none!important}
 .view-mode-btn.active{border-color:var(--accent);background:var(--accent-soft)}
 
 </style>
-<link rel="stylesheet" href="controls.css?v=12">
-<link rel="stylesheet" href="notes.css?v=1">
-<link rel="stylesheet" href="../app.css?v=7">
+<link rel="stylesheet" href="controls.css?v=13">
+<link rel="stylesheet" href="notes.css?v=2">
+<link rel="stylesheet" href="../app.css?v=8">
 <script defer src="../annotations-store.js?v=1"></script>
-<script defer src="../app.js?v=15"></script>
+<script defer src="../app.js?v=16"></script>
 </head>
 <body>
 <svg class="pdf-tone-filters" aria-hidden="true" focusable="false">
@@ -98,7 +98,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
     <button id="toolsToggle" class="btn icon tools-toggle" type="button" title="Настройки чтения" aria-label="Настройки чтения" aria-expanded="false" aria-controls="readerControls"><span data-viewer-icon="settings"></span></button>
   </div>
   <div class="reader-actions">
-    <button id="notesToggle" class="btn rail-button" type="button" aria-label="Режим заметок" aria-pressed="false" disabled>✎<span class="tool-caption">Заметки</span></button>
+    <button id="notesToggle" class="btn rail-button" type="button" aria-label="Режим заметок" title="Заметки и рисование" aria-pressed="false" disabled><span data-viewer-icon="pen"></span><span class="tool-caption">Заметки</span></button>
     <button id="outlineToggle" class="btn icon" type="button" title="Оглавление" aria-label="Оглавление" aria-expanded="false" aria-controls="outlinePanel"><span data-viewer-icon="outline"></span></button>
     <button id="searchToggle" class="btn icon" type="button" title="Поиск по PDF" aria-label="Поиск по PDF" aria-expanded="false" aria-controls="searchPanel"><span data-viewer-icon="search"></span></button>
     <button id="expandViewer" class="btn icon expand-viewer" type="button" title="Развернуть документ" aria-label="Развернуть документ"><span data-viewer-icon="expand"></span></button>
@@ -181,7 +181,7 @@ body.continuous-mode .canvas-wrap{display:none!important}
 
 <script type="module">
 import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs';
-import {ReaderNotes} from './notes.js?v=1';
+import {ReaderNotes} from './notes.js?v=2';
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
 
 const OWNER='BelovVlad',REPO='NSU_FP_Y4_S1',BRANCH='main';
@@ -222,11 +222,11 @@ const searchPreviewParam=params.get('searchpreview')==='1';
 if(embedParam)document.body.classList.add('embed-view');
 if(searchPreviewParam)document.body.classList.add('search-preview-mode');
 const landscapePhoneQuery=window.matchMedia('(orientation:landscape) and (max-height:600px) and (pointer:coarse)');
-const portraitPhoneQuery=window.matchMedia('(orientation:portrait) and (max-width:760px) and (pointer:coarse)');
-const phoneStripQuery=window.matchMedia('(orientation:portrait) and (max-width:760px) and (pointer:coarse), (orientation:landscape) and (max-height:600px) and (pointer:coarse)');
+const portraitPhoneQuery=window.matchMedia('(orientation:portrait) and (pointer:coarse)');
+const phoneStripQuery=window.matchMedia('(pointer:coarse)');
 const compactQuery=window.matchMedia(embedParam
-  ?'(max-width:520px), (orientation:landscape) and (max-height:600px) and (pointer:coarse)'
-  :'(max-width:760px), (orientation:landscape) and (max-height:600px) and (pointer:coarse)');
+  ?'(max-width:520px), (pointer:coarse)'
+  :'(max-width:760px), (pointer:coarse)');
 document.body.classList.toggle('compact-view',compactQuery.matches);
 compactQuery.addEventListener('change',()=>{
   document.body.classList.toggle('compact-view',compactQuery.matches);
@@ -240,6 +240,7 @@ const VIEWER_ICONS={
   settings:'M4 7h4m4 0h8M4 17h8m4 0h4M8 4v6m4-6v6m0 4v6m4-6v6',
   expand:'M9 4H4v5m11-5h5v5M4 15v5h5m6 0h5v-5',
   close:'m6 6 12 12M6 18 18 6',plus:'M12 5v14M5 12h14',minus:'M5 12h14',
+  pen:'m16 3 5 5-12 12-6 1 1-6L16 3Zm-2 2 5 5M4 15l5 5',
   fit:'M3 4v16M21 4v16M7 8l-4 4 4 4m10-8 4 4-4 4M3 12h18',
   pages:'M6 3h12v7H6zM6 14h12v7H6z',file:'M14 3H5v18h14V8l-5-5Zm0 0v5h5M8 13h8M8 17h5'
 };
@@ -863,6 +864,7 @@ function destroyContinuous(){
 }
 async function renderContinuousPage(el,n,force=false){
   if(!pdf||!el?.isConnected)return;
+  if(notes.isInteracting(n)){el.dataset.stale='1';return;}
   if(el.dataset.rendering==='1')return;
   if(!force&&el.dataset.rendered==='1'&&el.dataset.stale!=='1')return;
   const token=String(++continuousRenderSerial);
@@ -881,6 +883,7 @@ async function renderContinuousPage(el,n,force=false){
     const task=page.render({canvasContext:ctx2,viewport,transform:ratio===1?null:[ratio,0,0,ratio,0,0],background:'#fff'});
     await task.promise;
     if(!continuousMode||!el.isConnected||el.dataset.renderToken!==token)return;
+    if(notes.isInteracting(n)){el.dataset.stale='1';return;}
     const hl=document.createElement('div');hl.className='highlight-layer';
     const tl=document.createElement('div');tl.className='text-layer';
     const al=document.createElement('div');al.className='annotation-layer';
@@ -916,7 +919,7 @@ function setupContinuousObserver(){
       const el=entry.target;
       if(entry.isIntersecting){
         queueContinuousPage(el,Number(el.dataset.page),el.dataset.stale==='1');
-      }else if(el.dataset.rendered==='1'&&el.dataset.rendering!=='1'&&el.dataset.queued!=='1'){
+      }else if(el.dataset.rendered==='1'&&el.dataset.rendering!=='1'&&el.dataset.queued!=='1'&&!notes.isInteracting(Number(el.dataset.page))){
         const r=el.getBoundingClientRect();
         if(r.bottom<vr.top-1100||r.top>vr.bottom+1100){
           const n=Number(el.dataset.page);clearTextLayer(el.querySelector('.text-layer'));
@@ -928,6 +931,11 @@ function setupContinuousObserver(){
   },{root:viewer,rootMargin:compactQuery.matches?'360px 0px':'1000px 0px'});
   for(const el of continuousRoot.children)continuousObserver.observe(el);
 }
+viewer.addEventListener('notesgestureend',()=>{
+  if(!continuousRoot)return;
+  const vr=viewer.getBoundingClientRect();
+  for(const el of continuousRoot.children){const r=el.getBoundingClientRect();if(el.dataset.stale==='1'&&r.bottom>=vr.top&&r.top<=vr.bottom)queueContinuousPage(el,Number(el.dataset.page),true);}
+});
 function updateContinuousCurrentPage(){
   if(readerSuspended||document.hidden||!continuousMode||!continuousRoot)return;
   const vr=viewer.getBoundingClientRect();
@@ -1046,6 +1054,7 @@ window.addEventListener('pagehide',()=>persistReaderPosition());
 window.addEventListener('beforeunload',()=>persistReaderPosition());
 function commitContinuousScale(nextScale,anchor=continuousCenterAnchor(),keepFit=false){
   if(!continuousMode||!continuousRoot)return false;
+  notes.cancelGesture();
   lockReaderChrome(700);
   const previous=Math.max(.01,scale);
   scale=clampScale(nextScale);
@@ -1113,6 +1122,7 @@ async function renderContinuous(targetPage=pageNum,anchor=null){
   updateControls();hideLoading();
 }
 async function setContinuousMode(on){
+  notes.cancelGesture();void notes.flush();
   const next=!!on;
   if(continuousMode&&!next)captureReaderPosition({measure:true});
   continuousMode=next;
@@ -1308,11 +1318,14 @@ function paintPinchPreview(){
   pinchPreviewRaf=0;
   if(!pinchState)return;
   const ratio=pinchState.targetScale/pinchState.startScale;
-  if(pinchState.continuous&&continuousRoot)continuousRoot.style.transform='scale('+ratio+')';
-  else canvasWrap.style.transform='scale('+ratio+')';
+  const dx=pinchState.mid.x-pinchState.startMid.x,dy=pinchState.mid.y-pinchState.startMid.y;
+  const transform=`translate(${dx}px,${dy}px) scale(${ratio})`;
+  if(pinchState.continuous&&continuousRoot)continuousRoot.style.transform=transform;
+  else canvasWrap.style.transform=transform;
 }
 viewer.addEventListener('touchstart',e=>{
-  if(!pdf||e.touches.length!==2)return;
+  if(!pdf||e.touches.length!==2||notes.penActive)return;
+  notes.cancelGesture();
   e.preventDefault();closePageJump();fitWidth=false;gestureActive=true;lockReaderChrome(1000);
   const mid=touchMidpoint(e.touches),distance=touchDistance(e.touches);
   if(distance<8)return;
@@ -1320,7 +1333,7 @@ viewer.addEventListener('touchstart',e=>{
   if(continuousMode&&continuousRoot){
     const rect=continuousRoot.getBoundingClientRect();
     const anchor=continuousAnchorFromClient(mid.y);
-    pinchState={startDistance:distance,startScale:scale,targetScale:scale,anchor,continuous:true};
+    pinchState={startDistance:distance,startScale:scale,targetScale:scale,anchor,continuous:true,startMid:mid,mid,horizontal:(mid.x-rect.left)/rect.width};
     continuousRoot.classList.add('pinch-preview');
     continuousRoot.style.transformOrigin=(mid.x-rect.left)+'px '+(mid.y-rect.top)+'px';
     return;
@@ -1329,7 +1342,7 @@ viewer.addEventListener('touchstart',e=>{
   const rect=canvasWrap.getBoundingClientRect();
   if(rect.width<1||rect.height<1)return;
   pinchState={
-    startDistance:distance,startScale:scale,targetScale:scale,continuous:false,
+    startDistance:distance,startScale:scale,targetScale:scale,continuous:false,startMid:mid,mid,
     anchor:{x:Math.max(0,Math.min(1,(mid.x-rect.left)/rect.width)),y:Math.max(0,Math.min(1,(mid.y-rect.top)/rect.height)),clientX:mid.x,clientY:mid.y}
   };
   canvasWrap.classList.add('pinch-preview');
@@ -1339,6 +1352,7 @@ viewer.addEventListener('touchmove',e=>{
   if(!pinchState||e.touches.length<2)return;
   e.preventDefault();
   const distance=touchDistance(e.touches);if(distance<8)return;
+  pinchState.mid=touchMidpoint(e.touches);
   pinchState.targetScale=clampScale(pinchState.startScale*distance/pinchState.startDistance);
   zoomLabel.value=String(Math.round(pinchState.targetScale*100));
   if(!pinchPreviewRaf)pinchPreviewRaf=requestAnimationFrame(paintPinchPreview);
@@ -1346,14 +1360,16 @@ viewer.addEventListener('touchmove',e=>{
 function finishPinch(e){
   if(!pinchState||(e.touches&&e.touches.length>=2))return;
   const nextScale=pinchState.targetScale,anchor=pinchState.anchor,wasContinuous=pinchState.continuous;
+  const {mid,startMid,horizontal}=pinchState;
+  anchor.clientY=mid.y;if(!wasContinuous)anchor.clientX=mid.x;
   pinchState=null;
   if(pinchPreviewRaf){cancelAnimationFrame(pinchPreviewRaf);pinchPreviewRaf=0}
   canvasWrap.classList.remove('pinch-preview');canvasWrap.style.transform='';canvasWrap.style.transformOrigin='';
   continuousRoot?.classList.remove('pinch-preview');
   if(continuousRoot){continuousRoot.style.transform='';continuousRoot.style.transformOrigin=''}
   gestureActive=false;lockReaderChrome(700);
-  if(Math.abs(nextScale-scale)<.005){updateControls();return}
-  if(wasContinuous&&continuousMode)commitContinuousScale(nextScale,anchor,false);
+  if(Math.abs(nextScale-scale)<.005){viewer.scrollBy(startMid.x-mid.x,startMid.y-mid.y);updateControls();return}
+  if(wasContinuous&&continuousMode){commitContinuousScale(nextScale,anchor,false);const r=continuousRoot.getBoundingClientRect();viewer.scrollLeft+=r.left+r.width*horizontal-mid.x;}
   else{scale=clampScale(nextScale);updateControls();void renderPage({anchor})}
 }
 viewer.addEventListener('touchend',finishPinch,{passive:true});

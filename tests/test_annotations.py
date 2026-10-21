@@ -43,7 +43,7 @@ class AnnotationTests(unittest.TestCase):
         self.page.locator('#noteUndo').click();self.saved_count(0)
         self.page.locator('#noteRedo').click();self.saved_count(1)
         self.draw(60);self.saved_count(2)
-        self.page.locator('#noteTool').select_option('eraser')
+        self.page.locator('[data-note-tool=eraser]').click()
         self.page.locator('.canvas-wrap .user-notes path').first.click(position={'x':5,'y':2},force=True)
         self.saved_count(1)
         self.page.locator('#noteUndo').click();self.saved_count(2)
@@ -68,7 +68,7 @@ class AnnotationTests(unittest.TestCase):
         self.assertIn('alpha',self.page.evaluate('navigator.clipboard.readText()'))
         self.page.locator('.notes-selection button').nth(1).click();self.saved_count(1)
         self.assertEqual(self.page.locator('.user-notes polygon').count(),1)
-        self.page.locator('#notesToggle').click();self.page.locator('#noteTool').select_option('note')
+        self.page.locator('#notesToggle').click();self.page.locator('[data-note-tool=note]').click()
         self.page.locator('.canvas-wrap .user-notes>svg').click(position={'x':130,'y':200})
         self.page.locator('.note-editor textarea').fill('Формула: E = mc²')
         self.page.get_by_role('button',name='Сохранить',exact=True).click();self.saved_count(2)
@@ -155,6 +155,113 @@ class AnnotationTests(unittest.TestCase):
         self.assertEqual(self.page.evaluate('(async()=>(await NSUAnnotations.backup()).objects[0].points)()'),points)
         self.page.reload()
         self.page.locator('.user-notes path').wait_for()
+
+    def test_mobile_tablet_layout_and_fullscreen_reader(self):
+        self.page.set_viewport_size({'width':1024,'height':1366});self.home()
+        self.assertTrue(self.page.evaluate('isPhoneLayout()'))
+        self.assertTrue(self.page.locator('#menuBtn').is_visible())
+        self.assertLessEqual(self.page.locator('.sidebar').bounding_box()['x']+self.page.locator('.sidebar').bounding_box()['width'],1)
+        self.page.locator('#menuBtn').click()
+        self.page.wait_for_function("document.querySelector('.sidebar').getBoundingClientRect().left>=0")
+        self.page.locator('#overlay').click(position={'x':800,'y':100})
+        self.page.evaluate('openPdfFullscreen(viewerUrl(FILES[0]))')
+        frame=self.page.frame_locator('#pdfFullscreenFrame')
+        frame.locator('.continuous-page .user-notes svg').first.wait_for()
+        for width,height in [(1024,1366),(1366,1024),(820,1180)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            self.assertTrue(frame.locator('body').evaluate("el=>el.classList.contains('compact-view')&&el.classList.contains('continuous-mode')"))
+        frame.locator('#notesToggle').click()
+        for button in frame.locator('.notes-tool-group button').all():
+            self.assertGreaterEqual(button.bounding_box()['width'],44)
+        output=fixtures.ROOT/'build/tablet-reader';output.mkdir(parents=True,exist_ok=True)
+        self.page.screenshot(path=str(output/'tablet-notes.png'))
+
+    def test_mobile_tablet_notebook_uses_touch_outline(self):
+        self.page.set_viewport_size({'width':1366,'height':1024})
+        self.page.goto(self.base+'notebook/viewer.html?'+urlencode({'file':self.nb}))
+        self.page.locator('#tocLinks a').first.wait_for(state='attached')
+        self.page.locator('#tocToggle').click()
+        self.page.locator('#tocClose').wait_for()
+        outline=self.page.locator('#notebookOutline').bounding_box()
+        self.assertGreaterEqual(outline['x'],0);self.assertLessEqual(outline['x']+outline['width'],1366)
+        self.page.locator('#tocLinks a').first.click()
+        self.page.wait_for_function("!document.body.classList.contains('toc-open')")
+
+    def test_continuous_stroke_crosses_pages_and_keeps_saved_dom(self):
+        self.page.set_viewport_size({'width':1440,'height':1000});self.pdf()
+        self.page.locator('#viewMode').click()
+        self.page.locator('#zoom').fill('35');self.page.locator('#zoom').blur()
+        self.page.wait_for_function("document.querySelectorAll('.continuous-page .user-notes svg').length===2&&document.querySelector('.continuous-page').offsetHeight<450")
+        self.page.locator('#notesToggle').click()
+        first=self.page.locator('.continuous-page[data-page="1"] .user-notes svg')
+        second=self.page.locator('.continuous-page[data-page="2"] .user-notes svg')
+        a,b=first.bounding_box(),second.bounding_box()
+        x=a['x']+90;y=a['y']+60
+        self.page.mouse.move(x,y);self.page.mouse.down();self.page.mouse.move(x+60,y+10,steps=10);self.page.mouse.up();self.saved_count(1)
+        self.page.evaluate("window.savedStroke=document.querySelector('.continuous-page .user-notes g path')")
+        self.page.mouse.move(x,a['y']+a['height']-45);self.page.mouse.down()
+        self.page.mouse.move(x+10,a['y']+a['height']-10,steps=6)
+        self.assertTrue(self.page.evaluate("savedStroke===document.querySelector('.continuous-page .user-notes g path')"))
+        self.page.evaluate("renderContinuousPage(document.querySelector('.continuous-page'),1,true)")
+        self.assertTrue(self.page.evaluate("savedStroke===document.querySelector('.continuous-page .user-notes g path')"))
+        self.page.mouse.move(x+20,b['y']+50,steps=15);self.page.mouse.up();self.saved_count(3)
+        self.assertEqual(sorted(self.page.evaluate('(async()=>(await NSUAnnotations.backup()).objects.map(a=>a.page))()')),[1,1,2])
+        self.page.locator('#noteUndo').click();self.saved_count(1)
+        self.page.locator('#noteRedo').click();self.saved_count(3)
+        self.page.reload();self.page.locator('#notesToggle').wait_for();self.page.locator('#viewMode').click()
+        self.page.wait_for_function("document.querySelectorAll('.continuous-page .user-notes g:not(.notes-draft) path').length>=2")
+
+    def test_mobile_two_finger_pan_while_drawing(self):
+        self.page.set_viewport_size({'width':820,'height':1180});self.pdf()
+        self.page.locator('#notesToggle').click()
+        self.page.locator('.continuous-page .user-notes svg').first.wait_for()
+        client=self.context.new_cdp_session(self.page)
+        def touch(kind,y):
+            client.send('Input.dispatchTouchEvent',{'type':kind,'touchPoints':[] if kind=='touchEnd' else [{'x':160,'y':y,'id':1},{'x':340,'y':y,'id':2}]})
+        before=self.page.locator('#viewer').evaluate('el=>el.scrollTop')
+        touch('touchStart',600)
+        for y in [570,540,510,480,450]:touch('touchMove',y)
+        touch('touchEnd',450)
+        self.page.wait_for_function('before=>document.querySelector("#viewer").scrollTop>before+100',arg=before)
+        self.saved_count(0)
+        old_zoom=int(self.page.locator('#zoom').input_value())
+        client.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':200,'y':500,'id':1},{'x':400,'y':500,'id':2}]})
+        client.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':160,'y':480,'id':1},{'x':440,'y':480,'id':2}]})
+        client.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
+        self.assertGreater(int(self.page.locator('#zoom').input_value()),old_zoom+20);self.saved_count(0)
+        self.page.wait_for_function("[...document.querySelectorAll('.continuous-page')].some(el=>el.dataset.stale==='0'&&el.getBoundingClientRect().top<400&&el.getBoundingClientRect().bottom>550)")
+        client.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':300,'y':500,'id':1}]})
+        for i in range(1,9):client.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':300+i*8,'y':500+i*2,'id':1}]})
+        client.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
+        self.saved_count(1)
+
+    def test_eraser_drag_is_one_undo_action(self):
+        self.pdf();self.page.locator('#notesToggle').click();self.draw();self.draw(60);self.saved_count(2)
+        box=self.page.locator('.canvas-wrap .user-notes svg').bounding_box()
+        self.page.locator('[data-note-tool=eraser]').click()
+        x=box['x']+110;y=box['y']+106
+        self.page.mouse.move(x,y);self.page.mouse.down();self.page.mouse.move(x,y+60,steps=10);self.page.mouse.up()
+        self.saved_count(0);self.page.locator('#noteUndo').click();self.saved_count(2)
+
+    def test_mobile_stylus_pressure_palm_and_finger_scroll(self):
+        self.page.set_viewport_size({'width':820,'height':1180});self.pdf();self.page.locator('#notesToggle').click()
+        self.page.locator('.continuous-page .user-notes svg').first.wait_for()
+        self.page.evaluate("""() => {const el=document.querySelector('.continuous-page .user-notes svg'),r=el.getBoundingClientRect();
+          const send=(type,id,pointerType,x,y,pressure)=>el.dispatchEvent(new PointerEvent(type,{pointerId:id,pointerType,clientX:r.left+x,clientY:r.top+y,pressure,bubbles:true,button:0}));
+          send('pointerdown',51,'pen',100,140,.1);send('pointermove',51,'pen',140,145,.3);
+          send('pointerdown',52,'touch',180,220,.5);send('pointermove',51,'pen',200,155,.9);
+          send('pointerup',52,'touch',180,220,.5);send('pointerup',51,'pen',220,160,.8);}""")
+        self.saved_count(1)
+        data=self.page.evaluate('(async()=>(await NSUAnnotations.backup()).objects[0])()')
+        self.assertGreater(max(p[2] for p in data['points'])-min(p[2] for p in data['points']),.5)
+        self.assertEqual(data['brushVersion'],2)
+        self.page.locator('.notes-options summary').click()
+        self.assertFalse(self.page.locator('#noteFinger').is_checked())
+        self.page.locator('.notes-options summary').click()
+        before=self.page.locator('#viewer').evaluate('el=>el.scrollTop')
+        self.page.evaluate("""() => {const el=document.querySelector('.continuous-page .user-notes svg'),r=el.getBoundingClientRect();
+          for(const [type,y] of [['pointerdown',300],['pointermove',220],['pointerup',220]])el.dispatchEvent(new PointerEvent(type,{pointerId:61,pointerType:'touch',clientX:r.left+120,clientY:r.top+y,bubbles:true,button:0}));}""")
+        self.assertGreater(self.page.locator('#viewer').evaluate('el=>el.scrollTop'),before+50);self.saved_count(1)
 
     @unittest.skipUnless(fixtures.REAL_PDFJS,'Actual TextLayer geometry requires NSU_REAL_PDFJS=1')
     def test_real_textlayer_multiline_cyrillic_and_rotated_page(self):

@@ -301,7 +301,7 @@
         await checkForUpdate(updateStatus,update);
       };
     }
-    appActions.append(update);appSection.append(updateStatus);paragraph(appSection,'Версия оболочки: 82 · формат заметок: 1');body.append(appSection);
+    appActions.append(update);appSection.append(updateStatus);paragraph(appSection,'Версия оболочки: 83 · формат заметок: 1');body.append(appSection);
 
     const dataSection=document.createElement('section');dataSection.className='app-manager-section';
     dataSection.innerHTML='<h3>Офлайн-библиотека</h3><div class="app-manager-actions"></div>';

@@ -1,17 +1,17 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v82';
+const SHELL_VERSION = 'v83';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
-const CORE = ['index.html', 'app.js?v=15', 'app.css?v=7', 'annotations-store.js?v=1', 'offline-resources.json', 'knowledge.css?v=3', 'manifest.webmanifest?v=7',
+const CORE = ['index.html', 'app.js?v=16', 'app.css?v=8', 'annotations-store.js?v=1', 'offline-resources.json', 'knowledge.css?v=3', 'manifest.webmanifest?v=7',
   '../Overseer/overseer.js?v=19', '../Overseer/overseer.css?v=2',
   '../Overseer/assets/Circle20.png', '../Overseer/assets/GuidancePebbles.png',
   '../Overseer/assets/miscDangerSymbol.png', '../Overseer/assets/keyArrowA.png', '../Overseer/assets/keyXA.png', '../Overseer/assets/noise.png',
-  'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=18', 'notebook/outline.js?build=2',
-  'pdfjs/viewer.html', 'pdfjs/controls.css?v=12', 'pdfjs/notes.js?v=1', 'pdfjs/notes.css?v=1', 'assets/nsu-fp-emblem.webp',
+  'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=19', 'notebook/outline.js?build=3',
+  'pdfjs/viewer.html', 'pdfjs/controls.css?v=13', 'pdfjs/notes.js?v=2', 'pdfjs/notes.css?v=2', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png?v=2', 'assets/app-512.png?v=2', 'particles/index.html', 'particles/particles.js',
   'particles/explorer.css?v=16', 'particles/explorer.js?v=16', 'particles/layout.js?v=5', 'particles/routes.js?v=2', 'particles/extra-particles.js?v=2', 'particles/remaining-particles.js?v=2'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json', 'search-index/karma-history.json'];

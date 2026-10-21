@@ -163,7 +163,7 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 
 
 /* Continuous reading on phones: page arrows are redundant; keep only the current page indicator. */
-.compact-view.continuous-mode{--reader-bottom:52px}
+.compact-view.continuous-mode{--reader-bottom:calc(52px + env(safe-area-inset-bottom,0px))}
 .compact-view.continuous-mode .mobile-nav{
   grid-template-columns:1fr;
   height:var(--reader-bottom);

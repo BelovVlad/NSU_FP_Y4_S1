@@ -74,7 +74,7 @@ class SiteTests(unittest.TestCase):
         # Regression fixtures alone expose module bindings used by older tests.
         # Published viewer modules keep their private scope.
         viewer=cls.root/'docs/pdfjs/viewer.html'
-        bindings=['canvasRenderRatio','renderContinuous','closeSearch','getPageSearchData','resetSearch','searchQuery','searchPage','pageNum','notes']
+        bindings=['canvasRenderRatio','renderContinuous','renderContinuousPage','closeSearch','getPageSearchData','resetSearch','searchQuery','searchPage','pageNum','notes']
         bridge='Object.defineProperties(window, {'+','.join(
             name+':{configurable:true,get:()=>'+name+',set:value=>'+name+'=value}' for name in bindings)+'});'
         viewer.write_text(viewer.read_text(encoding='utf-8').replace('\nopen();','\n'+bridge+'\nopen();'),encoding='utf-8')
