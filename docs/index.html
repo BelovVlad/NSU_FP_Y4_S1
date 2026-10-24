@@ -2523,7 +2523,7 @@ else{state.view='home';setActiveNav('home')}
         document.head.appendChild(karmaCss);
       }
 
-      const scripts=['../Karma/karma-engine.js?v=4','../Karma/karma-animation.js?v=1','../Karma/karma-view.js?v=8','secret-dashboard.js?v=7'];
+      const scripts=['../Karma/karma-engine.js?v=5','../Karma/karma-animation.js?v=1','../Karma/karma-view.js?v=9','secret-dashboard.js?v=7'];
       Promise.all(scripts.map(src=>new Promise((loaded,failed)=>{
         const script=document.createElement('script');
         script.src=src;script.async=true;script.dataset.secretDashboard='1';
@@ -2552,15 +2552,19 @@ else{state.view='home';setActiveNav('home')}
     return loading;
   }
 
+  let lastTap=0,lastTouchAt=0;
   trigger.addEventListener('dblclick',e=>{
+    // Touch double taps are handled below; browsers can also synthesize a
+    // dblclick from the menu tap followed by a single tap on the nearby emblem.
+    if(Date.now()-lastTouchAt<500)return;
     e.preventDefault();
     e.stopPropagation();
     loadSecretDashboard();
   });
 
-  let lastTap=0;
   trigger.addEventListener('touchend',e=>{
     const now=Date.now();
+    lastTouchAt=now;
     if(now-lastTap<360){
       e.preventDefault();
       loadSecretDashboard();

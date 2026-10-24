@@ -1114,7 +1114,7 @@ async function renderContinuous(targetPage=pageNum,anchor=null){
   await new Promise(resolve=>requestAnimationFrame(()=>{
     if(!continuousMode||continuousRoot!==root){resolve();return;}
     if(anchor)restoreContinuousAnchor(anchor);
-    else continuousRoot?.querySelector('[data-page="'+pageNum+'"]')?.scrollIntoView({block:'start'});
+    else continuousRoot?.querySelector('[data-page="'+targetPage+'"]')?.scrollIntoView({block:'start'});
     updateContinuousCurrentPage();
     savePage();
     resolve();

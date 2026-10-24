@@ -1,5 +1,5 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v84';
+const SHELL_VERSION = 'v85';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
@@ -91,6 +91,9 @@ async function resource(request, event) {
   const html = request.mode === 'navigate' || /\.html$/i.test(url.pathname) || url.href === BASE.href;
   const immutable = library(url) || url.searchParams.has('v') || url.searchParams.has('build');
 
+  // Versioned non-HTML resources are immutable: a cache hit must not start a fetch.
+  if(cached && immutable && !html) return cached;
+
   const network = (async () => {
     const response = await fetch(request,{cache:html?'no-cache':'default'});
     if(!response.ok && response.type !== 'opaque') throw new Error('HTTP '+response.status);
@@ -109,7 +112,6 @@ async function resource(request, event) {
     }
   }
 
-  if(cached && immutable) return cached;
   event.waitUntil(network.catch(()=>{}));
   if(cached) return Promise.race([network.catch(()=>cached),new Promise(resolve=>setTimeout(()=>resolve(cached),1800))]);
   try { return await network; }

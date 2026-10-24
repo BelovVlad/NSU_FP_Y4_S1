@@ -103,7 +103,9 @@ class KarmaBrowserTests(unittest.TestCase):
         page.goto(self.url)
         page.locator('#menuBtn').tap()
         trigger=page.locator('#secretAcademicTrigger')
-        trigger.tap();page.wait_for_timeout(100);trigger.tap()
+        trigger.tap();page.wait_for_timeout(100)
+        self.assertEqual(page.locator('#secretAcademicDashboard.is-open').count(),0)
+        trigger.tap()
         page.wait_for_function("document.querySelector('.karma-subject.complete')")
         page.wait_for_timeout(2100)
         card=page.locator('#secretAcademicKarma')
@@ -178,13 +180,13 @@ class KarmaBrowserTests(unittest.TestCase):
         self.assertEqual(states['initial']['label'],'Карма 1 из 10')
         self.assertEqual(states['initial']['flower'],'Закройте все долги')
         self.assertEqual(states['initial']['width'],0)
-        self.assertEqual(states['oneDay']['level'],'2')
+        self.assertEqual(states['oneDay']['level'],'1')
         self.assertEqual(states['flower'],{'text':'Получен','width':100})
         self.assertEqual(states['all']['level'],'1')
-        self.assertEqual(states['beforeTop']['level'],'9')
-        self.assertEqual(states['top']['level'],'10')
-        self.assertEqual(states['top']['label'],'Карма 10 из 10')
-        self.assertEqual(states['top']['maximum'],'7 / 7 дней')
+        self.assertEqual(states['beforeTop']['level'],'1')
+        self.assertEqual(states['top']['level'],'1')
+        self.assertEqual(states['top']['label'],'Карма 1 из 10')
+        self.assertEqual(states['top']['maximum'],'0 / 7 дней')
         self.assertEqual(states['surplus'],{'count':'6 / 8','complete':False})
 
     def test_waiting_label_replaces_checkmark_only_until_deadline(self):
@@ -209,17 +211,20 @@ class KarmaBrowserTests(unittest.TestCase):
           view.stop();return states;
         }""")
         self.assertEqual(states['afterLesson'],{'complete':False,'waiting':True,
-                                                'label':'ожидание до 9:00','level':2})
-        self.assertEqual(states['deadline'],{'complete':False,'waiting':False,'label':'','level':1})
+                                                'label':'ожидание до 9:00','level':0})
+        self.assertEqual(states['deadline'],{'complete':False,'waiting':False,'label':'','level':0})
 
     def test_increase_sound_phases_and_loop_cleanup(self):
         page=self.page()
         errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
-        page.add_init_script("localStorage.setItem('nsu-editor-karma-visual-v1',JSON.stringify({level:1,shield:false,protectedUntil:null}))")
+        page.add_init_script("localStorage.setItem('nsu-editor-karma-visual-v1',JSON.stringify({level:0,shield:false,protectedUntil:null}))")
         rules=json.loads((ROOT/'Karma/rules.json').read_text('utf-8'))
         full={row['id']:100 for row in rules['series']}
+        debt={**full,rules['series'][0]['id']:0}
         page.route('**/search-index/karma-history.json',lambda route:route.fulfill(json={
-            'rules':rules,'currentCounts':full,'snapshots':[{'at':'2026-09-24T09:00:00+07:00','counts':full}]}))
+            'rules':rules,'currentCounts':full,'snapshots':[
+                {'at':'2026-09-24T09:00:00+07:00','counts':debt},
+                {'at':'2026-09-24T12:00:00+07:00','counts':full}]}))
         page.route('**/search-index/structure.json',lambda route:route.fulfill(json={
             'groups':[{'subject':row['subject'],'section':row['section'],'items':[{}]*100} for row in rules['series']]}))
         page.goto(self.url)

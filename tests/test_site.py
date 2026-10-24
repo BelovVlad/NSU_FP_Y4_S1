@@ -10,6 +10,7 @@ import functools
 import http.server
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import tempfile
@@ -58,8 +59,6 @@ class SiteTests(unittest.TestCase):
                          'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/notebook/outline.js', 'docs/giscus-config.json',
                          'docs/app.js', 'docs/app.css', 'docs/sw.js', 'docs/manifest.webmanifest',
                          'docs/annotations-store.js', 'docs/pdfjs/notes.js', 'docs/pdfjs/notes.css', 'docs/offline-resources.json',
-                         'docs/particles/index.html', 'docs/particles/particles.js',
-                         'docs/particles/explorer.js', 'docs/particles/explorer.css', 'docs/particles/layout.js', 'docs/particles/routes.js', 'docs/particles/contours.js', 'docs/particles/extra-particles.js', 'docs/particles/remaining-particles.js',
                          'Overseer/overseer.js', 'Overseer/overseer.css',
                          'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
                          'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
@@ -67,6 +66,7 @@ class SiteTests(unittest.TestCase):
             target = cls.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / relative, target)
+        shutil.copytree(ROOT/'docs/particles', cls.root/'docs/particles', dirs_exist_ok=True)
         if not REAL_PDFJS:
             # Deterministic SW tests exercise preparation/verification with local assets.
             # The optional real-runtime check retains the complete pinned CDN manifest.
@@ -390,18 +390,9 @@ class SiteTests(unittest.TestCase):
         self.page.set_viewport_size({'width':390,'height':844})
         self.pdf()
         self.page.wait_for_function("document.body.classList.contains('continuous-mode')")
-        self.page.evaluate("""() => {
-            getPageSearchData = async n => ({
-                text:'prefix alpha suffix words',
-                items:[{str:'prefix alpha suffix words',width:240,transform:[1,0,0,12,72,760]}]
-            });
-            searchInput.value='alpha';
-            resetSearch();
-            searchQuery='alpha';
-            searchPage=1;
-            pageNum=1;
-        }""")
-        self.page.evaluate("renderContinuous(1)")
+        self.page.locator('#searchToggle').click()
+        self.page.locator('#searchInput').fill('alpha')
+        self.page.locator('#searchInput').press('Enter')
         self.page.wait_for_function("""() => {
             const p=document.querySelector('.continuous-page[data-page="1"]');
             return p && p.dataset.rendered==='1' && p.querySelectorAll('.search-mark').length>0;
@@ -410,7 +401,7 @@ class SiteTests(unittest.TestCase):
         mark=self.page.locator('.continuous-page[data-page="1"] .search-mark').first.bounding_box()
         page_box=self.page.locator('.continuous-page[data-page="1"]').bounding_box()
         self.assertLess(mark['width'],page_box['width']*.45)
-        self.page.evaluate("closeSearch()")
+        self.page.locator('#searchClose').click()
         self.assertEqual(self.page.locator('.continuous-page .search-mark').count(),0)
 
     def enable_continuous_for_test(self):
@@ -685,24 +676,31 @@ class SiteTests(unittest.TestCase):
         self.page.evaluate('NSUApp.ready.then(()=>true)')
         self.page.wait_for_function('!!navigator.serviceWorker.controller')
 
+    def open_saved_pdfs(self):
+        self.page.locator('#appSettings').click()
+        self.page.get_by_role('button',name='Сохранённые материалы',exact=True).click()
+
     def test_pwa_offline_shell_material_versions_and_metadata(self):
         from urllib.parse import quote
         self.pwa_ready()
         url='../'+quote(self.nb)+'?v=one'
+        notebook_request=('GET','/'+quote(self.nb))
         read='async url=>{const r=await fetch(url);return {ok:r.ok,text:await r.text()}}'
         self.assertTrue(self.page.evaluate(read,url)['ok'])
-        count=len(self.requests)
+        count=self.requests.count(notebook_request)
+        self.assertEqual(count,1)
+        # Background requests for other resources must not look like notebook downloads.
+        self.assertTrue(self.page.evaluate(read,'search-index/files.json?test=background')['ok'])
         self.assertTrue(self.page.evaluate(read,url)['ok'])
-        self.assertEqual(len(self.requests),count,'A versioned notebook should not be downloaded twice')
+        self.assertEqual(self.requests.count(notebook_request),count,'A versioned notebook should not be downloaded twice')
         self.assertTrue(self.page.evaluate(read,url.replace('one','two'))['ok'])
-        self.assertGreater(len(self.requests),count,'A new content version must reach the server')
+        self.assertEqual(self.requests.count(notebook_request),count+1,'A new content version must reach the server')
         self.context.set_offline(True)
         self.page.reload()
         self.page.wait_for_function('FILES.length===2')
         self.assertTrue(self.page.evaluate(read,url)['ok'])
         self.assertIn('Reference',self.page.evaluate(read,url)['text'])
-        self.page.locator('#appSettings').click()
-        self.page.get_by_role('button',name='Сохранённые материалы',exact=True).click()
+        self.open_saved_pdfs()
         self.page.wait_for_function("document.querySelector('#appDialog').textContent.includes('Пока нет')")
 
     def test_pwa_pdf_explicit_save_offline_ranges_and_removal(self):
@@ -722,8 +720,7 @@ class SiteTests(unittest.TestCase):
         self.assertEqual(range_read('bytes=0-99'),{'status':206,'range':f"bytes 0-99/{result['bytes']}",'size':100})
         self.assertEqual(range_read('bytes=-10')['size'],10)
         self.assertEqual(range_read('bytes=999999-')['status'],416)
-        self.page.locator('#appSettings').click()
-        self.page.get_by_role('button',name='Сохранённые материалы',exact=True).click()
+        self.open_saved_pdfs()
         self.page.wait_for_function("document.querySelector('.app-downloads a')?.textContent==='Тестовый PDF'")
         self.assertNotIn('embed=',self.page.locator('.app-downloads a').get_attribute('href'))
         self.page.once('dialog',lambda dialog:dialog.accept())
@@ -742,16 +739,17 @@ class SiteTests(unittest.TestCase):
 
     def test_pwa_update_preserves_saved_documents(self):
         import time
-        import re
         from urllib.parse import quote
         self.pwa_ready()
-        self.assertEqual(self.page.locator('#appUpdate').count(),0,'A first installation is not an update')
         self.page.evaluate("args=>NSUApp.request('SAVE_PDF',args)",{
             'url':self.base+'../'+quote(self.a),'viewer':self.base+'pdfjs/viewer.html','title':'Saved before update'})
         worker=self.root/'docs/sw.js'
         original=worker.read_text(encoding='utf-8')
         try:
-            worker.write_text(re.sub(r"SHELL_VERSION = '[^']+'", "SHELL_VERSION = 'test-update'",original),encoding='utf-8')
+            updated,count=re.subn(r"SHELL_VERSION = '[^']+'", "SHELL_VERSION = 'test-update'", original, count=1)
+            self.assertEqual(count,1)
+            self.assertNotEqual(updated,original)
+            worker.write_text(updated,encoding='utf-8')
             # SimpleHTTPRequestHandler's Last-Modified validator has one-second precision.
             os.utime(worker,(time.time()+2,time.time()+2))
             self.page.evaluate('async()=>{const r=await NSUApp.ready;await r.update()}')
