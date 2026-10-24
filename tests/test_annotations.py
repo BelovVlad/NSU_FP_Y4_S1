@@ -167,6 +167,9 @@ class AnnotationTests(unittest.TestCase):
         self.page.evaluate('openPdfFullscreen(viewerUrl(FILES[0]))')
         frame=self.page.frame_locator('#pdfFullscreenFrame')
         frame.locator('.continuous-page .user-notes svg').first.wait_for()
+        # Headless Chromium cannot resize its native fullscreen window. The
+        # site's fullscreen reader remains open while we simulate rotation.
+        self.page.evaluate('async()=>{if(document.fullscreenElement)await document.exitFullscreen()}')
         for width,height in [(1024,1366),(1366,1024),(820,1180)]:
             self.page.set_viewport_size({'width':width,'height':height})
             self.assertTrue(frame.locator('body').evaluate("el=>el.classList.contains('compact-view')&&el.classList.contains('continuous-mode')"))
@@ -190,7 +193,10 @@ class AnnotationTests(unittest.TestCase):
     def test_continuous_stroke_crosses_pages_and_keeps_saved_dom(self):
         self.page.set_viewport_size({'width':1440,'height':1000});self.pdf()
         self.page.locator('#viewMode').click()
-        self.page.locator('#zoom').fill('35');self.page.locator('#zoom').blur()
+        self.page.locator('#zoom').fill('35')
+        self.page.evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
+        self.assertEqual(self.page.locator('#zoom').input_value(),'35')
+        self.page.locator('#zoom').blur()
         self.page.wait_for_function("document.querySelectorAll('.continuous-page .user-notes svg').length===2&&document.querySelector('.continuous-page').offsetHeight<450")
         self.page.locator('#notesToggle').click()
         first=self.page.locator('.continuous-page[data-page="1"] .user-notes svg')

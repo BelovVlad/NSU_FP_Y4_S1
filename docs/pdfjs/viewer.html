@@ -407,7 +407,9 @@ window.nsuPersistReaderPosition=()=>persistReaderPosition(false);
 window.nsuFlushAnnotations=async()=>{notes.cancelGesture();await notes.flush();return !notes.pending.length;};
 function updateOutlineActive(){if(!outlineEntries.length)return;let best=null;for(const e of outlineEntries){if(!e.page)continue;e.button.classList.remove('active');if(e.page<=pageNum&&(!best||e.page>best.page))best=e}if(best)best.button.classList.add('active')}
 function updateControls(){
-  pageInput.value=pageNum;total.textContent=`/ ${pdf?pdf.numPages:'—'}`;zoomLabel.value=String(Math.round(scale*100));
+  pageInput.value=pageNum;total.textContent=`/ ${pdf?pdf.numPages:'—'}`;
+  // Background rendering must preserve a zoom value the reader is still typing.
+  if(document.activeElement!==zoomLabel)zoomLabel.value=String(Math.round(scale*100));
   const atStart=pageNum<=1,atEnd=!pdf||pageNum>=pdf.numPages;
   prev.disabled=atStart;next.disabled=atEnd;mPrev.disabled=atStart;mNext.disabled=atEnd;mPageInfo.textContent=`${pageNum} / ${pdf?pdf.numPages:'—'}`;pageJumpInput.value=pageNum;pageJumpInput.max=pdf?String(pdf.numPages):'1';pageJumpTotal.textContent=`/ ${pdf?pdf.numPages:'—'}`;updateOutlineActive();
 }
