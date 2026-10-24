@@ -9,7 +9,6 @@
   const installButton = document.getElementById('installApp');
   const downloadsButton = document.getElementById('offlineFiles');
   const settingsButton = document.getElementById('appSettings');
-  const saveButton = document.getElementById('saveOffline');
   function notice(text) {
     let node = document.getElementById('appNotice');
     if(!node) { node=document.createElement('div'); node.id='appNotice'; node.className='app-notice'; node.setAttribute('role','status'); document.body.append(node); }
@@ -340,7 +339,7 @@
     paragraph(panel,installed()?'Вы уже открыли установленное приложение. Материалы обновляются при подключении к интернету.':
       /iPad|iPhone|iPod/.test(navigator.userAgent)?'В Safari нажмите «Поделиться», затем «На экран Домой».':
       'На Android откройте этот сайт в Chrome, нажмите ⋮ → «Установить приложение» или «Добавить на главный экран». Если сайт открыт внутри мессенджера, сначала выберите «Открыть в браузере».');
-    paragraph(panel,'Страницы базы сохраняются после открытия. Для PDF нажмите «Без интернета» в настройках просмотрщика: скачается весь файл, до 150 МБ. Первый запуск и несохранённые материалы требуют интернета.');
+    paragraph(panel,'Страницы базы сохраняются после открытия. Чтобы PDF открывались без интернета, откройте шестерёнку рядом с «Главная» → «Сохранить все материалы». Первый запуск и несохранённые материалы требуют интернета.');
     if(!supported)paragraph(panel,'Установка и офлайн-режим доступны на опубликованном сайте с HTTPS.');
   });
   downloadsButton?.addEventListener('click',async()=>{
@@ -359,19 +358,6 @@
         row.append(link,remove);list.append(row);
       }
     }catch(error){state.textContent=error.message;}
-  });
-  saveButton?.addEventListener('click',async()=>{
-    const direct=document.getElementById('direct');
-    if(!direct || direct.getAttribute('href')==='#')return;
-    saveButton.disabled=true;saveButton.textContent='Сохраняю…';
-    notice('Скачиваю PDF целиком. Не закрывайте документ до завершения.');
-    try {
-      const result=await request('SAVE_PDF',{url:direct.href,viewer:location.href,title:document.getElementById('title')?.textContent||'PDF'});
-      saveButton.textContent='Сохранён';
-      notice(`PDF сохранён (${(result.bytes/1048576).toFixed(1)} МБ). Открывайте его через «Сохранённые PDF» в меню сайта.`);
-      navigator.storage?.persist?.().catch(()=>{});
-    }catch(error){saveButton.textContent='Без интернета';notice(error.message);}
-    finally{saveButton.disabled=false;}
   });
   const ready = supported ? navigator.serviceWorker.register(new URL('sw.js',base),{scope:base.pathname,updateViaCache:'none'}).then(async value=>{
     registration=value;
@@ -458,57 +444,5 @@
     if(state.view==='subjects'&&state.subject!=='База'){
       const subject=state.subject;void probe(subject).then(found=>{if(found&&state.view==='subjects'&&state.subject===subject)renderSubject()});
     }
-  }
-
-  // PDF continuous mode: render link annotations on every page in the strip.
-  if(typeof renderContinuousPage==='function'&&typeof getPageAnnotations==='function'&&typeof destinationPage==='function'){
-    async function jumpToPdfDestination(dest){
-      const n=await destinationPage(dest);if(!n)return;
-      pageNum=n;
-      if(continuousMode&&continuousRoot){
-        const target=continuousRoot.querySelector('[data-page="'+n+'"]');
-        if(target){
-          queueContinuousPage(target,n);
-          savePage(n);updateControls();updateOutlineActive();
-          target.scrollIntoView({block:'start',behavior:'smooth'});
-          return;
-        }
-      }
-      await renderPage();
-    }
-    followInternalLink=jumpToPdfDestination;
-
-    async function renderContinuousLinks(el,n){
-      if(!pdf||!el?.isConnected||el.dataset.rendered!=='1')return;
-      const page=await getCachedPage(n);
-      if(!el.isConnected||el.dataset.rendered!=='1')return;
-      const baseViewport=page.getViewport({scale:1});
-      const cssWidth=parseFloat(el.style.width)||el.getBoundingClientRect().width;
-      if(!(cssWidth>0)||!(baseViewport.width>0))return;
-      const viewport=page.getViewport({scale:cssWidth/baseViewport.width});
-      let layer=el.querySelector(':scope > .annotation-layer');
-      if(!layer){layer=document.createElement('div');layer.className='annotation-layer';el.appendChild(layer)}
-      layer.replaceChildren();layer.style.width=viewport.width+'px';layer.style.height=viewport.height+'px';
-      let annotations=[];try{annotations=await getPageAnnotations(page)}catch{return}
-      if(!layer.isConnected||el.dataset.rendered!=='1')return;
-      for(const a of annotations){
-        if(a.subtype!=='Link'||!Array.isArray(a.rect))continue;
-        const rect=viewport.convertToViewportRectangle(a.rect),left=Math.min(rect[0],rect[2]),top=Math.min(rect[1],rect[3]),width=Math.abs(rect[0]-rect[2]),height=Math.abs(rect[1]-rect[3]);
-        if(width<1||height<1)continue;
-        const link=document.createElement('a');link.className='pdf-link';link.style.left=left+'px';link.style.top=top+'px';link.style.width=width+'px';link.style.height=height+'px';link.setAttribute('aria-label','Перейти по ссылке');
-        if(a.url){link.href=a.url;link.target='_blank';link.rel='noopener noreferrer';link.title=a.url}
-        else if(a.dest){link.href='#';link.title='Перейти к разделу';link.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();void jumpToPdfDestination(a.dest)})}
-        else if(a.action){link.href='#';link.title='Перейти';link.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();followNamedAction(a.action)})}
-        else continue;
-        layer.appendChild(link);
-      }
-    }
-    const baseRenderContinuousPage=renderContinuousPage;
-    renderContinuousPage=async function(el,n,force=false){
-      const result=await baseRenderContinuousPage(el,n,force);
-      await renderContinuousLinks(el,n);
-      return result;
-    };
-    queueMicrotask(()=>document.querySelectorAll('.continuous-page[data-rendered="1"]').forEach(el=>void renderContinuousLinks(el,Number(el.dataset.page))));
   }
 })();

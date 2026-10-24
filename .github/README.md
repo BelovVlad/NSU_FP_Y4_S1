@@ -34,6 +34,21 @@ https://belovvlad.github.io/NSU_FP_Y4_S1/
     └── Литература
 ```
 
+Сайт и всё, что к нему относится, собрано в нескольких служебных местах:
+
+```
+.
+├── docs/          сайт: главная, просмотрщики PDF/Notebook, поиск, Karma, Overseer, карта частиц
+├── _dev/          разработка сайта (не публикуется):
+│   ├── android-app/   Android-приложение (WebView)
+│   └── tests/         браузерные и node-тесты
+├── .github/       workflows и скрипты сборки (индекс поиска, app.js, APK)
+├── particles/     короткая ссылка …/particles/ → docs/particles/
+├── index.html     перенаправление на docs/
+├── _config.yml    настройки GitHub Pages
+└── giscus.json    настройки комментариев (должен лежать в корне)
+```
+
 ## 📝 Формат материалов
 
 Используются:

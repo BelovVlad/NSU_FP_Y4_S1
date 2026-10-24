@@ -18,7 +18,7 @@ def counts(payload, series):
 
 
 def build():
-    rules = json.loads((ROOT / 'Karma/rules.json').read_text('utf-8'))
+    rules = json.loads((ROOT / 'docs/Karma/rules.json').read_text('utf-8'))
     rows = []
     # First-parent avoids treating unpublished side-branch versions as site updates.
     for line in git('log', '--first-parent', '--reverse', '--format=%H %cI', '--', INDEX).splitlines():

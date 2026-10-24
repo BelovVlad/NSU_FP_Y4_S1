@@ -14,8 +14,6 @@
 .app-notice,.app-update{position:fixed;z-index:6000;bottom:max(18px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);box-sizing:border-box;width:max-content;max-width:calc(100% - 28px);padding:12px 16px;border:1px solid #34414d;border-radius:12px;background:#101920;color:#eef1f5;font:13px/1.5 system-ui;box-shadow:0 8px 30px #0006}
 .app-update{bottom:90px;cursor:pointer;color:#ead4b7}
 .app-notice[hidden]{display:none}
-#saveOffline{white-space:normal;font-size:11px;line-height:1.2}
-.compact-view #saveOffline{font-size:12px}
 @media(prefers-reduced-motion:reduce){.app-dialog::backdrop{backdrop-filter:none}}
 
 

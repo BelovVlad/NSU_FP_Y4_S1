@@ -52,7 +52,7 @@ Preview использует тот же читаемый размер. Заго
 Из корня репозитория:
 
 ```sh
-python -m pip install -r tests/requirements.txt
+python -m pip install -r _dev/tests/requirements.txt
 python -m playwright install chromium
 python -m unittest discover -s tests -v
 ```

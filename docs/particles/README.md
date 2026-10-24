@@ -55,6 +55,6 @@ root headings. `contours.js` remains a standalone utility, unused by the atlas.
 Validation:
 
 ```sh
-node --test tests/particles-layout.test.cjs
+node --test _dev/tests/particles-layout.test.cjs
 python -m unittest discover -s tests -p test_particles_browser.py -v
 ```

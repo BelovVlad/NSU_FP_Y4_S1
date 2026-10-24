@@ -1090,11 +1090,11 @@ body{
 
 </style>
 <link rel="stylesheet" href="knowledge.css?v=3">
-<link rel="stylesheet" href="app.css?v=8">
-<link rel="stylesheet" href="../Overseer/overseer.css?v=2">
+<link rel="stylesheet" href="app.css?v=9">
+<link rel="stylesheet" href="Overseer/overseer.css?v=2">
 <script defer src="annotations-store.js?v=1"></script>
-<script defer src="app.js?v=17"></script>
-<script defer src="../Overseer/overseer.js?v=19"></script>
+<script defer src="app.js?v=18"></script>
+<script defer src="Overseer/overseer.js?v=19"></script>
 </head>
 <body>
 <div id="overlay" class="mobile-overlay"></div>
@@ -2465,7 +2465,7 @@ else{state.view='home';setActiveNav('home')}
   const effectBuffers=new Map();
   function effectBuffer(name){
     if(!effectBuffers.has(name))effectBuffers.set(name,
-      fetch(`../Karma/audio/${name}.wav`).then(r=>{if(!r.ok)throw new Error('Sound unavailable');return r.arrayBuffer()})
+      fetch(`Karma/audio/${name}.wav`).then(r=>{if(!r.ok)throw new Error('Sound unavailable');return r.arrayBuffer()})
         .then(data=>soundContext.decodeAudioData(data)).catch(()=>{effectBuffers.delete(name);return null}));
     return effectBuffers.get(name);
   }
@@ -2519,11 +2519,11 @@ else{state.view='home';setActiveNav('home')}
         css.dataset.secretDashboard='1';
         document.head.appendChild(css);
         const karmaCss=document.createElement('link');
-        karmaCss.rel='stylesheet';karmaCss.href='../Karma/karma.css?v=3';
+        karmaCss.rel='stylesheet';karmaCss.href='Karma/karma.css?v=3';
         document.head.appendChild(karmaCss);
       }
 
-      const scripts=['../Karma/karma-engine.js?v=4','../Karma/karma-animation.js?v=1','../Karma/karma-view.js?v=8','secret-dashboard.js?v=7'];
+      const scripts=['Karma/karma-engine.js?v=4','Karma/karma-animation.js?v=1','Karma/karma-view.js?v=8','secret-dashboard.js?v=7'];
       Promise.all(scripts.map(src=>new Promise((loaded,failed)=>{
         const script=document.createElement('script');
         script.src=src;script.async=true;script.dataset.secretDashboard='1';

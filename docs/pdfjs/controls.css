@@ -27,9 +27,6 @@ button,input,a{font:inherit}
 .zoom-controls{padding-top:12px;border-top:1px solid var(--line)}
 .zoom-edit{width:56px;height:32px;display:flex;align-items:center;justify-content:center;gap:2px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--muted);font-size:10px}
 .zoom-input{width:34px;min-width:0;height:28px;padding:0;border:0;outline:0;background:transparent;color:var(--text);font-size:12px;text-align:right;appearance:textfield;-moz-appearance:textfield}
-.quality-controls{padding-top:10px;border-top:1px solid var(--line)}
-.quality-select{width:64px;height:32px;padding:0 5px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--text);font-size:10px;outline:0;cursor:pointer}
-.quality-select:focus{border-color:var(--accent)}
 .tone-switch{width:60px;height:30px;padding:2px;gap:0}
 .tone-btn{width:18px;height:24px;flex:1;border-radius:5px}.tone-icon{width:14px;height:14px}
 .expand-viewer{display:none}.embed-view .expand-viewer{display:inline-flex}
@@ -78,9 +75,6 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 .compact-view .control-pair{gap:6px}
 .compact-view .control-pair .btn.icon{width:44px;height:44px}
 .compact-view .zoom-edit{width:72px;height:44px;font-size:12px}.compact-view .zoom-input{width:42px;font-size:16px}
-.compact-view .quality-controls{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;padding:10px 0 0;border-top:1px solid var(--line)}
-.compact-view .quality-controls>.control-label{font-size:12px}
-.compact-view .quality-select{width:min(190px,55vw);height:44px;padding:0 12px;font-size:14px}
 .compact-view #fit{width:auto;min-width:92px;height:44px;flex-direction:row;padding:0 10px;border-color:var(--line);background:var(--panel)}
 .compact-view #fit .tool-caption{font-size:12px}
 .compact-view .reader-controls>.rail-button{width:100%;height:48px;flex-direction:row;gap:10px;padding:0 12px;border:1px solid var(--line);background:var(--panel)}
@@ -154,15 +148,13 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   }
   .compact-view .reader-controls .tools-heading{grid-column:1/-1}
   .compact-view .reader-controls .zoom-controls{grid-column:1/-1}
-  .compact-view .reader-controls #viewMode{grid-column:1}
-  .compact-view .reader-controls #saveOffline{grid-column:2}
   .compact-view .reader-controls .tone-switch{grid-column:1/-1;grid-row:auto}
   .compact-view .reader-controls .direct-link{grid-column:1/-1}
   .compact-view.tools-open .tools-backdrop{inset:0}
 }
 
 
-/* Continuous reading on phones: page arrows are redundant; keep only the current page indicator. */
+/* Phones read in the continuous strip: page arrows are redundant; keep only the current page indicator. */
 .compact-view.continuous-mode{--reader-bottom:calc(52px + env(safe-area-inset-bottom,0px))}
 .compact-view.continuous-mode .mobile-nav{
   grid-template-columns:1fr;
@@ -176,6 +168,7 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 /* Temporary transform used during pinch / trackpad zoom in the continuous strip. */
 .continuous-pages.pinch-preview{
   transition:none;
+  will-change:transform;
 }
 
 
@@ -241,7 +234,6 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   grid-template-areas:
     "head head"
     "zoom zoom"
-    "view offline"
     "tone tone"
     "file file";
   gap:10px;
@@ -256,7 +248,6 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   grid-template-areas:
     "head head"
     "zoom zoom"
-    "view offline"
     "file file";
 }
 .compact-view .tools-heading{
@@ -326,8 +317,6 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   padding:0 12px;
   border-radius:11px;
 }
-.compact-view #viewMode{grid-area:view}
-.compact-view #saveOffline{grid-area:offline}
 .compact-view .tone-switch{
   grid-area:tone;
   grid-column:auto;
@@ -360,11 +349,6 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 }
 .compact-view .reader-controls>.rail-button .tool-caption{font-size:12px}
 .compact-view .reader-controls>.rail-button:active{transform:scale(.985)}
-.compact-view #saveOffline{
-  font-size:12px;
-  opacity:.78;
-}
-.compact-view #saveOffline:not(:disabled){opacity:1}
 .compact-view .direct-link{
   grid-area:file;
   min-height:48px;
@@ -438,7 +422,6 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   grid-template-areas:
     "head head"
     "zoom zoom"
-    "view offline"
     "tone tone"
     "file file";
   align-items:stretch;
@@ -451,7 +434,6 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   grid-template-areas:
     "head head"
     "zoom zoom"
-    "view offline"
     "file file";
 }
 .compact-view .tools-heading{
@@ -538,8 +520,6 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   overflow:hidden;
   text-overflow:ellipsis;
 }
-.compact-view #viewMode{grid-area:view}
-.compact-view #saveOffline{grid-area:offline}
 .compact-view .tone-switch{
   grid-area:tone;
   width:100%;

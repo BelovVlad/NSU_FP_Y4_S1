@@ -6,7 +6,6 @@ on:
     paths:
       - 'docs/index.html'
       - 'docs/secret-dashboard.*'
-      - 'Karma/**'
       - 'docs/app.*'
       - 'docs/app-core.js'
       - 'docs/annotations-store.js'
@@ -21,20 +20,19 @@ on:
       - 'docs/search-index/**'
       - 'docs/secret-dashboard*'
       - 'docs/Karma/**'
-      - 'Karma/**'
+      - 'docs/Overseer/**'
       - '.github/scripts/build_app_bundle.py'
       - '.github/scripts/build_search_index.py'
       - '.github/scripts/build_karma_history.py'
       - 'docs/pdfjs/**'
       - 'docs/notebook/**'
       - '**/*.ipynb'
-      - 'tests/**'
+      - '_dev/tests/**'
       - '.github/workflows/viewer-tests.yml'
   pull_request:
     paths:
       - 'docs/index.html'
       - 'docs/secret-dashboard.*'
-      - 'Karma/**'
       - 'docs/app.*'
       - 'docs/app-core.js'
       - 'docs/annotations-store.js'
@@ -49,14 +47,14 @@ on:
       - 'docs/search-index/**'
       - 'docs/secret-dashboard*'
       - 'docs/Karma/**'
-      - 'Karma/**'
+      - 'docs/Overseer/**'
       - '.github/scripts/build_app_bundle.py'
       - '.github/scripts/build_search_index.py'
       - '.github/scripts/build_karma_history.py'
       - 'docs/pdfjs/**'
       - 'docs/notebook/**'
       - '**/*.ipynb'
-      - 'tests/**'
+      - '_dev/tests/**'
       - '.github/workflows/viewer-tests.yml'
   workflow_dispatch:
 
@@ -72,10 +70,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install -r tests/requirements.txt
+      - run: python -m pip install -r _dev/tests/requirements.txt
       - run: python -m playwright install --with-deps chromium
-      - run: python -m unittest discover -s tests -v
+      - run: python -m unittest discover -s _dev/tests -v
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/karma-engine.test.cjs tests/karma-animation.test.cjs tests/particles-layout.test.cjs
+      - run: node --test _dev/tests/karma-engine.test.cjs _dev/tests/karma-animation.test.cjs _dev/tests/particles-layout.test.cjs

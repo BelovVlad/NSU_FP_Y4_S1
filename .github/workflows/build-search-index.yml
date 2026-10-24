@@ -8,12 +8,12 @@ on:
       - '**/*.pdf'
       - '**/*.ipynb'
       - '**/*.tex'
-      - 'Karma/rules.json'
+      - 'docs/Karma/rules.json'
       - 'docs/app-core.js'
       - '.github/scripts/build_app_bundle.py'
       - '.github/scripts/build_search_index.py'
       - '.github/scripts/build_karma_history.py'
-      - 'Karma/rules.json'
+      - 'docs/Karma/rules.json'
       - '.github/workflows/build-search-index.yml'
   workflow_dispatch:
 
