@@ -1,19 +1,20 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'v85';
+const SHELL_VERSION = 'b01ee2ba6a';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
-const CORE = ['index.html', 'app.js?v=18', 'app.css?v=9', 'annotations-store.js?v=1', 'offline-resources.json', 'knowledge.css?v=3', 'manifest.webmanifest?v=7',
-  'Overseer/overseer.js?v=19', 'Overseer/overseer.css?v=2',
+const CORE = ['index.html', 'site.css?v=581f247313', 'site.js?v=ffdb969cf1', 'app.js?v=b0bec72a78', 'app.css?v=4e2e52a233', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=5db485695e', 'manifest.webmanifest?v=f091c1f136',
+  'Overseer/overseer.js?v=2125c3b5d7', 'Overseer/overseer.css?v=3c70ee01aa',
   'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
   'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
-  'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=19', 'notebook/outline.js?build=3',
-  'pdfjs/viewer.html', 'pdfjs/controls.css?v=15', 'pdfjs/notes.js?v=3', 'pdfjs/notes.css?v=3', 'assets/nsu-fp-emblem.webp',
-  'assets/app-192.png?v=2', 'assets/app-512.png?v=2', 'particles/index.html', 'particles/particles.js',
-  'particles/explorer.css?v=16', 'particles/explorer.js?v=16', 'particles/layout.js?v=5', 'particles/routes.js?v=2', 'particles/extra-particles.js?v=2', 'particles/remaining-particles.js?v=2'];
+  'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=2aa53795ce', 'notebook/outline.js?build=d72f570ee4',
+  'pdfjs/viewer.html', 'pdfjs/viewer.css?v=1e131249af', 'pdfjs/viewer.js?v=f0bab2333c', 'pdfjs/icons.js?v=c6753488af', 'pdfjs/pdf-tone.js?v=37583b871e',
+  'pdfjs/search-text.js?v=69622085ae', 'pdfjs/material-paths.js?v=ca1e61a965', 'pdfjs/renamed-materials.js?v=b94bf2d584', 'pdfjs/controls.css?v=ce628b7465', 'pdfjs/notes.js?v=cc44e7db2f', 'pdfjs/notes.css?v=c36146054c', 'assets/nsu-fp-emblem.webp',
+  'assets/app-192.png?v=f299e7a63c', 'assets/app-512.png?v=9f41a6f2fa', 'particles/index.html', 'particles/particles.js',
+  'particles/explorer.css?v=ab913786e6', 'particles/explorer.js?v=4f8c5e98ad', 'particles/layout.js?v=14224e1e89', 'particles/routes.js?v=1127b43bc0', 'particles/extra-particles.js?v=f0a2243a75', 'particles/remaining-particles.js?v=f1ed737ba7'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json', 'search-index/karma-history.json'];
 const absolute = path => new URL(path, BASE).href;
 const local = url => url.origin === BASE.origin && url.pathname.startsWith(ROOT.pathname);
@@ -21,10 +22,10 @@ const pdfUrl = url => /\.pdf$/i.test(url.pathname) && (local(url) ||
   url.origin === 'https://media.githubusercontent.com' && url.pathname.startsWith('/media/BelovVlad/NSU_FP_Y4_S1/main/'));
 const notebookUrl = url => local(url) && /\.ipynb$/i.test(url.pathname);
 const library = url => url.origin === 'https://cdn.jsdelivr.net' &&
-  /^\/npm\/(pdfjs-dist@4\.10\.38|mathjax@3\.2\.2|marked@12\.0\.2|dompurify@3\.1\.6|highlight\.js@11\.9\.0)\//.test(url.pathname) ||
+  /^\/npm\/(mathjax@3\.2\.2|marked@12\.0\.2|dompurify@3\.1\.6|highlight\.js@11\.9\.0)\//.test(url.pathname) ||
   url.origin === 'https://cdnjs.cloudflare.com' && url.pathname.startsWith('/ajax/libs/highlight.js/11.9.0/');
 function cacheable(url) {
-  return library(url) || local(url) && /\.(?:html|css|js|json|ipynb|png|webp|jpg|jpeg|svg|woff2?|webmanifest)$/i.test(url.pathname);
+  return library(url) || local(url) && /\.(?:html|css|js|json|ipynb|png|webp|jpg|jpeg|svg|woff2?|webmanifest|mjs|bcmap|pfb|ttf)$/i.test(url.pathname);
 }
 function keyFor(url) {
   const key = new URL(url);
@@ -82,8 +83,10 @@ async function material(request,event) {
 }
 async function resource(request, event) {
   const url = new URL(request.url), key = keyFor(url);
+  // vendor/ paths carry their version, so they live in the data cache and survive shell updates.
   const shell = url.origin === BASE.origin && url.pathname.startsWith(BASE.pathname) &&
-    !url.pathname.startsWith(absolute('search-index/').replace(BASE.origin,''));
+    !url.pathname.startsWith(absolute('search-index/').replace(BASE.origin,'')) &&
+    !url.pathname.startsWith(absolute('vendor/').replace(BASE.origin,''));
   const cache = await caches.open(shell ? SHELL : DATA);
   const cached = await cache.match(key);
   const html = request.mode === 'navigate' || /\.html$/i.test(url.pathname) || url.href === BASE.href;

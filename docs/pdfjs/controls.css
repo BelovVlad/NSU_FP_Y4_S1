@@ -1,4 +1,4 @@
-/* Reader controls: a side rail on desktop and a settings sheet on phones. */
+/* Reader controls: a side rail on desktop; a slim top bar, page badge and settings sheet on touch screens. */
 :root{--reader-rail:76px;--reader-head:44px;--reader-bottom:0px;--search-height:52px}
 button,input,a{font:inherit}
 .tool-icon{width:20px;height:20px;display:block;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
@@ -54,567 +54,126 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 .embed-view .outline-panel{width:min(var(--outlineW),calc(100vw - var(--reader-rail)))}
 .embed-view.outline-open .outline-backdrop{display:block;position:fixed;z-index:33;inset:0 0 0 var(--reader-rail);background:rgba(0,0,0,.3)}
 
-.compact-view{--reader-rail:0px;--reader-head:calc(56px + env(safe-area-inset-top,0px));--reader-bottom:calc(64px + env(safe-area-inset-bottom,0px));--search-height:84px;--outlineW:min(90vw,360px)}
-.compact-view .toolbar{inset:0 0 auto;width:auto;height:var(--reader-head);padding:env(safe-area-inset-top,0px) max(6px,env(safe-area-inset-right,0px)) 0 max(6px,env(safe-area-inset-left,0px));flex-direction:row;gap:4px;overflow:visible;border-right:0;border-bottom:1px solid var(--line)}
+
+/* Compact layout (phones, tablets, narrow windows): one slim top bar, a floating
+   page badge instead of a bottom bar, and a settings sheet portalled to <body>. */
+.compact-view{--reader-rail:0px;--reader-head:calc(48px + env(safe-area-inset-top,0px));--reader-bottom:0px;--search-height:84px;--outlineW:min(90vw,360px);
+  --sheet-bottom:calc(env(safe-area-inset-bottom,0px) + 52px)}
+.compact-view .toolbar{inset:0 0 auto;width:auto;height:var(--reader-head);padding:env(safe-area-inset-top,0px) max(4px,env(safe-area-inset-right,0px)) 0 max(4px,env(safe-area-inset-left,0px));flex-direction:row;gap:0;overflow:visible;border-right:0;border-bottom:1px solid var(--line)}
 .compact-view .reader-heading{display:block;position:static;flex:1;height:auto;min-width:0;padding:0 4px;border:0;background:transparent;order:2}
 .compact-view .reader-eyebrow{display:none}
-.compact-view .title{font-size:12px;font-weight:600;line-height:1.4}
+.compact-view .title{font-size:13px;font-weight:600;line-height:1.3}
 .compact-view #back{display:inline-flex;order:1}
 .compact-view .reader-actions{display:contents}
 .compact-view #outlineToggle{order:3}.compact-view #searchToggle{order:4}
 .compact-view .tools-toggle{display:inline-flex;order:5}
-.compact-view .toolbar>.reader-top>.btn,.compact-view .reader-actions>.btn,.compact-view .tools-toggle{width:40px;height:44px;padding:0;flex:none;border:0;background:transparent;gap:0}
-.compact-view #back .tool-caption,.compact-view #expandViewer{display:none}
-.compact-view .reader-controls{position:fixed;z-index:42;left:8px;right:8px;bottom:calc(var(--reader-bottom) + 8px);width:auto;max-height:calc(100dvh - var(--reader-head) - var(--reader-bottom) - 24px);overflow-y:auto;display:none;grid-template-columns:1fr 1fr;gap:16px;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--bar);box-shadow:0 12px 44px rgba(0,0,0,.4)}
-.compact-view.tools-open .reader-controls{display:grid}
-.compact-view .tools-heading{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;font-weight:650}
-.compact-view .tools-heading .btn{width:36px;height:36px}
-.compact-view .page-controls{display:none}
-.compact-view .zoom-controls{grid-column:1/-1;flex-direction:row;justify-content:center;flex-wrap:wrap;padding:0;border:0;gap:8px}
-.compact-view .zoom-controls>.control-label{width:100%;text-align:left;font-size:12px}
-.compact-view .control-pair{gap:6px}
-.compact-view .control-pair .btn.icon{width:44px;height:44px}
-.compact-view .zoom-edit{width:72px;height:44px;font-size:12px}.compact-view .zoom-input{width:42px;font-size:16px}
-.compact-view #fit{width:auto;min-width:92px;height:44px;flex-direction:row;padding:0 10px;border-color:var(--line);background:var(--panel)}
-.compact-view #fit .tool-caption{font-size:12px}
-.compact-view .reader-controls>.rail-button{width:100%;height:48px;flex-direction:row;gap:10px;padding:0 12px;border:1px solid var(--line);background:var(--panel)}
-.compact-view .reader-controls>.rail-button .tool-caption{font-size:12px}
-.compact-view .tone-switch{grid-column:1/-1;grid-row:4;width:100%;height:44px;padding:3px;gap:4px}
-.compact-view .tone-btn{height:36px;border-radius:8px}.compact-view .tone-icon{width:20px;height:20px}
-.compact-view.tools-open .tools-backdrop{display:block;position:fixed;z-index:36;inset:var(--reader-head) 0 var(--reader-bottom);background:rgba(0,0,0,.38)}
-.compact-view .viewer,.compact-view.outline-open .viewer{left:0;bottom:var(--reader-bottom);touch-action:pan-x pan-y}
-.compact-view .stage,.compact-view.continuous-mode .stage{padding:10px}
-.compact-view .outline-panel{left:0;top:var(--reader-head);bottom:var(--reader-bottom);width:var(--outlineW);z-index:38}
-.compact-view.outline-open .outline-backdrop{display:block;position:fixed;z-index:37;inset:var(--reader-head) 0 var(--reader-bottom);background:rgba(0,0,0,.4)}
+.compact-view .toolbar>.reader-top>.btn,.compact-view .reader-actions>.btn,.compact-view .tools-toggle{width:42px;height:44px;padding:0;flex:none;border:0;background:transparent;gap:0}
+.compact-view #back .tool-caption,.compact-view #expandViewer,.compact-view .page-controls{display:none}
+
+.compact-view .viewer,.compact-view.outline-open .viewer{left:0;bottom:0;touch-action:pan-x pan-y}
+.compact-view .stage,.compact-view.continuous-mode .stage{padding:8px max(8px,env(safe-area-inset-right,0px)) 8px max(8px,env(safe-area-inset-left,0px))}
+.compact-view .continuous-pages{gap:10px;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 56px)}
+.compact-view .outline-panel{left:0;top:var(--reader-head);bottom:0;width:var(--outlineW);z-index:38}
+.compact-view.outline-open .outline-backdrop{display:block;position:fixed;z-index:37;inset:var(--reader-head) 0 0;background:rgba(0,0,0,.4)}
 .compact-view .search-panel.open{display:grid;grid-template-columns:minmax(0,1fr) 38px 38px 38px;grid-template-rows:38px 20px;gap:4px;padding:8px}
 .compact-view .search-input{width:100%;min-width:0;height:38px;font-size:16px}
 .compact-view .search-panel .btn{height:38px;width:38px;padding:0}
 .compact-view .search-status{grid-column:1/-1;grid-row:2;min-width:0;text-align:center;font-size:11px}
 .compact-view .search-close{grid-column:4;grid-row:1}.compact-view .search-prev{grid-column:2;grid-row:1}.compact-view .search-next{grid-column:3;grid-row:1}
-.compact-view .mobile-nav{position:fixed;inset:auto 0 0;z-index:45;display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;gap:10px;height:var(--reader-bottom);padding:6px max(12px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:var(--bar)}
-.m-btn{display:grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);cursor:pointer}
-.m-btn:disabled{opacity:.35}.m-btn:active{background:var(--accent-soft)}
-.m-page-info{justify-self:center;min-width:100px;height:44px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--text);font-size:14px;font-weight:650;font-variant-numeric:tabular-nums;cursor:pointer}
-.m-page-info:hover,.m-page-info[aria-expanded=true]{background:var(--accent-soft);border-color:var(--line)}
-.page-jump{position:fixed;z-index:49;left:50%;bottom:calc(var(--reader-bottom) + 8px + var(--keyboard-offset,0px));transform:translateX(-50%);width:min(94vw,390px);padding:10px;border:1px solid var(--line);border-radius:13px;background:var(--bar);box-shadow:0 12px 34px rgba(0,0,0,.42)}
+
+/* Page badge: the strip scrolls by itself, so only the page number and the jump remain. */
+.compact-view .mobile-nav{position:fixed;z-index:45;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 10px);display:block;transition:opacity .16s ease}
+.compact-view #mPrev,.compact-view #mNext{display:none}
+/* The notes toolbar takes the bottom edge while drawing. */
+.compact-view.notes-mode .mobile-nav{opacity:0;pointer-events:none}
+.m-page-info{min-width:64px;height:32px;padding:0 11px;border:1px solid color-mix(in srgb,var(--line) 80%,transparent);border-radius:999px;
+  background:color-mix(in srgb,var(--bar) 84%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  color:var(--text);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;box-shadow:0 2px 10px rgba(0,0,0,.3);cursor:pointer}
+.m-page-info[aria-expanded=true],.m-page-info:active{border-color:var(--accent)}
+.page-jump{position:fixed;z-index:49;left:50%;bottom:calc(var(--sheet-bottom,16px) + var(--keyboard-offset,0px));transform:translateX(-50%);width:min(94vw,390px);padding:10px;border:1px solid var(--line);border-radius:13px;background:var(--bar);box-shadow:0 12px 34px rgba(0,0,0,.42)}
 .page-jump.open{display:block}.page-jump-form{display:grid;grid-template-columns:auto minmax(56px,1fr) auto auto auto;align-items:center;gap:7px}
 .page-jump-label,.page-jump-total{font-size:12px;color:var(--muted);white-space:nowrap}
 .page-jump-input{min-width:0;width:100%;height:44px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);text-align:center;font-size:16px}
 .page-jump-go,.page-jump-close{height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);cursor:pointer}
 .page-jump-close{width:36px;padding:0;font-size:20px}
-@media(prefers-reduced-motion:reduce){.outline-panel,.viewer{transition:none}}
 
-
-/* Phone landscape: the toolbar overlays a stable viewer instead of changing its geometry. */
-@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
-  .compact-view .viewer,.compact-view.outline-open .viewer{
-    top:0;
-    padding-top:var(--reader-head)
-  }
-  .compact-view .toolbar{
-    transition:transform .14s ease,opacity .14s ease;
-    box-shadow:0 5px 18px rgba(0,0,0,.22)
-  }
-  /* A permanent will-change:transform turns the toolbar into the containing
-     block for its fixed settings sheet on Chromium/Samsung Internet. */
-  .compact-view.tools-open .toolbar{
-    transform:none!important;
-    opacity:1;
-    pointer-events:auto
-  }
-  .compact-view.reader-chrome-hidden .toolbar{
-    transform:translate3d(0,calc(-100% - env(safe-area-inset-top,0px)),0);
-    opacity:.98;
-    pointer-events:none
-  }
-  .compact-view.reader-chrome-hidden .outline-panel{top:0}
-  .compact-view.reader-chrome-hidden .search-panel{top:0}
-  .compact-view.reader-chrome-hidden .loading{top:10px}
-  .compact-view .reader-controls{
-    left:auto;
-    right:max(8px,env(safe-area-inset-right,0px));
-    top:max(8px,env(safe-area-inset-top,0px));
-    bottom:max(8px,env(safe-area-inset-bottom,0px));
-    width:min(480px,72vw);
-    height:auto;
-    max-height:none;
-    overflow-y:auto;
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-    gap:10px;
-    padding:12px;
-    align-content:start;
-    overscroll-behavior:contain;
-    -webkit-overflow-scrolling:touch
-  }
-  .compact-view .reader-controls .tools-heading{grid-column:1/-1}
-  .compact-view .reader-controls .zoom-controls{grid-column:1/-1}
-  .compact-view .reader-controls .tone-switch{grid-column:1/-1;grid-row:auto}
-  .compact-view .reader-controls .direct-link{grid-column:1/-1}
-  .compact-view.tools-open .tools-backdrop{inset:0}
-}
-
-
-/* Phones read in the continuous strip: page arrows are redundant; keep only the current page indicator. */
-.compact-view.continuous-mode{--reader-bottom:calc(52px + env(safe-area-inset-bottom,0px))}
-.compact-view.continuous-mode .mobile-nav{
-  grid-template-columns:1fr;
-  height:var(--reader-bottom);
-  padding-top:4px
-}
-.compact-view.continuous-mode #mPrev,
-.compact-view.continuous-mode #mNext{display:none}
-.compact-view.continuous-mode .m-page-info{justify-self:center;height:40px}
-
-/* Temporary transform used during pinch / trackpad zoom in the continuous strip. */
-.continuous-pages.pinch-preview{
-  transition:none;
-  will-change:transform;
-}
-
-
-/* In phone landscape the strip uses the full height. Keep only a tiny translucent page badge. */
-@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
-  .compact-view.continuous-mode{--reader-bottom:0px}
-  .compact-view.continuous-mode .viewer{bottom:0}
-  .compact-view.continuous-mode .mobile-nav{
-    left:auto;right:max(8px,env(safe-area-inset-right,0px));bottom:max(6px,env(safe-area-inset-bottom,0px));
-    width:auto;height:auto;min-height:0;padding:0;border:0;background:transparent;
-    display:block;pointer-events:none
-  }
-  .compact-view.continuous-mode .m-page-info{
-    pointer-events:auto;min-width:0;width:auto;height:22px;padding:0 7px;
-    border:0;border-radius:999px;
-    background:color-mix(in srgb,var(--bar) 28%,transparent);
-    color:color-mix(in srgb,var(--text) 42%,transparent);
-    font-size:10px;font-weight:650;line-height:22px;
-    box-shadow:none;backdrop-filter:blur(3px);
-    opacity:.72
-  }
-  .compact-view.continuous-mode .m-page-info:active,
-  .compact-view.continuous-mode .m-page-info:focus-visible,
-  .compact-view.continuous-mode .m-page-info[aria-expanded=true]{
-    opacity:1;color:var(--text);background:color-mix(in srgb,var(--bar) 74%,transparent)
-  }
-}
-
-
-/* Mobile compositing: avoid briefly exposing the unfiltered white PDF surface
-   while a filtered page is promoted/demoted during pinch or rotation. */
-.compact-view canvas{transition:none}
-.compact-view .canvas-wrap,
-.compact-view .continuous-page{background:var(--pdf-bg)}
-.compact-view.pdf-tone-black .canvas-wrap,
-.compact-view.pdf-tone-black .continuous-page{background:#15191c}
-.compact-view.pdf-tone-mine .canvas-wrap,
-.compact-view.pdf-tone-mine .continuous-page{background:#293133}
-
-
-/* Samsung Internet/Chromium: on compact layouts #readerControls is portalled
-   to <body>, so it cannot be clipped by the fixed header's compositing layer. */
-.compact-view.tools-open > .reader-controls{
-  position:fixed;
-  z-index:60;
-}
-@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
-  .compact-view.tools-open > .reader-controls{
-    min-height:calc(100dvh - max(8px,env(safe-area-inset-top,0px)) - max(8px,env(safe-area-inset-bottom,0px)));
-  }
-}
-
-
-/* Mobile reading settings — compact bottom sheet in portrait, balanced card in landscape. */
-.compact-view .reader-controls{
-  left:50%;
-  right:auto;
-  bottom:calc(var(--reader-bottom) + 10px);
-  transform:translateX(-50%);
-  width:min(calc(100vw - 20px),560px);
-  max-height:calc(100dvh - var(--reader-head) - var(--reader-bottom) - 20px);
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  grid-template-areas:
-    "head head"
-    "zoom zoom"
-    "tone tone"
-    "file file";
-  gap:10px;
-  padding:14px;
-  border-color:color-mix(in srgb,var(--line) 82%,transparent);
-  border-radius:20px;
-  background:color-mix(in srgb,var(--bar) 97%,#000);
-  box-shadow:0 18px 58px rgba(0,0,0,.52);
-  scrollbar-width:thin;
-}
-.compact-view .reader-controls:has(.tone-switch[hidden]){
-  grid-template-areas:
-    "head head"
-    "zoom zoom"
-    "file file";
-}
-.compact-view .tools-heading{
-  grid-area:head;
-  grid-column:auto;
-  min-height:40px;
-  padding:0 2px 2px;
-  font-size:16px;
-  font-weight:700;
-  letter-spacing:-.01em;
-}
-.compact-view .tools-heading .btn{
-  width:40px;
-  height:40px;
-  border-radius:12px;
-  background:var(--panel);
-}
-.compact-view .zoom-controls{
-  grid-area:zoom;
-  grid-column:auto;
-  display:grid;
-  grid-template-columns:auto minmax(72px,88px) minmax(112px,1fr);
-  align-items:end;
-  justify-content:stretch;
-  gap:8px;
-  padding:10px;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background:color-mix(in srgb,var(--panel) 58%,transparent);
-}
-.compact-view .zoom-controls>.control-label{
-  grid-column:1/-1;
-  width:auto;
-  margin:0 0 1px 2px;
-  color:var(--muted);
-  font-size:11px;
-  font-weight:600;
-  letter-spacing:.035em;
-}
-.compact-view .zoom-controls>.control-pair{grid-column:1}
-.compact-view .zoom-controls>.zoom-edit{grid-column:2}
-.compact-view .zoom-controls>#fit{grid-column:3}
-.compact-view .control-pair{
-  width:100%;
-  gap:6px;
-}
-.compact-view .control-pair .btn.icon{
-  width:44px;
-  height:44px;
-  border-radius:11px;
-}
-.compact-view .zoom-edit{
-  width:100%;
-  height:44px;
-  border-radius:11px;
-  font-size:12px;
-}
-.compact-view .zoom-input{
-  width:44px;
-  font-size:16px;
-  font-weight:600;
-}
-.compact-view #fit{
-  width:100%;
-  min-width:0;
-  height:44px;
-  padding:0 12px;
-  border-radius:11px;
-}
-.compact-view .tone-switch{
-  grid-area:tone;
-  grid-column:auto;
-  grid-row:auto;
-  width:100%;
-  height:48px;
-  padding:4px;
-  gap:4px;
-  border-radius:13px;
-  background:color-mix(in srgb,var(--panel) 50%,transparent);
-}
-.compact-view .tone-btn{
-  height:38px;
-  border-radius:9px;
-}
-.compact-view .tone-icon{
-  width:19px;
-  height:19px;
-}
-.compact-view .reader-controls>.rail-button{
-  width:100%;
-  height:50px;
-  margin:0;
-  padding:0 12px;
-  gap:9px;
-  border:1px solid var(--line);
-  border-radius:13px;
-  background:color-mix(in srgb,var(--panel) 74%,transparent);
-  font-weight:600;
-}
+/* Settings sheet. On compact layouts #readerControls is portalled to <body>, so
+   the fixed header's compositing layer cannot clip it (Samsung Internet/Chromium). */
+.compact-view .reader-controls{box-sizing:border-box;position:fixed;z-index:60;left:50%;right:auto;top:auto;bottom:var(--sheet-bottom);transform:translateX(-50%);
+  width:min(calc(100vw - 16px),520px);height:auto;max-height:calc(100dvh - var(--reader-head) - var(--sheet-bottom) - 8px);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;
+  display:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"head head" "zoom zoom" "tone tone" "file file";align-content:start;gap:8px;padding:12px;
+  border:1px solid color-mix(in srgb,var(--line) 82%,transparent);border-radius:18px;background:color-mix(in srgb,var(--bar) 97%,#000);box-shadow:0 18px 58px rgba(0,0,0,.52);scrollbar-width:thin}
+.compact-view .reader-controls:has(.tone-switch[hidden]){grid-template-areas:"head head" "zoom zoom" "file file"}
+.compact-view.tools-open .reader-controls{display:grid}
+.compact-view.tools-open .tools-backdrop{display:block;position:fixed;z-index:36;inset:0;background:rgba(0,0,0,.46)}
+.compact-view .tools-heading{grid-area:head;display:grid;grid-template-columns:minmax(0,1fr) 40px;align-items:center;gap:10px;min-width:0;min-height:40px;font-size:16px;font-weight:700;letter-spacing:-.01em}
+.compact-view .tools-heading>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2}
+.compact-view .tools-heading .btn{justify-self:end;width:40px;height:40px;padding:0;border-radius:12px;background:var(--panel)}
+.compact-view .zoom-controls{grid-area:zoom;display:grid;grid-template-columns:94px 72px minmax(0,1fr);grid-template-rows:auto 44px;align-items:center;gap:7px 8px;min-width:0;margin:0;padding:9px;overflow:hidden;
+  border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--panel) 58%,transparent)}
+.compact-view .zoom-controls>.control-label{grid-column:1/-1;margin:0 0 1px 1px;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.035em}
+.compact-view .zoom-controls>.control-pair{grid-column:1;grid-row:2;display:grid;grid-template-columns:1fr 1fr;width:94px;gap:6px}
+.compact-view .zoom-controls>.control-pair .btn.icon{width:44px;height:44px;border-radius:11px}
+.compact-view .zoom-controls>.zoom-edit{grid-column:2;grid-row:2;width:72px;height:44px;border-radius:11px;font-size:12px}
+.compact-view .zoom-input{width:44px;font-size:16px;font-weight:600}
+.compact-view .zoom-controls>#fit{grid-column:3;grid-row:2;width:100%;min-width:0;height:44px;flex-direction:row;padding:0 10px;overflow:hidden;border:1px solid var(--line);border-radius:11px;background:var(--panel)}
+.compact-view #fit .tool-caption{min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+.compact-view .tone-switch{grid-area:tone;width:100%;min-width:0;height:48px;padding:4px;gap:4px;border-radius:13px;background:color-mix(in srgb,var(--panel) 50%,transparent)}
+.compact-view .tone-btn{height:38px;border-radius:9px}.compact-view .tone-icon{width:19px;height:19px}
+.compact-view .reader-controls>.rail-button{width:100%;min-width:0;height:48px;margin:0;flex-direction:row;gap:9px;padding:0 12px;border:1px solid var(--line);border-radius:13px;background:color-mix(in srgb,var(--panel) 74%,transparent);font-weight:600}
 .compact-view .reader-controls>.rail-button .tool-caption{font-size:12px}
 .compact-view .reader-controls>.rail-button:active{transform:scale(.985)}
-.compact-view .direct-link{
-  grid-area:file;
-  min-height:48px;
-  background:transparent!important;
-}
-.compact-view.tools-open .tools-backdrop{
-  inset:0;
-  background:rgba(0,0,0,.46);
-}
-
-/* Landscape: keep the document visible and make the settings card dense, not stretched. */
-@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
-  .compact-view .reader-controls,
-  .compact-view.tools-open > .reader-controls{
-    left:auto;
-    right:max(8px,env(safe-area-inset-right,0px));
-    top:50%;
-    bottom:auto;
-    transform:translateY(-50%);
-    width:min(720px,62vw);
-    min-height:0;
-    height:auto;
-    max-height:calc(100dvh - 16px);
-    padding:12px;
-    gap:8px;
-    align-content:start;
-  }
-  .compact-view .tools-heading{
-    min-height:36px;
-    padding-bottom:0;
-    font-size:15px;
-  }
-  .compact-view .tools-heading .btn{
-    width:36px;
-    height:36px;
-    border-radius:10px;
-  }
-  .compact-view .zoom-controls{
-    grid-template-columns:auto minmax(72px,90px) minmax(128px,1fr);
-    padding:8px;
-    gap:7px;
-  }
-  .compact-view .reader-controls>.rail-button{height:46px}
-  .compact-view .tone-switch{height:46px}
-  .compact-view .tone-btn{height:36px}
-}
-
-
-/* Canonical compact settings sheet.
-   Keep this block last: it deliberately overrides the older compact/landscape
-   experiments above so every mobile browser and the Android WebView use the
-   same geometry. */
-.compact-view .reader-controls,
-.compact-view.tools-open > .reader-controls{
-  box-sizing:border-box;
-  position:fixed;
-  z-index:60;
-  left:50%;
-  right:auto;
-  top:auto;
-  bottom:calc(var(--reader-bottom) + 8px);
-  transform:translateX(-50%);
-  width:min(calc(100vw - 16px),520px);
-  min-width:0;
-  min-height:0;
-  height:auto;
-  max-height:calc(100dvh - var(--reader-head) - var(--reader-bottom) - 16px);
-  overflow-x:hidden;
-  overflow-y:auto;
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  grid-template-areas:
-    "head head"
-    "zoom zoom"
-    "tone tone"
-    "file file";
-  align-items:stretch;
-  align-content:start;
-  gap:8px;
-  padding:12px;
-  border-radius:18px;
-}
-.compact-view .reader-controls:has(.tone-switch[hidden]){
-  grid-template-areas:
-    "head head"
-    "zoom zoom"
-    "file file";
-}
-.compact-view .tools-heading{
-  grid-area:head;
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 40px;
-  align-items:center;
-  gap:10px;
-  width:100%;
-  min-width:0;
-  min-height:40px;
-  padding:0;
-}
-.compact-view .tools-heading>span{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  line-height:1.2;
-}
-.compact-view .tools-heading .btn{
-  justify-self:end;
-  width:40px;
-  height:40px;
-  margin:0;
-  padding:0;
-}
-.compact-view .zoom-controls{
-  grid-area:zoom;
-  display:grid;
-  grid-template-columns:94px 72px minmax(0,1fr);
-  grid-template-rows:auto 44px;
-  align-items:center;
-  justify-content:stretch;
-  width:100%;
-  min-width:0;
-  margin:0;
-  padding:9px;
-  gap:7px 8px;
-  overflow:hidden;
-}
-.compact-view .zoom-controls>.control-label{
-  grid-column:1/-1;
-  grid-row:1;
-  width:auto;
-  min-width:0;
-  margin:0 0 1px 1px;
-}
-.compact-view .zoom-controls>.control-pair{
-  grid-column:1;
-  grid-row:2;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  width:94px;
-  min-width:0;
-  gap:6px;
-}
-.compact-view .zoom-controls>.control-pair .btn.icon{
-  width:44px;
-  min-width:0;
-  height:44px;
-  margin:0;
-}
-.compact-view .zoom-controls>.zoom-edit{
-  grid-column:2;
-  grid-row:2;
-  width:72px;
-  min-width:0;
-  height:44px;
-  margin:0;
-}
-.compact-view .zoom-controls>#fit{
-  grid-column:3;
-  grid-row:2;
-  width:100%;
-  min-width:0;
-  height:44px;
-  margin:0;
-  padding:0 10px;
-  overflow:hidden;
-}
-.compact-view .zoom-controls>#fit .tool-caption{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.compact-view .tone-switch{
-  grid-area:tone;
-  width:100%;
-  min-width:0;
-  margin:0;
-}
 .compact-view .direct-link{grid-area:file}
-.compact-view .reader-controls>.rail-button{
-  min-width:0;
-  margin:0;
-}
-.compact-view.tools-open .tools-backdrop{
-  inset:0;
-}
 
 @media(max-width:380px){
-  .compact-view .reader-controls,
-  .compact-view.tools-open > .reader-controls{
-    width:calc(100vw - 12px);
-    padding:10px;
-    gap:7px;
-    border-radius:16px;
-  }
-  .compact-view .zoom-controls{
-    grid-template-columns:86px 64px minmax(0,1fr);
-    padding:8px;
-    gap:6px;
-  }
-  .compact-view .zoom-controls>.control-pair{
-    grid-template-columns:40px 40px;
-    width:86px;
-    gap:6px;
-  }
-  .compact-view .zoom-controls>.control-pair .btn.icon{
-    width:40px;
-    height:42px;
-  }
-  .compact-view .zoom-controls>.zoom-edit{
-    width:64px;
-    height:42px;
-  }
-  .compact-view .zoom-controls>#fit{
-    height:42px;
-    padding:0 7px;
-  }
+  .compact-view .reader-controls{width:calc(100vw - 12px);padding:10px;gap:7px;border-radius:16px}
+  .compact-view .zoom-controls{grid-template-columns:86px 64px minmax(0,1fr);padding:8px;gap:6px}
+  .compact-view .zoom-controls>.control-pair{grid-template-columns:40px 40px;width:86px}
+  .compact-view .zoom-controls>.control-pair .btn.icon{width:40px;height:42px}
+  .compact-view .zoom-controls>.zoom-edit{width:64px;height:42px}
+  .compact-view .zoom-controls>#fit{height:42px;padding:0 7px}
   .compact-view #fit .tool-icon{width:18px;height:18px}
   .compact-view #fit .tool-caption{font-size:11px}
 }
 
-@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
-  .compact-view .reader-controls,
-  .compact-view.tools-open > .reader-controls{
-    left:auto;
-    right:max(8px,env(safe-area-inset-right,0px));
-    top:50%;
-    bottom:auto;
-    transform:translateY(-50%);
-    width:min(500px,70vw);
-    min-width:0;
-    min-height:0;
-    height:auto;
-    max-height:calc(100dvh - max(8px,env(safe-area-inset-top,0px)) - max(8px,env(safe-area-inset-bottom,0px)));
-    padding:10px;
-    gap:7px;
-  }
-  .compact-view .tools-heading{min-height:36px;grid-template-columns:minmax(0,1fr) 36px}
-  .compact-view .tools-heading .btn{width:36px;height:36px}
-  .compact-view .zoom-controls{padding:7px}
-  .compact-view .reader-controls>.rail-button{height:44px}
-  .compact-view .tone-switch{height:44px}
-  .compact-view .tone-btn{height:34px}
-}
-
-
-/* Touch reading keeps a stable page surface while its controls slide away. */
+/* Touch reading: the toolbar overlays a stable page surface and slides away while reading. */
 .reader-reveal{display:none}
 @media(pointer:coarse){
   .compact-view .viewer,.compact-view.outline-open .viewer{top:0;padding-top:var(--reader-head);scroll-padding-top:var(--reader-head)}
   .compact-view.search-open .viewer{top:0;padding-top:calc(var(--reader-head) + var(--search-height));scroll-padding-top:calc(var(--reader-head) + var(--search-height))}
-  .compact-view .toolbar,.compact-view .mobile-nav{transition:transform .16s ease,opacity .16s ease}
+  .compact-view .toolbar{transition:transform .16s ease,opacity .16s ease;box-shadow:0 5px 18px rgba(0,0,0,.22)}
+  /* A permanent will-change:transform would make the toolbar the containing block of the settings sheet. */
+  .compact-view.tools-open .toolbar{transform:none!important;opacity:1;pointer-events:auto}
   .compact-view.reader-chrome-hidden .toolbar{transform:translateY(-100%);opacity:0;pointer-events:none;visibility:hidden}
-  .compact-view.reader-chrome-hidden .mobile-nav{transform:translateY(calc(100% + env(safe-area-inset-bottom,0px) + 16px));opacity:0;pointer-events:none;visibility:hidden}
-  .compact-view.reader-chrome-hidden .reader-reveal{display:grid;place-items:center;position:fixed;z-index:46;top:calc(env(safe-area-inset-top,0px) + 6px);right:max(8px,env(safe-area-inset-right,0px));width:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--bar);color:var(--muted);box-shadow:0 2px 8px #0002;cursor:pointer}
+  .compact-view.reader-chrome-hidden .mobile-nav{opacity:.55}
+  .compact-view.reader-chrome-hidden .outline-panel,.compact-view.reader-chrome-hidden .search-panel{top:0}
+  .compact-view.reader-chrome-hidden .loading{top:10px}
+  .compact-view.reader-chrome-hidden .reader-reveal{display:grid;place-items:center;position:fixed;z-index:46;top:calc(env(safe-area-inset-top,0px) + 6px);right:max(8px,env(safe-area-inset-right,0px));width:40px;height:40px;padding:0;border:1px solid var(--line);border-radius:50%;background:color-mix(in srgb,var(--bar) 84%,transparent);color:var(--muted);box-shadow:0 2px 8px #0003;cursor:pointer}
 }
-@media(pointer:coarse) and (min-width:600px) and (min-height:600px){
-  .compact-view{--reader-head:calc(48px + env(safe-area-inset-top,0px))}
-  .compact-view .toolbar{gap:2px;padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
-  .compact-view .title{font-size:12px;font-weight:500}
-  .compact-view.continuous-mode{--reader-bottom:0px}
-  .compact-view.continuous-mode .mobile-nav{left:auto;right:max(8px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 6px);width:auto;height:44px;padding:0;border:0;border-radius:12px;background:transparent}
-  .compact-view.continuous-mode .m-page-info{min-width:72px;height:44px;padding:0 10px;font-size:11px;font-weight:500;background:var(--bar);border:1px solid var(--line);box-shadow:0 2px 8px #0002}
-  .compact-view .reader-controls,.compact-view .page-jump{bottom:calc(env(safe-area-inset-bottom,0px) + 60px)}
-  .compact-view .stage,.compact-view.continuous-mode .stage{padding:8px}
+
+/* Phone landscape: little height, so the toolbar is slimmer and settings become a side card. */
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  .compact-view{--reader-head:calc(42px + env(safe-area-inset-top,0px));--sheet-bottom:max(8px,env(safe-area-inset-bottom,0px))}
+  .compact-view .toolbar>.reader-top>.btn,.compact-view .reader-actions>.btn,.compact-view .tools-toggle{height:40px}
+  .compact-view .mobile-nav{bottom:max(6px,env(safe-area-inset-bottom,0px))}
+  .compact-view .m-page-info{height:26px;min-width:0;padding:0 8px;font-size:11px}
+  .compact-view .reader-controls{left:auto;right:max(8px,env(safe-area-inset-right,0px));top:50%;bottom:auto;transform:translateY(-50%);
+    width:min(500px,70vw);max-height:calc(100dvh - max(8px,env(safe-area-inset-top,0px)) - max(8px,env(safe-area-inset-bottom,0px)));padding:10px;gap:7px}
+  .compact-view .tools-heading{min-height:36px;grid-template-columns:minmax(0,1fr) 36px;font-size:15px}
+  .compact-view .tools-heading .btn{width:36px;height:36px;border-radius:10px}
+  .compact-view .zoom-controls{padding:7px}
+  .compact-view .reader-controls>.rail-button,.compact-view .tone-switch{height:44px}
+  .compact-view .tone-btn{height:34px}
 }
-@media(prefers-reduced-motion:reduce){.compact-view .toolbar,.compact-view .mobile-nav{transition:none}}
+@media(prefers-reduced-motion:reduce){.outline-panel,.viewer,.compact-view .toolbar,.compact-view .mobile-nav{transition:none}}
+
+/* Mobile compositing: avoid briefly exposing a white page surface while pages are promoted during pinch or rotation. */
+.compact-view .canvas-wrap,.compact-view .continuous-page{background:var(--pdf-bg)}
+.compact-view.pdf-tone-black .canvas-wrap,.compact-view.pdf-tone-black .continuous-page{background:#15191c}
+.compact-view.pdf-tone-mine .canvas-wrap,.compact-view.pdf-tone-mine .continuous-page{background:#293133}
+
+/* Temporary transform used during pinch / trackpad zoom in the continuous strip. */
+.continuous-pages.pinch-preview{transition:none;will-change:transform}
 
 /* Site-wide search preview: the parent card owns navigation and actions.
    Render only the matched document page here; never stack a second toolbar,

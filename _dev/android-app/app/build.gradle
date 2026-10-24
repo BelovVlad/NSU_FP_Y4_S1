@@ -2,16 +2,27 @@ plugins {
     id 'com.android.application'
 }
 
+// The update key is kept out of git: CI restores it from repository secrets,
+// local builds read the git-ignored keystore.properties. Without it the APK is
+// signed with the debug key and cannot update an installed app.
+def signingProps = new Properties()
+def signingPropsFile = rootProject.file('keystore.properties')
+if (signingPropsFile.exists()) signingPropsFile.withInputStream { signingProps.load(it) }
+def signingValue = { String key -> System.getenv(key) ?: signingProps.getProperty(key) }
+def updateKeystore = signingValue('NSUFP_KEYSTORE')
+
 android {
     namespace 'ru.nsu.fp'
     compileSdk 35
 
     signingConfigs {
-        nsufp {
-            storeFile file('../keys/nsufp-update.keystore')
-            storePassword 'nsufp2026'
-            keyAlias 'nsufp'
-            keyPassword 'nsufp2026'
+        if (updateKeystore) {
+            nsufp {
+                storeFile rootProject.file(updateKeystore)
+                storePassword signingValue('NSUFP_STORE_PASSWORD')
+                keyAlias signingValue('NSUFP_KEY_ALIAS') ?: 'nsufp'
+                keyPassword signingValue('NSUFP_KEY_PASSWORD')
+            }
         }
     }
 
@@ -25,10 +36,10 @@ android {
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.nsufp
+            if (updateKeystore) signingConfig signingConfigs.nsufp
         }
         release {
-            signingConfig signingConfigs.nsufp
+            if (updateKeystore) signingConfig signingConfigs.nsufp
             minifyEnabled false
         }
     }

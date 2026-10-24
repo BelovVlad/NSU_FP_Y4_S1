@@ -1,0 +1,45 @@
+name: Build site files
+# app.js and the ?v= cache stamps are derived from the sources: regenerate and commit them,
+# so a changed file always reaches browsers and the service worker past their caches.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '!docs/search-index/**'
+      - '.github/scripts/build_site.py'
+      - '.github/scripts/build_app_bundle.py'
+      - '.github/workflows/build-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python .github/scripts/build_site.py
+      - name: Commit derived site files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs
+          if git diff --cached --quiet; then
+            echo "Derived site files unchanged"
+          else
+            git commit -m "Update derived site files"
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          fi

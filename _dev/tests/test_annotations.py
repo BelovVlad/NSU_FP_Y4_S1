@@ -391,7 +391,7 @@ class AnnotationTests(unittest.TestCase):
     @unittest.skipIf(fixtures.REAL_PDFJS,'Large-document virtualization uses a deterministic 200-page fixture')
     def test_notes_virtualization_keeps_only_nearby_canvases(self):
         stub=fixtures.PDF_STUB.replace('numPages:2,','numPages:200,').replace('n>2)','n>200)')
-        self.context.route('https://cdn.jsdelivr.net/npm/pdfjs-dist@*/build/pdf.min.mjs',
+        self.context.route('**/vendor/pdfjs-*/pdf.min.mjs',
             lambda route:route.fulfill(body=stub,content_type='text/javascript',headers={'Access-Control-Allow-Origin':'*'}))
         self.page.goto(self.base+'pdfjs/viewer.html?'+urlencode({'file':self.a}))
         self.page.wait_for_function("document.querySelector('#total').textContent==='/ 200'")

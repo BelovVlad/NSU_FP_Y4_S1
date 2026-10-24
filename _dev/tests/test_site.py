@@ -54,7 +54,8 @@ class SiteTests(unittest.TestCase):
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
         cls.root = Path(cls.temp.name)
-        for relative in ['docs/index.html', 'docs/knowledge.css', 'docs/search-worker.js', 'docs/pdfjs/viewer.html', 'docs/pdfjs/controls.css',
+        for relative in ['docs/index.html', 'docs/site.css', 'docs/site.js', 'docs/knowledge.css', 'docs/search-worker.js', 'docs/pdfjs/viewer.html', 'docs/pdfjs/viewer.css', 'docs/pdfjs/viewer.js', 'docs/pdfjs/icons.js', 'docs/pdfjs/pdf-tone.js',
+                         'docs/pdfjs/search-text.js', 'docs/pdfjs/material-paths.js', 'docs/pdfjs/renamed-materials.js', 'docs/pdfjs/controls.css',
                          'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/notebook/outline.js', 'docs/giscus-config.json',
                          'docs/app.js', 'docs/app.css', 'docs/sw.js', 'docs/manifest.webmanifest',
                          'docs/annotations-store.js', 'docs/pdfjs/notes.js', 'docs/pdfjs/notes.css', 'docs/offline-resources.json',
@@ -67,6 +68,7 @@ class SiteTests(unittest.TestCase):
             target = cls.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / relative, target)
+        shutil.copytree(ROOT/'docs/vendor',cls.root/'docs/vendor')
         if not REAL_PDFJS:
             # Deterministic SW tests exercise preparation/verification with local assets.
             # The optional real-runtime check retains the complete pinned CDN manifest.
@@ -74,8 +76,8 @@ class SiteTests(unittest.TestCase):
                 'pdf':['annotations-store.js?v=1'], 'ipynb':['annotations-store.js?v=1']}),encoding='utf-8')
         # Regression fixtures alone expose module bindings used by older tests.
         # Published viewer modules keep their private scope.
-        viewer=cls.root/'docs/pdfjs/viewer.html'
-        bindings=['canvasRenderRatio','renderContinuous','renderContinuousPage','sweepContinuous','closeSearch','getPageSearchData','resetSearch','searchQuery','searchPage','pageNum','notes']
+        viewer=cls.root/'docs/pdfjs/viewer.js'
+        bindings=['canvasRenderRatio','renderContinuous','renderContinuousPage','sweepContinuous','pageSizeHints','closeSearch','getPageSearchData','resetSearch','searchQuery','searchPage','pageNum','notes']
         bridge='Object.defineProperties(window, {'+','.join(
             name+':{configurable:true,get:()=>'+name+',set:value=>'+name+'=value}' for name in bindings)+'});'
         viewer.write_text(viewer.read_text(encoding='utf-8').replace('\nopen();','\n'+bridge+'\nopen();'),encoding='utf-8')
@@ -164,7 +166,7 @@ class SiteTests(unittest.TestCase):
         self.context=self.browser.new_context(has_touch=touch,service_workers='allow' if self._testMethodName.startswith('test_pwa_') else 'block')
         self.context.route('https://giscus.app/**', lambda route: route.fulfill(body='',content_type='text/javascript'))
         if not REAL_PDFJS:
-            self.context.route('https://cdn.jsdelivr.net/npm/pdfjs-dist@*/build/pdf.min.mjs',
+            self.context.route('**/vendor/pdfjs-*/pdf.min.mjs',
                 lambda route: route.fulfill(body=PDF_STUB,content_type='text/javascript',headers={'Access-Control-Allow-Origin':'*'}))
         self.page=self.context.new_page()
         self.errors=[]
@@ -525,6 +527,25 @@ class SiteTests(unittest.TestCase):
         self.assertTrue(self.page.locator('#outlinePanel').is_visible())
         self.assertLessEqual(self.page.locator('#outlinePanel').bounding_box()['width'],320)
 
+    def test_strip_uses_indexed_page_sizes_for_matching_version(self):
+        def files(version):
+            body=json.dumps({'files':[{'path':self.a,'type':'pdf','version':version,'page_count':2,
+                'page_sizes':[[595,842,1],[842,595,1]]}]})
+            return lambda route:route.fulfill(body=body,content_type='application/json')
+        self.context.route('**/search-index/files.json',files('fixture-a'))
+        self.pdf('&v=fixture-a')
+        self.assertEqual(self.page.evaluate('pageSizeHints'),[[595,842],[842,595]])
+        # Rebuild the strip without rendering: placeholders alone must follow the hints.
+        self.page.evaluate('sweepContinuous=()=>{};renderContinuous(1)')
+        self.page.wait_for_function("document.querySelectorAll('.continuous-page').length===2 && !document.querySelector('.continuous-page canvas')")
+        ratios=self.page.evaluate("[...document.querySelectorAll('.continuous-page')].map(el=>parseFloat(el.style.width)/parseFloat(el.style.height))")
+        self.assertAlmostEqual(ratios[0],595/842,delta=.01)
+        self.assertAlmostEqual(ratios[1],842/595,delta=.01)
+        self.context.unroute('**/search-index/files.json')
+        self.context.route('**/search-index/files.json',files('another-version'))
+        self.pdf('&v=fixture-a')
+        self.assertIsNone(self.page.evaluate('pageSizeHints'))
+
     @unittest.skipIf(REAL_PDFJS,'Failure injection is provided by the deterministic PDF.js stub')
     def test_pdf_can_recover_from_render_failure(self):
         self.pdf()
@@ -534,8 +555,14 @@ class SiteTests(unittest.TestCase):
         self.page.evaluate("window.__failNextRender=true;renderContinuousPage("+page2+",2,true)")
         self.page.wait_for_function(page2+".dataset.rendered==='0'")
         self.assertEqual(self.page.locator('#stage .error').count(),0)
+        retry=self.page.locator('.continuous-page[data-page="2"] .page-retry')
+        self.assertIn('Повторить',retry.inner_text())
+        # The sweep does not hammer a failing page; the reader retries explicitly.
         self.page.evaluate("sweepContinuous()")
+        self.assertEqual(retry.count(),1)
+        retry.click()
         self.page.wait_for_function(page2+".dataset.rendered==='1'")
+        self.assertEqual(retry.count(),0)
         self.assertEqual(self.page.locator('#stage .error').count(),0)
 
     def test_giscus_reads_config_file(self):

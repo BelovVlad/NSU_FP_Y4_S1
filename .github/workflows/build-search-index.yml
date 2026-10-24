@@ -1,5 +1,5 @@
 name: Build search index
-# Site search metadata, Karma history and the app bundle are regenerated from source files.
+# Site search metadata and Karma history are regenerated from source files (app.js: build-site.yml).
 
 on:
   push:
@@ -9,8 +9,6 @@ on:
       - '**/*.ipynb'
       - '**/*.tex'
       - 'docs/Karma/rules.json'
-      - 'docs/app-core.js'
-      - '.github/scripts/build_app_bundle.py'
       - '.github/scripts/build_search_index.py'
       - '.github/scripts/build_karma_history.py'
       - 'docs/Karma/rules.json'
@@ -36,14 +34,13 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install pymupdf
-      - run: python .github/scripts/build_app_bundle.py
       - run: python .github/scripts/build_search_index.py
       - run: python .github/scripts/build_karma_history.py
       - name: Commit generated site data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/app.js docs/search-index
+          git add docs/search-index
           if git diff --cached --quiet; then
             echo "Generated site data unchanged"
           else

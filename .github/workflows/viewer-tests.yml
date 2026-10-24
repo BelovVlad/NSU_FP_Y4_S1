@@ -22,6 +22,7 @@ on:
       - 'docs/Karma/**'
       - 'docs/Overseer/**'
       - '.github/scripts/build_app_bundle.py'
+      - '.github/scripts/build_site.py'
       - '.github/scripts/build_search_index.py'
       - '.github/scripts/build_karma_history.py'
       - 'docs/pdfjs/**'
@@ -49,6 +50,7 @@ on:
       - 'docs/Karma/**'
       - 'docs/Overseer/**'
       - '.github/scripts/build_app_bundle.py'
+      - '.github/scripts/build_site.py'
       - '.github/scripts/build_search_index.py'
       - '.github/scripts/build_karma_history.py'
       - 'docs/pdfjs/**'
@@ -72,6 +74,8 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -r _dev/tests/requirements.txt
       - run: python -m playwright install --with-deps chromium
+      # Test the site as it will be published: app.js and cache stamps rebuilt from sources.
+      - run: python .github/scripts/build_site.py
       - run: python -m unittest discover -s _dev/tests -v
       - uses: actions/setup-node@v4
         with:

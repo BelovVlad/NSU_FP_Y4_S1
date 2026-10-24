@@ -76,4 +76,4 @@
 }
 
 .topbar-actions svg{display:block;flex:none}
-@media(pointer:coarse){.topbar-actions .ghost-btn,.topbar .menu-btn{width:44px;height:44px}.topbar{min-height:60px}.workspace-resizer{display:none}.workspace{display:block}.subject-list-col{padding-right:0}}
+@media(pointer:coarse){.topbar-actions .ghost-btn,.topbar .menu-btn{width:44px;height:44px}.topbar{min-height:52px}.workspace-resizer{display:none}.workspace{display:block}.subject-list-col{padding-right:0}}

@@ -320,8 +320,8 @@ class OverseerBrowserTests(unittest.TestCase):
         page.clock.run_for(2200)
         self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
 
-    def test_projection_relocates_after_five_seconds_and_rechecks_condition(self):
-        page = self.page(clock=True, config={'activeMax': 30000})
+    def test_projection_relocates_after_dwell_and_rechecks_condition(self):
+        page = self.page(clock=True, config={'activeMax': 60000})
         page.evaluate("NSUOverseer.show('ambient')")
         page.locator('#musicToggle').hover()
         page.clock.run_for(1700)
@@ -330,8 +330,13 @@ class OverseerBrowserTests(unittest.TestCase):
             page.clock.run_for(4000)
             self.assertEqual(page.evaluate('NSUOverseer.getState().position'), before)
             self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
-            page.clock.run_for(2200)
+            # A projection dwells 8–14 s (plus its opening) before the Overseer relocates.
+            for _ in range(40):
+                page.clock.run_for(500)
+                if page.evaluate('NSUOverseer.getState().position') != before:
+                    break
             self.assertNotEqual(page.evaluate('NSUOverseer.getState().position'), before)
+            page.clock.run_for(2500)
             self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
         page.mouse.move(640, 400)
         page.clock.run_for(6500)

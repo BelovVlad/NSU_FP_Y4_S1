@@ -50,8 +50,12 @@ AUDIO_SHIM = r'''
 '''
 
 
+def bundle() -> str:
+    return CORE.read_text(encoding='utf-8').rstrip() + AUDIO_SHIM
+
+
 def main():
-    OUTPUT.write_text(CORE.read_text(encoding='utf-8').rstrip() + AUDIO_SHIM, encoding='utf-8')
+    OUTPUT.write_text(bundle(), encoding='utf-8')
     print(f'Built {OUTPUT.relative_to(ROOT)} from {CORE.relative_to(ROOT)} + Karma audio shim')
 
 

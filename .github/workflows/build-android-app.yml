@@ -41,7 +41,22 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      - name: Restore update signing key
+        shell: bash
+        env:
+          NSUFP_KEYSTORE_BASE64: ${{ secrets.NSUFP_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$NSUFP_KEYSTORE_BASE64" ]; then
+            echo "::error::Secret NSUFP_KEYSTORE_BASE64 is missing. An APK signed with another key cannot update installed apps."
+            exit 1
+          fi
+          echo "$NSUFP_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/nsufp-update.keystore"
+          echo "NSUFP_KEYSTORE=$RUNNER_TEMP/nsufp-update.keystore" >> "$GITHUB_ENV"
+
       - name: Build debug APK
+        env:
+          NSUFP_STORE_PASSWORD: ${{ secrets.NSUFP_STORE_PASSWORD }}
+          NSUFP_KEY_PASSWORD: ${{ secrets.NSUFP_KEY_PASSWORD }}
         run: gradle --no-daemon :app:assembleDebug
 
       - name: Prepare APK

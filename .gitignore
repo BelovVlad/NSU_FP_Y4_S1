@@ -29,6 +29,9 @@ node_modules/
 .ruff_cache/
 .gradle/
 /_dev/android-app/local.properties
+# Ключ подписи обновлений хранится в секретах GitHub, а не в репозитории.
+/_dev/android-app/keys/
+/_dev/android-app/keystore.properties
 /playwright-report/
 /test-results/
 *.tsbuildinfo

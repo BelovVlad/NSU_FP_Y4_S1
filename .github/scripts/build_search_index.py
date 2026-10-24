@@ -146,6 +146,23 @@ def base_record(rel: Path, kind: str) -> dict:
     }
 
 
+def page_sizes(doc: fitz.Document) -> list[list]:
+    """Displayed page sizes in PDF points, run-length encoded as [width, height, count].
+
+    The viewer lays out the whole continuous strip from these before any page is
+    rendered, so mixed portrait/landscape documents do not jump while scrolling.
+    """
+    runs: list[list] = []
+    for page in doc:
+        rect = page.rect  # crop box with /Rotate applied, as PDF.js displays it
+        size = [round(rect.width, 1), round(rect.height, 1)]
+        if runs and runs[-1][:2] == size:
+            runs[-1][2] += 1
+        else:
+            runs.append([*size, 1])
+    return runs
+
+
 def pdf_record(rel: Path) -> dict:
     full = ROOT / rel
     record = base_record(rel, "pdf")
@@ -163,6 +180,7 @@ def pdf_record(rel: Path) -> dict:
         try:
             with fitz.open(full) as doc:
                 record["page_count"] = doc.page_count
+                record["page_sizes"] = page_sizes(doc)
         except Exception:
             pass
         return record
@@ -170,6 +188,7 @@ def pdf_record(rel: Path) -> dict:
     try:
         with fitz.open(full) as doc:
             record["page_count"] = doc.page_count
+            record["page_sizes"] = page_sizes(doc)
             for number, page in enumerate(doc, 1):
                 text = clean_text(page.get_text("text", sort=True))
                 if text:
@@ -243,6 +262,7 @@ def compact_metadata(record: dict) -> dict:
         "created_at",
         "version",
         "page_count",
+        "page_sizes",
         "cell_count",
         "indexed",
         "reason",

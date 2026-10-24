@@ -1,0 +1,69 @@
+/* PDF reader: document surface, panels, layers and tones. Controls live in controls.css. */
+:root{--bg:#0d1015;--pdf-bg:#1e1e1e;--bar:#12161c;--panel:#171c23;--line:#2b323d;--text:#eef1f5;--muted:#8993a1;--accent:#d45d68;--accent-soft:rgba(212,93,104,.14);--outlineW:320px}
+
+body.theme-na19{
+  --bg:#071112;--pdf-bg:#0a1718;--bar:#0c1a1b;--panel:#102123;--line:#31565a;
+  --text:#eff8f6;--muted:#88aaa9;--accent:#53c8c5;--accent-soft:rgba(83,200,197,.14)
+}
+body.theme-na19x{
+  --bg:#171b1e;--pdf-bg:#20262a;--bar:#252b30;--panel:#30373d;--line:#68757d;
+  --text:#ffffff;--muted:#b9c3c8;--accent:#f7fbfd;--accent-soft:rgba(247,251,253,.14)
+}
+body.theme-na19 .search-panel,body.theme-na19 .outline-panel,body.theme-na19 .mobile-nav,body.theme-na19 .loading{
+  background:rgba(12,26,27,.98)
+}
+body.theme-na19x .search-panel,body.theme-na19x .outline-panel,body.theme-na19x .mobile-nav,body.theme-na19x .loading{
+  background:rgba(37,43,48,.98)
+}
+body.theme-na19 .page-input,body.theme-na19 .search-input,body.theme-na19 .zoom-edit{background:#0b1819}
+body.theme-na19x .page-input,body.theme-na19x .search-input,body.theme-na19x .zoom-edit{background:#2d3439}
+body.theme-na19 .outline-link.depth-0{background:#102123;border-color:#31565a}
+body.theme-na19x .outline-link.depth-0{background:#30373d;border-color:#68757d}
+body.theme-na19 .outline-link.depth-1{border-left-color:#396368;background:rgba(83,200,197,.025)}
+body.theme-na19x .outline-link.depth-1{border-left-color:#78858d;background:rgba(255,255,255,.025)}
+
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.search-panel{position:fixed;z-index:35;top:58px;left:0;right:0;height:52px;display:none;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--line);background:rgba(18,22,28,.98);box-shadow:0 6px 18px rgba(0,0,0,.22)}.search-panel.open{display:flex}.search-input{height:36px;min-width:120px;max-width:520px;flex:1;border:1px solid var(--line);border-radius:9px;background:#0f1318;color:var(--text);padding:0 11px;outline:none}.search-status{min-width:125px;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.search-panel .btn{height:36px}.search-close{font-size:18px}
+.outline-panel{position:fixed;z-index:34;left:0;top:58px;bottom:0;width:var(--outlineW);display:flex;flex-direction:column;border-right:1px solid var(--line);background:rgba(18,22,28,.985);box-shadow:14px 0 34px rgba(0,0,0,.34);transform:translateX(-102%);transition:transform .18s ease}.outline-panel.open{transform:translateX(0)}.outline-head{height:52px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 12px;border-bottom:1px solid var(--line);flex:none}.outline-title{font-size:14px;font-weight:800}.outline-tree{min-height:0;flex:1;overflow:auto;padding:9px 8px 18px}.outline-empty{padding:18px 12px;color:var(--muted);font-size:13px;line-height:1.5}.outline-row{position:relative}.outline-link{width:100%;min-height:37px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:1px 0;padding:7px 9px;border:0;border-radius:8px;background:transparent;color:var(--text);text-align:left;text-decoration:none;cursor:pointer;transition:background .12s ease,border-color .12s ease,color .12s ease}.outline-link:hover{background:rgba(255,255,255,.045)}.outline-link.active{background:var(--accent-soft)!important;box-shadow:inset 4px 0 0 var(--accent);color:var(--text)}.outline-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.outline-page{color:var(--muted);font-size:10px;font-variant-numeric:tabular-nums}.outline-link.depth-0{min-height:44px;margin:8px 0 4px;padding:9px 10px;border:1px solid #313944;background:#1a2028}.outline-link.depth-0 .outline-label{font-size:13.5px;font-weight:800;letter-spacing:-.01em}.outline-link.depth-0 .outline-page{font-size:11px;font-weight:700;color:#aab3c0}.outline-link.depth-1{margin-left:10px;width:calc(100% - 10px);padding:8px 9px 8px 13px;border-left:2px solid #46505d;background:rgba(255,255,255,.018)}.outline-link.depth-1 .outline-label{font-size:12.5px;font-weight:680}.outline-link.depth-1 .outline-label::before{content:'› ';color:#768292;font-weight:900}.outline-link.depth-2{margin-left:24px;width:calc(100% - 24px);padding:7px 9px 7px 12px;border-left:1px solid #39424d;color:#d4dae2}.outline-link.depth-2 .outline-label{font-size:12px;font-weight:560}.outline-link.depth-2 .outline-label::before{content:'· ';color:#707b89;font-weight:900}.outline-link.depth-3{margin-left:38px;width:calc(100% - 38px);padding:6px 9px 6px 11px;border-left:1px dashed #343c46;color:#b9c1cc}.outline-link.depth-3 .outline-label{font-size:11.5px;font-weight:500}.outline-link.depth-3 .outline-label::before{content:'– ';color:#697482}.outline-backdrop{display:none}
+.viewer{position:absolute;inset:58px 0 0;overflow:auto;background:var(--pdf-bg);transition:left .18s ease}.viewer{left:0}body.outline-open .viewer{left:var(--outlineW)}body.search-open .viewer{top:110px}.stage{min-height:100%;display:flex;justify-content:center;align-items:flex-start;padding:24px}.canvas-wrap{position:relative;line-height:0;box-shadow:0 8px 28px rgba(0,0,0,.5)}canvas{display:block;max-width:none;background:transparent}
+/* PDF tones are baked into the raster (see TONE_PIPELINES); these only colour empty page placeholders. */
+body.pdf-tone-black .canvas-wrap{background:#15191c}
+body.pdf-tone-mine .canvas-wrap{background:#293133}
+.tone-switch{height:36px;display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--line);border-radius:10px;background:#0f151b;overflow:hidden;flex:none}
+.tone-switch[hidden]{display:none!important}
+.canvas-wrap[hidden]{display:none}
+.tone-btn{width:31px;height:28px;display:grid;place-items:center;padding:0;border:0;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer}
+.tone-btn:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.tone-btn.active{background:var(--panel);color:var(--cream,#ead4b7);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 34%,var(--line)),0 2px 8px rgba(0,0,0,.16)}
+.tone-icon{width:16px;height:16px;display:block}
+.tone-icon *{vector-effect:non-scaling-stroke}
+.tone-icon-mine .mine-left{fill:#ff8fa3}.tone-icon-mine .mine-right{fill:#90e0ef}.tone-icon-mine .mine-line{stroke:#fff;stroke-width:1.2;fill:none;opacity:.88}
+.highlight-layer,.annotation-layer{position:absolute;left:0;top:0;overflow:hidden}.highlight-layer{pointer-events:none}.annotation-layer{pointer-events:none;z-index:4}.pdf-link{position:absolute;display:block;pointer-events:auto;cursor:pointer;background:transparent;border:0;border-radius:2px;text-decoration:none;touch-action:manipulation;-webkit-tap-highlight-color:rgba(212,93,104,.18)}.pdf-link:hover{background:rgba(212,93,104,.10);box-shadow:inset 0 0 0 1px rgba(212,93,104,.26)}.pdf-link:focus-visible{outline:2px solid var(--accent);outline-offset:1px}.pdf-link:active{background:rgba(212,93,104,.18)}.search-mark{position:absolute;background:rgba(255,210,64,.38);border:1px solid rgba(255,210,64,.62);border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.08)}
+.loading{position:fixed;left:50%;top:82px;z-index:50;transform:translateX(-50%);display:none;align-items:center;gap:9px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(18,22,28,.95);color:var(--muted);font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.28)}body.search-open .loading{top:134px}.loading.show{display:flex}.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse .8s infinite alternate}@keyframes pulse{to{opacity:.3}}.error{max-width:680px;margin:80px auto;padding:24px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);line-height:1.6}.error strong{color:var(--text)}
+.mobile-nav{display:none}
+.page-jump{display:none}
+/* Selectable PDF text layer */
+.text-layer{position:absolute;inset:0;z-index:3;overflow:hidden;line-height:1;pointer-events:auto;user-select:text;-webkit-user-select:text}
+.text-layer span{position:absolute;transform-origin:0 0;color:transparent;white-space:pre;cursor:text}
+.text-layer ::selection{background:rgba(70,145,255,.34)}
+.highlight-layer{z-index:2}
+.annotation-layer{z-index:4}
+
+/* Continuous strip: the default reading mode (single canvas is kept for search previews). */
+.continuous-pages{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;padding:0 0 28px}
+.continuous-page{position:relative;min-width:120px;min-height:160px;background:var(--pdf-bg);box-shadow:0 8px 28px rgba(0,0,0,.5);line-height:0;contain:layout paint}
+.continuous-page canvas{display:block}
+.continuous-page .highlight-layer{position:absolute;left:0;top:0;z-index:2;overflow:hidden;pointer-events:none}
+.continuous-page .text-layer{z-index:3}
+body.pdf-tone-black .continuous-page{background:#15191c}
+body.pdf-tone-mine .continuous-page{background:#293133}
+body.continuous-mode .stage{display:block;padding:18px 20px}
+body.continuous-mode .canvas-wrap{display:none!important}
+
+/* A page whose render failed offers a retry instead of staying silently blank. */
+.page-retry{position:absolute;left:50%;top:50%;z-index:6;transform:translate(-50%,-50%);max-width:calc(100% - 24px);min-height:40px;padding:8px 14px;
+  border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);font:600 13px/1.3 system-ui;line-height:1.3;white-space:normal;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.page-retry:hover,.page-retry:focus-visible{border-color:var(--accent);outline:none}
+
+/* Sharp redraw of the visible part of a zoomed page, above the base raster and below the layers. */
+.continuous-page>.page-detail{position:absolute;z-index:1;pointer-events:none}
