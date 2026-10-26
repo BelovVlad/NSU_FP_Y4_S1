@@ -16,7 +16,7 @@
       host.innerHTML=`<div class="karma-header"><h3>Карма</h3></div>
         <div class="karma-body"><div class="karma-display" role="img"><canvas width="360" height="360" aria-hidden="true"></canvas></div>
         <div class="karma-details"><p class="karma-status" role="status">Проверяю историю конспектов…</p><div class="karma-tracks"></div><div class="karma-series"></div>
-        <details class="karma-rules"><summary>Как считается карма</summary><p>Начальная карма — 1. Каждый день в 09:00 по Новосибирску: если долгов нет, карма повышается на 1; если остался хотя бы один долг — понижается на 1. Уровень не опускается ниже 1. После занятия есть время до 09:00 следующего дня.</p><p>Обычные повышения доводят карму до 9. Семь полных календарных суток подряд на девятой карме открывают десятую. Суббота и воскресенье тоже учитываются.</p><p>Закрытие всех накопленных долгов даёт кармацвет сразу, не чаще одного раза за день с 09:00 до 09:00. Кармацвет защищает от следующего снижения на один календарный день, до 09:00 следующих суток. Если долг остаётся, на следующем пересчёте карма снижается на 1. Пока защита удерживает девятую карму, серия продолжается; снижение обнуляет её.</p><p class="karma-history-note"></p></details></div></div>`;
+        <details class="karma-rules"><summary>Как считается карма</summary><p>Начальная карма — 1. На конспект после занятия есть время до 09:00 следующего дня. Каждый день в 09:00 по Новосибирску, включая выходные, карма понижается на 1, если остался хотя бы один долг. Без долгов уровень не меняется. Ниже 1 карма не опускается.</p><p>Полное погашение всех текущих долгов сразу повышает карму на 1, не чаще одного раза за день с 09:00 до 09:00. Частичное погашение повышения не даёт, а лишние конспекты одного раздела не закрывают долг в другом.</p><p>Обычные повышения доводят карму до 9. После семи полных суток подряд на девятой карме следующее полное погашение долгов открывает десятую. Снижение обнуляет серию.</p><p>Кармацвет выдаётся, если долги были сразу во всех восьми разделах и за тот же день с 09:00 до 09:00 закрыты все. Он не накапливается и защищает от следующего снижения до 09:00 следующих суток; серия на девятой карме при этом сохраняется. Если долг остаётся и дальше, карма снижается на 1.</p><p class="karma-history-note"></p></details></div></div>`;
       this.canvas=host.querySelector('canvas');
     }
     error(){
@@ -36,9 +36,10 @@
         :result.level===9?'Высшая карма. Семь календарных суток на девятой карме завершены.'
         :result.shield?'Карма закреплена кармацветом.':'';
       status.hidden=!status.textContent;
-      const maximumDays=completedDays(result.fullSince,7,now);
-      h.querySelector('.karma-tracks').innerHTML=`<div><span>Кармацвет</span><b>${result.shield?'Получен':result.protectedUntil?'Защита действует':'Закройте все долги'}</b><i><em style="width:${result.shield||result.protectedUntil?100:0}%"></em></i></div>
-        <div><span>Высшая карма</span><b>${maximumDays} / 7 дней</b><i><em style="width:${maximumDays/7*100}%"></em></i></div>`;
+      const flowerShare=result.shield||result.protectedUntil?1:result.flowerProgress??0;
+      const maximumShare=result.level===9?1:completedDays(result.fullSince,7,now)/7;
+      const track=(label,share)=>`<div><span>${label}</span><i role="progressbar" aria-label="${label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(share*100)}"><em style="width:${share*100}%"></em></i></div>`;
+      h.querySelector('.karma-tracks').innerHTML=track('Кармацвет',flowerShare)+track('Высшая карма',maximumShare);
       const subjects=new Map();
       for(const row of result.rows){
         if(!subjects.has(row.subject))subjects.set(row.subject,[]);

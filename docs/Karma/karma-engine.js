@@ -42,7 +42,8 @@
     const times=new Set([...snapshots.map(s=>s.time),now]);
     for(let t=firstDayEnd;t<=now;t+=DAY)times.add(t);
     let snapshot=0,counts={},level=0,stableSince=begin,fullSince=null;
-    let shield=false,protectedUntil=null,rows=[],hadDebt=false,lastFlowerDay=null;
+    let shield=false,protectedUntil=null,rows=[],hadDebt=false;
+    let lastFlowerDay=null,lastIncreaseDay=null,allDebtDay=null;
     const changes=[{at:begin,type:'initial',level}];
     for(const time of [...times].sort((a,b)=>a-b)){
       // Uploads at 09:00 count before that day's assessment.
@@ -50,12 +51,20 @@
       rows=status(rules,counts,time);
       const debt=rows.some(row=>row.actual<row.due);
       const day=dayStart(time-rules.deadlineHour*3600000,rules);
-      if(hadDebt&&!debt&&lastFlowerDay!==day){
-        shield=true;protectedUntil=null;lastFlowerDay=day;
-        changes.push({at:time,type:'reinforced',level});
+      if(rows.every(row=>row.actual<row.due))allDebtDay=day;
+      const before=level;
+      if(hadDebt&&!debt){
+        // Only a full repayment counts; partial repayment changes nothing.
+        if(lastIncreaseDay!==day){
+          if(level<8){level++;lastIncreaseDay=day}
+          else if(level===8&&fullSince!==null&&time-fullSince>=7*DAY){level=9;lastIncreaseDay=day}
+        }
+        if(allDebtDay===day&&lastFlowerDay!==day){
+          shield=true;protectedUntil=null;lastFlowerDay=day;
+          changes.push({at:time,type:'reinforced',level});
+        }
       }
       if(!debt)protectedUntil=null;
-      const before=level;
       if(time>=firstDayEnd&&(time-firstDayEnd)%DAY===0){
         if(protectedUntil!==null&&time>=protectedUntil){
           protectedUntil=null;
@@ -66,8 +75,7 @@
             shield=false;protectedUntil=time+DAY;
             changes.push({at:time,type:'protected',level});
           }else level=Math.max(0,level-1);
-        }else if(level<8)level++;
-        else if(level===8&&fullSince!==null&&time-fullSince>=7*DAY)level=9;
+        }
       }
       if(level!==before){
         stableSince=time;
@@ -77,7 +85,11 @@
       }
       hadDebt=debt;
     }
-    return {level,raw:rows.filter(row=>row.complete).length,rows,shield,protectedUntil,
+    const today=dayStart(now-rules.deadlineHour*3600000,rules);
+    // Share of sections repaid since all eight were in debt today; null when no flower is in reach.
+    const flowerProgress=hadDebt&&allDebtDay===today&&lastFlowerDay!==today
+      ?rows.filter(row=>row.actual>=row.due).length/rows.length:null;
+    return {level,raw:rows.filter(row=>row.complete).length,rows,shield,protectedUntil,flowerProgress,
       stableSince,fullSince,changes,observedFrom:begin,nextDeadline:graceEnd(now,rules),
       reinforcementAt:null,maximumAt:fullSince!==null?fullSince+7*DAY:null};
   }

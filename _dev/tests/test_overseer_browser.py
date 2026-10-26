@@ -176,6 +176,68 @@ class OverseerBrowserTests(unittest.TestCase):
         self.assertFalse(page.evaluate('window.NSUOverseer.getState().active'))
         page.wait_for_function("window.NSUOverseer.getState().active && window.NSUOverseer.getState().reason==='danger'", timeout=1500)
 
+    def test_gribanov_outranks_cursor_beyond_half_tracking_distance(self):
+        page = self.page(clock=True, config={'activeMax': 60000})
+        page.locator('#musicToggle').evaluate("node=>node.style.visibility='hidden'")
+        page.evaluate("""() => {
+          const word=document.createElement('div');
+          word.style.cssText='position:fixed;left:560px;top:380px;font-size:30px;z-index:3';
+          word.textContent='Грибанов';document.body.append(word);window.NSUOverseer.scan();
+        }""")
+        page.clock.run_for(600)
+        state=page.evaluate('NSUOverseer.getState()')
+        self.assertTrue(state['active'])
+        head=state['position']
+        inward={'top':(0,1),'bottom':(0,-1),'left':(1,0),'right':(-1,0)}[state['edge']]
+        # Usual tracking distance is 12 body lengths (576 px); the word keeps its
+        # hold until the cursor comes within half of that.
+        for distance,focus in [(430,'danger'),(230,'cursor'),(430,'danger')]:
+            page.mouse.move(head['x']+inward[0]*distance,head['y']+inward[1]*distance)
+            page.clock.run_for(100)
+            self.assertEqual(page.evaluate('NSUOverseer.getState().focus'),focus)
+
+    def test_overseer_faces_music_button_throughout_the_approach(self):
+        page = self.page(clock=True, config={'activeMax': 60000})
+        page.evaluate("NSUOverseer.show('ambient')")
+        page.clock.run_for(600)
+        page.locator('#musicToggle').hover()
+        rect=page.locator('#musicToggle').bounding_box()
+        centre=(rect['x']+rect['width']/2,rect['y']+rect['height']/2)
+        stages=set()
+        for _ in range(30):
+            page.clock.run_for(20)
+            state=page.evaluate('NSUOverseer.getState()')
+            stages.add(state['musicApproach'])
+            if state['musicApproach']=='moving':
+                # It must not land looking at something else and then turn round.
+                self.assertEqual(state['focus'],'music')
+                self.assertAlmostEqual(state['lookAt']['x'],centre[0],delta=1)
+                self.assertAlmostEqual(state['lookAt']['y'],centre[1],delta=1)
+        self.assertEqual(stages,{'moving','arrived'})
+
+    def test_music_button_outranks_gribanov(self):
+        page = self.page(clock=True, config={'activeMax': 60000})
+        page.evaluate("""() => {
+          const word=document.createElement('div');
+          word.style.cssText='position:fixed;left:560px;top:380px;font-size:30px;z-index:3';
+          word.textContent='Грибанов';document.body.append(word);window.NSUOverseer.scan();
+        }""")
+        page.clock.run_for(600)
+        self.assertTrue(page.evaluate('NSUOverseer.getState().active'))
+        page.locator('#musicToggle').hover()
+        page.clock.run_for(1700)
+        state=page.evaluate('NSUOverseer.getState()')
+        self.assertTrue(state['gribanovVisible'])
+        self.assertEqual(state['musicApproach'],'arrived')
+        self.assertEqual(state['focus'],'music')
+        self.assertEqual(state['musicHologram'],'pebbles')
+        self.assert_music_distance(page)
+        # Away from the button, the word takes the Overseer's attention back.
+        page.mouse.move(80,780)
+        page.clock.run_for(200)
+        self.assertEqual(page.evaluate('NSUOverseer.getState().focus'),'danger')
+        self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'),'')
+
     def test_music_modes_replace_ambient_schedule(self):
         page = self.page()
         page.evaluate("""() => {
@@ -224,6 +286,23 @@ class OverseerBrowserTests(unittest.TestCase):
         page.wait_for_timeout(80)
         self.assertFalse(page.evaluate('window.NSUOverseer.getState().active'))
 
+    def test_alt_o_shatters_overseer_on_desktop(self):
+        page = self.page()
+        self.assertFalse(page.evaluate('window.NSUOverseer.getState().mobile'))
+        # Without an Overseer on screen, and inside text fields, Alt+O does nothing.
+        page.keyboard.press('Alt+KeyO')
+        self.assertFalse(page.evaluate('window.NSUOverseer.getState().suppressedUntilReload'))
+        page.evaluate("window.NSUOverseer.show('ambient')")
+        page.wait_for_function('window.NSUOverseer.getState().active')
+        page.locator('#globalSearch').focus()
+        page.keyboard.press('Alt+KeyO')
+        self.assertFalse(page.evaluate('window.NSUOverseer.getState().disintegrating'))
+        page.locator('#globalSearch').blur()
+        page.keyboard.press('Alt+KeyO')
+        page.wait_for_function("window.NSUOverseer.getState().disintegrating && window.NSUOverseer.getState().reason==='shattered'")
+        page.wait_for_function("!window.NSUOverseer.getState().active && window.NSUOverseer.getState().suppressedUntilReload", timeout=1600)
+        self.assertFalse(page.evaluate("window.NSUOverseer.show('ambient')"))
+
     def test_music_hover_only_projects_for_existing_overseer(self):
         page = self.page(clock=True, config={'activeMax': 20000})
         deadline = page.evaluate('NSUOverseer.getState().scheduleWindowEnds')
@@ -251,7 +330,8 @@ class OverseerBrowserTests(unittest.TestCase):
         page.clock.run_for(1500)
         self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
         self.assert_music_distance(page)
-        page.mouse.move(640, 400)
+        # Far from the top-bar button: outside the 12-body-length cursor tracking radius.
+        page.mouse.move(80, 780)
         page.evaluate("""() => {
           chooseMusicTrack('na19x');window.__overseerMusicPaused=false;
           document.querySelector('#siteMusic').dispatchEvent(new Event('play'));
@@ -260,7 +340,7 @@ class OverseerBrowserTests(unittest.TestCase):
         self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'stop')
         page.locator('#musicToggle').hover()
         self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'stop')
-        page.mouse.move(640, 400)
+        page.mouse.move(80, 780)
         self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'stop')
         page.evaluate("NSUOverseer.hide('test')")
         page.locator('#musicToggle').hover()
@@ -303,7 +383,7 @@ class OverseerBrowserTests(unittest.TestCase):
         page.evaluate("NSUOverseer.show('ambient')")
         rect = page.locator('#musicToggle').bounding_box()
         for _ in range(2):
-            page.mouse.move(rect['x'] + rect['width'] + 180, rect['y'] + rect['height']/2)
+            page.mouse.move(rect['x'] - 90, rect['y'] + rect['height']/2)
             page.clock.run_for(1700)
             self.assertEqual(page.evaluate('NSUOverseer.getState().musicHologram'), 'pebbles')
             page.mouse.move(640, 400)
@@ -500,6 +580,72 @@ class OverseerBrowserTests(unittest.TestCase):
         }""", point)
         self.assertGreater(displacement,80)
         self.assertTrue(page.evaluate('NSUOverseer.getState().active'))
+
+    def test_cursor_beside_head_never_swings_feelers_around(self):
+        page = self.page(clock=True, config={'activeMax': 60000})
+        page.locator('#musicToggle').evaluate("node=>node.style.visibility='hidden'")
+        page.evaluate("NSUOverseer.show('ambient')")
+        page.clock.run_for(600)
+        state=page.evaluate('NSUOverseer.getState()')
+        head=state['position']
+        horizontal=state['edge'] in ('top','bottom')
+        inward={'top':(0,1),'bottom':(0,-1),'left':(1,0),'right':(-1,0)}[state['edge']]
+        # Sweep the cursor beside the head, near the root plane, where the gaze turns
+        # through the strands' exit directions; their tips must follow smoothly.
+        previous=None;largest=0
+        for step in range(120):
+            offset=-160+step*320/119
+            depth=10+abs(offset)*.15
+            x=head['x']+(offset if horizontal else 0)+inward[0]*(depth-40)
+            y=head['y']+(0 if horizontal else offset)+inward[1]*(depth-40)
+            if abs(offset)<70: continue
+            page.mouse.move(x,y)
+            page.clock.run_for(17)
+            tips=page.evaluate('NSUOverseer.getState().feelerTips')
+            if previous and len(tips)==len(previous):
+                largest=max(largest,*(abs(a['x']-b['x'])+abs(a['y']-b['y']) for a,b in zip(tips,previous)))
+            previous=tips
+        self.assertTrue(page.evaluate('NSUOverseer.getState().active'))
+        # A whipping strand used to fling its tip thousands of pixels in one frame;
+        # ordinary quick reactions stay well below a strand's own length.
+        self.assertLess(largest,40)
+
+    def test_fast_cursor_does_not_jerk_feelers(self):
+        page = self.page(clock=True, config={'activeMax': 60000})
+        page.evaluate("""() => {
+          window.__frames=0;const raf=window.requestAnimationFrame.bind(window);
+          window.requestAnimationFrame=callback=>raf(time=>{window.__frames++;callback(time)});
+        }""")
+        page.locator('#musicToggle').evaluate("node=>node.style.visibility='hidden'")
+        page.evaluate("NSUOverseer.show('ambient')")
+        page.clock.run_for(600)
+        state=page.evaluate('NSUOverseer.getState()')
+        head=state['position']
+        horizontal=state['edge'] in ('top','bottom')
+        inward={'top':(0,1),'bottom':(0,-1),'left':(1,0),'right':(-1,0)}[state['edge']]
+        def at(along,depth):
+            return (head['x']+(along if horizontal else 0)+inward[0]*depth,
+                    head['y']+(0 if horizontal else along)+inward[1]*depth)
+        # Fast swipes in front of the head and beside it, close to the root plane.
+        path=[at(-250+k*500/59,90) for k in range(60)]+[at(250-k*500/59,160) for k in range(60)]
+        samples=[]
+        for x,y in path:
+            page.mouse.move(x,y)
+            page.clock.run_for(16)
+            samples.append(page.evaluate("""({frames:window.__frames,tips:NSUOverseer.getState().feelerTips,
+              position:NSUOverseer.getState().position,zipping:document.querySelector('#nsuOverseer').classList.contains('is-zipping')})"""))
+        largest=0;checked=0
+        for a,b,c in zip(samples,samples[1:],samples[2:]):
+            # Only whole single frames of a settled strand; teleports legitimately jump.
+            if b['frames']-a['frames']!=1 or c['frames']-b['frames']!=1: continue
+            if any(s['zipping'] or s['position']!=a['position'] or len(s['tips'])!=3 for s in (a,b,c)): continue
+            checked+=1
+            for i in range(3):
+                largest=max(largest,abs(c['tips'][i]['x']-2*b['tips'][i]['x']+a['tips'][i]['x'])+
+                                    abs(c['tips'][i]['y']-2*b['tips'][i]['y']+a['tips'][i]['y']))
+        self.assertGreater(checked,30)
+        # Jerking strands changed their tips' speed by 5–8 px per frame and more.
+        self.assertLess(largest,3)
 
     def test_pwa_shell_contains_overseer_component(self):
         context = self.browser.new_context(service_workers='allow')

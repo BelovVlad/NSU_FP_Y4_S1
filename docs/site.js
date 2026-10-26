@@ -54,6 +54,16 @@ function isNewDate(v){if(!v)return false;const d=new Date(v);return Number.isFin
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function encPath(p){return p.split('/').map(encodeURIComponent).join('/')}
 function isPhoneLayout(){return matchMedia('(max-width:720px), (pointer:coarse)').matches}
+// Desktop shows the music button in the top bar; the phone drawer keeps it in the sidebar.
+// Only the row moves: the <audio> element stays in place so playback is never interrupted.
+const musicControl=$('.music-control'),musicRow=$('.music-row'),topMusicSlot=$('#topMusicSlot');
+function placeMusicControl(){
+  const phone=isPhoneLayout();
+  if(phone)musicControl.prepend(musicRow);else topMusicSlot.append(musicRow);
+  musicControl.classList.toggle('is-moved',!phone);
+}
+placeMusicControl();
+matchMedia('(max-width:720px), (pointer:coarse)').addEventListener('change',placeMusicControl);
 function subjectOf(f){const p=f.path.split('/');return p[0]==='База'&&p[1]==='КМ'?'КМ':p[0]}
 function rawSection(f){
   const parts=f.path.split('/');
@@ -1370,11 +1380,11 @@ else{state.view='home';setActiveNav('home')}
         css.dataset.secretDashboard='1';
         document.head.appendChild(css);
         const karmaCss=document.createElement('link');
-        karmaCss.rel='stylesheet';karmaCss.href='Karma/karma.css?v=44a71ab9c0';
+        karmaCss.rel='stylesheet';karmaCss.href='Karma/karma.css?v=01c0a9ea07';
         document.head.appendChild(karmaCss);
       }
 
-      const scripts=['Karma/karma-engine.js?v=ba0af5903f','Karma/karma-animation.js?v=13d12977d6','Karma/karma-view.js?v=cf194f3865','secret-dashboard.js?v=92564a7fe1'];
+      const scripts=['Karma/karma-engine.js?v=d99288a7f9','Karma/karma-animation.js?v=13d12977d6','Karma/karma-view.js?v=097a0f1789','secret-dashboard.js?v=92564a7fe1'];
       Promise.all(scripts.map(src=>new Promise((loaded,failed)=>{
         const script=document.createElement('script');
         script.src=src;script.async=true;script.dataset.secretDashboard='1';
