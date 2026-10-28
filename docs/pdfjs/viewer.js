@@ -4,7 +4,7 @@ import {ReaderNotes} from './notes.js?v=cc44e7db2f';
 import {currentMaterialPath} from './material-paths.js?v=ca1e61a965';
 import {renderViewerIcons} from './icons.js?v=c6753488af';
 import {applyToneToCanvas,PDF_TONES} from './pdf-tone.js?v=37583b871e';
-import {normalizeText,findMatches,itemHighlightRanges} from './search-text.js?v=69622085ae';
+import {normalizeText,findMatches,itemHighlightRanges} from './search-text.js?v=3770976b57';
 const PDFJS_BASE=new URL('../vendor/pdfjs-4.10.38/',location.href).href;
 pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_BASE+'pdf.worker.min.mjs';
 

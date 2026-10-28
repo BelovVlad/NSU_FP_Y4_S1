@@ -114,7 +114,8 @@ class SiteTests(unittest.TestCase):
             {'subject':'ОВФ', 'file':'part-00.json', 'version':'a'},
             {'subject':'ФЭЧ', 'file':'part-01.json', 'version':'b'}]})
         write('part-00.json', {'records':[{'path':cls.a, 'pages':[{'n':1,'t':'alpha beta'}, {'n':2,'t':'gamma delta'}]}]})
-        write('part-01.json', {'records':[{'path':cls.b, 'pages':[{'n':1,'t':'needle in second section'}]}]})
+        write('part-01.json', {'records':[{'path':cls.b, 'pages':[{'n':1,'t':'needle in second section'},
+            {'n':2,'t':'В деся- тичной системе интегралы 𝑞1, во-первых, сходятся'}]}]})
         cls.requests=[]
         cls.failed_paths=set()
         cls.delayed_paths={}
@@ -229,6 +230,18 @@ class SiteTests(unittest.TestCase):
         self.assertEqual(self.page.evaluate('searchGroupsAll.length'),1)
         self.search('needle')
         self.assertEqual(self.page.evaluate('searchGroupsAll[0].f.path'),self.b)
+
+    def test_search_joins_line_hyphens_and_matches_word_forms(self):
+        self.home()
+        for query in ['десятичной','десятичная система','интеграла','во-первых','вопервых','q1']:
+            self.search(query)
+            self.assertEqual(self.page.evaluate('searchGroupsAll.map(g=>g.hits[0].page)'),[2],query)
+        self.search('десятичной')
+        snippet=self.page.locator('.search-group-snippet').inner_html()
+        self.assertIn('<mark>десятичной</mark>',snippet)
+        self.assertIn('q1',snippet)
+        self.search('во-первых')
+        self.assertIn('<mark>во-первых</mark>',self.page.locator('.search-group-snippet').inner_html())
 
     def test_subject_sort_and_lecture_switch_keep_iframe(self):
         self.home()

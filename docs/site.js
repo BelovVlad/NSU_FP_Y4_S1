@@ -44,9 +44,17 @@ hydrateIcons();
 const initialSubject=hashSubject();
 const state={view:(ORDER.includes(initialSubject)?'subjects':'home'),subject:(ORDER.includes(initialSubject)?initialSubject:'ФиХАиМ'),section:'',selected:null,selectedEntry:null,meta:new Map(),structure:{groups:[]},searchBusy:false,sort:'date',literatureTab:'main'};
 const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch'),sidebar=$('#sidebar'),overlay=$('#overlay'),musicToggle=$('#musicToggle'),musicAudio=$('#siteMusic'),pdfFullscreen=$('#pdfFullscreen'),pdfFullscreenFrame=$('#pdfFullscreenFrame'),pdfFullscreenLoader=$('#pdfFullscreenLoader'),pdfFullscreenLoaderText=$('#pdfFullscreenLoaderText');
-let searchRun=0,searchTimer=0,searchWorker=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
+let searchStems=[],searchRun=0,searchTimer=0,searchWorker=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
 function syncSubjectHash(){if(state.view!=='subjects'||!ORDER.includes(state.subject))return;const h='#subject='+encodeURIComponent(state.subject);if(location.hash!==h)history.replaceState(null,'',h)}
+// #search=<query> opens the search view; other sites (the PweB hub) link here with it.
+function takeHashSearch(){
+  if(!location.hash.startsWith('#search='))return false;
+  let q='';try{q=decodeURIComponent(location.hash.slice(8)).trim()}catch{}
+  history.replaceState(null,'',location.pathname+location.search);
+  if(!q)return false;
+  searchInput.value=q;runSearch(q);return true;
+}
 function clearSubjectHash(){if(location.hash.startsWith('#subject='))history.replaceState(null,'',location.pathname+location.search)}
 function isNewDate(v){if(!v)return false;const d=new Date(v);return Number.isFinite(d.getTime())&&Date.now()-d.getTime()<3*86400000&&Date.now()>=d.getTime()}
 
@@ -1057,7 +1065,7 @@ function searchStatus(message,retry=false){
 }
 function ensureSearchWorker(){
   if(searchWorker)return searchWorker;
-  const worker=new Worker('search-worker.js');
+  const worker=new Worker('search-worker.js?v=32d5520b7c',{type:'module'});
   worker.postMessage({type:'init',files:FILES.map(f=>({...f,title:niceName(f),subject:subjectOf(f),section:sectionOf(f),description:fileDesc(f)}))});
   worker.onmessage=event=>{
     const data=event.data;
@@ -1068,7 +1076,7 @@ function ensureSearchWorker(){
     searchGroupsAll=data.groups.map(group=>({...group,f:fileByPath(group.path)})).filter(group=>group.f);
     const filtered=searchGroupsAll.filter(g=>(searchFilterSubject==='all'||subjectOf(g.f)===searchFilterSubject)&&(searchFilterSection==='all'||sectionOf(g.f)===searchFilterSection));
     searchSelectedGroup=Math.max(0,filtered.findIndex(g=>g.f.path===selected));
-    state.searchBusy=!!data.partial;
+    state.searchBusy=!!data.partial;searchStems=data.stems||[];
     renderSearchResults(searchQuery);
     searchStatus(data.partial?'Результаты по названию. Загружаю поиск по содержимому…':data.failed?'Не весь индекс удалось загрузить. Результаты могут быть неполными.':'Результаты для «'+searchQuery+'»',!!data.failed);
   };
@@ -1082,22 +1090,22 @@ function ensureSearchWorker(){
 
 function searchNorm(v){return String(v||'').toLocaleLowerCase('ru-RU').replace(/ё/g,'е').replace(/\s+/g,' ').trim()}
 function searchTerms(q){return [...new Set(searchNorm(q).split(' ').filter(Boolean))]}
+// Highlights the stems the worker matched (searchStems), extended to the end of the word.
 function searchHi(text,q){
-  const raw=String(text||''),terms=searchTerms(q);
+  const raw=String(text||''),terms=searchNorm(q)===searchNorm(searchQuery)&&searchStems.length?searchStems:searchTerms(q);
   if(!terms.length)return esc(raw);
   const low=raw.toLocaleLowerCase('ru-RU').replace(/ё/g,'е');
+  // Longest term first; an optional dash between letters lets "вопервых" mark "во-первых".
+  const pattern=new RegExp(terms.slice().sort((a,b)=>b.length-a.length).map(t=>[...t].map(c=>c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('[-‐-―]?')).join('|'),'gu');
   let out='',pos=0;
-  while(pos<raw.length){
-    let best=-1,bestTerm='';
-    for(const term of terms){
-      const at=low.indexOf(term,pos);
-      if(at>=0&&(best<0||at<best||(at===best&&term.length>bestTerm.length))){best=at;bestTerm=term}
-    }
-    if(best<0){out+=esc(raw.slice(pos));break}
-    out+=esc(raw.slice(pos,best))+'<mark>'+esc(raw.slice(best,best+bestTerm.length))+'</mark>';
-    pos=best+bestTerm.length;
+  for(const match of low.matchAll(pattern)){
+    if(match.index<pos)continue;
+    let end=match.index+match[0].length;
+    while(end<raw.length&&/[\p{L}\p{N}]/u.test(raw[end]))end++;
+    out+=esc(raw.slice(pos,match.index))+'<mark>'+esc(raw.slice(match.index,end))+'</mark>';
+    pos=end;
   }
-  return out;
+  return out+esc(raw.slice(pos));
 }
 function searchFiltersHtml(){
   const subjects=ORDER.filter(x=>searchGroupsAll.some(g=>subjectOf(g.f)===x));
@@ -1244,7 +1252,7 @@ async function loadMeta(){
     else if(!FILES.some(x=>subjectOf(x)===state.subject))state.subject=ORDER.find(x=>FILES.some(f=>subjectOf(f)===x))||'ФиХАиМ';
     renderSubjectNav();
     setActiveNav(state.view);
-    render();
+    if(!takeHashSearch())render();
   }catch(e){
     console.error(e);
     main.innerHTML='<section class="search-view"><div class="panel"><div class="empty">Не удалось загрузить материалы. Обновите страницу через Ctrl+F5.</div></div></section>';
@@ -1292,6 +1300,7 @@ function firstMobileImmersiveGesture(event){
 document.addEventListener('pointerup',firstMobileImmersiveGesture,true);
 
 window.addEventListener('hashchange',()=>{
+  if(location.hash.startsWith('#search=')){if(FILES.length)takeHashSearch();return}
   const hs=hashSubject();
   if(ORDER.includes(hs)){
     if(state.view==='subjects'&&hs===state.subject)return;

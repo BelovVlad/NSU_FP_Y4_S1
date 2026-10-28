@@ -1,18 +1,18 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'b01ee2ba6a';
+const SHELL_VERSION = '2911a954bb';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
-const CORE = ['index.html', 'site.css?v=581f247313', 'site.js?v=ffdb969cf1', 'app.js?v=b0bec72a78', 'app.css?v=4e2e52a233', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=5db485695e', 'manifest.webmanifest?v=f091c1f136',
+const CORE = ['index.html', 'site.css?v=581f247313', 'site.js?v=5266289263', 'app.js?v=b0bec72a78', 'app.css?v=4e2e52a233', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=5db485695e', 'manifest.webmanifest?v=f091c1f136',
   'Overseer/overseer.js?v=2125c3b5d7', 'Overseer/overseer.css?v=3c70ee01aa',
   'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
   'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
-  'search-worker.js', 'notebook/viewer.html', 'notebook/viewer.css?build=2aa53795ce', 'notebook/outline.js?build=d72f570ee4',
-  'pdfjs/viewer.html', 'pdfjs/viewer.css?v=1e131249af', 'pdfjs/viewer.js?v=f0bab2333c', 'pdfjs/icons.js?v=c6753488af', 'pdfjs/pdf-tone.js?v=37583b871e',
-  'pdfjs/search-text.js?v=69622085ae', 'pdfjs/material-paths.js?v=ca1e61a965', 'pdfjs/renamed-materials.js?v=b94bf2d584', 'pdfjs/controls.css?v=ce628b7465', 'pdfjs/notes.js?v=cc44e7db2f', 'pdfjs/notes.css?v=c36146054c', 'assets/nsu-fp-emblem.webp',
+  'search-worker.js?v=32d5520b7c', 'notebook/viewer.html', 'notebook/viewer.css?build=2aa53795ce', 'notebook/outline.js?build=d72f570ee4',
+  'pdfjs/viewer.html', 'pdfjs/viewer.css?v=1e131249af', 'pdfjs/viewer.js?v=be0d529c93', 'pdfjs/icons.js?v=c6753488af', 'pdfjs/pdf-tone.js?v=37583b871e',
+  'pdfjs/search-text.js?v=3770976b57', 'pdfjs/material-paths.js?v=ca1e61a965', 'pdfjs/renamed-materials.js?v=b94bf2d584', 'pdfjs/controls.css?v=ce628b7465', 'pdfjs/notes.js?v=cc44e7db2f', 'pdfjs/notes.css?v=c36146054c', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png?v=f299e7a63c', 'assets/app-512.png?v=9f41a6f2fa', 'particles/index.html', 'particles/particles.js',
   'particles/explorer.css?v=ab913786e6', 'particles/explorer.js?v=4f8c5e98ad', 'particles/layout.js?v=14224e1e89', 'particles/routes.js?v=1127b43bc0', 'particles/extra-particles.js?v=f0a2243a75', 'particles/remaining-particles.js?v=f1ed737ba7'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json', 'search-index/karma-history.json'];
