@@ -1292,14 +1292,18 @@ function enableMobileImmersiveMode(){
     if(result?.catch)result.catch(()=>{});
   }catch{}
 }
-function firstMobileImmersiveGesture(event){
-  document.removeEventListener('pointerup',firstMobileImmersiveGesture,true);
-  // The installed app is already fullscreen and draws under the camera cutout;
-  // the Fullscreen API on top of it would letterbox the cutout with a black strip.
-  if(event.target.closest('#installApp,#offlineFiles,#appSettings,.app-dialog') || window.matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone===true)return;
+const installedApp=()=>window.matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone===true;
+// Only element fullscreen lets the page draw under the camera cutout (viewport-fit=cover);
+// without it the area is a black strip. The browser drops it after the keyboard, app
+// switches or dialogs, so the installed app restores it on the next tap.
+function mobileImmersiveGesture(event){
+  if(event.target.closest('#installApp,#offlineFiles,#appSettings,.app-dialog'))return;
+  if(!installedApp())document.removeEventListener('pointerup',mobileImmersiveGesture,true);
   enableMobileImmersiveMode();
 }
-document.addEventListener('pointerup',firstMobileImmersiveGesture,true);
+document.addEventListener('pointerup',mobileImmersiveGesture,true);
+// Taps inside the PDF frame never reach this document; the viewer calls this instead.
+window.nsuKeepImmersive=()=>{if(installedApp())enableMobileImmersiveMode()};
 
 window.addEventListener('hashchange',()=>{
   if(location.hash.startsWith('#search=')){if(FILES.length)takeHashSearch();return}
