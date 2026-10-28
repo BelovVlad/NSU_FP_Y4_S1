@@ -18,6 +18,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
@@ -112,12 +114,33 @@ public class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 29) {
             window.setNavigationBarContrastEnforced(false);
         }
+        // ALWAYS: the page is drawn under the camera cutout in every orientation,
+        // so no black letterbox strip appears above the content.
         if (Build.VERSION.SDK_INT >= 28) {
             WindowManager.LayoutParams params = window.getAttributes();
-            params.layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            params.layoutInDisplayCutoutMode = Build.VERSION.SDK_INT >= 30
+                    ? WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                    : WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
             window.setAttributes(params);
         }
+        if (Build.VERSION.SDK_INT >= 30) window.setDecorFitsSystemWindows(false);
+        hideStatusBar();
+    }
+
+    // The system restores the status bar after dialogs, the keyboard or app switches;
+    // hide it again each time the window regains focus.
+    private void hideStatusBar() {
+        if (Build.VERSION.SDK_INT < 30) return;
+        WindowInsetsController controller = getWindow().getInsetsController();
+        if (controller == null) return;
+        controller.hide(WindowInsets.Type.statusBars());
+        controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) hideStatusBar();
     }
 
     private void applySafeInsets() {

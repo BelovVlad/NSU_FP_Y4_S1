@@ -4,7 +4,7 @@ import {ReaderNotes} from './notes.js?v=cc44e7db2f';
 import {currentMaterialPath} from './material-paths.js?v=ca1e61a965';
 import {renderViewerIcons} from './icons.js?v=c6753488af';
 import {applyToneToCanvas,PDF_TONES} from './pdf-tone.js?v=37583b871e';
-import {normalizeText,findMatches,itemHighlightRanges} from './search-text.js?v=69622085ae';
+import {normalizeText,findMatches,itemHighlightRanges} from './search-text.js?v=3770976b57';
 const PDFJS_BASE=new URL('../vendor/pdfjs-4.10.38/',location.href).href;
 pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_BASE+'pdf.worker.min.mjs';
 
@@ -1089,12 +1089,6 @@ async function startContinuous(){
   await renderContinuous(pageNum);
 }
 let readerChromeLastScroll=viewer.scrollTop,readerChromeDirection=0,readerChromeLockUntil=0;
-const showReaderControls=document.createElement('button');
-showReaderControls.className='reader-reveal';showReaderControls.type='button';
-showReaderControls.setAttribute('aria-label','Показать панели PDF');
-showReaderControls.innerHTML='<svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
-document.body.append(showReaderControls);
-showReaderControls.onclick=()=>{lockReaderChrome(1200);document.getElementById('notesToggle').focus({preventScroll:true});};
 function setReaderChromeHidden(hidden){
   document.body.classList.toggle('reader-chrome-hidden',!!hidden&&phoneStripQuery.matches&&compactQuery.matches);
 }
@@ -1133,7 +1127,7 @@ viewer.addEventListener('scroll',()=>{
 },{passive:true});
 viewer.addEventListener('notesmodechange',()=>lockReaderChrome(800));
 viewer.addEventListener('notesgesturestart',()=>lockReaderChrome(650));
-document.addEventListener('focusin',e=>{if(e.target.closest('.toolbar,.notes-tools,.mobile-nav,.reader-reveal'))lockReaderChrome(800);});
+document.addEventListener('focusin',e=>{if(e.target.closest('.toolbar,.notes-tools,.mobile-nav'))lockReaderChrome(800);});
 landscapePhoneQuery.addEventListener('change',()=>{
   lockReaderChrome(1000);
   closeTools();
@@ -1230,6 +1224,11 @@ expandViewer.onclick=()=>{
   else document.documentElement.requestFullscreen?.().catch?.(()=>{});
 };
 searchToggle.onclick=openSearch;searchClose.onclick=closeSearch;searchNext.onclick=()=>searchStep(1);searchPrev.onclick=()=>searchStep(-1);searchInput.oninput=resetSearch;searchInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchStep(e.shiftKey?-1:1)}});
+// The installed app keeps element fullscreen so the camera cutout is not a black strip.
+document.addEventListener('pointerup',()=>{
+  if(window.parent===window||!compactQuery.matches)return;
+  try{window.parent.nsuKeepImmersive?.()}catch{}
+},true);
 window.addEventListener('keydown',e=>{if(e.target.closest('dialog,textarea,select'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();openSearch();return}if(e.key==='Escape'){if(document.body.classList.contains('tools-open'))closeTools(true);else if(pageJump.classList.contains('open'))closePageJump();else if(outlinePanel.classList.contains('open'))closeOutline();else if(searchPanel.classList.contains('open'))closeSearch();else if(notes.enabled){notes.button.click();}else back.click();return}if(document.activeElement===searchInput||document.activeElement===pageInput||document.activeElement===pageJumpInput||document.activeElement===zoomLabel||e.target.closest('input'))return;if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)});
 let wheelZoomTimer=0,wheelZoomStartScale=0,wheelZoomTargetScale=0,wheelZoomAnchor=null,wheelZoomContinuous=false;
 function finishWheelZoom(){

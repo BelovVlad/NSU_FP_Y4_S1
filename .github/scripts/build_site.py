@@ -25,7 +25,7 @@ import build_app_bundle  # noqa: E402
 
 # Files whose text references other site files with a version query.
 REFERRERS = [
-    'index.html', 'site.js', 'sw.js',
+    'index.html', 'site.js', 'sw.js', 'search-worker.js',
     'pdfjs/viewer.html', 'pdfjs/viewer.js', 'pdfjs/material-paths.js',
     'notebook/viewer.html', 'particles/index.html',
 ]

@@ -1,10 +1,8 @@
-'use strict';
-
 // Keep document text and its normalized form off the UI thread.
+import {cleanText,normalizeText as normalize,searchTerms} from './pdfjs/search-text.js?v=3770976b57';
+
 let files=[],filesByPath=new Map(),manifestPromise=null,activeRun=0;
 const shardCache=new Map(),shardRequests=new Map();
-const normalize=value=>String(value||'').toLocaleLowerCase('ru-RU').replace(/ё/g,'е').replace(/\s+/g,' ').trim();
-const termsFor=query=>[...new Set(normalize(query).split(' ').filter(Boolean))];
 
 async function fetchJson(url,cache){
   const controller=new AbortController();
@@ -38,22 +36,28 @@ function loadShard(shard,index){
   }).finally(()=>shardRequests.delete(key));
   shardRequests.set(key,request);return request;
 }
+// A word matches by its stem; the exact word form and the whole phrase rank higher.
 function score(title,body,query,terms){
-  if(!terms.length||!terms.every(term=>title.includes(term)||body.includes(term)))return -1;
+  if(!terms.length||!terms.every(({stem})=>title.includes(stem)||body.includes(stem)))return -1;
   let value=(title.includes(query)?100:0)+(body.includes(query)?80:0);
-  for(const term of terms){if(title.includes(term))value+=16;if(body.includes(term))value+=5}
+  for(const {term,stem} of terms){
+    if(title.includes(term))value+=16;else if(title.includes(stem))value+=10;
+    if(body.includes(term))value+=5;else if(body.includes(stem))value+=3;
+  }
   return value;
 }
+// Terms are matched without in-word hyphens, so "вопервых" must still find "во-первых" in the shown text.
+const hyphenTolerant=term=>new RegExp([...term].map(c=>c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('[-‐-―]?'),'u');
 function snippet(text,terms){
-  const raw=text.replace(/\s+/g,' ').trim(),low=normalize(raw);
+  const raw=cleanText(text),low=raw.toLocaleLowerCase('ru-RU').replace(/ё/g,'е');
   let at=-1;
-  for(const term of terms){const found=low.indexOf(term);if(found>=0&&(at<0||found<at))at=found}
+  for(const {stem} of terms){const found=low.search(hyphenTolerant(stem));if(found>=0&&(at<0||found<at))at=found}
   at=Math.max(0,at);
   const start=Math.max(0,at-125),end=Math.min(raw.length,at+260);
   return (start?'…':'')+raw.slice(start,end)+(end<raw.length?'…':'');
 }
 function search(query,records){
-  const q=normalize(query),terms=termsFor(query),groups=new Map();
+  const q=normalize(query),terms=searchTerms(query),groups=new Map();
   if(!terms.length)return [];
   function add(file,page,text,value){
     let group=groups.get(file.path);
@@ -81,9 +85,11 @@ function search(query,records){
   result.sort((a,b)=>b.score-a.score||filesByPath.get(a.path).title.localeCompare(filesByPath.get(b.path).title,'ru'));
   return result;
 }
+// Sent with results so the page highlights the same word forms that matched.
+const stemsFor=query=>searchTerms(query).map(({stem})=>stem);
 async function runSearch(id,query){
   activeRun=id;
-  postMessage({id,type:'results',groups:search(query,[]),partial:true});
+  postMessage({id,type:'results',groups:search(query,[]),partial:true,stems:stemsFor(query)});
   try{
     const index=await manifest();
     if(id!==activeRun)return;
@@ -98,9 +104,9 @@ async function runSearch(id,query){
       }
     }
     await Promise.all(Array.from({length:Math.min(3,shards.length)},consume));
-    if(id===activeRun)postMessage({id,type:'results',groups:search(query,records),partial:false,failed});
+    if(id===activeRun)postMessage({id,type:'results',groups:search(query,records),partial:false,failed,stems:stemsFor(query)});
   }catch{
-    if(id===activeRun)postMessage({id,type:'results',groups:search(query,[]),partial:false,failed:1});
+    if(id===activeRun)postMessage({id,type:'results',groups:search(query,[]),partial:false,failed:1,stems:stemsFor(query)});
   }
 }
 self.onmessage=event=>{

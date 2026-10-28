@@ -137,7 +137,6 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 }
 
 /* Touch reading: the toolbar overlays a stable page surface and slides away while reading. */
-.reader-reveal{display:none}
 @media(pointer:coarse){
   .compact-view .viewer,.compact-view.outline-open .viewer{top:0;padding-top:var(--reader-head);scroll-padding-top:var(--reader-head)}
   .compact-view.search-open .viewer{top:0;padding-top:calc(var(--reader-head) + var(--search-height));scroll-padding-top:calc(var(--reader-head) + var(--search-height))}
@@ -148,7 +147,6 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
   .compact-view.reader-chrome-hidden .mobile-nav{opacity:.55}
   .compact-view.reader-chrome-hidden .outline-panel,.compact-view.reader-chrome-hidden .search-panel{top:0}
   .compact-view.reader-chrome-hidden .loading{top:10px}
-  .compact-view.reader-chrome-hidden .reader-reveal{display:grid;place-items:center;position:fixed;z-index:46;top:calc(env(safe-area-inset-top,0px) + 6px);right:max(8px,env(safe-area-inset-right,0px));width:40px;height:40px;padding:0;border:1px solid var(--line);border-radius:50%;background:color-mix(in srgb,var(--bar) 84%,transparent);color:var(--muted);box-shadow:0 2px 8px #0003;cursor:pointer}
 }
 
 /* Phone landscape: little height, so the toolbar is slimmer and settings become a side card. */
