@@ -91,6 +91,8 @@ async function resource(request, event) {
   const cached = await cache.match(key);
   const html = request.mode === 'navigate' || /\.html$/i.test(url.pathname) || url.href === BASE.href;
   const immutable = library(url) || url.searchParams.has('v') || url.searchParams.has('build');
+  // A saved copy of a versioned file is final: return it before a network request starts.
+  if(!html && cached && immutable) return cached;
 
   const network = (async () => {
     const response = await fetch(request,{cache:html?'no-cache':'default'});
@@ -110,7 +112,6 @@ async function resource(request, event) {
     }
   }
 
-  if(cached && immutable) return cached;
   event.waitUntil(network.catch(()=>{}));
   if(cached) return Promise.race([network.catch(()=>cached),new Promise(resolve=>setTimeout(()=>resolve(cached),1800))]);
   try { return await network; }
