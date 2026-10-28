@@ -1,0 +1,402 @@
+% !TeX root = part8.tex
+\documentclass[../final.tex]{subfiles}
+\begin{document}
+\ifSubfilesClassLoaded{\setcounter{chapter}{5}}{}
+
+% Sources: Desktop/11.jpg, 22.jpg, 33.jpg.
+\chapter{Фононы в твёрдом теле}
+\rsubtitle{Модель Дебая, теплоёмкость и колебания атомов}
+
+\section{Нормальные колебания решётки}
+\subsection{Смещения атомов и гармоническое приближение}
+Рассмотрим одноатомное твёрдое тело из $N$ атомов одинаковой массы $m$.
+Положение $i$-го атома представим как
+\begin{equation*}
+ \mathbf r_i=\mathbf R_i+\mathbf u_i,
+ \qquad\boldsymbol\chi=(u_{1x},u_{1y},u_{1z},\ldots,u_{Nz})^{\mathsf T},
+\end{equation*}
+где $\mathbf R_i$ --- положение равновесия, а $\mathbf u_i$ --- малое смещение.
+У каждого атома три компоненты смещения, всего --- $3N$ координат $\chi_a$.
+Разложим потенциальную энергию около равновесия:
+\begin{align*}
+ U(\boldsymbol\chi)&=U_{\mathrm{stat}}
+ +\sum_a\left.\frac{\partial U}{\partial\chi_a}\right|_0\chi_a
+ +\frac12\sum_{a,b}\left.\frac{\partial^2U}
+ {\partial\chi_a\partial\chi_b}\right|_0\chi_a\chi_b+\cdots,\\
+ \left.\frac{\partial U}{\partial\chi_a}\right|_0&=0,\qquad
+ B_{ab}=\frac1m\left.\frac{\partial^2U}
+ {\partial\chi_a\partial\chi_b}\right|_0.
+\end{align*}
+Линейный член исчезает, поскольку в равновесии силы равны нулю.
+Гармоническое приближение сохраняет только квадратичный член:
+\begin{equation*}
+ U_2\equiv U-U_{\mathrm{stat}}
+ =\frac m2\sum_{a,b}B_{ab}\chi_a\chi_b
+ =\frac m2\boldsymbol\chi^{\mathsf T}B\boldsymbol\chi.
+\end{equation*}
+Матрица $B$ вещественна и симметрична: $B_{ab}=B_{ba}$.
+Смешанные произведения $\chi_a\chi_b$ при $a\ne b$ описывают связь
+между смещениями разных координат. Движения отдельных атомов поэтому
+не являются независимыми осцилляторами.
+С учётом кинетической энергии гамильтониан равен
+\begin{equation*}
+ H=U_{\mathrm{stat}}+\frac{\mathbf p^{\mathsf T}\mathbf p}{2m}
+ +\frac m2\boldsymbol\chi^{\mathsf T}B\boldsymbol\chi.
+\end{equation*}
+Множитель $m/2$ можно включить в коэффициенты квадратичной формы.
+Принятое здесь определение $B$ удобно тем, что её собственные значения
+имеют размерность квадрата частоты.
+
+\clearpage
+\subsection{Почему внутренних колебаний $3N-6$}
+Три перемещения центра масс и три поворота свободного конечного нелинейного тела
+не меняют взаимных расстояний атомов. После их отделения остаётся
+$M=3N-6$ внутренних мод; при $N\gg1$ имеем $M\simeq3N$.
+
+\subsection{Матрица поворота и нормальные координаты}
+Вещественная симметричная матрица $B$ имеет ортонормированный набор
+собственных векторов $\mathbf e_\nu$:
+\begin{equation*}
+ B\mathbf e_\nu=\omega_\nu^2\mathbf e_\nu,\qquad
+ \mathbf e_\nu^{\mathsf T}\mathbf e_\mu=\delta_{\nu\mu}.
+\end{equation*}
+Составим из этих векторов столбцы матрицы $Z$.
+Это ортогональное преобразование базиса:
+\begin{equation*}
+ Z^{\mathsf T}Z=1,\qquad Z^{-1}=Z^{\mathsf T},\qquad
+ Z^{\mathsf T}BZ=\Omega^2
+ =\operatorname{diag}(\omega_1^2,\omega_2^2,\ldots).
+\end{equation*}
+Нормальные координаты --- проекции смещений на собственные векторы:
+\begin{equation*}
+ \mathbf Q=Z^{\mathsf T}\boldsymbol\chi,\qquad
+ \boldsymbol\chi=Z\mathbf Q,\qquad
+ Q_\nu=\sum_a Z_{a\nu}\chi_a.
+\end{equation*}
+Подстановка в потенциальную энергию даёт всю цепочку преобразований:
+\begin{align*}
+ U_2&=\frac m2\boldsymbol\chi^{\mathsf T}B\boldsymbol\chi
+ =\frac m2(Z\mathbf Q)^{\mathsf T}B(Z\mathbf Q)\\
+ &=\frac m2\mathbf Q^{\mathsf T}(Z^{\mathsf T}BZ)\mathbf Q
+ =\frac m2\mathbf Q^{\mathsf T}\Omega^2\mathbf Q
+ =\frac m2\sum_\nu\omega_\nu^2Q_\nu^2.
+\end{align*}
+Смешанные произведения нормальных координат исчезли.
+Преобразуем тем же способом импульсы: $\boldsymbol\Pi=Z^{\mathsf T}\mathbf p$.
+Ортогональность сохраняет кинетическую энергию,
+$\mathbf p^{\mathsf T}\mathbf p=\boldsymbol\Pi^{\mathsf T}\boldsymbol\Pi$.
+После отделения движения тела как целого
+\begin{equation*}
+ H_{\mathrm{int}}=U_{\mathrm{stat}}+\sum_{\nu=1}^{M}
+ \left(\frac{\Pi_\nu^2}{2m}+\frac{m\omega_\nu^2Q_\nu^2}{2}\right),\qquad
+ \ddot Q_\nu+\omega_\nu^2Q_\nu=0.
+\end{equation*}
+Каждая нормальная координата колеблется независимо с собственной частотой
+$\omega_\nu$. Одна мода описывает согласованное движение многих атомов.
+
+\subsection{Продольные и поперечные волны}
+Нормальные колебания являются коллективными движениями атомов.
+При продольной волне смещения направлены вдоль волнового вектора,
+при поперечной --- перпендикулярно ему.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=8pt,bottom=6pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=0.95cm,y=0.45cm]
+ \draw[->] (0,0)--(11.6,0) node[right] {$\mathbf k$};
+ \foreach \xx in {0.4,1.25,2.0,2.6,3.1,3.55,4.2,5.0,6.0,7.0,7.8,8.4,8.9,9.4,10.2} {
+  \fill[p3] (\xx,0) circle (1.7pt);
+ }
+ \draw[<->,red3] (2.8,0.55)--(4.2,0.55);
+ \node[above] at (7,0.55) {продольная волна};
+ \draw[->] (0,-2.1)--(11.6,-2.1) node[right] {$\mathbf k$};
+ \draw[p3,domain=0:11,samples=100] plot (\x,{-2.1+0.42*sin(65*\x)});
+ \foreach \xx in {0.4,1.2,2,2.8,3.6,4.4,5.2,6,6.8,7.6,8.4,9.2,10,10.8} {
+  \fill[p3] (\xx,{-2.1+0.42*sin(65*\xx)}) circle (1.7pt);
+ }
+ \draw[<->,red3] (1.3,-2.7)--(1.3,-1.5);
+ \node[below] at (7,-2.7) {поперечная волна};
+\end{tikzpicture}
+\captionof{figure}{Продольная и поперечная акустические волны в решётке.}
+\end{rbox}
+
+\clearpage
+\section{Квантовые осцилляторы и фононы}
+\subsection{Статистическая сумма одной моды}
+Температура в формулах измеряется в энергетических единицах:
+$T=k_BT_{\mathrm K}$, $\beta=1/T$.
+Энергетические уровни гармонического осциллятора равны
+\begin{equation*}
+ E_n=\hbar\omega\left(n+\frac12\right),\qquad n=0,1,2,\ldots.
+\end{equation*}
+Суммируя геометрическую прогрессию, получаем
+\begin{align*}
+ Z_\omega&=\sum_{n=0}^{\infty}e^{-\beta\hbar\omega(n+1/2)}\\
+ &=e^{-\beta\hbar\omega/2}
+ \left(1+e^{-\beta\hbar\omega}+e^{-2\beta\hbar\omega}+\cdots\right)
+ =\frac{e^{-\beta\hbar\omega/2}}{1-e^{-\beta\hbar\omega}},\\
+ \ln Z_\omega&=-\frac{\beta\hbar\omega}{2}
+ -\ln(1-e^{-\beta\hbar\omega}).
+\end{align*}
+Средняя энергия моды равна
+\begin{equation*}
+ \overline E_\omega=-\frac{\partial\ln Z_\omega}{\partial\beta}
+ =\frac{\hbar\omega}{2}+\frac{\hbar\omega}{e^{\hbar\omega/T}-1}.
+\end{equation*}
+Первое слагаемое --- энергия нулевых колебаний, второе --- тепловая энергия.
+Квант возбуждения нормальной моды называется \rconcept{фононом}.
+
+\subsection{Число фононов и сравнение с фотонами}
+Число атомов $N$ фиксировано, а число фононов $N_{\mathrm{ph}}$ не сохраняется.
+Для равновесных фононов $\mu_{\mathrm{ph}}=0$, поэтому
+\begin{equation*}
+ \overline n(\omega)=\frac1{e^{\hbar\omega/T}-1},\qquad
+ N_{\mathrm{ph}}=\sum_\nu\overline n(\omega_\nu).
+\end{equation*}
+У фотонов $\omega=ck$ и две поперечные поляризации.
+У длинноволновых акустических фононов $\omega=c_sk$, где $c_s$ --- скорость звука
+соответствующей ветви; имеются две поперечные и одна продольная ветви.
+В решётке число мод конечно, а их спектр ограничен атомным масштабом.
+
+\subsection{Классический предел и закон Дюлонга--Пти}
+При $T\gg\hbar\omega$ средняя энергия одной моды стремится к $T$:
+по $T/2$ приходится на кинетическую и потенциальную части.
+Если $T\gg\hbar\omega_{\max}$, все моды возбуждены классически и
+\begin{equation*}
+ E_{\mathrm{vib}}\simeq MT\simeq3NT,\qquad C_V\simeq M\simeq3N.
+\end{equation*}
+Это закон Дюлонга--Пти. В обычных единицах
+$C_{V,\mathrm K}=k_BC_V\simeq3Nk_B$; для одного моля --- $3R$.
+
+\clearpage
+\section{Плотность состояний в модели Дебая}
+\subsection{Подсчёт акустических мод}
+В трёхмерном пространстве волновых векторов на одну ветвь приходится
+\begin{equation*}
+ d\mathcal N_s=\frac{V\,d^3k}{(2\pi)^3}
+ =\frac{V}{2\pi^2}k^2\,dk
+ =\frac{V\omega^2}{2\pi^2c_s^3}\,d\omega.
+\end{equation*}
+Суммируя две поперечные ветви со скоростью $c_t$ и одну продольную
+со скоростью $c_l$, получаем
+\begin{equation*}
+ D(\omega)=\frac{V\omega^2}{2\pi^2}
+ \left(\frac2{c_t^3}+\frac1{c_l^3}\right)
+ =\frac{3V\omega^2}{2\pi^2c_D^3},\qquad
+ \frac3{c_D^3}=\frac2{c_t^3}+\frac1{c_l^3}.
+\end{equation*}
+Здесь $D(\omega)d\omega$ --- число нормальных мод во всём образце
+в интервале частот $d\omega$, а $c_D$ --- средняя дебаевская скорость звука.
+
+\subsection{Предельная частота и температура Дебая}
+Линейный акустический спектр продолжается до частоты $\omega_D$,
+выбранной из условия сохранения полного числа мод:
+\begin{align*}
+ 3N&=\int_0^{\omega_D}D(\omega)\,d\omega
+ =\frac{V\omega_D^3}{2\pi^2c_D^3},\\
+ \omega_D&=c_D\left(\frac{6\pi^2N}{V}\right)^{1/3},\qquad
+ D_D(\omega)=
+ \begin{cases}
+  \dfrac{9N\omega^2}{\omega_D^3},&0<\omega<\omega_D,\\
+  0,&\omega>\omega_D.
+ \end{cases}
+\end{align*}
+Определим дебаевскую температуру в энергетических единицах
+$\Theta_D=\hbar\omega_D$; её значение в кельвинах равно $\Theta_D/k_B$.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=10pt,bottom=8pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=7cm,y=2.0cm]
+ \draw[->] (0,0)--(1.55,0) node[right] {$\omega/\omega_D$};
+ \draw[->] (0,0)--(0,1.7) node[above] {$D(\omega)$};
+ \draw[p3,thick,domain=0:1,samples=60] plot (\x,\x^2);
+ \draw[p3,thick] (1,1)--(1,0)--(1.45,0);
+ \draw[dotted] (1,0)--(1,1.55);\node[below] at (1,0) {$1$};
+ \draw[red3,dashed,thick] (0,0) .. controls (0.2,0) and (0.35,0.18) .. (0.5,0.47)
+  .. controls (0.57,0.9) and (0.6,0.5) .. (0.66,0.62)
+  .. controls (0.74,0.75) and (0.83,1.5) .. (0.88,1.4)
+  .. controls (0.91,0.25) and (1,0.08) .. (1.25,0.02);
+ \node[p3,right] at (0.18,1.25) {модель Дебая};
+ \node[red3,right] at (1.04,0.85) {реальный спектр};
+\end{tikzpicture}
+\captionof{figure}{Дебаевская плотность состояний и схема более сложного реального спектра.
+ Длинноволновая зависимость $D(\omega)\propto\omega^2$ сохраняется при малых частотах.}
+\end{rbox}
+
+\clearpage
+\section{Энергия решётки и теплоёмкость}
+\subsection{Нулевые и тепловые колебания}
+Колебательная энергия образца равна сумме средних энергий всех мод:
+\begin{align*}
+ E_{\mathrm{vib}}&=\int_0^{\omega_D}D_D(\omega)
+ \left[\frac{\hbar\omega}{2}
+ +\frac{\hbar\omega}{e^{\hbar\omega/T}-1}\right]d\omega\\
+ &=E_0+E_{\mathrm{th}}.
+\end{align*}
+Энергия нулевых колебаний в модели Дебая составляет
+\begin{equation*}
+ E_0=\frac{9N\hbar}{2\omega_D^3}\int_0^{\omega_D}\omega^3\,d\omega
+ =\frac98N\hbar\omega_D=\frac98N\Theta_D.
+\end{equation*}
+Для тепловой части введём $z=\hbar\omega/T$:
+\begin{align*}
+ E_{\mathrm{th}}&=\frac{9N\hbar}{\omega_D^3}
+ \int_0^{\omega_D}\frac{\omega^3\,d\omega}{e^{\hbar\omega/T}-1}\\
+ &=\frac{9NT^4}{\Theta_D^3}
+ \int_0^{\Theta_D/T}\frac{z^3\,dz}{e^z-1}.
+\end{align*}
+Полная энергия твёрдого тела дополнительно содержит статическую энергию
+равновесной решётки: $E=U_{\mathrm{stat}}+E_0+E_{\mathrm{th}}$.
+В гармоническом приближении при постоянном объёме частоты мод фиксированы;
+$U_{\mathrm{stat}}$ и $E_0$ не зависят от температуры.
+
+\subsection{Дебаевская формула для теплоёмкости}
+Следовательно, $C_V=(\partial E_{\mathrm{th}}/\partial T)_V$.
+Дифференцируя среднее заполнение каждой моды, получаем
+\begin{align*}
+ C_V&=\int_0^{\omega_D}D_D(\omega)
+ \left(\frac{\hbar\omega}{T}\right)^2
+ \frac{e^{\hbar\omega/T}}{(e^{\hbar\omega/T}-1)^2}\,d\omega\\
+ &=9N\left(\frac{T}{\Theta_D}\right)^3
+ \int_0^{\Theta_D/T}\frac{z^4e^z}{(e^z-1)^2}\,dz.
+\end{align*}
+Формула описывает колебательный вклад. В обычных единицах
+$C_{V,\mathrm K}=k_BC_V$.
+
+\clearpage
+\section{Низкие и высокие температуры}
+\subsection{Низкотемпературный закон Дебая}
+При $T\ll\Theta_D$ верхний предел интеграла можно заменить бесконечностью:
+\begin{align*}
+ E_{\mathrm{th}}&\simeq\frac{9NT^4}{\Theta_D^3}
+ \int_0^\infty\frac{z^3\,dz}{e^z-1}
+ =\frac{9NT^4}{\Theta_D^3}\Gamma(4)\zeta(4)\\
+ &=\frac{3\pi^4}{5}\frac{NT^4}{\Theta_D^3},\\
+ C_V&\simeq\frac{12\pi^4}{5}N\left(\frac{T}{\Theta_D}\right)^3.
+\end{align*}
+Таким образом, колебательная теплоёмкость при низкой температуре
+пропорциональна $T^3$. Возбуждаются главным образом длинноволновые
+акустические моды; их число растёт как объём области $\hbar c_sk\lesssim T$
+в пространстве волновых векторов.
+
+\subsection{Высокотемпературное разложение}
+При $T\gg\Theta_D$ во всём интеграле $z\ll1$. Используем
+\begin{equation*}
+ \frac1{e^z-1}=\frac1z-\frac12+\frac z{12}-\frac{z^3}{720}+O(z^5).
+\end{equation*}
+Положив $b=\Theta_D/T$, находим
+\begin{align*}
+ E_{\mathrm{th}}
+ &=\frac{9NT^4}{\Theta_D^3}\int_0^b
+ \left(z^2-\frac{z^3}{2}+\frac{z^4}{12}-\frac{z^6}{720}+\cdots\right)dz\\
+ &=\frac{9NT^4}{\Theta_D^3}
+ \left(\frac{b^3}{3}-\frac{b^4}{8}+\frac{b^5}{60}-\frac{b^7}{5040}+\cdots\right)\\
+ &=3NT\left[1-\frac38\frac{\Theta_D}{T}
+ +\frac1{20}\left(\frac{\Theta_D}{T}\right)^2
+ -\frac1{1680}\left(\frac{\Theta_D}{T}\right)^4+\cdots\right].
+\end{align*}
+Постоянный член $-9N\Theta_D/8$ компенсирует $E_0$, если вернуть
+нулевую энергию. Для полной колебательной энергии и теплоёмкости
+\begin{align*}
+ E_{\mathrm{vib}}&=3NT+\frac{3N\Theta_D^2}{20T}
+ -\frac{N\Theta_D^4}{560T^3}+\cdots,\\
+ C_V&=3N\left[1-\frac1{20}\left(\frac{\Theta_D}{T}\right)^2
+ +\frac1{560}\left(\frac{\Theta_D}{T}\right)^4+\cdots\right]
+ \longrightarrow3N.
+\end{align*}
+
+\clearpage
+\section{Средний квадрат смещения атомов}
+\subsection{Кинетическая и потенциальная энергии моды}
+Для гармонического осциллятора средние кинетическая и потенциальная энергии
+равны при любой температуре:
+\begin{equation*}
+ \left\langle\frac{P^2}{2m}\right\rangle
+ =\left\langle\frac{m\omega^2Q^2}{2}\right\rangle
+ =\frac12\overline E_\omega.
+\end{equation*}
+Отсюда
+\begin{equation*}
+ \langle Q^2\rangle_\omega
+ =\frac{\hbar}{m\omega}\left(\frac12+\frac1{e^{\hbar\omega/T}-1}\right).
+\end{equation*}
+Обозначим через $\langle r^2\rangle$ средний квадрат смещения одного атома
+от положения равновесия, усреднённый по всем атомам:
+\begin{equation*}
+ \langle r^2\rangle\equiv\frac1N\sum_{i=1}^N\langle|\mathbf u_i|^2\rangle
+ =\frac{\hbar}{Nm}\int_0^{\omega_D}\frac{D_D(\omega)}{\omega}
+ \left(\frac12+\frac1{e^{\hbar\omega/T}-1}\right)d\omega.
+\end{equation*}
+Ортогональность нормальных координат сохраняет сумму квадратов смещений.
+Поэтому в модели Дебая
+\begin{equation*}
+ \langle r^2\rangle=\frac{9\hbar}{m\omega_D^3}
+ \int_0^{\omega_D}\omega\left(\frac12+\frac1{e^{\hbar\omega/T}-1}\right)d\omega.
+\end{equation*}
+
+\subsection{Низкотемпературный предел}
+После замены $z=\hbar\omega/T$ получаем
+\begin{equation*}
+ \langle r^2\rangle=\frac{9\hbar}{m\omega_D^3}
+ \left[\frac{\omega_D^2}{4}
+ +\left(\frac{T}{\hbar}\right)^2
+ \int_0^{\Theta_D/T}\frac{z\,dz}{e^z-1}\right].
+\end{equation*}
+При $T\ll\Theta_D$ используем $\Gamma(2)\zeta(2)=\pi^2/6$:
+\begin{equation*}
+ \langle r^2\rangle\simeq\frac{9\hbar}{m\omega_D^3}
+ \left[\frac{\omega_D^2}{4}+\frac{\pi^2}{6}\left(\frac{T}{\hbar}\right)^2\right].
+\end{equation*}
+При $T=0$ сохраняются нулевые смещения:
+$\langle r^2\rangle_0=9\hbar/(4m\omega_D)$.
+
+\subsection{Высокотемпературный предел}
+При $T\gg\Theta_D$ слагаемые $1/2$ в нулевой и тепловой частях сокращаются:
+\begin{equation*}
+ \langle r^2\rangle\simeq\frac{9\hbar}{m\omega_D^3}
+ \left(\frac{T\omega_D}{\hbar}+\frac{\hbar\omega_D^3}{36T}+\cdots\right)
+ =\frac{9T}{m\omega_D^2}+\frac{\hbar^2}{4mT}+\cdots.
+\end{equation*}
+
+\clearpage
+\section{Устойчивость решётки и соответственные состояния}
+\subsection{Критерий Линдемана}
+Эмпирический критерий связывает плавление с достижением определённой
+относительной амплитуды колебаний:
+\begin{equation*}
+ \frac{\sqrt{\langle r^2\rangle_{T_m}}}{a}\simeq\xi,
+ \qquad \xi\sim0.15\text{--}0.30,
+ \qquad \langle r^2\rangle_{T_m}\simeq\xi^2a^2.
+\end{equation*}
+Здесь $a$ --- характерное межатомное расстояние, $T_m$ --- температура плавления.
+Величина $\xi$ является ориентировочным параметром и зависит от вещества
+и принятого определения амплитуды.
+Если применим классический предел, то
+\begin{equation*}
+ \frac{9T_m}{m\omega_D^2}\simeq\xi^2a^2,
+ \qquad T_m\simeq\frac{\xi^2m\omega_D^2a^2}{9}.
+\end{equation*}
+Для температуры плавления в кельвинах правую часть делят на $k_B$.
+
+\subsection{Закон соответственных состояний в модели Дебая}
+После введения отношения $y=T/\Theta_D$ температурные зависимости
+колебательных величин принимают универсальный вид.
+Например,
+\begin{equation*}
+ \frac{C_V}{N}=9y^3\int_0^{1/y}\frac{z^4e^z}{(e^z-1)^2}\,dz
+ \equiv\mathcal C(y).
+\end{equation*}
+Для свободной энергии при фиксированном объёме
+\begin{align*}
+ F(V,T)&=F_0(V)+T\int_0^{\omega_D}D_D(\omega)
+ \ln(1-e^{-\hbar\omega/T})\,d\omega\\
+ &=F_0(V)+N\Theta_D(V)\,f\!\left(\frac{T}{\Theta_D(V)}\right),\\
+ f(y)&=9y^4\int_0^{1/y}z^2\ln(1-e^{-z})\,dz.
+\end{align*}
+Величина $F_0(V)=U_{\mathrm{stat}}(V)+E_0(V)$ содержит статическую
+и нулевую колебательную энергии.
+Различия между веществами в этой модели входят через $N$,
+фоновую энергию и масштаб $\Theta_D$.
+
+\end{document}

@@ -1,0 +1,466 @@
+% !TeX root = part10.tex
+\documentclass[../final.tex]{subfiles}
+\begin{document}
+\ifSubfilesClassLoaded{\setcounter{chapter}{7}\setcounter{section}{8}}{}
+
+% Sources: Desktop/11.jpg, 22.jpg, 33.jpg, 44.jpg (лекция 27.10).
+% Продолжение главы об эффекте Мёссбауэра из part9.
+\section{Усреднение по всем нормальным модам}
+\subsection{Постановка}
+В предыдущих разделах тепловое среднее $\langle e^{-i\mathbf k\cdot\mathbf u}\rangle_T$
+было записано через гауссову экспоненту. Проведём теперь вычисление
+непосредственно для решётки из $N$ атомов, не предполагая гауссовость заранее.
+Вероятность бесфононного перехода в состоянии решётки $\ket{\psi}$ равна
+\begin{equation*}
+ P=\bigl|\bra{\psi}e^{-i\mathbf k\cdot\mathbf u}\ket{\psi}\bigr|^2,\qquad
+ \ket{\psi}=\ket{n_1,\ldots,n_{3N}}
+ =\ket{n_1}\otimes\ket{n_2}\otimes\cdots\otimes\ket{n_{3N}},
+\end{equation*}
+где $\mathbf u$ --- смещение излучающего ядра, а $\mathbf k$ --- волновой вектор
+фотона.
+
+\subsection{Факторизация по модам}
+Смещение данного атома линейно выражается через нормальные координаты:
+$u_a=\sum_\nu Z_{a\nu}Q_\nu$. Поэтому показатель экспоненты является суммой
+слагаемых, каждое из которых зависит лишь от одной моды:
+\begin{equation*}
+ e^{-i\mathbf k\cdot\mathbf u}=\prod_\nu e^{-ic_\nu Q_\nu},\qquad
+ c_\nu=\sum_a k_aZ_{a\nu}.
+\end{equation*}
+Операторы разных мод коммутируют, а состояние --- прямое произведение,
+так что матричный элемент распадается на произведение:
+\begin{equation*}
+ \bra{\psi}e^{-i\mathbf k\cdot\mathbf u}\ket{\psi}
+ =\prod_\nu\bra{n_\nu}e^{-ic_\nu Q_\nu}\ket{n_\nu}.
+\end{equation*}
+Матрица $Z$ ортогональна, поэтому $\sum_\nu c_\nu^2=k^2$.
+Для эквивалентных атомов изотропного кристалла этот вес распределён
+по $3N$ модам равномерно в среднем: $c_\nu^2\to k^2/(3N)$.
+Каждый коэффициент мал, $c_\nu\sim k/\sqrt{3N}$: одна мода смещает
+отдельный атом очень слабо.
+
+\subsection{Матричный элемент одной моды}
+Из-за малости $c_\nu$ экспоненту достаточно разложить до второго порядка:
+\begin{equation*}
+ \bra{n}e^{-icQ}\ket{n}
+ =1-ic\bra{n}Q\ket{n}-\frac{c^2}{2}\bra{n}Q^2\ket{n}+\cdots
+ =1-\frac{c^2}{2}\bra{n}Q^2\ket{n}+\cdots .
+\end{equation*}
+Линейный член исчезает, поскольку $Q\propto a+a^\dagger$ меняет $n$ на единицу.
+С матричным элементом $\bra{n}Q^2\ket{n}=\hbar(2n+1)/(2M\omega)$ получаем
+\begin{equation*}
+ \bra{\psi}e^{-i\mathbf k\cdot\mathbf u}\ket{\psi}
+ =\prod_\nu\left(1-\frac{k^2}{2\cdot3N}\,
+ \frac{\hbar(2n_\nu+1)}{2M\omega_\nu}\right).
+\end{equation*}
+
+\clearpage
+\subsection{Тепловое усреднение}
+Числа заполнения разных мод распределены по Гиббсу независимо:
+\begin{equation*}
+ w(n_1,\ldots,n_{3N})=\prod_\nu
+ \frac{e^{-\hbar\omega_\nu(n_\nu+1/2)/T}}{Z_\nu}.
+\end{equation*}
+Поэтому произведение по модам усредняется сомножитель за сомножителем:
+\begin{align*}
+ \langle e^{-i\mathbf k\cdot\mathbf u}\rangle_T
+ &=\sum_{n_1,\ldots,n_{3N}}w(n_1,\ldots,n_{3N})
+ \prod_\nu\left(1-\frac{\hbar k^2(2n_\nu+1)}{2\cdot3N\cdot2M\omega_\nu}\right)\\
+ &=\prod_\nu\left(1-\frac{\hbar k^2\langle2n_\nu+1\rangle}
+ {2\cdot3N\cdot2M\omega_\nu}\right).
+\end{align*}
+Среднее $\langle2n+1\rangle$ удобно найти дифференцированием по параметру.
+Для одной моды введём $\alpha=\hbar\omega/(2T)$, тогда
+$\hbar\omega(n+1/2)/T=\alpha(2n+1)$ и
+\begin{equation*}
+ Z=\sum_{n=0}^{\infty}e^{-\alpha(2n+1)}
+ =\frac{e^{-\alpha}}{1-e^{-2\alpha}}
+ =\frac1{e^{\alpha}-e^{-\alpha}}.
+\end{equation*}
+Нужная сумма получается производной той же суммы:
+\begin{align*}
+ \sum_{n=0}^{\infty}(2n+1)e^{-\alpha(2n+1)}
+ &=-\frac{\partial}{\partial\alpha}\sum_{n=0}^{\infty}e^{-\alpha(2n+1)}
+ =-\frac{\partial}{\partial\alpha}\frac{e^{-\alpha}}{1-e^{-2\alpha}}\\
+ &=-\frac{\partial}{\partial\alpha}\frac1{e^{\alpha}-e^{-\alpha}}
+ =\frac{e^{\alpha}+e^{-\alpha}}{(e^{\alpha}-e^{-\alpha})^2}.
+\end{align*}
+Делим на $Z$:
+\begin{equation*}
+ \langle2n+1\rangle
+ =\frac{e^{\alpha}+e^{-\alpha}}{e^{\alpha}-e^{-\alpha}}
+ =\coth\frac{\hbar\omega}{2T}
+ =1+\frac{2}{e^{\hbar\omega/T}-1}
+ =1+2\overline n(\omega).
+\end{equation*}
+Результат совпадает с полученным ранее через сумму геометрической
+прогрессии: единица отвечает нулевым колебаниям, $2\overline n$ --- тепловым фононам.
+
+\subsection{Переход к экспоненте}
+Каждый сомножитель отличается от единицы на $\varepsilon_\nu\sim1/N$,
+а сомножителей $3N$. Логарифмируя, получаем
+\begin{equation*}
+ \prod_\nu(1-\varepsilon_\nu)
+ =\exp\Bigl(\sum_\nu\ln(1-\varepsilon_\nu)\Bigr)
+ =\exp\Bigl(-\sum_\nu\varepsilon_\nu+O(1/N)\Bigr).
+\end{equation*}
+Отброшенные члены $\sum_\nu\varepsilon_\nu^2\sim1/N$ исчезают в макроскопическом
+кристалле. Отсюда
+\begin{align*}
+ \langle e^{-i\mathbf k\cdot\mathbf u}\rangle_T
+ &=\exp\left[-\frac{k^2}{2\cdot3N}\sum_\nu\frac{\hbar}{M\omega_\nu}
+ \left(\frac12+\frac1{e^{\hbar\omega_\nu/T}-1}\right)\right]\\
+ &=\exp\left(-\frac{k^2}{6}\langle u^2\rangle_T\right)
+ =\exp\left(-\frac{k^2}{2}\langle u_\parallel^2\rangle_T\right),
+\end{align*}
+где, как и раньше,
+\begin{equation*}
+ \langle u^2\rangle_T=\frac1N\sum_\nu\frac{\hbar}{M\omega_\nu}
+ \left(\frac12+\frac1{e^{\hbar\omega_\nu/T}-1}\right),\qquad
+ \langle u_\parallel^2\rangle_T=\frac13\langle u^2\rangle_T.
+\end{equation*}
+Тем самым гауссова форма теплового среднего \rresult{выведена},
+а не предположена: она возникает как произведение большого числа
+почти единичных множителей. Вероятность бесфононного перехода
+\begin{equation*}
+ f_{\mathrm{LM}}=\bigl|\langle e^{-i\mathbf k\cdot\mathbf u}\rangle_T\bigr|^2
+ =e^{-k^2\langle u_\parallel^2\rangle_T}
+ =e^{-k^2\langle u^2\rangle_T/3}.
+\end{equation*}
+
+\remark
+Сначала усреднена амплитуда, затем взят квадрат модуля.
+Строго следовало бы усреднить вероятность
+$\bigl|\bra{\psi}e^{-i\mathbf k\cdot\mathbf u}\ket{\psi}\bigr|^2
+=\prod_\nu(1-\varepsilon_\nu)^2\simeq\prod_\nu(1-2\varepsilon_\nu)$.
+Это выражение тоже линейно по каждому $\varepsilon_\nu$, поэтому оба порядка
+действий дают один результат с точностью до $O(1/N)$.
+
+\clearpage
+\subsection{Температурная зависимость}
+Подстановка дебаевского $\langle u^2\rangle_T$ даёт полученную выше формулу
+для $f_{\mathrm{LM}}(T)$. Её график для $^{57}\mathrm{Fe}$ вместе с асимптотиками
+показан на рисунке. На лекции для $300$~K приводилось значение $0.76$;
+дебаевская формула с $\Theta_D/k_B=430$~K даёт $0.79$, а низкотемпературная
+асимптотика, применённая за пределами своей области, --- $0.72$.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=10pt,bottom=7pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=3.4cm,y=4.4cm]
+ \draw[->] (0,0)--(3.2,0) node[right] {$T/\Theta_D$};
+ \draw[->] (0,0)--(0,1.12) node[above] {$f_{\mathrm{LM}}$};
+ \foreach \xx in {1,2,3} {\draw (\xx,0)--(\xx,-0.02) node[below] {$\xx$};}
+ \foreach \yy in {0.5,1} {\draw (0,\yy)--(-0.03,\yy) node[left] {$\yy$};}
+ \draw[dotted] (0,1)--(3.1,1);
+ \draw[red3,dashed,domain=0:0.95,samples=60]
+  plot (\x,{exp(-0.07905*(1+6.5797*\x*\x))});
+ \draw[red3,dashed,domain=0.35:3,samples=60]
+  plot (\x,{exp(-0.3162*\x)});
+ \draw[p3,thick] plot file {\subfix{../image/lecture10_mossbauer_fraction.dat}};
+ \fill (0.179,0.9089) circle (1.5pt) node[above right] {$77$~K};
+ \fill (0.698,0.7922) circle (1.5pt) node[above right] {$300$~K};
+ \node[p3,right] at (1.45,0.80) {модель Дебая};
+ \node[red3,right] at (2.05,0.40) {$e^{-6RT/\Theta_D^2}$};
+ \node[red3,right] at (0.85,0.50) {$T\ll\Theta_D$};
+\end{tikzpicture}
+\captionof{figure}{Вероятность бесфононного перехода для $^{57}\mathrm{Fe}$
+ ($R/\Theta_D=0.053$). Штриховые линии --- низко- и высокотемпературная
+ асимптотики.}
+\end{rbox}
+
+\remark
+Сумма вероятностей всех переходов решётки равна единице, а средняя энергия,
+переданная решётке, по-прежнему равна $R$. Доля $f_{\mathrm{LM}}$ переходов
+не передаёт решётке энергии вовсе; остальные события сопровождаются
+рождением или поглощением фононов.
+
+\clearpage
+\chapter{Термодинамические флуктуации}
+\rsubtitle{Формула Эйнштейна и гауссово распределение}
+
+\section{Вероятность флуктуации}
+\subsection{Формула Больцмана}
+Энтропия связана с числом доступных микросостояний $\Gamma$:
+\begin{equation*}
+ S=\ln\Gamma,\qquad \Gamma=e^{S}.
+\end{equation*}
+Рассмотрим малую, но макроскопическую часть тела вместе с окружающей
+её средой. В разделах 8.1--8.3 число частиц этой части фиксировано;
+обмен частицами со средой рассмотрим отдельно в разделе 8.4.
+Вся система замкнута. Если параметры части отклонились
+от равновесных, полная энтропия изменилась на $\Delta S+\Delta S_{\text{ср}}$, и
+\begin{equation*}
+ \Gamma=e^{S_0+S_{0,\text{ср}}}\,e^{\Delta S+\Delta S_{\text{ср}}}
+ =\Gamma_{\text{равн}}\,e^{\Delta S+\Delta S_{\text{ср}}}.
+\end{equation*}
+Вероятность флуктуации пропорциональна числу реализующих её микросостояний:
+\begin{equation*}
+ w\propto e^{\Delta S+\Delta S_{\text{ср}}}.
+\end{equation*}
+
+\subsection{Изменение энтропии среды}
+Система замкнута, поэтому
+\begin{equation*}
+ E_{\text{ср}}+E=\mathrm{const},\qquad V_{\text{ср}}+V=\mathrm{const},
+ \qquad \Delta E_{\text{ср}}=-\Delta E,\quad \Delta V_{\text{ср}}=-\Delta V.
+\end{equation*}
+Среда велика, её температура $T$ и давление $p$ при флуктуации не меняются.
+Для неё справедливо термодинамическое тождество:
+\begin{equation*}
+ \Delta E_{\text{ср}}=T\Delta S_{\text{ср}}-p\Delta V_{\text{ср}}
+ \quad\Longrightarrow\quad
+ \Delta S_{\text{ср}}=-\frac{\Delta E+p\Delta V}{T}.
+\end{equation*}
+
+\subsection{Формула Эйнштейна}
+Подставляя, получаем \rconcept{формулу Эйнштейна}:
+\begin{equation*}
+ w\propto\exp\left(-\frac{\Delta E-T\Delta S+p\Delta V}{T}\right)
+ =\exp\left(-\frac{R_{\min}}{T}\right).
+\end{equation*}
+Здесь $R_{\min}=\Delta E-T\Delta S+p\Delta V$ --- \rconcept{минимальная работа},
+которую внешний источник должен совершить, чтобы обратимо перевести часть
+тела из равновесного состояния в данное. Температура и давление здесь
+равны значениям для среды. Если флуктуация происходит при заданных $T$ и $p$
+части тела, $R_{\min}=\Delta\Phi$ и $w\propto e^{-\Delta\Phi/T}$.
+
+Формула \rassumption{классическая}: она применима, когда квантовые эффекты
+в движении, описываемом флуктуирующей величиной, несущественны,
+а сама часть тела содержит много частиц.
+
+\clearpage
+\section{Гауссово распределение}
+\subsection{Одна флуктуирующая величина}
+Вблизи равновесия $R_{\min}$ имеет минимум, и её разложение по малому
+отклонению $x$ начинается с квадратичного члена:
+\begin{equation*}
+ R_{\min}\simeq\frac{\alpha x^2}{2},\qquad
+ w(x)=\sqrt{\frac{\alpha}{2\pi T}}\,e^{-\alpha x^2/(2T)}.
+\end{equation*}
+Это распределение Гаусса
+\begin{equation*}
+ f(x)=\frac1{\sqrt{2\pi}\,\sigma}\,e^{-(x-a)^2/(2\sigma^2)},\qquad
+ \langle x\rangle=a,\qquad
+ \langle(\Delta x)^2\rangle=\langle x^2\rangle-\langle x\rangle^2=\sigma^2,
+\end{equation*}
+со средним $a=0$ и дисперсией
+\begin{equation*}
+ \langle x^2\rangle=\frac{T}{\alpha},\qquad
+ \left\langle\frac{\alpha x^2}{2}\right\rangle=\frac T2.
+\end{equation*}
+На каждую квадратичную степень свободы приходится средняя энергия
+флуктуации $T/2$.
+
+\subsection{Пример: математический маятник}
+Маятник массы $m$ и длины $l$ находится в равновесии со средой.
+При отклонении на угол $\varphi$ груз поднимается на высоту
+\begin{equation*}
+ h=l(1-\cos\varphi)\simeq\frac{l\varphi^2}{2}.
+\end{equation*}
+Минимальная работа --- приращение потенциальной энергии:
+\begin{equation*}
+ R_{\min}=mgh\simeq\frac{mgl\varphi^2}{2},\qquad
+ w\propto e^{-mgl\varphi^2/(2T)}.
+\end{equation*}
+Следовательно,
+\begin{equation*}
+ \sigma^2=\langle\varphi^2\rangle=\frac{T}{mgl}.
+\end{equation*}
+При комнатной температуре для макроскопического маятника эта величина
+ничтожна; заметной она становится у лёгких подвесов, например в крутильных весах.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=10pt,bottom=7pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,scale=1.0]
+ \draw[thick] (-1.2,0)--(1.2,0);
+ \foreach \xx in {-1.1,-0.8,...,1.1} {\draw (\xx,0)--(\xx+0.2,0.2);}
+ \draw[dashed] (0,0)--(0,-3.4);
+ \draw[p3,thick] (0,0)--({3.4*sin(30)},{-3.4*cos(30)});
+ \fill[p3] ({3.4*sin(30)},{-3.4*cos(30)}) circle (4pt);
+ \draw (0,-1) arc (-90:-60:1) node[midway,below] {$\varphi$};
+ \node[left] at ({1.7*sin(30)},{-1.7*cos(30)}) {$l$};
+ \draw[dotted] ({3.4*sin(30)},{-3.4*cos(30)})--(0,{-3.4*cos(30)});
+ \draw[red3,<->] (2.2,-3.4)--(2.2,{-3.4*cos(30)})
+  node[midway,right] {$h$};
+ \draw[dotted] (0,-3.4)--(2.4,-3.4);
+\end{tikzpicture}
+\captionof{figure}{Отклонение маятника на угол $\varphi$ поднимает груз
+ на высоту $h\simeq l\varphi^2/2$.}
+\end{rbox}
+
+\clearpage
+\section{Флуктуации основных термодинамических величин}
+\subsection{Квадратичное разложение минимальной работы}
+Температура и энтропия рассматриваемой части определяются через её
+мгновенные макроскопические параметры: $T=T(E,V,N)$, $S=S(E,V,N)$.
+Предполагается локальное равновесие. Поэтому $\Delta T$ относится к самой
+части тела, тогда как температура большой среды остаётся постоянной.
+Коэффициенты при флуктуациях далее берутся в равновесном состоянии.
+Разложим энергию части тела по малым $\Delta S$ и $\Delta V$
+до второго порядка:
+\begin{equation*}
+ \Delta E=\left(\frac{\partial E}{\partial S}\right)_V\Delta S
+ +\left(\frac{\partial E}{\partial V}\right)_S\Delta V
+ +\frac12\left[\frac{\partial^2E}{\partial S^2}(\Delta S)^2
+ +2\frac{\partial^2E}{\partial S\partial V}\Delta S\Delta V
+ +\frac{\partial^2E}{\partial V^2}(\Delta V)^2\right].
+\end{equation*}
+Первые производные равны $T$ и $-p$, поэтому линейные члены сокращаются
+в $R_{\min}$. Квадратичную часть сгруппируем так:
+\begin{align*}
+ \Delta E-T\Delta S+p\Delta V
+ &=\frac{\Delta S}{2}\left[\left(\frac{\partial T}{\partial S}\right)_V\Delta S
+ +\left(\frac{\partial T}{\partial V}\right)_S\Delta V\right]\\
+ &\quad-\frac{\Delta V}{2}\left[\left(\frac{\partial p}{\partial S}\right)_V\Delta S
+ +\left(\frac{\partial p}{\partial V}\right)_S\Delta V\right]\\
+ &=\frac12\left(\Delta T\Delta S-\Delta p\Delta V\right).
+\end{align*}
+Квадратные скобки --- первые порядки изменений $\Delta T$ и $\Delta p$.
+Итак,
+\begin{equation*}
+ w\propto\exp\left(\frac{\Delta p\Delta V-\Delta T\Delta S}{2T}\right).
+\end{equation*}
+В этой форме можно выбрать любые две независимые переменные
+и выразить через них остальные.
+
+\subsection{Переменные давление и энтропия}
+Выберем независимыми $\Delta p$ и $\Delta S$:
+\begin{equation*}
+ \Delta T=\left(\frac{\partial T}{\partial p}\right)_S\Delta p
+ +\left(\frac{\partial T}{\partial S}\right)_p\Delta S,\qquad
+ \Delta V=\left(\frac{\partial V}{\partial p}\right)_S\Delta p
+ +\left(\frac{\partial V}{\partial S}\right)_p\Delta S.
+\end{equation*}
+Подставляя в показатель, получаем
+\begin{equation*}
+ w\propto\exp\left\{\frac1{2T}\left[(\Delta p)^2
+ \left(\frac{\partial V}{\partial p}\right)_S
+ -(\Delta S)^2\left(\frac{\partial T}{\partial S}\right)_p
+ +\Delta p\Delta S\left(\left(\frac{\partial V}{\partial S}\right)_p
+ -\left(\frac{\partial T}{\partial p}\right)_S\right)\right]\right\}.
+\end{equation*}
+Из $dW=T\,dS+V\,dp$ для энтальпии $W=E+pV$ следует соотношение Максвелла
+$(\partial V/\partial S)_p=(\partial T/\partial p)_S$, и перекрёстный член
+равен нулю. Распределение распадается на два независимых гауссовых множителя.
+Сравнивая с $e^{-\alpha x^2/(2T)}$, находим
+\begin{align*}
+ \langle(\Delta p)^2\rangle&=-\frac{T}{(\partial V/\partial p)_S}
+ =-T\left(\frac{\partial p}{\partial V}\right)_S,\\
+ \langle(\Delta S)^2\rangle&=T\left(\frac{\partial S}{\partial T}\right)_p=C_p,
+ \qquad \langle\Delta S\Delta p\rangle=0.
+\end{align*}
+
+\subsection{Переменные объём и температура}
+Выберем независимыми $\Delta V$ и $\Delta T$:
+\begin{equation*}
+ \Delta p=\left(\frac{\partial p}{\partial V}\right)_T\Delta V
+ +\left(\frac{\partial p}{\partial T}\right)_V\Delta T,\qquad
+ \Delta S=\left(\frac{\partial S}{\partial V}\right)_T\Delta V
+ +\left(\frac{\partial S}{\partial T}\right)_V\Delta T.
+\end{equation*}
+Перекрёстный член содержит
+$(\partial p/\partial T)_V-(\partial S/\partial V)_T=0$
+по соотношению Максвелла для $dF=-S\,dT-p\,dV$. Используя
+$(\partial S/\partial T)_V=C_V/T$, получаем
+\begin{equation*}
+ w\propto\exp\left[\frac{(\Delta V)^2}{2T}
+ \left(\frac{\partial p}{\partial V}\right)_T\right]
+ \exp\left[-\frac{C_V(\Delta T)^2}{2T^2}\right].
+\end{equation*}
+Отсюда
+\begin{equation*}
+ \langle(\Delta V)^2\rangle=-T\left(\frac{\partial V}{\partial p}\right)_T,\qquad
+ \langle(\Delta T)^2\rangle=\frac{T^2}{C_V},\qquad
+ \langle\Delta V\Delta T\rangle=0.
+\end{equation*}
+Флуктуации конечны лишь при $(\partial p/\partial V)_T<0$ и $C_V>0$ ---
+это \rassumption{условия термодинамической устойчивости}. В критической точке
+$(\partial p/\partial V)_T\to0$, и флуктуации объёма резко растут.
+
+\subsection{Корреляторы разных величин}
+Зная независимые флуктуации, можно найти средние произведения любых величин.
+Например,
+\begin{align*}
+ \langle\Delta S\Delta T\rangle
+ &=\langle\Delta S\Delta p\rangle\left(\frac{\partial T}{\partial p}\right)_S
+ +\langle(\Delta S)^2\rangle\left(\frac{\partial T}{\partial S}\right)_p
+ =0+C_p\cdot\frac{T}{C_p}=T,\\
+ \langle\Delta p\Delta V\rangle
+ &=\langle(\Delta p)^2\rangle\left(\frac{\partial V}{\partial p}\right)_S
+ +\langle\Delta p\Delta S\rangle\left(\frac{\partial V}{\partial S}\right)_p
+ =-T.
+\end{align*}
+
+\section{Флуктуации числа частиц}
+\subsection{Часть тела фиксированного объёма}
+Рассмотрим теперь часть тела, выделенную неподвижными воображаемыми стенками.
+Её объём постоянен, а число частиц меняется за счёт обмена со средой:
+\begin{equation*}
+ dE=T\,dS-p\,dV+\mu\,dN,\qquad V=\mathrm{const}
+ \quad\Longrightarrow\quad dE=T\,dS+\mu\,dN.
+\end{equation*}
+Формулы предыдущего раздела переходят в новые заменой
+$V\to N$, $-p\to\mu$. Повторяя вывод, получаем
+\begin{equation*}
+ R_{\min}=\Delta E-T\Delta S-\mu\Delta N
+ =\frac12(\Delta T\Delta S+\Delta\mu\Delta N),\qquad
+ w\propto\exp\left(-\frac{\Delta N\Delta\mu+\Delta T\Delta S}{2T}\right).
+\end{equation*}
+
+\subsection{Независимые температура и число частиц}
+Выберем независимыми $\Delta T$ и $\Delta N$:
+\begin{equation*}
+ \Delta\mu=\left(\frac{\partial\mu}{\partial N}\right)_{T,V}\Delta N
+ +\left(\frac{\partial\mu}{\partial T}\right)_{N,V}\Delta T,\qquad
+ \Delta S=\left(\frac{\partial S}{\partial N}\right)_{T,V}\Delta N
+ +\left(\frac{\partial S}{\partial T}\right)_{N,V}\Delta T.
+\end{equation*}
+Перекрёстный член исчезает, поскольку
+$(\partial S/\partial N)_{T,V}=-(\partial\mu/\partial T)_{N,V}$
+по $dF=-S\,dT+\mu\,dN$. Тогда
+\begin{equation*}
+ w\propto\exp\left[-\frac{(\Delta N)^2}{2T}
+ \left(\frac{\partial\mu}{\partial N}\right)_{T,V}\right]
+ \exp\left[-\frac{C_V(\Delta T)^2}{2T^2}\right],
+\end{equation*}
+\begin{equation*}
+ \langle(\Delta N)^2\rangle=T\left(\frac{\partial N}{\partial\mu}\right)_{T,V},
+ \qquad \langle(\Delta T)^2\rangle=\frac{T^2}{C_V}.
+\end{equation*}
+Устойчивость требует $(\partial\mu/\partial N)_{T,V}>0$, так что
+$\langle(\Delta N)^2\rangle>0$. Тот же результат получается в большом
+каноническом распределении: $N=-\partial\Omega/\partial\mu$ и
+$\langle(\Delta N)^2\rangle=T\,\partial N/\partial\mu$.
+
+\subsection{Связь с флуктуацией объёма}
+Флуктуацию числа частиц в заданном объёме можно получить и из
+флуктуации объёма при заданном числе частиц. Сопоставим два описания
+флуктуаций удельного объёма $v=V/N$. Из
+$\Delta v=\Delta V/N-V\Delta N/N^2$ в первом порядке следует
+\begin{equation*}
+ (\Delta v)_{N=\mathrm{const}}=\frac{\Delta V}{N},\qquad
+ (\Delta v)_{V=\mathrm{const}}=-\frac{V\Delta N}{N^2}.
+\end{equation*}
+Это разные условия. Для одного равновесного состояния в термодинамическом
+пределе соответствующие дисперсии связаны соотношением
+\begin{equation*}
+ \langle(\Delta N)^2\rangle=\frac{N^2}{V^2}\langle(\Delta V)^2\rangle
+ =-\frac{TN^2}{V^2}\left(\frac{\partial V}{\partial p}\right)_{T,N}.
+\end{equation*}
+
+\subsection{Классический идеальный газ}
+Для классического идеального газа $pV=NT$,
+$(\partial V/\partial p)_T=-V/p=-V^2/(NT)$.
+Подстановка даёт
+\begin{equation*}
+ \langle(\Delta N)^2\rangle=N,\qquad
+ \frac{\langle(\Delta V)^2\rangle}{V^2}=\frac1N,\qquad
+ \frac{\langle(\Delta T)^2\rangle}{T^2}=\frac1{C_V}=\frac{2}{3N}.
+\end{equation*}
+Последнее равенство записано для одноатомного газа. Число частиц
+распределено по Пуассону, и относительные флуктуации
+\rresult{убывают как $1/\sqrt N$}: в макроскопической части тела они ничтожны.
+
+\end{document}

@@ -1,0 +1,288 @@
+% !TeX root = part6.tex
+\documentclass[../final.tex]{subfiles}
+\begin{document}
+\ifSubfilesClassLoaded{\setcounter{chapter}{3}}{}
+
+% Lecture 6, 05.10.2026. Sources: Desktop/11.jpg, 22.jpg, 33.jpg, 44.jpg.
+\chapter{Термодинамика бозе-конденсата}
+\rsubtitle{Теплоёмкость, давление и изотермы}
+\section{Теплоёмкость вблизи конденсации}
+\subsection{Число частиц и внутренняя энергия}
+Рассматриваем трёхмерный идеальный бозе-газ с сохраняющимся числом частиц.
+Температура измеряется в энергетических единицах: $T=k_BT_{\mathrm K}$.
+Обозначим $T_c=T_{\text{БЭ}}$, $x=\mu/T$ и
+\begin{equation*}
+ A=\frac{g(2m)^{3/2}}{4\pi^2\hbar^3},\qquad
+ F_\alpha(x)=\sum_{n=1}^{\infty}\frac{e^{nx}}{n^\alpha},\qquad x<0.
+\end{equation*}
+Здесь $F_\alpha'(x)=F_{\alpha-1}(x)$,
+$F_\alpha(0)=\zeta(\alpha)$ при $\alpha>1$.
+В нормальной фазе $T>T_c$ число частиц равно
+\begin{align*}
+ N&=AVT^{3/2}\Gamma(3/2)F_{3/2}(x),\\
+ F_{3/2}(x)&=\zeta(3/2)-2\sqrt\pi\sqrt{-x}+O(|x|),\qquad x\to0^-.
+\end{align*}
+На границе перехода
+\begin{equation*}
+ N=AVT_c^{3/2}\Gamma(3/2)\zeta(3/2),\qquad
+ T_c=\left[\frac{N}{AV\Gamma(3/2)\zeta(3/2)}\right]^{2/3}.
+\end{equation*}
+Энергия имеет две ветви:
+\begin{equation*}
+ E=AVT^{5/2}\Gamma(5/2)
+ \begin{cases}
+  \zeta(5/2),&T\leq T_c,\\
+  F_{5/2}(x),&T>T_c.
+ \end{cases}
+\end{equation*}
+При постоянных $N,V$ теплоёмкость равна
+\begin{align*}
+ C_V^-&=\frac52AVT^{3/2}\Gamma(5/2)\zeta(5/2),\\
+ C_V^+&=AV\Gamma(5/2)
+ \left[\frac52T^{3/2}F_{5/2}(x)+T^{5/2}F_{3/2}(x)x'\right].
+\end{align*}
+Штрих означает производную по $T$ при постоянных $N,V$.
+Поскольку $x'(T_c^+)=0$, теплоёмкость на границе непрерывна:
+$C_V(T_c^+)=C_V(T_c^-)$.
+
+\clearpage
+\subsection{Вторая производная отношения $\mu/T$}
+Корневая поправка к числу частиц даёт
+\begin{align*}
+ \frac{N}{AV\Gamma(3/2)T^{3/2}}
+ &=\zeta(3/2)-2\sqrt\pi\sqrt{-x}+O(|x|),\\
+ -\frac{3N}{2AV\Gamma(3/2)T^{5/2}}
+ &\sim\frac{\sqrt\pi}{\sqrt{-x}}x',\\
+ x'&\sim-\frac{3N}{2AV\Gamma(3/2)\sqrt\pi\,T^{5/2}}\sqrt{-x}
+ \longrightarrow0.
+\end{align*}
+Положим $B(T)=3N/[2AV\Gamma(3/2)\sqrt\pi\,T^{5/2}]$.
+Дифференцируя главный член $x'\sim-B(T)\sqrt{-x}$, находим
+\begin{align*}
+ x''&\sim-B'(T)\sqrt{-x}+\frac{B(T)}{2\sqrt{-x}}x',\\
+ x''(T_c^+)&=-\frac12B^2(T_c)
+ =-\frac12\left[\frac{3N}{2AV\Gamma(3/2)\sqrt\pi\,T_c^{5/2}}\right]^2\\
+ &=-\frac{9\zeta^2(3/2)}{8\pi T_c^2}.
+\end{align*}
+Первая добавка исчезает, а во второй отношение $x'/\sqrt{-x}$
+стремится к $-B(T_c)$. Поэтому вторая производная имеет конечный предел.
+
+\subsection{Скачок производной теплоёмкости}
+В пределе $T\to T_c^+$ члены, содержащие $x'$ и
+$F_{1/2}(x)(x')^2$, исчезают. Остаётся
+\begin{align*}
+ \Delta\!\left(\frac{dC_V}{dT}\right)
+ &\equiv C_V'(T_c^+)-C_V'(T_c^-)\\
+ &=AVT_c^{5/2}\Gamma(5/2)\zeta(3/2)\,x''(T_c^+)\\
+ &=-\frac{27}{16\pi}\frac{N}{T_c}\zeta^2(3/2)
+ \simeq-3.666\frac{N}{T_c}.
+\end{align*}
+Здесь использованы $\Gamma(5/2)=\tfrac32\Gamma(3/2)$ и уравнение для $T_c$.
+При этом $C_V(T_c)/N=\tfrac{15}{4}\zeta(5/2)/\zeta(3/2)\simeq1.926$.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=10pt,bottom=8pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=2.4cm,y=1.05cm]
+ \draw[->] (0,0)--(4.3,0) node[right] {$T/T_c$};
+ \draw[->] (0,0)--(0,2.35) node[above] {$C_V/N$};
+ \draw[dashed,red3] (0,1.5)--(4,1.5);
+ \node[left] at (0,1.5) {$3/2$};
+ \draw[dotted] (1,0)--(1,1.926);\node[below] at (1,0) {$1$};
+ \draw[p3,thick,domain=0:1,samples=50] plot (\x,{1.925671675*\x^1.5});
+ \draw[p3,thick] plot file {\subfix{../image/bose_cv.dat}};
+ \node[above,p3] at (1,1.926) {$1.926$};
+\end{tikzpicture}
+\captionof{figure}{Теплоёмкость непрерывна, её производная испытывает скачок.
+ При высоких температурах $C_V/N\to3/2$.}
+\end{rbox}
+
+\clearpage
+\section{Давление идеального бозе-газа}
+\subsection{Большой термодинамический потенциал}
+Для нерелятивистского спектра $\varepsilon=p^2/(2m)$
+плотность состояний равна $D(\varepsilon)=AV\sqrt\varepsilon$.
+В термодинамическом пределе
+\begin{equation*}
+ \Omega=AVT\int_0^\infty\sqrt\varepsilon\,
+ \ln\!\left(1-e^{(\mu-\varepsilon)/T}\right)d\varepsilon.
+\end{equation*}
+Интегрирование по частям с учётом
+$d\ln(1-e^{(\mu-\varepsilon)/T})/d\varepsilon
+ =[T(e^{(\varepsilon-\mu)/T}-1)]^{-1}$ даёт
+\begin{equation*}
+ \Omega=-\frac23AV\int_0^\infty
+ \frac{\varepsilon^{3/2}\,d\varepsilon}{e^{(\varepsilon-\mu)/T}-1}
+ =-\frac23E=-pV.
+\end{equation*}
+Следовательно,
+\begin{equation*}
+ p=\frac{2E}{3V}=\frac23AT^{5/2}\Gamma(5/2)F_{5/2}(\mu/T),\qquad T>T_c.
+\end{equation*}
+
+\subsection{Давление при наличии конденсата}
+При $T\leq T_c$ химический потенциал равен нулю и
+\begin{align*}
+ E&=AVT^{5/2}\Gamma(5/2)\zeta(5/2),\\
+ p_{\mathrm{sat}}(T)&=\frac23AT^{5/2}\Gamma(5/2)\zeta(5/2),\\
+ N_{\mathrm{ex}}&=AVT^{3/2}\Gamma(3/2)\zeta(3/2),\qquad
+ N_0=N-N_{\mathrm{ex}}.
+\end{align*}
+Давление определяется возбуждёнными частицами и при заданной температуре
+не зависит от полного числа частиц. Частицы в основном состоянии
+с $\varepsilon_0=0$ не вносят вклада в энергию и давление идеального газа.
+
+При фиксированных $N,T$ критический объём равен
+\begin{equation*}
+ V_c(T)=\frac{N}{AT^{3/2}\Gamma(3/2)\zeta(3/2)}.
+\end{equation*}
+При сжатии ниже $V_c$ число возбуждённых частиц уменьшается пропорционально $V$,
+доля конденсата растёт, а давление остаётся равным $p_{\mathrm{sat}}(T)$.
+
+\clearpage
+\section{Изотермы квантовых газов}
+\subsection{Давление и химический потенциал}
+При $V>V_c$ бозе-газ находится в нормальной фазе: $\mu<0$.
+Уравнение для числа частиц определяет химический потенциал:
+\begin{equation*}
+ F_{3/2}(\mu/T)=\zeta(3/2)\frac{V_c}{V}.
+\end{equation*}
+При $V\leq V_c$ имеется конденсат и $\mu=0$.
+Сжатие в этой области переводит частицы в основное состояние.
+
+\begin{rbox}[unbreakable,left=16pt,right=16pt,top=12pt,bottom=9pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=6pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=2.15cm,y=0.95cm]
+ \draw[->] (0,0)--(5.15,0) node[right] {$V/V_c$};
+ \draw[->] (0,0)--(0,4.65) node[above] {$p/p_{\mathrm{sat}}$};
+ \draw[dotted] (1,0)--(1,4);\node[below] at (1,0) {$1$};
+ \node[left] at (0,1) {$1$};
+ \begin{scope}
+  \clip (0,0) rectangle (5,4.45);
+  \draw[red3,thick] plot file {\subfix{../image/lecture6_fermi_isotherm.dat}};
+  \draw[dashed,domain=0.45:5,samples=90] plot (\x,{1.94737/\x});
+  \draw[p3,very thick] (0,1)--(1,1);
+  \draw[p3,thick] plot file {\subfix{../image/lecture6_bose_isotherm.dat}};
+ \end{scope}
+ \node[red3,right] at (1.65,2.95) {ферми-газ};
+ \node[right] at (2.65,1.4) {классический газ};
+ \node[p3,right] at (2.65,0.5) {бозе-газ};
+ \node[p3,above] at (0.52,1.08) {конденсат};
+ \begin{scope}[yshift=-3.25cm,y=1.55cm]
+  \draw[->] (0,0)--(5.15,0) node[right] {$V/V_c$};
+  \draw[->] (0,-1.2)--(0,0.4) node[above] {$\mu/T$};
+  \draw[p3,very thick] (0.05,0)--(1,0);
+  \draw[p3,thick] plot file {\subfix{../image/lecture6_bose_mu_volume.dat}};
+  \draw[dotted] (1,0)--(1,-1.1);\node[above] at (1,0) {$1$};
+  \node[p3,above] at (0.5,0.08) {$\mu=0$};
+  \node[p3] at (2,-0.9) {$\mu<0$};
+ \end{scope}
+\end{tikzpicture}
+\captionof{figure}{Изотермы при одинаковых $N,T,m,g$ и химический потенциал
+ бозе-газа. Объём нормирован на $V_c(T)$, давление --- на $p_{\mathrm{sat}}(T)$.}
+\end{rbox}
+
+При больших объёмах все три газа переходят в классический режим $pV=NT$.
+При сжатии ферми-газа давление растёт сильнее из-за принципа Паули;
+в сильно вырожденной области $p\propto(N/V)^{5/3}$.
+У бозе-газа давление ниже классического и выходит на горизонтальный участок.
+
+\clearpage
+\section{Сравнение с газом Ван-дер-Ваальса}
+Для взаимодействующих частиц фазовый переход газ--жидкость описывается,
+в частности, уравнением Ван-дер-Ваальса
+\begin{equation*}
+ \left(p+a\frac{N^2}{V^2}\right)(V-Nb)=NT.
+\end{equation*}
+Параметры $a,b>0$ учитывают притяжение и собственный объём частиц.
+Ниже критической температуры формальная изотерма содержит участок
+с $\partial p/\partial V>0$, соответствующий механической неустойчивости.
+В равновесии петля заменяется горизонтальным участком сосуществования
+жидкости и пара:
+\begin{equation*}
+ p(V_\ell,T)=p(V_g,T)=p_{\mathrm{coex}}(T),\qquad
+ \int_{V_\ell}^{V_g}[p(V,T)-p_{\mathrm{coex}}(T)]\,dV=0.
+\end{equation*}
+Последнее равенство --- правило равных площадей Максвелла.
+
+\begin{rbox}[unbreakable,left=16pt,right=16pt,top=12pt,bottom=9pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=6pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=2.4cm,y=2.4cm]
+ \draw[->] (0,0)--(4.85,0) node[right] {$V/V_{\text{кр}}$};
+ \draw[->] (0,0)--(0,1.5) node[above] {$p/p_{\text{кр}}$};
+ \draw[dashed] plot file {\subfix{../image/lecture6_vdw_isotherm.dat}};
+ \draw[p3,very thick] (0.603402,0.646998)--(2.348842,0.646998);
+ \draw[dotted] (0.603402,0)--(0.603402,0.646998);
+ \draw[dotted] (2.348842,0)--(2.348842,0.646998);
+ \node[below] at (0.603402,0) {$V_\ell$};
+ \node[below] at (2.348842,0) {$V_g$};
+ \node[p3,above] at (1.5,0.67) {жидкость и пар};
+ \node[right] at (2.8,1.12) {$T=0.9T_{\text{кр}}$};
+ \begin{scope}[xshift=2cm,yshift=-4.7cm,x=2cm,y=1.4cm]
+  \draw[->] (0,0)--(3.5,0) node[right] {$T$};
+  \draw[->] (0,0)--(0,2.35) node[above] {$p$};
+  \draw[p3,thick] (0.45,0.25) .. controls (1.2,0.5) and (2,1.3) .. (2.6,1.95);
+  \fill[p3] (2.6,1.95) circle (1.5pt);
+  \node[right] at (2.6,1.95) {критическая точка};
+  \node at (0.95,1.25) {жидкость};
+  \node at (2.4,0.45) {газ};
+ \end{scope}
+\end{tikzpicture}
+\captionof{figure}{Изотерма Ван-дер-Ваальса с участком сосуществования фаз
+ и схема линии жидкость--газ на плоскости $(T,p)$.}
+\end{rbox}
+
+Горизонтальные участки внешне сходны, но имеют разный смысл.
+Для газа Ван-дер-Ваальса сосуществуют пространственные фазы с разными плотностями;
+для идеального бозе-газа происходит перераспределение частиц между основным
+и возбуждёнными состояниями.
+
+\clearpage
+\section{Экспериментальная бозе-конденсация}
+\subsection{Разреженные атомные газы}
+В 1995 году в JILA, совместной лаборатории Университета Колорадо и NIST,
+группа Эрика Корнелла и Карла Вимана получила конденсат атомов $^{87}\mathrm{Rb}$.
+Независимо группа Вольфганга Кеттерле в MIT получила конденсат атомов натрия.
+За получение конденсатов в разреженных газах щелочных атомов и исследование
+их свойств Корнелл, Виман и Кеттерле получили Нобелевскую премию по физике 2001 года.
+
+В опыте с рубидием конденсат появлялся при температуре около
+$170\,\text{нК}$ и плотности порядка $2.5\cdot10^{12}\,\text{см}^{-3}$.
+При дальнейшем охлаждении был получен почти чистый конденсат примерно
+из $2000$ атомов при температуре порядка $20\,\text{нК}$.
+Атомы удерживались в ловушке; поэтому пространственное распределение плотности
+отличалось от однородной модели газа в ящике.
+
+\subsection{Зависимость критической температуры от массы}
+Для однородного идеального газа
+\begin{equation*}
+ T_{c,\mathrm K}=\frac{2\pi\hbar^2}{mk_B}
+ \left[\frac{n}{g\zeta(3/2)}\right]^{2/3},\qquad n=\frac NV.
+\end{equation*}
+При фиксированных $n,g$ коэффициент $A\propto m^{3/2}$, откуда
+\begin{equation*}
+ T_c^{3/2}\propto\frac1A\propto m^{-3/2},\qquad T_c\propto\frac1m.
+\end{equation*}
+Чем меньше масса частицы, тем выше температура квантового вырождения
+при одной и той же плотности.
+
+\subsection{Оценка для гелия-4}
+Для $^4\mathrm{He}$ имеем $g=1$, $m=M_r m_u$,
+где $M_r\simeq4.0026$, а $m_u$ --- атомная единица массы.
+Введём молярный объём $v_m=V/\nu$; тогда $n=N_A/v_m$.
+Если численное значение $v_m$ задано в $\text{см}^3/\text{моль}$, то
+\begin{equation*}
+ T_{c,\mathrm K}\simeq
+ \frac{114.6\,\mathrm K}
+ {M_r\,[v_m/(\text{см}^3/\text{моль})]^{2/3}}.
+\end{equation*}
+При $v_m\simeq27.6\,\text{см}^3/\text{моль}$ идеальная модель даёт
+$T_{c,\mathrm K}\simeq3.1\,\mathrm K$.
+Температура сверхтекучего перехода жидкого $^4\mathrm{He}$ при давлении
+насыщенного пара составляет $T_\lambda\simeq2.17\,\mathrm K$.
+Жидкий гелий является взаимодействующей системой, поэтому формула идеального
+газа даёт лишь оценку температурного масштаба.
+
+\end{document}

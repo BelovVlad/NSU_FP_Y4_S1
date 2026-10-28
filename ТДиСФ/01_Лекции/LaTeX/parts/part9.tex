@@ -1,0 +1,495 @@
+% !TeX root = part9.tex
+\documentclass[../final.tex]{subfiles}
+\begin{document}
+\ifSubfilesClassLoaded{\setcounter{chapter}{6}}{}
+
+% Sources: Desktop/1.jpg, 2.jpg, 3.jpg.
+\chapter{Тепловое расширение и эффект Мёссбауэра}
+\rsubtitle{Закон Грюнейзена, отдача ядра и бесфононные переходы}
+
+\section{Соответственные состояния при заданном давлении}
+Модель Дебая связывает температурные зависимости колебательных величин
+с одним энергетическим масштабом $\Theta_D=\hbar\omega_D$.
+Температуру далее измеряем в энергетических единицах: $T=k_BT_{\mathrm K}$.
+Число атомов $N$ фиксировано.
+
+Для потенциала Гиббса используем приближение одного частотного масштаба:
+\begin{equation*}
+ \Phi(p,T)\simeq\Phi_0(p)+N\Theta(p)f(x),\qquad
+ x=\frac{T}{\Theta(p)},\qquad \Theta\equiv\Theta_D.
+\end{equation*}
+Это запись закона соответственных состояний при заданном давлении.
+Она применима, когда тепловое изменение объёма мало и изменение спектра
+можно описать зависимостью $\Theta(p)$. Функция $f$ безразмерна,
+а $\Phi_0$ содержит температурно независимую часть, включая нулевые колебания.
+
+\subsection{Энтропия и теплоёмкость}
+Из дифференциала $d\Phi=-S\,dT+V\,dp$ следует
+\begin{align*}
+ S&=-\left(\frac{\partial\Phi}{\partial T}\right)_p
+ =-N\Theta f'(x)\frac1\Theta=-Nf'(x),\\
+ C_p&=T\left(\frac{\partial S}{\partial T}\right)_p
+ =-\frac{NT}{\Theta}f''(x)=-Nx f''(x).
+\end{align*}
+Штрихи у $f$ означают производные по $x$.
+При $C_p>0$ имеем $f''(x)<0$.
+
+\subsection{Объём как производная потенциала}
+При фиксированной температуре меняются и множитель $\Theta$, и аргумент $x$:
+\begin{equation*}
+ \Theta'=\frac{d\Theta}{dp},\qquad
+ \left(\frac{\partial x}{\partial p}\right)_T
+ =-\frac{T\Theta'}{\Theta^2}=-\frac{x\Theta'}\Theta.
+\end{equation*}
+Поэтому
+\begin{align*}
+ V&=\left(\frac{\partial\Phi}{\partial p}\right)_T
+ =\Phi_0'(p)+N\Theta'f(x)
+ +N\Theta f'(x)\left(-\frac{x\Theta'}\Theta\right)\\
+ &=V_0(p)+N\Theta'\bigl[f(x)-xf'(x)\bigr],
+ \qquad V_0(p)=\Phi_0'(p).
+\end{align*}
+
+\clearpage
+\section{Тепловое расширение и закон Грюнейзена}
+Объёмный коэффициент теплового расширения определён как
+\begin{equation*}
+ \alpha_V=\frac1V\left(\frac{\partial V}{\partial T}\right)_p.
+\end{equation*}
+Дифференцируем найденный объём, сохраняя все члены:
+\begin{align*}
+ \left(\frac{\partial V}{\partial T}\right)_p
+ &=N\Theta'\left[\frac{f'(x)}\Theta
+ -\frac{f'(x)}\Theta-\frac{x f''(x)}\Theta\right]\\
+ &=-\frac{N\Theta'}\Theta x f''(x)
+ =\frac{\Theta'}\Theta C_p.
+\end{align*}
+Члены с $f'$ сокращаются. В принятом приближении получаем закон Грюнейзена:
+\begin{equation*}
+ \boxed{\quad \frac{\alpha_V}{C_p}
+ =\frac1{V\Theta}\frac{d\Theta}{dp}
+ \simeq\frac1{V_0\Theta}\frac{d\Theta}{dp}.\quad}
+\end{equation*}
+Последний переход использует малость теплового изменения объёма.
+Если $d\Theta/dp>0$, нагревание приводит к расширению.
+При слабой температурной зависимости правой части $\alpha_V(T)$
+повторяет температурный ход $C_p(T)$.
+Для изотропного тела линейный коэффициент равен $\alpha_L=\alpha_V/3$.
+При переходе к кельвинам и $\alpha_V$, и $C_p$ умножаются на $k_B$;
+их отношение сохраняется.
+
+\subsection{Межатомный потенциал и характерная частота}
+Если $a$ --- минимум парного потенциала $U(r)$, то вблизи него
+\begin{equation*}
+ U(r)=U(a)+\frac{U''(a)}2(r-a)^2+\cdots,\qquad
+ \omega_0^2=\frac{U''(a)}m.
+\end{equation*}
+Здесь $m$ --- масса, соответствующая выбранной координате колебаний.
+Частота Дебая задаётся всем спектром решётки и имеет тот же характерный
+масштаб жёсткости связей. Увеличение жёсткости при сжатии обычно повышает
+$\omega_D$ и $\Theta_D$.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=8pt,bottom=6pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=1cm,y=0.7cm]
+ \draw[->] (0,0)--(10.4,0) node[right] {$r$};
+ \draw[->] (0,-2.1)--(0,1.6) node[above] {$U(r)$};
+ \draw[p3,thick] (0.7,1.3) .. controls (0.85,-0.7) and (1.2,-1.8) .. (2,-1.8)
+ .. controls (3,-1.8) and (3.3,-0.2) .. (9.8,-0.08);
+ \draw[dashed] (2,0)--(2,-1.8);
+ \node[above] at (2,0) {$a$};
+\end{tikzpicture}
+\captionof{figure}{Асимметричная яма: резкое отталкивание и более пологая область притяжения.}
+\end{rbox}
+В чисто гармонической яме среднее положение не сдвигается при нагревании.
+Тепловое расширение связано с ангармонизмом; в квазигармоническом описании
+он учитывается через зависимость частот от объёма или давления.
+
+\clearpage
+\section{Отдача свободного ядра}
+Пусть энергия ядерного перехода равна $\varepsilon_0$.
+Фотон с волновым вектором $\mathbf k$ имеет энергию и импульс
+\begin{equation*}
+ \varepsilon_\gamma=\hbar\omega=\hbar ck,\qquad
+ \mathbf p_\gamma=\hbar\mathbf k.
+\end{equation*}
+Если покоившееся ядро массы $M$ испускает фотон, то по закону сохранения
+импульса оно получает импульс $-\hbar\mathbf k$.
+Его кинетическая энергия отдачи равна
+\begin{equation*}
+ \boxed{\quad R=\frac{p_\gamma^2}{2M}
+ =\frac{\hbar^2k^2}{2M}=\frac{\varepsilon_\gamma^2}{2Mc^2}.\quad}
+\end{equation*}
+Используем нерелятивистское движение ядра, $\varepsilon_0\ll Mc^2$.
+В выражении для малой поправки $R$ можно положить
+$\varepsilon_\gamma\simeq\varepsilon_0$.
+
+\subsection{Испускание и поглощение покоящимися ядрами}
+При испускании часть энергии перехода уходит на отдачу:
+\begin{equation*}
+ \varepsilon_0=\varepsilon_\gamma^{\text{исп}}+R,
+ \qquad \varepsilon_\gamma^{\text{исп}}\simeq\varepsilon_0-R.
+\end{equation*}
+При поглощении фотон должен обеспечить и возбуждение, и отдачу:
+\begin{equation*}
+ \varepsilon_\gamma^{\text{погл}}=\varepsilon_0+R.
+\end{equation*}
+Центры линий испускания и поглощения разнесены на $2R$.
+Поэтому одинаковые свободные покоящиеся ядра не обеспечивают резонанс,
+если $R$ значительно превосходит естественную ширину линии.
+
+\subsection{Оценка для $^{57}\mathrm{Fe}$}
+Для перехода с энергией $\varepsilon_0\simeq14.4\,\text{кэВ}$
+и $Mc^2\simeq57\cdot931.5\,\text{МэВ}\simeq53.1\,\text{ГэВ}$
+\begin{equation*}
+ R\simeq\frac{(1.44\cdot10^4)^2}{2\cdot5.31\cdot10^{10}}\,\text{эВ}
+ \simeq1.95\cdot10^{-3}\,\text{эВ}.
+\end{equation*}
+Естественная ширина связана со средним временем жизни возбуждённого уровня:
+\begin{equation*}
+ \Gamma=\frac\hbar\tau,\qquad
+ \tau\simeq141\,\text{нс},\qquad
+ \Gamma\simeq4.7\cdot10^{-9}\,\text{эВ}.
+\end{equation*}
+Следовательно, $R/\Gamma\simeq4.2\cdot10^5$:
+энергия отдачи мала по сравнению с энергией фотона, но огромна по сравнению
+с шириной ядерной линии.
+
+\clearpage
+\section{Движущееся ядро: доплеровское уширение}
+До испускания ядро имеет импульс $\mathbf P=\hbar\mathbf K=M\mathbf v$;
+после испускания --- $\mathbf P-\hbar\mathbf k$.
+Энергии начального и конечного состояний равны
+\begin{equation*}
+ E_i=\varepsilon_0+\frac{P^2}{2M},\qquad
+ E_f=\frac{|\mathbf P-\hbar\mathbf k|^2}{2M}.
+\end{equation*}
+Раскрывая квадрат, получаем
+\begin{align*}
+ \varepsilon_\gamma^{\text{исп}}&=E_i-E_f
+ =\varepsilon_0+\frac{P^2-(P^2-2\hbar\mathbf k\cdot\mathbf P+\hbar^2k^2)}{2M}\\
+ &=\varepsilon_0+\frac{\hbar\mathbf k\cdot\mathbf P}{M}-R
+ =\varepsilon_0+\hbar\mathbf k\cdot\mathbf v-R.
+\end{align*}
+При поглощении импульс меняется с $\mathbf P$ на $\mathbf P+\hbar\mathbf k$:
+\begin{equation*}
+ \varepsilon_\gamma^{\text{погл}}
+ =\varepsilon_0+\frac{|\mathbf P+\hbar\mathbf k|^2-P^2}{2M}
+ =\varepsilon_0+\hbar\mathbf k\cdot\mathbf v+R.
+\end{equation*}
+
+\subsection{Средняя энергия и дисперсия}
+В равновесном газе $\langle\mathbf v\rangle=0$.
+Для компоненты $v_\parallel$ вдоль $\mathbf k$ распределение Максвелла даёт
+\begin{equation*}
+ w(v_\parallel)=\sqrt{\frac{M}{2\pi T}}
+ e^{-Mv_\parallel^2/(2T)},\qquad
+ \langle v_\parallel^2\rangle=\frac TM.
+\end{equation*}
+Поэтому
+\begin{align*}
+ \langle\varepsilon_\gamma^{\text{исп}}\rangle&=\varepsilon_0-R,
+ &\langle\varepsilon_\gamma^{\text{погл}}\rangle&=\varepsilon_0+R,\\
+ \sigma_\varepsilon^2
+ &=\langle\varepsilon_\gamma^2\rangle-\langle\varepsilon_\gamma\rangle^2
+ =\hbar^2k^2\langle v_\parallel^2\rangle
+ =2RT,
+ &\sigma_\varepsilon&=\sqrt{2RT}.
+\end{align*}
+Дисперсия растёт как $T$, а ширина --- как $\sqrt T$.
+При $T_{\mathrm K}=300\,\text{К}$ для $^{57}\mathrm{Fe}$
+$\sigma_\varepsilon\simeq1.0\cdot10^{-2}\,\text{эВ}$.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=7pt,bottom=6pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\footnotesize,x=0.95cm,y=0.65cm]
+ \foreach \yy/\ww/\hh in {0/0.10/1.45,2.6/1.40/1.05} {
+  \draw[->] (0,\yy)--(11,\yy) node[right] {$\varepsilon_\gamma$};
+  \draw[p3,thick,domain=0.4:10.4,samples=120]
+   plot (\x,{\yy+\hh*exp(-((\x-3.6)^2)/\ww)});
+  \draw[red3,thick,domain=0.4:10.4,samples=120]
+   plot (\x,{\yy+\hh*exp(-((\x-6.8)^2)/\ww)});
+  \node[below] at (3.6,\yy) {$\varepsilon_0-R$};
+  \node[below] at (6.8,\yy) {$\varepsilon_0+R$};
+  \draw (5.2,\yy)--(5.2,{\yy-0.08});
+  \node[below] at (5.2,\yy) {$\varepsilon_0$};
+ }
+ \node[p3] at (2.4,4.35) {испускание};
+ \node[red3] at (7.9,4.35) {поглощение};
+ \node at (9.6,3.9) {$T_2>T_1$};
+ \node at (9.6,1.1) {$T_1$};
+\end{tikzpicture}
+\captionof{figure}{Доплеровское уширение может увеличить перекрытие разнесённых линий в газе.}
+\end{rbox}
+
+\clearpage
+\section{Связанное ядро и бесфононный переход}
+В кристалле ядро связано с решёткой. Передача импульса может сопровождаться
+изменением колебательного состояния, а может происходить без рождения
+и поглощения фононов. Во втором случае возникает узкая резонансная линия:
+это эффект Мёссбауэра.
+
+\subsection{Оператор передачи импульса}
+Сначала рассмотрим одномерный осциллятор с координатой $x$.
+Разложим начальное состояние по собственным состояниям импульса:
+\begin{equation*}
+ |n_i\rangle=\int dP\,|P\rangle\langle P|n_i\rangle.
+\end{equation*}
+При испускании фотона каждый импульс ядра уменьшается на $\hbar k$.
+Поскольку $\langle x|P\rangle\propto e^{iPx/\hbar}$, имеем
+\begin{equation*}
+ e^{-ikx}|P\rangle=|P-\hbar k\rangle,
+ \qquad
+ |\psi_{\text{после}}\rangle
+ =\int dP\,|P-\hbar k\rangle\langle P|n_i\rangle
+ =e^{-ikx}|n_i\rangle.
+\end{equation*}
+Это состояние, вообще говоря, является суперпозицией уровней осциллятора:
+\begin{equation*}
+ |\psi_{\text{после}}\rangle=\sum_{n_f}|n_f\rangle
+ \underbrace{\langle n_f|e^{-ikx}|n_i\rangle}_{A_{n_fn_i}},
+ \qquad P_{n_fn_i}=|A_{n_fn_i}|^2.
+\end{equation*}
+
+\subsection{Энергия фотона и колебательные переходы}
+Предположим, что частота и положение равновесия осциллятора не меняются
+при ядерном переходе. Тогда
+\begin{align*}
+ E_i&=\varepsilon_0+\hbar\omega\left(n_i+\frac12\right),
+ &E_f&=\hbar\omega\left(n_f+\frac12\right),\\
+ \varepsilon_\gamma&=\varepsilon_0+\hbar\omega(n_i-n_f).
+\end{align*}
+Если $n_f>n_i$, часть энергии уходит в колебания и
+$\varepsilon_\gamma<\varepsilon_0$; если $n_f<n_i$, фотон получает
+добавочную энергию. При $n_f=n_i$ колебательная энергия сохраняется:
+\begin{equation*}
+ \boxed{\varepsilon_\gamma=\varepsilon_0.}
+\end{equation*}
+Для решётки с набором мод вместо одного слагаемого возникает сумма:
+\begin{equation*}
+ \varepsilon_\gamma=\varepsilon_0+
+ \sum_\nu\hbar\omega_\nu(n_{i\nu}-n_{f\nu}).
+\end{equation*}
+В бесфононном канале набор чисел заполнения сохраняется.
+Импульс передаётся кристаллу как целому; энергия его отдачи
+$\hbar^2k^2/(2M_{\text{кр}})$ пренебрежимо мала из-за большой массы
+$M_{\text{кр}}$. Закон сохранения импульса при этом выполняется.
+
+\clearpage
+\section{Вероятность бесфононного перехода}
+\subsection{Осциллятор в основном состоянии}
+Обозначим $s^2=\langle0|x^2|0\rangle=\hbar/(2M\omega)$.
+Плотность вероятности координаты в основном состоянии гауссова:
+\begin{equation*}
+ |\psi_0(x)|^2=\frac1{\sqrt{2\pi s^2}}
+ \exp\!\left(-\frac{x^2}{2s^2}\right).
+\end{equation*}
+Амплитуда перехода без изменения колебательного состояния равна
+\begin{align*}
+ A_{00}&=\langle0|e^{-ikx}|0\rangle
+ =\frac1{\sqrt{2\pi s^2}}\int_{-\infty}^{\infty}
+ \exp\!\left(-\frac{x^2}{2s^2}-ikx\right)dx\\
+ &=\exp\!\left(-\frac{k^2s^2}{2}\right).
+\end{align*}
+Тот же результат виден из разложения экспоненты:
+\begin{equation*}
+ A_{00}=1-ik\langle x\rangle_0-\frac{k^2}2\langle x^2\rangle_0+\cdots
+ =1-\frac{k^2s^2}{2}+\cdots.
+\end{equation*}
+Нечётные моменты равны нулю, а сумма всех чётных моментов даёт гауссову
+экспоненту. При переходе от амплитуды к вероятности показатель удваивается:
+\begin{equation*}
+ P_{00}=|A_{00}|^2=e^{-k^2\langle x^2\rangle_0}.
+\end{equation*}
+
+\subsection{Тепловое среднее и три измерения}
+Для гармонической решётки тепловые флуктуации смещений также гауссовы.
+Пусть $\mathbf u$ --- смещение излучающего ядра от положения равновесия,
+а $u_\parallel$ --- его проекция на направление фотона. Тогда
+\begin{equation*}
+ \mathcal A_T=\left\langle e^{-i\mathbf k\cdot\mathbf u}\right\rangle_T
+ =\exp\!\left[-\frac12\langle(\mathbf k\cdot\mathbf u)^2\rangle_T\right].
+\end{equation*}
+Вес когерентной упругой линии в макроскопической гармонической решётке
+определяется фактором Лэмба--Мёссбауэра:
+\begin{equation*}
+ f_{\mathrm{LM}}=|\mathcal A_T|^2
+ =\exp[-k^2\langle u_\parallel^2\rangle_T].
+\end{equation*}
+При изотропных колебаниях
+\begin{equation*}
+ \langle u_\parallel^2\rangle_T=\frac13\langle|\mathbf u|^2\rangle_T,
+ \qquad
+ \boxed{f_{\mathrm{LM}}=\exp\!\left[-\frac{k^2}{3}
+ \langle|\mathbf u|^2\rangle_T\right].}
+\end{equation*}
+Чем меньше амплитуда колебаний, тем больше доля бесфононной линии.
+Даже при $T=0$ нулевые колебания дают $f_{\mathrm{LM}}<1$.
+
+\clearpage
+\section{Средний квадрат смещения через нормальные моды}
+Для одноатомной решётки массы атомов равны $M$.
+Собственные состояния гармонического гамильтониана имеют вид
+$|\Psi\rangle=|n_1,n_2,\ldots,n_{3N}\rangle$.
+Ортогональное преобразование $\boldsymbol\chi=Z\mathbf Q$
+приводит квадратичную форму к диагональному виду:
+\begin{equation*}
+ U_2=\frac M2\boldsymbol\chi^{\mathsf T}B\boldsymbol\chi
+ =\frac M2\mathbf Q^{\mathsf T}\operatorname{diag}(\omega_\nu^2)\mathbf Q
+ =\frac M2\sum_\nu\omega_\nu^2Q_\nu^2.
+\end{equation*}
+Поскольку $Z^{\mathsf T}Z=1$, сохраняется сумма квадратов координат:
+\begin{equation*}
+ \sum_{i=1}^N|\mathbf u_i|^2=\sum_\nu Q_\nu^2,
+ \qquad
+ \langle u^2\rangle\equiv\frac1N\sum_i\langle|\mathbf u_i|^2\rangle
+ =\frac1N\sum_\nu\langle Q_\nu^2\rangle.
+\end{equation*}
+Для эквивалентных узлов это же среднее характеризует излучающий атом.
+В изотропном случае разложение упругой амплитуды начинается с
+\begin{equation*}
+ \langle e^{-i\mathbf k\cdot\mathbf u}\rangle
+ =1-\frac{k^2}{6}\langle u^2\rangle+\cdots
+ =1-\frac{k^2}{6N}\sum_\nu\langle Q_\nu^2\rangle+\cdots.
+\end{equation*}
+
+\subsection{Почему появляется произведение по модам}
+Выразим проекцию смещения излучающего атома через нормальные координаты:
+\begin{equation*}
+ u_\parallel=\sum_\nu c_\nu Q_\nu,\qquad
+ e^{-i\mathbf k\cdot\mathbf u}
+ =e^{-ik\sum_\nu c_\nu Q_\nu}
+ =\prod_\nu e^{-ikc_\nu Q_\nu}.
+\end{equation*}
+Коэффициенты $c_\nu$ задаются собственными векторами колебаний.
+Координаты разных мод коммутируют, а состояние $|\Psi\rangle$
+является произведением состояний отдельных осцилляторов. Поэтому
+\begin{align*}
+ \mathcal A_\Psi
+ &=\langle\Psi|e^{-i\mathbf k\cdot\mathbf u}|\Psi\rangle
+ =\prod_\nu\langle n_\nu|e^{-ikc_\nu Q_\nu}|n_\nu\rangle\\
+ &=\prod_\nu\left[1-\frac{k^2c_\nu^2}{2}
+ \langle n_\nu|Q_\nu^2|n_\nu\rangle+\cdots\right].
+\end{align*}
+При раскрытии произведения в первом порядке по квадратам смещений
+получаем сумму вкладов мод. Усреднение по эквивалентным узлам
+и направлениям даёт $\overline{c_\nu^2}=1/(3N)$ и возвращает
+поправку $-k^2\sum_\nu\langle Q_\nu^2\rangle/(6N)$.
+
+\clearpage
+\subsection{Матричный элемент $Q_\nu^2$}
+Используем операторы рождения и уничтожения:
+\begin{align*}
+ Q_\nu&=\sqrt{\frac\hbar{2M\omega_\nu}}(a_\nu+a_\nu^\dagger),\\
+ \langle n|Q_\nu^2|n\rangle
+ &=\frac\hbar{2M\omega_\nu}
+ \langle n|a_\nu^2+(a_\nu^\dagger)^2
+ +a_\nu a_\nu^\dagger+a_\nu^\dagger a_\nu|n\rangle\\
+ &=\frac\hbar{2M\omega_\nu}\bigl[0+0+(n+1)+n\bigr]
+ =\frac\hbar{2M\omega_\nu}(2n+1).
+\end{align*}
+Два первых слагаемых меняют число квантов на два и потому не дают
+диагонального матричного элемента.
+
+\subsection{Усреднение по распределению Бозе}
+Статистическая сумма одной моды равна
+\begin{equation*}
+ Z_\nu=\sum_{n=0}^\infty e^{-\hbar\omega_\nu(n+1/2)/T}
+ =\frac{e^{-\hbar\omega_\nu/(2T)}}{1-e^{-\hbar\omega_\nu/T}}.
+\end{equation*}
+Для $q=e^{-\hbar\omega_\nu/T}$ вероятность уровня равна
+\begin{equation*}
+ w_n=\frac{e^{-\hbar\omega_\nu(n+1/2)/T}}{Z_\nu}
+ =(1-q)q^n.
+\end{equation*}
+Из сумм $\sum q^n=(1-q)^{-1}$ и $\sum nq^n=q/(1-q)^2$ получаем
+\begin{align*}
+ \langle Q_\nu^2\rangle_T
+ &=\frac\hbar{2M\omega_\nu}(1-q)\sum_{n=0}^\infty(2n+1)q^n\\
+ &=\frac\hbar{2M\omega_\nu}\frac{1+q}{1-q}
+ =\frac\hbar{M\omega_\nu}
+ \left(\frac12+\frac1{e^{\hbar\omega_\nu/T}-1}\right).
+\end{align*}
+Это же выражение можно записать как
+\begin{equation*}
+ \langle Q_\nu^2\rangle_T=\frac\hbar{2M\omega_\nu}
+ \coth\!\left(\frac{\hbar\omega_\nu}{2T}\right).
+\end{equation*}
+При $T\to0$ остаётся $\hbar/(2M\omega_\nu)$, а при
+$T\gg\hbar\omega_\nu$ получаем классический результат
+$\langle Q_\nu^2\rangle_T\simeq T/(M\omega_\nu^2)$.
+В тепловом состоянии независимость мод и гауссово распределение координат
+позволяют просуммировать все порядки:
+\begin{equation*}
+ \mathcal A_T=\prod_\nu
+ \exp\!\left[-\frac{k^2c_\nu^2}{2}\langle Q_\nu^2\rangle_T\right]
+ =\exp\!\left[-\frac{k^2}{2}\sum_\nu c_\nu^2
+ \langle Q_\nu^2\rangle_T\right].
+\end{equation*}
+После изотропного усреднения это даёт ранее найденную формулу
+$\mathcal A_T=e^{-k^2\langle u^2\rangle_T/6}$.
+
+\clearpage
+\section{Фактор Лэмба--Мёссбауэра в модели Дебая}
+Переходим от суммы по модам к плотности состояний
+$D_D(\omega)=9N\omega^2/\omega_D^3$, $0<\omega<\omega_D$:
+\begin{align*}
+ \langle u^2\rangle_T
+ &=\frac\hbar{NM}\int_0^{\omega_D}\frac{D_D(\omega)}\omega
+ \left(\frac12+\frac1{e^{\hbar\omega/T}-1}\right)d\omega\\
+ &=\frac{9\hbar}{M\omega_D^3}
+ \left[\frac{\omega_D^2}{4}
+ +\left(\frac T\hbar\right)^2
+ \int_0^{\Theta_D/T}\frac{z\,dz}{e^z-1}\right].
+\end{align*}
+Подставим это выражение в $f_{\mathrm{LM}}=e^{-k^2\langle u^2\rangle_T/3}$.
+С учётом $R=\hbar^2k^2/(2M)$ и $\Theta_D=\hbar\omega_D$ имеем
+\begin{equation*}
+ \boxed{f_{\mathrm{LM}}(T)=\exp\!\left\{
+ -\frac{6R}{\Theta_D}\left[\frac14+
+ \left(\frac{T}{\Theta_D}\right)^2
+ \int_0^{\Theta_D/T}\frac{z\,dz}{e^z-1}\right]\right\}.}
+\end{equation*}
+
+\subsection{Низкие температуры}
+При $T\ll\Theta_D$ верхний предел интеграла можно заменить бесконечностью:
+\begin{equation*}
+ \int_0^\infty\frac{z\,dz}{e^z-1}=\Gamma(2)\zeta(2)=\frac{\pi^2}{6}.
+\end{equation*}
+Отсюда
+\begin{equation*}
+ f_{\mathrm{LM}}(T)\simeq
+ \exp\!\left[-\frac{3R}{2\Theta_D}
+ \left(1+\frac{2\pi^2}{3}\frac{T^2}{\Theta_D^2}\right)\right],
+ \qquad f_{\mathrm{LM}}(0)=e^{-3R/(2\Theta_D)}.
+\end{equation*}
+
+\subsection{Высокие температуры}
+При $T\gg\Theta_D$ используем
+$\langle u^2\rangle_T\simeq9T/(M\omega_D^2)$:
+\begin{equation*}
+ f_{\mathrm{LM}}(T)\simeq
+ \exp\!\left[-\frac{3k^2T}{M\omega_D^2}\right]
+ =\exp\!\left[-\frac{6RT}{\Theta_D^2}\right].
+\end{equation*}
+Повышение температуры уменьшает бесфононную долю.
+Поэтому для наблюдения эффекта благоприятны малый $R$, высокая
+характерная частота решётки и низкая температура.
+
+\subsection{Численная оценка для железа}
+Положим $\Theta_D/k_B=430\,\text{К}$,
+$\Theta_D\simeq0.0371\,\text{эВ}$ и $R\simeq0.00195\,\text{эВ}$.
+Полная дебаевская формула даёт
+\begin{equation*}
+ f_{\mathrm{LM}}(0)\simeq0.924,\qquad
+ f_{\mathrm{LM}}(77\,\text{К})\simeq0.909,\qquad
+ f_{\mathrm{LM}}(300\,\text{К})\simeq0.792.
+\end{equation*}
+Здесь аргументы в кельвинах обозначают физическую температуру $T_{\mathrm K}$.
+Оценки относятся к одноатомной изотропной модели Дебая с указанным
+параметром; реальная вероятность зависит от колебательного спектра
+и окружения ядра.
+
+\end{document}

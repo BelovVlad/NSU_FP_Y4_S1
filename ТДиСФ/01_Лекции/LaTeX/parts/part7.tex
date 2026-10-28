@@ -1,0 +1,471 @@
+% !TeX root = part7.tex
+\documentclass[../final.tex]{subfiles}
+\begin{document}
+\ifSubfilesClassLoaded{\setcounter{chapter}{4}}{}
+
+% Sources: Desktop/1.jpg--5.jpg; introductory photon-gas material from part6.
+\chapter{Фотонный газ}
+\rsubtitle{Тепловое излучение, поглощение и оптическая толщина}
+\section{Равновесие фотонного газа}
+\subsection{Химический потенциал фотонов}
+Рассмотрим излучение в полости объёма $V$ со стенками при температуре $T_{\mathrm K}$.
+В квантовых интегралах используем энергетическую температуру
+$T=k_BT_{\mathrm K}$. Стенки испускают и поглощают фотоны, поэтому
+их число $N_\gamma$ определяется тепловым равновесием.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=9pt,bottom=7pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,scale=0.8]
+ \draw (0,0) rectangle (5,1.7);
+ \draw (-0.4,0.4)--(-0.4,2.1)--(4.6,2.1)--(5,1.7);
+ \draw (-0.4,0.4)--(0,0);\draw (-0.4,2.1)--(0,1.7);
+ \node at (2.5,1) {$V,\quad N_\gamma$};
+ \draw[->,p3,domain=0:1.4,samples=60] plot (\x+0.2,{0.5+0.05*sin(720*\x)});
+ \draw[->,p3,domain=0:1.4,samples=60] plot (\x+3.3,{0.5+0.05*sin(720*\x)});
+ \node[below] at (2.5,-0.1) {стенки при температуре $T_{\mathrm K}$};
+\end{tikzpicture}
+\captionof{figure}{Число фотонов изменяется при обмене излучением со стенками полости.}
+\end{rbox}
+
+При постоянных $T,V$ равновесие соответствует минимуму свободной энергии:
+\begin{equation*}
+ dF=-S_{\mathrm K}\,dT_{\mathrm K}-p\,dV+\mu_\gamma\,dN_\gamma,\qquad
+ \mu_\gamma=\left(\frac{\partial F}{\partial N_\gamma}\right)_{T_{\mathrm K},V}=0.
+\end{equation*}
+Для фотонной моды с энергией $\varepsilon=cp=\hbar\omega$ получаем
+\begin{equation*}
+ \overline n_\gamma(\varepsilon)=\frac1{e^{\varepsilon/T}-1}.
+\end{equation*}
+
+\subsection{Число фотонов и две поляризации}
+У фотона две независимые поляризации. Поэтому
+\begin{align*}
+ N_\gamma&=2V\int\frac{d^3p}{(2\pi\hbar)^3}\frac1{e^{cp/T}-1}
+ =\frac{V}{\pi^2\hbar^3}\int_0^\infty\frac{p^2\,dp}{e^{cp/T}-1}\\
+ &=\frac{V}{\pi^2c^3}\int_0^\infty\frac{\omega^2\,d\omega}{e^{\hbar\omega/T}-1}
+ =\frac{VT^3}{\pi^2\hbar^3c^3}\Gamma(3)\zeta(3)\\
+ &=\frac{2\zeta(3)}{\pi^2}V\left(\frac{T}{\hbar c}\right)^3.
+\end{align*}
+Здесь $p=\hbar\omega/c$, $z=\hbar\omega/T$ и
+$\int_0^\infty z^{s-1}(e^z-1)^{-1}dz=\Gamma(s)\zeta(s)$.
+
+\clearpage
+\section{Энергия и термодинамические функции}
+\subsection{Энергия равновесного излучения}
+Плотность состояний по частоте равна $D_\omega(\omega)=V\omega^2/(\pi^2c^3)$.
+Энергия фотонного газа имеет вид
+\begin{align*}
+ E&=\frac{V}{\pi^2c^3}\int_0^\infty
+ \frac{\hbar\omega^3\,d\omega}{e^{\hbar\omega/T}-1}
+ =\frac{VT^4}{\pi^2\hbar^3c^3}\int_0^\infty\frac{z^3\,dz}{e^z-1}\\
+ &=\frac{VT^4}{\pi^2\hbar^3c^3}\Gamma(4)\zeta(4)
+ =\frac{\pi^2VT^4}{15\hbar^3c^3}.
+\end{align*}
+Использованы $\Gamma(4)=6$ и $\zeta(4)=\pi^4/90$.
+Введём постоянную Стефана--Больцмана
+\begin{align*}
+ \sigma&=\frac{\pi^2k_B^4}{60\hbar^3c^2}
+ =5.670374419\cdot10^{-8}\,
+ \frac{\text{Вт}}{\text{м}^2\,\text{К}^4}\\
+ &=5.670374419\cdot10^{-5}\,
+ \frac{\text{эрг}}{\text{см}^2\,\text{с}\,\text{К}^4}.
+\end{align*}
+Тогда энергия и её объёмная плотность равны
+\begin{equation*}
+ E=\frac{4\sigma}{c}VT_{\mathrm K}^4,\qquad
+ u\equiv\frac EV=\frac{4\sigma}{c}T_{\mathrm K}^4.
+\end{equation*}
+
+\subsection{Свободная энергия, давление и энтропия}
+При $\mu_\gamma=0$ свободная энергия совпадает с большим
+термодинамическим потенциалом:
+\begin{align*}
+ \Omega=F&=\frac{VT}{\pi^2c^3}\int_0^\infty
+ \omega^2\ln(1-e^{-\hbar\omega/T})\,d\omega\\
+ &=-\frac13E=-\frac{4\sigma}{3c}VT_{\mathrm K}^4=-pV.
+\end{align*}
+В отличие от нерелятивистского газа, для фотонов $p=E/(3V)$:
+\begin{equation*}
+ p=\frac{4\sigma}{3c}T_{\mathrm K}^4,\qquad
+ C_{V,\mathrm K}=\left(\frac{\partial E}{\partial T_{\mathrm K}}\right)_V
+ =\frac{16\sigma}{c}VT_{\mathrm K}^3.
+\end{equation*}
+Энтропия в обычных единицах равна
+\begin{equation*}
+ S_{\mathrm K}=-\left(\frac{\partial F}{\partial T_{\mathrm K}}\right)_V
+ =\frac{16\sigma}{3c}VT_{\mathrm K}^3=\frac13C_{V,\mathrm K}.
+\end{equation*}
+
+\clearpage
+\section{Формула Планка и максимум спектра}
+\subsection{Спектральная плотность энергии}
+Распределение энергии по угловой частоте задаётся формулой Планка:
+\begin{equation*}
+ \frac{dE}{d\omega}=
+ \frac{V\hbar\omega^3}{\pi^2c^3(e^{\hbar\omega/T}-1)},\qquad
+ u_\omega\equiv\frac1V\frac{dE}{d\omega}.
+\end{equation*}
+При $z=\hbar\omega/T$ форма спектра определяется функцией
+$f(z)=z^3/(e^z-1)$. Условие её максимума при $z>0$:
+\begin{equation*}
+ 3(e^z-1)-ze^z=0\quad\Longleftrightarrow\quad
+ 3(1-e^{-z})=z,\qquad z_\omega=2.821439\ldots.
+\end{equation*}
+Следовательно, $\omega_{\max}=2.821439\,k_BT_{\mathrm K}/\hbar$.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=10pt,bottom=7pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,x=1cm,y=1.35cm]
+ \draw[->] (0,0)--(10.8,0) node[right] {$z$};
+ \draw[->] (0,0)--(0,1.85) node[above] {$z^3/(e^z-1)$};
+ \draw[p3,thick] plot file {\subfix{../image/lecture7_planck.dat}};
+ \draw[dotted] (2.821439,0)--(2.821439,1.42144);
+ \node[below] at (2.821439,0) {$2.82$};
+\end{tikzpicture}
+\captionof{figure}{Спектр Планка по частоте в безразмерных переменных.}
+\end{rbox}
+
+\subsection{Спектр по длине волны и закон смещения Вина}
+При переходе к $\lambda=2\pi c/\omega$ необходимо учитывать якобиан:
+\begin{equation*}
+ u_\lambda=u_\omega\left|\frac{d\omega}{d\lambda}\right|
+ =\frac{8\pi hc}{\lambda^5(e^{hc/(\lambda k_BT_{\mathrm K})}-1)},\qquad h=2\pi\hbar.
+\end{equation*}
+Для максимума $u_\lambda$ получаем
+$5(1-e^{-z})=z$, $z_\lambda=4.965114\ldots$, откуда
+\begin{equation*}
+ \lambda_{\max}T_{\mathrm K}=\frac{hc}{4.965114\,k_B}
+ =2.897772\cdot10^{-3}\,\text{м}\cdot\text{К}.
+\end{equation*}
+Максимум спектра по длине волны не является образом максимума $u_\omega$.
+Примеры: при $5800\,\text{К}$ имеем $\lambda_{\max}\simeq500\,\text{нм}$;
+при $300\,\text{К}$ --- $9.66\,\text{мкм}$;
+при $250\,\text{К}$ --- $11.6\,\text{мкм}$.
+
+\clearpage
+\section{Направленный поток и закон Кирхгофа}
+\subsection{Спектральная плотность на единицу телесного угла}
+В равновесии излучение изотропно. Введём
+\begin{equation*}
+ e_0(\omega)=\frac{u_\omega}{4\pi}
+ =\frac{\hbar\omega^3}{4\pi^3c^3(e^{\hbar\omega/T}-1)}.
+\end{equation*}
+Величина $e_0(\omega)\,d\omega\,d\Omega$ --- энергия единицы объёма
+в интервале частот $d\omega$ и телесном угле $d\Omega$.
+За время $dt$ лучи, составляющие угол $\theta$ с нормалью к площадке $dS$,
+пересекают объём $dV=c\cos\theta\,dt\,dS$. Поэтому
+\begin{align*}
+ dE_{\mathrm{in}}&=e_0(\omega)c\cos\theta\,dS\,dt\,d\omega\,d\Omega,\\
+ \frac{dJ_{\mathrm{in}}}{d\omega\,d\Omega}
+ &=c\,e_0(\omega)\cos\theta.
+\end{align*}
+Здесь $J$ --- мощность потока на единицу площади поверхности.
+Множитель $\cos\theta$ отражает проекцию площадки на направление луча.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=10pt,bottom=7pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,scale=0.9]
+ \fill[white,opacity=0.08] (-3,-0.22) rectangle (3,0);
+ \draw (-3,0)--(3,0);\node[right] at (3,0) {$dS$};
+ \draw[dashed,->] (0,0)--(0,2.55) node[above] {нормаль};
+ \draw[->,p3,thick] (-2.3,2.3)--(0,0);
+ \draw[->,red3,thick] (0,0)--(2.3,2.3);
+ \draw (0,0.65) arc[start angle=90,end angle=45,radius=0.65];
+ \node at (0.35,0.95) {$\theta$};
+ \node[p3,above] at (-2.3,2.3) {поглощение};
+ \node[red3,above] at (2.3,2.3) {испускание};
+\end{tikzpicture}
+\captionof{figure}{Поток через поверхность пропорционален $\cos\theta$.
+ В равновесии поглощение и испускание взаимно компенсируются.}
+\end{rbox}
+
+\subsection{Поглощательная и излучательная способности}
+Пусть $\alpha(\theta,\omega)$ --- доля энергии падающего луча, поглощённая телом.
+В тепловом равновесии соответствующее собственное излучение равно
+\begin{equation*}
+ j(\theta,\omega)=\alpha(\theta,\omega)c\,e_0(\omega)\cos\theta.
+\end{equation*}
+\rconcept{Закон Кирхгофа}: отношение излучения к поглощательной способности
+при заданных частоте, направлении и температуре одинаково для всех тел:
+\begin{equation*}
+ \frac{j(\theta,\omega)}{\alpha(\theta,\omega)}
+ =c\,e_0(\omega)\cos\theta.
+\end{equation*}
+Относительная излучательная способность равна поглощательной
+на той же частоте и в соответствующем направлении.
+
+\clearpage
+\section{Абсолютно чёрное тело}
+\subsection{Закон Стефана--Больцмана}
+Для абсолютно чёрного тела $\alpha(\theta,\omega)=1$.
+Интегрируя направленный поток по внешней полусфере, находим
+\begin{align*}
+ J_{\text{АЧТ}}&=c\int_0^\infty e_0(\omega)\,d\omega
+ \int_0^{2\pi}d\varphi\int_0^{\pi/2}\cos\theta\sin\theta\,d\theta\\
+ &=\pi c\int_0^\infty e_0(\omega)\,d\omega
+ =\frac c4u=\sigma T_{\mathrm K}^4.
+\end{align*}
+Это \rconcept{закон Стефана--Больцмана}: полная мощность излучения единицы
+площади абсолютно чёрного тела пропорциональна четвёртой степени температуры.
+Плотность энергии в полости $u$ и поток через её отверстие $J$ связаны
+соотношением $J=cu/4$.
+
+\subsection{Полость с малым отверстием}
+Малое отверстие в полости служит моделью чёрного тела.
+Попавший внутрь луч многократно отражается от стенок, теряя энергию при каждом
+отражении. Если коэффициент отражения стенки равен $R$, после $n$ отражений
+остаётся доля $R^n$, а поглощается доля
+\begin{equation*}
+ \alpha_{\mathrm{eff}}\simeq1-R^n.
+\end{equation*}
+Например, при $R=0.99$ и $n=1000$ остаётся
+$0.99^{1000}\simeq4.32\cdot10^{-5}$ исходной энергии.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=12pt,bottom=8pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,scale=0.95]
+ \draw[line width=1pt] (198:1.8) arc[start angle=198,end angle=522,radius=1.8];
+ \draw[->,p3,thick] (-3,0.42)--(-1.7,0.42)--(1.4,-1.0)--(-0.6,1.6)
+  --(-1.3,-1.2)--(1.65,0.5)--(0.2,-1.7);
+ \node[above] at (0,1.95) {полость};
+ \node[left,align=right] at (-2.15,0) {малое\\отверстие};
+\end{tikzpicture}
+\captionof{figure}{Многократные отражения увеличивают эффективное поглощение.
+ Излучение равновесной полости определяется температурой стенок.}
+\end{rbox}
+
+Реальное тело может хорошо поглощать в одной спектральной области
+и слабо --- в другой. Поэтому поглощение видимого солнечного излучения
+и испускание теплового инфракрасного излучения описываются разными
+спектрально усреднёнными коэффициентами.
+
+\clearpage
+\section{Солнечное излучение и тепловой баланс Земли}
+\subsection{Солнечная постоянная и геометрическое ослабление}
+Приближая Солнце чёрным телом радиуса $R_\odot$ и температуры $T_{\odot,\mathrm K}$,
+получаем его полную светимость и поток на расстоянии $r$:
+\begin{equation*}
+ L_\odot=4\pi R_\odot^2\sigma T_{\odot,\mathrm K}^4,\qquad
+ J_\odot(r)=\frac{L_\odot}{4\pi r^2}
+ =\sigma T_{\odot,\mathrm K}^4\frac{R_\odot^2}{r^2}.
+\end{equation*}
+Для $T_{\odot,\mathrm K}\simeq5800\,\text{К}$,
+$R_\odot\simeq0.7\cdot10^6\,\text{км}$ и
+$r\simeq150\cdot10^6\,\text{км}$ оценка даёт
+$J_\odot\simeq1.4\cdot10^3\,\text{Вт}/\text{м}^2$.
+Средний поток на орбите Земли составляет примерно
+$1361\,\text{Вт}/\text{м}^2$; это солнечная постоянная.
+
+\subsection{Усреднение по поверхности шара}
+Планета перехватывает солнечное излучение диском площади $\pi R_\oplus^2$,
+а её полная поверхность имеет площадь $4\pi R_\oplus^2$.
+Поэтому средний падающий поток равен
+\begin{align*}
+ \langle J_\odot\rangle
+ &=\frac{J_\odot}{4\pi}
+ \int_0^{2\pi}d\varphi\int_0^{\pi/2}\cos\theta\sin\theta\,d\theta\\
+ &=\frac{J_\odot}{4}\simeq340\,\text{Вт}/\text{м}^2.
+\end{align*}
+Интеграл берётся только по освещённой полусфере.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=12pt,bottom=8pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,scale=0.95]
+ \draw[red3,thick] (-3.8,0) circle (0.6);
+ \node[below] at (-3.8,-0.8) {Солнце};
+ \draw[p3,thick] (3.2,0) circle (1.1);
+ \node[below] at (3.2,-1.3) {Земля};
+ \foreach \yy in {-0.8,-0.4,0,0.4,0.8} {
+  \draw[->,red3] (-2.5,\yy)--(1.9,\yy);
+ }
+ \draw[dashed] (3.2,-1.1)--(3.2,1.1);
+ \node[above] at (0,1.1) {$J_\odot$};
+ \node[right,align=left] at (4.45,0.1) {перехват: $\pi R_\oplus^2$\\поверхность: $4\pi R_\oplus^2$};
+\end{tikzpicture}
+\captionof{figure}{Геометрический множитель $1/4$ возникает при переходе
+ от потока на перпендикулярную лучам площадку к среднему по всей планете.}
+\end{rbox}
+
+\subsection{Отражение, поглощение и пропускание}
+Для заданного диапазона спектра баланс падающей энергии имеет вид
+\begin{equation*}
+ A+\alpha+\mathcal T=1.
+\end{equation*}
+Здесь $A$ --- отражённая доля (альбедо), $\alpha$ --- поглощённая доля,
+$\mathcal T$ --- пропущенная доля. Для непрозрачного тела $\mathcal T=0$.
+
+\clearpage
+\subsection{Эффективная температура и альбедо}
+В простейшей модели Земля поглощает долю $1-A$ солнечного потока
+и излучает в инфракрасном диапазоне с интегральной излучательной
+способностью $\epsilon_{\mathrm{IR}}$. Условие стационарного баланса:
+\begin{equation*}
+ \frac{J_\odot(1-A)}4
+ =\epsilon_{\mathrm{IR}}\sigma T_{\mathrm{eff}}^4.
+\end{equation*}
+При $\epsilon_{\mathrm{IR}}=1$ эффективная температура равна
+\begin{equation*}
+ T_{\mathrm{eff}}=
+ \left[\frac{J_\odot(1-A)}{4\sigma}\right]^{1/4}.
+\end{equation*}
+Для $A\simeq0.30$ и $J_\odot\simeq1361\,\text{Вт}/\text{м}^2$ получаем
+\begin{equation*}
+ T_{\mathrm{eff}}\simeq255\,\text{К}\simeq-18\,^{\circ}\text{C}.
+\end{equation*}
+Это эффективная температура излучения планеты; средняя температура
+земной поверхности не определяется одной этой формулой.
+Альбедо характеризует отражение солнечного спектра,
+а $\epsilon_{\mathrm{IR}}$ --- испускание в другом, инфракрасном диапазоне.
+
+\subsection{Чувствительность к изменению альбедо}
+При постоянных $J_\odot$ и $\epsilon_{\mathrm{IR}}$ имеем
+\begin{equation*}
+ \frac{dT_{\mathrm{eff}}}{dA}
+ =-\frac{T_{\mathrm{eff}}}{4(1-A)}
+ \simeq-91\,\text{К}\qquad(A=0.30).
+\end{equation*}
+Изменению альбедо на $\Delta A=0.01$ в этой модели соответствует
+\begin{equation*}
+ \Delta T_{\mathrm{eff}}\simeq-0.91\,\text{К}.
+\end{equation*}
+Увеличение отражённой доли уменьшает поглощаемую энергию и эффективную
+температуру, если остальные параметры фиксированы.
+
+\subsection{Примеры значений альбедо}
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{ll}
+\textbf{Объект или поверхность}&\textbf{Примерное альбедо}\\
+Океан при близком к нормальному падении&$0.02$\\
+Трава&$0.2$\\
+Различные участки земной поверхности&$0.1$--$0.35$\\
+Облака разной толщины&$0.02$--$0.75$\\
+Земля в среднем по солнечному спектру&$0.30$
+\end{tabular}
+\end{center}
+Альбедо поверхности зависит от длины волны, угла падения и состояния
+поверхности; альбедо облака --- также от количества и размера капель.
+
+\clearpage
+\section{Ослабление излучения в облаке}
+\subsection{Закон Бугера--Ламберта--Бера}
+Для направленного пучка, проходящего через среду, уменьшение интенсивности
+описывается уравнением
+\begin{equation*}
+ dI_\omega=-n\sigma_{\mathrm{ext}}I_\omega\,d\ell,\qquad
+ d\tau=n\sigma_{\mathrm{ext}}\,d\ell.
+\end{equation*}
+Здесь $n$ --- концентрация рассеивающих и поглощающих частиц,
+$\sigma_{\mathrm{ext}}$ --- сечение экстинкции, $\ell$ --- длина пути.
+Безразмерная величина $\tau$ называется оптической толщиной:
+\begin{equation*}
+ \tau(\ell)=\int_0^\ell n(\ell')\sigma_{\mathrm{ext}}(\ell')\,d\ell',\qquad
+ I_\omega(\ell)=I_{\omega,0}e^{-\tau(\ell)}.
+\end{equation*}
+Экстинкция включает поглощение и рассеяние из исходного направления:
+$\sigma_{\mathrm{ext}}=\sigma_{\mathrm{abs}}+\sigma_{\mathrm{sca}}$.
+Закон описывает прямой пучок; рассеянное излучение требует отдельного учёта.
+
+\subsection{Направленность рассеяния}
+Введём параметр асимметрии
+\begin{equation*}
+ g=\langle\cos\theta\rangle
+ =\frac1{\sigma_{\mathrm{sca}}}
+ \int\cos\theta\,\frac{d\sigma_{\mathrm{sca}}}{d\Omega}\,d\Omega.
+\end{equation*}
+Угол $\theta$ отсчитывается от исходного направления луча.
+Для изотропного рассеяния $g=0$, для преимущественно прямого рассеяния $g>0$.
+Для облачных капель воды в видимом диапазоне характерно $g\simeq0.85$.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=12pt,bottom=8pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,scale=1]
+ \draw[->,p3,thick] (-3,0)--(0,0);
+ \fill (0,0) circle (1.5pt);
+ \draw[dashed,->] (0,0)--(3.8,0) node[right] {вперёд};
+ \draw[->,red3,thick] (0,0)--(3,0.8);
+ \draw[->,red3] (0,0)--(2.6,-0.5);
+ \draw[->,red3] (0,0)--(2.3,1.2);
+ \draw (1.1,0) arc[start angle=0,end angle=15,radius=1.1];
+ \node at (1.4,0.35) {$\theta$};
+ \node[above] at (0,1.7) {рассеяние каплей воды};
+\end{tikzpicture}
+\captionof{figure}{При $g>0$ рассеяние преимущественно сохраняет направление распространения.}
+\end{rbox}
+
+Для описания изменения направления часто вводят транспортную оптическую толщину
+\begin{equation*}
+ \tau_{\mathrm{tr}}\simeq(1-g)\tau
+\end{equation*}
+при пренебрежимо малом поглощении. Она отличается от оптической толщины
+ослабления прямого пучка.
+
+\clearpage
+\subsection{Оптическая толщина и водозапас облака}
+Пусть облако имеет площадь основания $S_{\mathrm{cl}}$, толщину $L$
+и содержит $N$ одинаковых водяных капель радиуса $r$.
+Тогда $n=N/(S_{\mathrm{cl}}L)$.
+Для капель, больших по сравнению с длиной волны,
+$\sigma_{\mathrm{ext}}\simeq2\pi r^2$. Поэтому
+\begin{equation*}
+ \tau=n\sigma_{\mathrm{ext}}L
+ =\frac{N}{S_{\mathrm{cl}}}\,2\pi r^2.
+\end{equation*}
+Объёмная плотность жидкой воды обозначается $\rho_w$.
+Полная масса воды и водозапас на единицу площади равны
+\begin{equation*}
+ M_w=\frac43\pi r^3\rho_wN,\qquad
+ \mathrm{LWP}\equiv\frac{M_w}{S_{\mathrm{cl}}}
+ =\frac43\pi r^3\rho_w\frac{N}{S_{\mathrm{cl}}}.
+\end{equation*}
+Аббревиатура LWP означает \textit{Liquid Water Path}.
+Деля одно равенство на другое, получаем
+\begin{equation*}
+ \frac{\mathrm{LWP}}{\tau}=\frac23\rho_wr,\qquad
+ \boxed{\tau=\frac{3\,\mathrm{LWP}}{2\rho_wr}}.
+\end{equation*}
+Размерность LWP --- масса на единицу площади, обычно
+$\text{г}/\text{м}^2$ или $\text{кг}/\text{м}^2$.
+В формулу необходимо подставлять согласованные единицы.
+
+\begin{rbox}[unbreakable,left=14pt,right=14pt,top=12pt,bottom=8pt]{[]}
+\centering
+\captionsetup{font=footnotesize,hypcap=false,skip=5pt}
+\begin{tikzpicture}[>=Stealth,font=\small,scale=0.85]
+ \draw[rounded corners=8pt] (-3,0) rectangle (3,2.2);
+ \foreach \xx/\yy in {-2.4/0.4,-1.5/1.6,-0.7/0.7,0.2/1.8,1/0.5,1.8/1.4,2.5/0.8,-2.5/1.5,0.4/0.9} {
+  \draw[p3] (\xx,\yy) circle (0.1);
+ }
+ \draw[dashed] (-0.4,0)--(-0.4,2.2);
+ \draw[dashed] (0.8,0)--(0.8,2.2);
+ \draw[<->] (3.4,0)--(3.4,2.2) node[midway,right] {$L$};
+ \draw[->,red3,thick] (0.2,3)--(0.2,2.3);
+ \node[below] at (0,-0.15) {площадь основания $S_{\mathrm{cl}}$};
+\end{tikzpicture}
+\captionof{figure}{Водозапас облака --- масса жидкой воды в вертикальном столбе
+ на единицу площади его основания.}
+\end{rbox}
+
+Ориентировочные значения LWP для облаков:
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{ll}
+Морские облака&$40$--$150\,\text{г}/\text{м}^2$\\
+Континентальные облака&$30$--$60\,\text{г}/\text{м}^2$\\
+Кучевые облака&$\lesssim100\,\text{г}/\text{м}^2$\\
+Дождевые облака&$\lesssim400\,\text{г}/\text{м}^2$
+\end{tabular}
+\end{center}
+Эти оценки зависят от толщины облака и стадии его развития.
+Например, при $\mathrm{LWP}=100\,\text{г}/\text{м}^2$,
+$r=10\,\text{мкм}$ и $\rho_w=10^3\,\text{кг}/\text{м}^3$ имеем $\tau\simeq15$.
+Для распределения капель по размерам аналогичная формула использует
+эффективный радиус $r_{\mathrm{eff}}=\langle r^3\rangle/\langle r^2\rangle$.
+
+\end{document}
