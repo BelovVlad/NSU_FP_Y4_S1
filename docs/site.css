@@ -1079,3 +1079,9 @@ body{
   }
 }
 
+/* Tablets: the banner spans the full width but stayed phone-height, so the centred
+   crop cut off the logo and the figures. Grow it with the width and crop from the top. */
+@media (pointer:coarse) and (min-width:721px) and (min-height:601px){
+  .hero{min-height:clamp(184px,24vw,290px)}
+  .hero-art .hero-art-base{object-position:80% 88%}
+}

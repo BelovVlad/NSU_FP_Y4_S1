@@ -1238,12 +1238,11 @@ function startZoomPreview(clientX,clientY){
   const rect=target.getBoundingClientRect();
   if(rect.width<1||rect.height<1)return null;
   const x=Math.max(rect.left,Math.min(rect.right,clientX)),y=Math.max(rect.top,Math.min(rect.bottom,clientY));
+  // Measure first: the preview class makes the strip the pages' offsetParent.
+  const anchor=continuous?continuousAnchorFromClient(y):zoomAnchorFromClient(x,y);
   target.classList.add('pinch-preview');
   target.style.transformOrigin=(x-rect.left)+'px '+(y-rect.top)+'px';
-  return{
-    target,continuous,startScale:scale,targetScale:scale,clientX:x,clientY:y,horizontal:(x-rect.left)/rect.width,
-    anchor:continuous?continuousAnchorFromClient(y):zoomAnchorFromClient(x,y)
-  };
+  return{target,continuous,anchor,startScale:scale,targetScale:scale,clientX:x,clientY:y,horizontal:(x-rect.left)/rect.width};
 }
 // Single-page mode: stretch the current raster to the new size at once, so the page
 // keeps its previewed size and position while the sharp render is in flight.
