@@ -507,6 +507,9 @@ class OverseerBrowserTests(unittest.TestCase):
     def test_crown_opens_before_projection_and_lingers_after_distraction(self):
         page = self.page(clock=True, config={'activeMax': 20000})
         page.emulate_media(reduced_motion='reduce')
+        # The Overseer spawns at a random edge, and the top-bar music button pulls it within 120px.
+        # This test is about the crown and projection, so keep the music zone out of the cursor's path.
+        page.evaluate("document.querySelector('#musicToggle').style.visibility='hidden'")
         with page.expect_response(lambda response: response.url.endswith('/miscDangerSymbol.png')) as sprite_response:
             page.evaluate("""() => {
               const word=document.createElement('div');word.textContent='Грибанов';
