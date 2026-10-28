@@ -1089,12 +1089,6 @@ async function startContinuous(){
   await renderContinuous(pageNum);
 }
 let readerChromeLastScroll=viewer.scrollTop,readerChromeDirection=0,readerChromeLockUntil=0;
-const showReaderControls=document.createElement('button');
-showReaderControls.className='reader-reveal';showReaderControls.type='button';
-showReaderControls.setAttribute('aria-label','Показать панели PDF');
-showReaderControls.innerHTML='<svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
-document.body.append(showReaderControls);
-showReaderControls.onclick=()=>{lockReaderChrome(1200);document.getElementById('notesToggle').focus({preventScroll:true});};
 function setReaderChromeHidden(hidden){
   document.body.classList.toggle('reader-chrome-hidden',!!hidden&&phoneStripQuery.matches&&compactQuery.matches);
 }
@@ -1133,7 +1127,7 @@ viewer.addEventListener('scroll',()=>{
 },{passive:true});
 viewer.addEventListener('notesmodechange',()=>lockReaderChrome(800));
 viewer.addEventListener('notesgesturestart',()=>lockReaderChrome(650));
-document.addEventListener('focusin',e=>{if(e.target.closest('.toolbar,.notes-tools,.mobile-nav,.reader-reveal'))lockReaderChrome(800);});
+document.addEventListener('focusin',e=>{if(e.target.closest('.toolbar,.notes-tools,.mobile-nav'))lockReaderChrome(800);});
 landscapePhoneQuery.addEventListener('change',()=>{
   lockReaderChrome(1000);
   closeTools();
