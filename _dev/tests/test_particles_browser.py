@@ -318,8 +318,9 @@ class ParticleExplorerTests(unittest.TestCase):
     def test_desktop_edge_menus_hover_focus_and_camera(self):
         camera=self.page.locator('#viewport').get_attribute('transform')
         canvas=self.page.locator('#canvasWrap').bounding_box()
-        self.assertLessEqual(self.page.locator('#mainMenu').bounding_box()['y']+78,1)
-        self.assertLessEqual(self.page.locator('#filters').bounding_box()['x']+230,1)
+        # The panels slide out of view after load (.18s transition); wait for it instead of sampling mid-slide.
+        self.page.wait_for_function("document.querySelector('#mainMenu').getBoundingClientRect().top+78<=1")
+        self.page.wait_for_function("document.querySelector('#filters').getBoundingClientRect().left+230<=1")
         # Actual screen edges also reveal the panels, with no click.
         self.page.mouse.move(700,1)
         expect(self.page.locator('#topReveal')).to_have_attribute('aria-expanded','true')
