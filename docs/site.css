@@ -62,7 +62,8 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .searchbox .glass{position:absolute;left:13px;top:50%;width:18px;height:18px;display:grid;place-items:center;transform:translateY(-50%);color:#a1a8af;pointer-events:none}
 .searchbox .glass .ui-icon{width:17px;height:17px}
 .kbd{position:absolute;right:9px;top:8px;padding:3px 7px;border:1px solid #303943;border-radius:5px;background:#151c23;color:#9da5ad;font-size:10px}
-.top-meta{justify-self:end;color:#6f7a84;font-size:12px}
+.top-music{justify-self:end;display:flex;align-items:center}
+.top-music .music-row{min-height:0;padding:0}.top-music .music-copy{display:none}
 .ghost-btn{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;background:#0d141b;color:#b7bec5;cursor:pointer}
 .ghost-btn:hover{border-color:#394550;color:var(--cream);background:#111922}
 .ghost-btn .ui-icon{width:17px;height:17px}
@@ -206,7 +207,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
   .sidebar{transform:translateX(-100%);transition:transform .18s ease;box-shadow:22px 0 50px rgba(0,0,0,.5)}
   .sidebar.open{transform:none}.mobile-overlay{position:fixed;z-index:40;inset:0;background:rgba(0,0,0,.5)}.mobile-overlay.show{display:block}
   .app{margin-left:0}.topbar{position:sticky;top:0;z-index:35;height:58px;grid-template-columns:auto 1fr auto;padding:0 10px;gap:8px;box-shadow:0 6px 18px rgba(0,0,0,.18)}.menu-btn{display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--line);border-radius:8px;background:#0d141b;color:#d9d1c8}
-  .top-meta,.kbd{display:none}.searchbox input{height:38px;padding-right:12px}.main{padding:0 10px 28px}
+  .top-music,.kbd{display:none}.searchbox input{height:38px;padding-right:12px}.main{padding:0 10px 28px}
   .hero{min-height:140px;margin:0 -10px;padding:17px 13px}.hero h1{font-size:30px}.hero-art{display:none}.hero-copy{max-width:none}
   .tabs{margin-top:16px}.tab{padding:0 12px}
   .workspace{margin-top:10px}.panel-head{padding:12px}.file-list{padding:0 7px 7px}.file-row{grid-template-columns:30px minmax(0,1fr);padding:9px 7px}.file-side{display:none}
@@ -302,6 +303,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 
 /* Halcyon Memories music control */
 .music-control{padding:9px 0 11px;border-top:1px solid var(--line2)}
+.music-control.is-moved{display:none}
 .music-toggle{
   width:48px;height:48px;flex:none;display:grid;place-items:center;
   padding:0;border:0;border-radius:9px;background:transparent;color:var(--text2);cursor:pointer
@@ -1005,7 +1007,7 @@ body.music-na19x .pdf-fullscreen-loader{
     gap:7px;box-shadow:0 5px 16px rgba(0,0,0,.18)
   }
   .menu-btn{display:grid;place-items:center;width:36px;height:36px;border:1px solid var(--line);border-radius:8px;background:#0d141b;color:#d9d1c8}
-  .top-meta,.kbd{display:none}
+  .top-music,.kbd{display:none}
   .searchbox input{height:36px;padding-right:10px}
   .main{padding-left:10px;padding-right:10px}
 }

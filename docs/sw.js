@@ -1,13 +1,13 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'b58c6ac9c2';
+const SHELL_VERSION = '67876dd9d0';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
-const CORE = ['index.html', 'site.css?v=581f247313', 'site.js?v=cc8c4026c6', 'app.js?v=b0bec72a78', 'app.css?v=4e2e52a233', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=5db485695e', 'manifest.webmanifest?v=6bddccb735',
-  'Overseer/overseer.js?v=2125c3b5d7', 'Overseer/overseer.css?v=3c70ee01aa',
+const CORE = ['index.html', 'site.css?v=93c5fe9e27', 'site.js?v=b288eeb3d9', 'app.js?v=b0bec72a78', 'app.css?v=4e2e52a233', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=5db485695e', 'manifest.webmanifest?v=6bddccb735',
+  'Overseer/overseer.js?v=c6c82cab8a', 'Overseer/overseer.css?v=3c70ee01aa',
   'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
   'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
   'search-worker.js?v=32d5520b7c', 'notebook/viewer.html', 'notebook/viewer.css?build=2aa53795ce', 'notebook/outline.js?build=d72f570ee4',
@@ -91,6 +91,8 @@ async function resource(request, event) {
   const cached = await cache.match(key);
   const html = request.mode === 'navigate' || /\.html$/i.test(url.pathname) || url.href === BASE.href;
   const immutable = library(url) || url.searchParams.has('v') || url.searchParams.has('build');
+  // A saved copy of a versioned file is final: return it before a network request starts.
+  if(!html && cached && immutable) return cached;
 
   const network = (async () => {
     const response = await fetch(request,{cache:html?'no-cache':'default'});
@@ -110,7 +112,6 @@ async function resource(request, event) {
     }
   }
 
-  if(cached && immutable) return cached;
   event.waitUntil(network.catch(()=>{}));
   if(cached) return Promise.race([network.catch(()=>cached),new Promise(resolve=>setTimeout(()=>resolve(cached),1800))]);
   try { return await network; }

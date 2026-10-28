@@ -6,15 +6,17 @@
   const MINUTE = 60 * 1000;
   const HOLOGRAM_SCALE = .7;
   const supplied = window.__OVERSEER_TEST_CONFIG__ || {};
+  // Absence intervals are a third shorter than the original ones; shattering still lasts until reload.
+  const ABSENCE = 1 / 1.5;
   const CONFIG = Object.freeze({
-    initialWindow: supplied.initialWindow ?? 14 * MINUTE,
-    raisedWindow: supplied.raisedWindow ?? 7 * MINUTE,
-    musicWindow: supplied.musicWindow ?? 7 * MINUTE,
-    glitchMin: supplied.glitchMin ?? 15 * 1000,
-    glitchMax: supplied.glitchMax ?? 60 * 1000,
+    initialWindow: supplied.initialWindow ?? 14 * MINUTE * ABSENCE,
+    raisedWindow: supplied.raisedWindow ?? 7 * MINUTE * ABSENCE,
+    musicWindow: supplied.musicWindow ?? 7 * MINUTE * ABSENCE,
+    glitchMin: supplied.glitchMin ?? 15 * 1000 * ABSENCE,
+    glitchMax: supplied.glitchMax ?? 60 * 1000 * ABSENCE,
     activeMax: supplied.activeMax ?? 3 * MINUTE,
     mobileActiveMax: supplied.mobileActiveMax ?? 1 * MINUTE,
-    cooldown: supplied.cooldown ?? 7 * MINUTE,
+    cooldown: supplied.cooldown ?? 7 * MINUTE * ABSENCE,
     scanInterval: supplied.scanInterval ?? 700,
     bodySize: supplied.bodySize ?? 48
   });
@@ -56,8 +58,10 @@
     pointer: {x: -1000, y: -1000, seen: false},
     lookAt: {x: innerWidth * .5, y: innerHeight * .5},
     gazeAngle: null,
+    turnActivity: 0,
     renderedTailCurl: 0,
     feelers: [],
+    strandShapes: [],
     retractDuration: 280,
     projecting: false,
     focus: 'ambient',
@@ -467,6 +471,7 @@
     state.teleporting = false;
     state.gazeAngle = null;
     state.feelers = [];
+    state.strandShapes = [];
     state.projecting = false;
     state.projectionKind = '';
     state.projectionStage = 'idle';
@@ -530,8 +535,9 @@
     return true;
   }
 
-  function disintegrate() {
-    if(!state.active || pdfPaused || state.disintegrating || !mobilePointer.matches) return false;
+  // A tap on a phone shatters the Overseer; on a computer Alt+O (Option+O) does.
+  function disintegrate(byKeyboard = false) {
+    if(!state.active || pdfPaused || state.disintegrating || !(mobilePointer.matches || byKeyboard)) return false;
     clearSchedule();
     clearTimeout(activeTimer);
     clearTimeout(attentionTimer);
@@ -597,6 +603,7 @@
       state.renderedTailCurl = state.tailCurl;
       state.gazeAngle = null;
       state.feelers = [];
+    state.strandShapes = [];
       state.nextWanderAt = performance.now() + 6000 + random() * 11000;
       state.phase = 0;
       state.phaseDirection = 1;
@@ -657,8 +664,9 @@
     const target={x:clamp(rect.left+rect.width/2,12,viewportWidth-12),y:clamp(rect.top+rect.height/2,12,viewportHeight-12)};
     // Project next to the actual target so the warning has an unambiguous subject.
     const above=placement!=='below' && rect.top>65;
-    const symbol={x:clamp(target.x,22,viewportWidth-22),
-      y:clamp(above?rect.top-gap:rect.bottom+gap,24,viewportHeight-24)};
+    const symbol=placement==='left'
+      ? {x:clamp(rect.left-gap,22,viewportWidth-22),y:clamp(target.y,24,viewportHeight-24)}
+      : {x:clamp(target.x,22,viewportWidth-22),y:clamp(above?rect.top-gap:rect.bottom+gap,24,viewportHeight-24)};
     const angle=Math.atan2(target.y-symbol.y,target.x-symbol.x);
     const arrowDistance=Math.min(28,gap-12);
     const arrow={x:symbol.x+Math.cos(angle)*arrowDistance,y:symbol.y+Math.sin(angle)*arrowDistance};
@@ -666,6 +674,8 @@
   }
 
   function projectionLayout(kind, rect) {
+    // The desktop top bar has no room above or below the button: project to its left.
+    if(kind!=='danger' && musicButton?.closest('.topbar')) return hologramLayout(rect,'left',44);
     return hologramLayout(rect,kind==='danger'?'below':'auto',kind==='pebbles'?32:48);
   }
 
@@ -730,7 +740,9 @@
   }
 
   function requestedMusicHologram() {
-    if(!state.active || state.disintegrating || state.gribanovVisible || !visibleRect(musicButton)) return '';
+    // A visible "Грибанов" outranks the music projections, except while the cursor
+    // is at the music button: that request outranks the word.
+    if(!state.active || state.disintegrating || (state.gribanovVisible && !state.musicHovered) || !visibleRect(musicButton)) return '';
     if(state.musicApproach==='arrived' && !state.teleporting && state.phase>=.98 && performance.now()>=state.musicReadyAt &&
       musicAudio?.paused && state.musicHovered) return 'pebbles';
     return musicMode() === 'glitch' ? 'stop' : '';
@@ -867,19 +879,33 @@
     path.closePath();
     const lengths=[0];
     for(let i=1;i<points.length;i++) lengths.push(lengths[i-1]+distance(points[i],points[i-1]));
-    const anchors=[.30,.325,.35].map(fraction=>{
-      const length=lengths[lengths.length-1]*fraction;
-      const index=Math.max(1,lengths.findIndex(value=>value>=length));
+    const total=lengths[lengths.length-1];
+    // Per-point normals, interpolated below so offsets along a tight bend have no corners.
+    const normals=points.map((_,i)=>{
+      const before=points[Math.max(0,i-1)],after=points[Math.min(32,i+1)];
+      const size=Math.max(.001,distance(before,after));
+      return {x:-(after.y-before.y)/size,y:(after.x-before.x)/size};
+    });
+    // A point on the centre line at arc length s from the eye, with its normal.
+    // Negative lengths continue past the eye along the tangent of the head.
+    const along=s=>{
+      const index=s<=0?1:Math.max(1,lengths.findIndex(value=>value>=Math.min(s,total)));
       const before=points[index-1],after=points[index];
       const segment=Math.max(.001,lengths[index]-lengths[index-1]);
-      const t=(length-lengths[index-1])/segment;
-      return {x:lerp(before.x,after.x,t),y:lerp(before.y,after.y,t),nx:-(after.y-before.y)/segment,ny:(after.x-before.x)/segment};
-    });
-    return {frame,head,path,angle,anchors,scale:scale*extension};
+      const t=s<=0?s/segment:(Math.min(s,total)-lengths[index-1])/segment;
+      const blend=clamp(t,0,1),nx=lerp(normals[index-1].x,normals[index].x,blend),ny=lerp(normals[index-1].y,normals[index].y,blend);
+      const size=Math.max(.001,Math.hypot(nx,ny));
+      return {x:lerp(before.x,after.x,t),y:lerp(before.y,after.y,t),nx:nx/size,ny:ny/size};
+    };
+    // The faint rear strand is rooted further back along the stem, so it shows
+    // from behind the body instead of hiding under the front strand on its side.
+    const anchorLengths=[.30,.325,.5].map(fraction=>total*fraction);
+    return {frame,head,path,angle,along,anchorLengths,scale:scale*extension};
   }
 
   function drawOverseer(time,delta) {
-    const {frame,head,path,angle,anchors,scale}=bodyGeometry(time);
+    const body=bodyGeometry(time);
+    const {frame,head,path,angle,scale}=body;
     if(scale<.01) return;
     ctx.save();
     ctx.globalAlpha=state.phase;
@@ -889,7 +915,7 @@
     glow.addColorStop(1,'rgba(255,210,70,0)');
     ctx.fillStyle=glow;ctx.fillRect(head.x-22,head.y-22,44,44);
     ctx.save();ctx.translate(head.x,head.y);ctx.rotate(angle);ctx.scale(scale,scale);
-    drawFeelers(time,anchors,head,angle,scale,true,delta);
+    drawFeelers(time,body,true,delta);
     ctx.restore();
     const gradient=ctx.createLinearGradient(head.x,head.y,frame.root.x,frame.root.y);
     gradient.addColorStop(0,'#fff3a0');gradient.addColorStop(.22,'#e9c443');
@@ -905,7 +931,7 @@
     ctx.restore();
 
     ctx.translate(head.x,head.y);ctx.rotate(angle);ctx.scale(scale,scale);
-    drawFeelers(time,anchors,head,angle,scale,false,delta);
+    drawFeelers(time,body,false,delta);
     ctx.shadowColor='#ffe98c';ctx.shadowBlur=5;
     ctx.fillStyle='#e9cc5b';ctx.beginPath();ctx.ellipse(0,0,6.7,6,0,0,Math.PI*2);ctx.fill();
     ctx.shadowBlur=0;
@@ -916,72 +942,113 @@
     ctx.restore();
   }
 
+  // When the gaze swings past the stem the stem bends with it, so the strand's
+  // shape can change several times faster than the head turns. Ease the shape
+  // itself and bound its rate, so a fast cursor turns the strands, never jerks them.
+  function easeStrandShape(index,goal,delta) {
+    const shape=state.strandShapes[index];
+    if(reduceMotion.matches || state.phase<.98 || !shape) return state.strandShapes[index]={...goal};
+    const dt=delta/1000,ease=1-Math.exp(-12*dt);
+    for(const [key,rate] of [['exit',4],['turn',4],['inner',3]])
+      shape[key]+=clamp((goal[key]-shape[key])*ease,-rate*dt,rate*dt);
+    return shape;
+  }
+
   function relaxFeeler(index,targets,delta) {
     if(reduceMotion.matches || state.phase<.98 || !state.feelers[index]) {
-      state.feelers[index]=targets.map(point=>({...point,vx:0,vy:0}));
+      state.feelers[index]=targets.map(point=>({...point}));
       return targets;
     }
     const nodes=state.feelers[index];
     const lengths=targets.map((point,j)=>j?distance(point,targets[j-1]):0);
-    const steps=Math.max(1,Math.ceil(delta/10)),dt=delta/1000/steps;
-    for(let step=0;step<steps;step++) {
-      for(let j=2;j<nodes.length;j++) {
-        const node=nodes[j],t=j/(nodes.length-1);
-        // Distal joints have less stiffness and retain more of the previous motion.
-        const stiffness=lerp(420,100,t),damping=lerp(32,15,t);
-        node.vx+=(targets[j].x-node.x)*stiffness*dt;
-        node.vy+=(targets[j].y-node.y)*stiffness*dt;
-        node.vx*=Math.exp(-damping*dt);node.vy*=Math.exp(-damping*dt);
-        node.x+=node.vx*dt;node.y+=node.vy*dt;
-      }
-      // Preserve strand lengths while allowing the curve to bend between joints.
-      for(let pass=0;pass<3;pass++) {
-        for(let j=0;j<2;j++) Object.assign(nodes[j],targets[j],{vx:0,vy:0});
-        for(let j=2;j<nodes.length;j++) {
-          const prev=nodes[j-1],node=nodes[j];
-          const dx=node.x-prev.x,dy=node.y-prev.y;
-          const length=Math.max(.001,Math.hypot(dx,dy));
-          const correction=(length-lengths[j])/length;
-          const share=j===2?1:.75;
-          node.x-=dx*correction*share;node.y-=dy*correction*share;
-          if(j>2) {prev.x+=dx*correction*(1-share);prev.y+=dy*correction*(1-share);}
-        }
-      }
+    const dt=delta/1000;
+    // Each joint eases towards its place, the tip more slowly than the base, so
+    // the strand trails behind a turning head. Easing has no velocity to carry,
+    // so a joint can neither overshoot nor be jerked back by the constraints.
+    for(let j=2;j<nodes.length;j++) {
+      const ease=1-Math.exp(-lerp(26,14,j/(nodes.length-1))*dt);
+      nodes[j].x+=(targets[j].x-nodes[j].x)*ease;
+      nodes[j].y+=(targets[j].y-nodes[j].y)*ease;
+    }
+    // Each joint is then placed at its exact strand length from the one before it,
+    // so the strand can never stretch. Neighbouring joints ease at almost the same
+    // rate, so the strand stays smooth without any bend limit fighting the easing.
+    for(let j=0;j<2;j++) Object.assign(nodes[j],targets[j]);
+    for(let j=2;j<nodes.length;j++) {
+      const b=nodes[j-1],c=nodes[j];
+      const length=Math.max(.001,Math.hypot(c.x-b.x,c.y-b.y));
+      c.x=b.x+(c.x-b.x)/length*lengths[j];c.y=b.y+(c.y-b.y)/length*lengths[j];
     }
     return nodes;
   }
 
-  function drawFeelers(time,anchors,head,angle,scale,rear,delta) {
+  function drawFeelers(time,body,rear,delta) {
+    const {head,angle,scale,along,anchorLengths}=body;
     const cos=Math.cos(angle),sin=Math.sin(angle);
-    const tangentEnd=Math.tan(.3*4.8)-.3*4.8;
     for(const i of (rear?[2]:[0,1])) {
-      const anchor=anchors[i],dx=(anchor.x-head.x)/scale,dy=(anchor.y-head.y)/scale;
-      const base={x:dx*cos+dy*sin,y:-dx*sin+dy*cos};
-      const normal={x:anchor.nx*cos+anchor.ny*sin,y:-anchor.nx*sin+anchor.ny*cos};
       const side=i===1?1:-1;
       const wave=reduceMotion.matches?0:Math.sin(time*.0018+i*2)*.5;
-      let points=[];
       const lengths=[0];
+      // Each strand is traced by its heading rather than by control points: it
+      // leaves the stem outwards and slightly back towards the root, then turns
+      // smoothly round towards the eye until it runs along the gaze. The turn per
+      // step is small and changes gradually, so no pose can fold it into a corner.
+      const anchor=along(anchorLengths[i]);
+      const normal={x:anchor.nx*side,y:anchor.ny*side};
+      const towardRoot={x:anchor.ny,y:-anchor.nx};
+      const rootAngle=Math.atan2(towardRoot.y,towardRoot.x);
+      // Turn the way that passes through "outwards" before "forwards", never across the stem.
+      const direction=Math.sign(towardRoot.x*normal.y-towardRoot.y*normal.x)||1;
+      // Gaze measured from "straight back along the stem" round through "outwards".
+      const gaze=(((angle-rootAngle)*direction)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
+      // The front strand on the side the head is turned towards is on the inside of
+      // the turn: it is shorter and tucked against the body. The same rule holds
+      // for either side, so turning left and right mirror each other.
+      const inner=rear?0:clamp(Math.sin(gaze)*1.4,0,1);
+      // Exit angle and turn are one continuous function of the gaze all round the
+      // circle, so a cursor beside the Overseer can never flip a strand between
+      // two shapes. Over most of the range the strand leaves near the stem, curls
+      // through at least ~120° and ends along the gaze. When the head is bent so far
+      // that the gaze points back along the stem, following it would need a loop:
+      // the strand then settles into its resting curl forwards along the body,
+      // towards the eye, instead of being bent back against the others.
+      const knots=[[0,1,2.14],[1.5,.3,1.2],[2.4,.3,2.1],[4.4,2.3,2.1],[5,2.3,2.7],[Math.PI*2,1,2.14]];
+      const k=knots.findIndex(([at])=>at>=gaze),[g0,e0,t0]=knots[Math.max(0,k-1)],[g1,e1,t1]=knots[Math.max(1,k)];
+      const f=clamp((gaze-g0)/Math.max(.001,g1-g0),0,1);
+      const shape=easeStrandShape(i,{exit:lerp(e0,e1,f),turn:lerp(t0,t1,f),inner},delta);
+      // Tucking a strand in sends it forwards along the body towards the eye: on
+      // the inside of a bend the body comes to meet it, so it stays as close as the
+      // strands on the outside. A strand is tucked on the inside of the head's turn,
+      // and every strand folds in and draws back a little while the head is turning.
+      // The turn is adjusted to match, so the tips still end along the gaze.
+      const folding=state.turnActivity;
+      const tuck=clamp((rear?.75:shape.inner*.5)+folding*.55,0,1);
+      const exit=lerp(shape.exit,2.6,tuck);
+      const start=rootAngle+direction*exit;
+      const turn=(shape.turn+shape.exit-exit)*direction*(1+wave*.04);
+      const step=(rear?36:48*(1-shape.inner*.32))*(1-folding*.12)*scale/32;
+      const offset=(rear?.8:1.2)*(1-tuck*.6)*scale;
+      const point={x:anchor.x+normal.x*offset,y:anchor.y+normal.y*offset};
+      const heading=t=>{const u=Math.min(1,t/.55);return start+turn*u*u*(3-2*u)};
+      const targets=[];
       for(let j=0;j<=32;j++) {
-        const u=4.8*j/32;
-        // Subtract the linear term so the base exits exactly at a right angle.
-        const forward=(Math.tan(.3*u)-.3*u)/tangentEnd*(rear?38:30);
-        const lateral=side*(2+u*((i===2?1.9:2.8)+wave*.12));
-        const point=rear
-          ? {x:base.x-3+normal.x*lateral*.35+forward*.85,y:base.y+2+normal.y*lateral*.35}
-          : {x:base.x+normal.x*lateral+forward,y:base.y+normal.y*lateral};
-        if(!reduceMotion.matches) {
-          const t=j/32,envelope=t*t;
-          point.x+=Math.sin(time*(.0029+i*.0003)-t*4+i*2)*envelope*1.7;
-          point.y+=(Math.sin(time*(.004+i*.0004)-t*5+i*2)*3.8+
-            Math.sin(time*.006+t*3+i)*1.1)*envelope*(rear?.7:1);
+        if(j) {
+          const middle=heading((j-.5)/32);
+          point.x+=Math.cos(middle)*step;point.y+=Math.sin(middle)*step;
         }
-        points.push(point);
+        const target={...point};
+        if(!reduceMotion.matches) {
+          const u=j/32,envelope=u*u;
+          const lx=Math.sin(time*(.0029+i*.0003)-u*4+i*2)*envelope*1.7/6;
+          const ly=(Math.sin(time*(.004+i*.0004)-u*5+i*2)*3.8+
+            Math.sin(time*.006+u*3+i)*1.1)*envelope*(rear?.7:1)/6;
+          target.x+=(lx*cos-ly*sin)*scale;target.y+=(lx*sin+ly*cos)*scale;
+        }
+        targets.push(target);
       }
       // Simulate in screen coordinates so turning the head doesn't rotate the whole
       // strand rigidly. Convert back only for drawing in the head's local frame.
-      const targets=points.map(point=>({x:head.x+(point.x*cos-point.y*sin)*scale,y:head.y+(point.x*sin+point.y*cos)*scale}));
-      points=relaxFeeler(i,targets,delta).map(point=>{
+      const points=relaxFeeler(i,targets,delta).map(point=>{
         const dx=(point.x-head.x)/scale,dy=(point.y-head.y)/scale;
         return {x:dx*cos+dy*sin,y:-dx*sin+dy*cos};
       });
@@ -989,7 +1056,7 @@
       ctx.globalAlpha=state.phase*(rear?.68:1);
       ctx.lineWidth=rear?.75:.85;
       for(let j=1;j<points.length;j++) {
-        const blue=clamp((lengths[j]/lengths[lengths.length-1]-.88)/.09,0,1);
+        const blue=clamp((lengths[j]/lengths[lengths.length-1]-.76)/.18,0,1);
         ctx.strokeStyle=`rgb(${Math.round(lerp(255,112,blue))},${Math.round(lerp(219,117,blue))},${Math.round(lerp(87,255,blue))})`;
         ctx.beginPath();ctx.moveTo(points[j-1].x,points[j-1].y);ctx.lineTo(points[j].x,points[j].y);ctx.stroke();
       }
@@ -1051,11 +1118,20 @@
     return center;
   }
 
+  function musicZone(rect, pointer) {
+    const gap=Math.hypot(Math.max(rect.left-pointer.x,0,pointer.x-rect.right),
+      Math.max(rect.top-pointer.y,0,pointer.y-rect.bottom));
+    if(!musicButton.closest('.topbar')) return gap<=CONFIG.bodySize*4;
+    // In the desktop top bar the button sits beside the search box and the header
+    // buttons: keep a tighter zone and ignore the cursor while it is on another control.
+    if(gap>CONFIG.bodySize*2.5) return false;
+    const control=document.elementFromPoint(pointer.x,pointer.y)?.closest('button,a,input,select,textarea');
+    return !control || control===musicButton;
+  }
+
   function updateMusicProximity() {
     const rect=visibleRect(musicButton), pointer=state.pointer;
-    const near=!!rect && pointer.seen && !mobilePointer.matches &&
-      Math.hypot(Math.max(rect.left-pointer.x,0,pointer.x-rect.right),
-        Math.max(rect.top-pointer.y,0,pointer.y-rect.bottom))<=CONFIG.bodySize*4;
+    const near=!!rect && pointer.seen && !mobilePointer.matches && musicZone(rect,pointer);
     if(near && (!state.musicHovered || state.musicApproach==='idle') && state.active && !state.disintegrating) state.musicApproach='pending';
     if(!near) state.musicApproach='idle';
     state.musicHovered=near;
@@ -1064,7 +1140,7 @@
   function update(time, delta) {
     updateMusicProximity();
     if(state.disintegrating) return;
-    if(state.musicApproach==='pending' && state.musicHovered && !state.teleporting && !state.gribanovVisible) teleport('music');
+    if(state.musicApproach==='pending' && state.musicHovered && !state.teleporting) teleport('music');
     if(state.phaseDirection) {
       state.phase = clamp(state.phase + state.phaseDirection * delta / (state.phaseDirection<0?state.retractDuration:280), 0, 1);
       if(state.phase === 0 || state.phase === 1) state.phaseDirection = 0;
@@ -1072,15 +1148,21 @@
     state.interfaceMotion *= Math.pow(.91, delta / 16.67);
     const attentionCenter = updateAttention();
     const pointerDistance = state.pointer.seen && !mobilePointer.matches ? distance(state.pos, state.pointer) : Infinity;
-    const followRadius = CONFIG.bodySize * 8;
+    const followRadius = CONFIG.bodySize * 12;
     const musicKind=requestedMusicHologram();
     const atMusicButton=state.musicHovered;
     state.dangerRect=rangeRect(state.dangerRange);
-    if(pointerDistance<followRadius && !(atMusicButton && !state.dangerRect)) {
+    // A visible "Грибанов" outranks the cursor: the Overseer keeps watching the
+    // word and turns to the cursor only within half its usual tracking distance.
+    const danger=state.gribanovVisible && !!state.dangerRect;
+    // While flying to the button it already looks at it, so it lands facing the
+    // button instead of glancing at whatever it was inspecting and turning round.
+    const musicFocus=musicKind || atMusicButton && (state.musicApproach==='moving' || state.musicApproach==='arrived');
+    if(pointerDistance<(danger?followRadius/2:followRadius) && !atMusicButton) {
       state.focus='cursor';state.lookAt={...state.pointer};
-    } else if(state.gribanovVisible && state.dangerRect) {
+    } else if(danger && !(atMusicButton && musicFocus)) {
       state.focus='danger';state.lookAt={x:state.dangerRect.left+state.dangerRect.width/2,y:state.dangerRect.top+state.dangerRect.height/2};
-    } else if(musicKind || atMusicButton && state.musicApproach==='arrived') {
+    } else if(musicFocus) {
       state.focus='music';
       const rect=musicButton.getBoundingClientRect();state.lookAt={x:rect.left+rect.width/2,y:rect.top+rect.height/2};
     } else {
@@ -1100,7 +1182,7 @@
     }
 
     if(pointerDistance < CONFIG.bodySize * 1.25 && !state.teleporting) teleport('escape');
-    if(!reduceMotion.matches && time > state.nextWanderAt && !state.teleporting && !desired && !(state.musicHovered && !state.gribanovVisible)) {
+    if(!reduceMotion.matches && time > state.nextWanderAt && !state.teleporting && !desired && !state.musicHovered) {
       if(random() < .35) teleport();
       else {
         // The root stays planted. Only the head leans and turns to inspect things.
@@ -1120,7 +1202,12 @@
     const angleDelta = Math.atan2(Math.sin(targetAngle-state.gazeAngle),Math.cos(targetAngle-state.gazeAngle));
     const turn = angleDelta * (1-Math.exp(-delta/220));
     const maxTurn = delta*.0035;
-    state.gazeAngle += clamp(turn,-maxTurn,maxTurn);
+    const applied=clamp(turn,-maxTurn,maxTurn);
+    state.gazeAngle += applied;
+    // How briskly the head is turning: rises quickly, relaxes slowly. The strands
+    // fold in against the body while it is high.
+    const activity=clamp(Math.abs(applied)/Math.max(1,delta)/.0022,0,1);
+    state.turnActivity=lerp(state.turnActivity,activity,1-Math.exp(-delta/(activity>state.turnActivity?90:420)));
     state.renderedTailCurl = lerp(state.renderedTailCurl,state.tailCurl,1-Math.exp(-delta/320));
     if(reduceMotion.matches) return;
     const spring = .0022 * Math.min(delta, 34);
@@ -1206,7 +1293,7 @@
       updateMusicProximity();
       // Nearness to the music button already requests a retreat and approach; don't
       // replace that request with a random escape before the next animation frame.
-      const approachingMusic=state.musicHovered && state.musicApproach==='pending' && !state.gribanovVisible;
+      const approachingMusic=state.musicHovered && state.musicApproach==='pending';
       if(state.active && !mobilePointer.matches && !approachingMusic && distance(state.pos,state.pointer)<CONFIG.bodySize*1.25) teleport('escape');
     }, {passive:true});
     addEventListener('pointerdown', event => {
@@ -1232,6 +1319,13 @@
         disintegrate();
       }
     }, {passive:false,capture:true});
+    addEventListener('keydown', event => {
+      // event.code names the physical key, so the shortcut also works with other
+      // layouts and with Option+O on a Mac, where the key would otherwise type "ø".
+      if(event.code !== 'KeyO' || !event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.repeat) return;
+      if(event.target?.closest?.('input,textarea,select,[contenteditable]:not([contenteditable="false"])')) return;
+      if(disintegrate(true)) event.preventDefault();
+    });
     document.addEventListener('visibilitychange', () => {
       if(!document.hidden) queueScan();
     });
@@ -1273,6 +1367,7 @@
         crownOpen: state.crownOpen,
         edge: state.edge,
         lookAt: {...state.lookAt},
+        feelerTips: state.feelers.filter(Boolean).map(nodes=>({x:nodes[nodes.length-1].x,y:nodes[nodes.length-1].y})),
         position: {...state.pos}
       };
     }

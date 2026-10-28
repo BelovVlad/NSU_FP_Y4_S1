@@ -82,7 +82,8 @@ class KarmaBrowserTests(unittest.TestCase):
         self.assertEqual(debts.locator('.secret-debt').count(),6)
         self.assertEqual(debts.locator('.secret-debt').filter(has_text='ФиХАиМ').locator('.secret-debt-name').inner_text(),'ФиХАиМ · Семинары')
         flower=page.locator('.karma-tracks > div').nth(0)
-        self.assertEqual(flower.locator('b').inner_text(),'Закройте все долги')
+        self.assertEqual(page.locator('.karma-tracks b').count(),0)
+        self.assertNotIn('дней',page.locator('.karma-tracks').inner_text())
         self.assertAlmostEqual(flower.locator('em').evaluate('(el)=>parseFloat(el.style.width)'),0,places=4)
         self.assertTrue(page.evaluate("document.querySelector('#secretAcademicKarma').compareDocumentPosition(document.querySelector('#secretAcademicSummary')) & Node.DOCUMENT_POSITION_FOLLOWING"))
         self.assertTrue(page.evaluate("Array.from(document.querySelector('.karma-display canvas').getContext('2d').getImageData(0,0,280,310).data).some(x=>x>0)"))
@@ -148,25 +149,28 @@ class KarmaBrowserTests(unittest.TestCase):
           const {rules}=await (await fetch('search-index/karma-history.json')).json();
           const host=document.createElement('div');
           const view=new KarmaView(host),now=Date.now(),day=86400000;
-          const read=(count,age)=>{
-            const counts=Object.fromEntries(rules.series.map(s=>[s.id,count]));
-            const history={rules,snapshots:[{at:new Date(now-age*day).toISOString(),counts}]};
-            const result=KarmaEngine.calculate(history,now);
+          const fill=count=>Object.fromEntries(rules.series.map(s=>[s.id,count]));
+          const partial={...fill(0),[rules.series[0].id]:100};
+          const iso=time=>new Date(time).toISOString();
+          // One debt in seven sections and its full repayment on each of the last n days.
+          const climb=n=>Array.from({length:n},(_,k)=>[{at:iso(now-(n-k)*day),counts:partial},
+            {at:iso(now-(n-k)*day+3600000),counts:fill(100)}]).flat();
+          const read=snapshots=>{
+            const result=KarmaEngine.calculate({rules,snapshots},now);
             view.render(result,now);
             const tracks=host.querySelectorAll('.karma-tracks>div');
             return {level:host.dataset.level,label:host.querySelector('.karma-display').getAttribute('aria-label'),
-              flower:tracks[0].querySelector('b').textContent,width:parseFloat(tracks[0].querySelector('em').style.width),
-              maximum:tracks[1].querySelector('b').textContent};
+              width:parseFloat(tracks[0].querySelector('em').style.width),
+              maximum:parseFloat(tracks[1].querySelector('em').style.width)};
           };
-          const states={initial:read(0,.5),oneDay:read(100,1),
-            all:read(100,0),beforeTop:read(100,14),top:read(100,15)};
+          const states={initial:read([{at:iso(now-day/2),counts:fill(0)}]),oneDay:read(climb(1)),
+            all:read([{at:iso(now-day),counts:fill(100)}]),beforeTop:read(climb(14)),top:read(climb(15))};
           const empty=Object.fromEntries(rules.series.map(s=>[s.id,0]));
           const full=Object.fromEntries(rules.series.map(s=>[s.id,100]));
           view.render(KarmaEngine.calculate({rules,snapshots:[
             {at:new Date(now-day).toISOString(),counts:empty},
             {at:new Date(now).toISOString(),counts:full}]},now),now);
-          states.flower={text:host.querySelector('.karma-tracks b').textContent,
-            width:parseFloat(host.querySelector('.karma-tracks em').style.width)};
+          states.flower={width:parseFloat(host.querySelector('.karma-tracks em').style.width)};
           const counts=Object.fromEntries(rules.series.map(s=>[s.id,0]));
           counts['fiham-lectures']=6;counts['fiham-seminars']=2;
           view.render(KarmaEngine.calculate({rules,snapshots:[{at:new Date(now).toISOString(),counts}]},now),now);
@@ -176,15 +180,15 @@ class KarmaBrowserTests(unittest.TestCase):
         }""")
         self.assertEqual(states['initial']['level'],'1')
         self.assertEqual(states['initial']['label'],'Карма 1 из 10')
-        self.assertEqual(states['initial']['flower'],'Закройте все долги')
         self.assertEqual(states['initial']['width'],0)
         self.assertEqual(states['oneDay']['level'],'2')
-        self.assertEqual(states['flower'],{'text':'Получен','width':100})
+        self.assertEqual(states['flower'],{'width':100})
         self.assertEqual(states['all']['level'],'1')
         self.assertEqual(states['beforeTop']['level'],'9')
         self.assertEqual(states['top']['level'],'10')
         self.assertEqual(states['top']['label'],'Карма 10 из 10')
-        self.assertEqual(states['top']['maximum'],'7 / 7 дней')
+        self.assertAlmostEqual(states['beforeTop']['maximum'],600/7,places=4)
+        self.assertEqual(states['top']['maximum'],100)
         self.assertEqual(states['surplus'],{'count':'6 / 8','complete':False})
 
     def test_waiting_label_replaces_checkmark_only_until_deadline(self):
@@ -209,17 +213,19 @@ class KarmaBrowserTests(unittest.TestCase):
           view.stop();return states;
         }""")
         self.assertEqual(states['afterLesson'],{'complete':False,'waiting':True,
-                                                'label':'ожидание до 9:00','level':2})
-        self.assertEqual(states['deadline'],{'complete':False,'waiting':False,'label':'','level':1})
+                                                'label':'ожидание до 9:00','level':0})
+        self.assertEqual(states['deadline'],{'complete':False,'waiting':False,'label':'','level':0})
 
     def test_increase_sound_phases_and_loop_cleanup(self):
         page=self.page()
         errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
-        page.add_init_script("localStorage.setItem('nsu-editor-karma-visual-v1',JSON.stringify({level:1,shield:false,protectedUntil:null}))")
+        page.add_init_script("localStorage.setItem('nsu-editor-karma-visual-v1',JSON.stringify({level:0,shield:false,protectedUntil:null}))")
         rules=json.loads((ROOT/'docs/Karma/rules.json').read_text('utf-8'))
         full={row['id']:100 for row in rules['series']}
         page.route('**/search-index/karma-history.json',lambda route:route.fulfill(json={
-            'rules':rules,'currentCounts':full,'snapshots':[{'at':'2026-09-24T09:00:00+07:00','counts':full}]}))
+            'rules':rules,'currentCounts':full,'snapshots':[
+                {'at':'2026-09-25T12:00:00+07:00','counts':{**full,rules['series'][0]['id']:0}},
+                {'at':'2026-09-25T13:00:00+07:00','counts':full}]}))
         page.route('**/search-index/structure.json',lambda route:route.fulfill(json={
             'groups':[{'subject':row['subject'],'section':row['section'],'items':[{}]*100} for row in rules['series']]}))
         page.goto(self.url)

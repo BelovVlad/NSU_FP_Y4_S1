@@ -728,12 +728,14 @@ class SiteTests(unittest.TestCase):
         self.pwa_ready()
         url='../'+quote(self.nb)+'?v=one'
         read='async url=>{const r=await fetch(url);return {ok:r.ok,text:await r.text()}}'
+        # Count only notebook downloads: the page keeps fetching unrelated assets in the background on slow runners.
+        downloads=lambda:sum(path.endswith('/'+quote(self.nb)) for method,path in self.requests if method=='GET')
         self.assertTrue(self.page.evaluate(read,url)['ok'])
-        count=len(self.requests)
+        count=downloads()
         self.assertTrue(self.page.evaluate(read,url)['ok'])
-        self.assertEqual(len(self.requests),count,'A versioned notebook should not be downloaded twice')
+        self.assertEqual(downloads(),count,'A versioned notebook should not be downloaded twice')
         self.assertTrue(self.page.evaluate(read,url.replace('one','two'))['ok'])
-        self.assertGreater(len(self.requests),count,'A new content version must reach the server')
+        self.assertGreater(downloads(),count,'A new content version must reach the server')
         self.context.set_offline(True)
         self.page.reload()
         self.page.wait_for_function('FILES.length===2')
