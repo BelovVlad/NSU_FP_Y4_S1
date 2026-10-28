@@ -1,5 +1,5 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = '67876dd9d0';
+const SHELL_VERSION = '665c315312';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
@@ -11,8 +11,8 @@ const CORE = ['index.html', 'site.css?v=93c5fe9e27', 'site.js?v=b288eeb3d9', 'ap
   'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
   'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
   'search-worker.js?v=32d5520b7c', 'notebook/viewer.html', 'notebook/viewer.css?build=2aa53795ce', 'notebook/outline.js?build=d72f570ee4',
-  'pdfjs/viewer.html', 'pdfjs/viewer.css?v=1e131249af', 'pdfjs/viewer.js?v=b085631c32', 'pdfjs/icons.js?v=c6753488af', 'pdfjs/pdf-tone.js?v=37583b871e',
-  'pdfjs/search-text.js?v=3770976b57', 'pdfjs/material-paths.js?v=ca1e61a965', 'pdfjs/renamed-materials.js?v=b94bf2d584', 'pdfjs/controls.css?v=68489908be', 'pdfjs/notes.js?v=cc44e7db2f', 'pdfjs/notes.css?v=c36146054c', 'assets/nsu-fp-emblem.webp',
+  'pdfjs/viewer.html', 'pdfjs/viewer.css?v=1e131249af', 'pdfjs/viewer.js?v=a7a0833106', 'pdfjs/icons.js?v=c6753488af', 'pdfjs/pdf-tone.js?v=37583b871e',
+  'pdfjs/search-text.js?v=3770976b57', 'pdfjs/material-paths.js?v=ca1e61a965', 'pdfjs/renamed-materials.js?v=b94bf2d584', 'pdfjs/controls.css?v=cfe888a5d0', 'pdfjs/notes.js?v=cc44e7db2f', 'pdfjs/notes.css?v=c36146054c', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png?v=f299e7a63c', 'assets/app-512.png?v=9f41a6f2fa', 'particles/index.html', 'particles/particles.js',
   'particles/explorer.css?v=ab913786e6', 'particles/explorer.js?v=4f8c5e98ad', 'particles/layout.js?v=14224e1e89', 'particles/routes.js?v=1127b43bc0', 'particles/extra-particles.js?v=f0a2243a75', 'particles/remaining-particles.js?v=f1ed737ba7'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json', 'search-index/karma-history.json'];

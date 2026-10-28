@@ -206,11 +206,25 @@
         "fiham-seminars": 6
       },
       "commit": "21044440f9de0de6085120964c24b11508439dd1"
+    },
+    {
+      "at": "2026-10-28T18:18:54.073644+00:00",
+      "counts": {
+        "ovf-lectures": 5,
+        "tdisf-lectures": 10,
+        "tdisf-seminars": 4,
+        "fksv-seminars": 5,
+        "fech-seminars": 5,
+        "fech-lectures": 2,
+        "fiham-lectures": 4,
+        "fiham-seminars": 6
+      },
+      "source": "index-build"
     }
   ],
   "currentCounts": {
     "ovf-lectures": 5,
-    "tdisf-lectures": 5,
+    "tdisf-lectures": 10,
     "tdisf-seminars": 4,
     "fksv-seminars": 5,
     "fech-seminars": 5,
@@ -218,5 +232,5 @@
     "fiham-lectures": 4,
     "fiham-seminars": 6
   },
-  "indexGeneratedAt": "2026-10-28T11:52:12.691114+00:00"
+  "indexGeneratedAt": "2026-10-28T18:16:34.477143+00:00"
 }
