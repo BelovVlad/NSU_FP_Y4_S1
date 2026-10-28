@@ -1022,7 +1022,7 @@
       // and every strand folds in and draws back a little while the head is turning.
       // The turn is adjusted to match, so the tips still end along the gaze.
       const folding=state.turnActivity;
-      const tuck=clamp((rear?.75:shape.inner*.85)+folding*.55,0,1);
+      const tuck=clamp((rear?.75:shape.inner*.5)+folding*.55,0,1);
       const exit=lerp(shape.exit,2.6,tuck);
       const start=rootAngle+direction*exit;
       const turn=(shape.turn+shape.exit-exit)*direction*(1+wave*.04);
