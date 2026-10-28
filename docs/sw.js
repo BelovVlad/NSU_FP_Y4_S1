@@ -1,8 +1,8 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
 <<<<<<< HEAD
-const SHELL_VERSION = '2a76290ec8';
+const SHELL_VERSION = 'bce90b6cb2';
 =======
-const SHELL_VERSION = 'f1c502002a';
+const SHELL_VERSION = 'bce90b6cb2';
 >>>>>>> 42f7885839cce0a720119ba451cc6f3e1fbb52d0
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
@@ -13,7 +13,7 @@ const PDFS = PREFIX + 'pdf-v1';
 <<<<<<< HEAD
 const CORE = ['index.html', 'site.css?v=93c5fe9e27', 'site.js?v=b288eeb3d9', 'app.js?v=b0bec72a78', 'app.css?v=4e2e52a233', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=5db485695e', 'manifest.webmanifest?v=6bddccb735',
 =======
-const CORE = ['index.html', 'site.css?v=93c5fe9e27', 'site.js?v=bf53986104', 'app.js?v=b0bec72a78', 'app.css?v=4e2e52a233', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=5db485695e', 'manifest.webmanifest?v=f091c1f136',
+const CORE = ['index.html', 'site.css?v=93c5fe9e27', 'site.js?v=b288eeb3d9', 'app.js?v=b0bec72a78', 'app.css?v=4e2e52a233', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=5db485695e', 'manifest.webmanifest?v=6bddccb735',
 >>>>>>> 42f7885839cce0a720119ba451cc6f3e1fbb52d0
   'Overseer/overseer.js?v=c6c82cab8a', 'Overseer/overseer.css?v=3c70ee01aa',
   'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
