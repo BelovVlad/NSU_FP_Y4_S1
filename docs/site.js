@@ -1294,7 +1294,9 @@ function enableMobileImmersiveMode(){
 }
 function firstMobileImmersiveGesture(event){
   document.removeEventListener('pointerup',firstMobileImmersiveGesture,true);
-  if(event.target.closest('#installApp,#offlineFiles,#appSettings,.app-dialog') || window.matchMedia('(display-mode: standalone)').matches)return;
+  // The installed app is already fullscreen and draws under the camera cutout;
+  // the Fullscreen API on top of it would letterbox the cutout with a black strip.
+  if(event.target.closest('#installApp,#offlineFiles,#appSettings,.app-dialog') || window.matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone===true)return;
   enableMobileImmersiveMode();
 }
 document.addEventListener('pointerup',firstMobileImmersiveGesture,true);
