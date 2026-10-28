@@ -1230,115 +1230,153 @@ document.addEventListener('pointerup',()=>{
   try{window.parent.nsuKeepImmersive?.()}catch{}
 },true);
 window.addEventListener('keydown',e=>{if(e.target.closest('dialog,textarea,select'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();openSearch();return}if(e.key==='Escape'){if(document.body.classList.contains('tools-open'))closeTools(true);else if(pageJump.classList.contains('open'))closePageJump();else if(outlinePanel.classList.contains('open'))closeOutline();else if(searchPanel.classList.contains('open'))closeSearch();else if(notes.enabled){notes.button.click();}else back.click();return}if(document.activeElement===searchInput||document.activeElement===pageInput||document.activeElement===pageJumpInput||document.activeElement===zoomLabel||e.target.closest('input'))return;if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)});
-let wheelZoomTimer=0,wheelZoomStartScale=0,wheelZoomTargetScale=0,wheelZoomAnchor=null,wheelZoomContinuous=false;
+// Zoom gestures preview with a CSS transform around a point fixed at gesture start
+// (measured before any transform is applied), then commit one real scale change.
+function endZoomPreview(target){target.classList.remove('pinch-preview');target.style.transform='';target.style.transformOrigin=''}
+function startZoomPreview(clientX,clientY){
+  const continuous=continuousMode&&!!continuousRoot,target=continuous?continuousRoot:canvasWrap;
+  const rect=target.getBoundingClientRect();
+  if(rect.width<1||rect.height<1)return null;
+  const x=Math.max(rect.left,Math.min(rect.right,clientX)),y=Math.max(rect.top,Math.min(rect.bottom,clientY));
+  target.classList.add('pinch-preview');
+  target.style.transformOrigin=(x-rect.left)+'px '+(y-rect.top)+'px';
+  return{
+    target,continuous,startScale:scale,targetScale:scale,clientX:x,clientY:y,horizontal:(x-rect.left)/rect.width,
+    anchor:continuous?continuousAnchorFromClient(y):zoomAnchorFromClient(x,y)
+  };
+}
+// Single-page mode: stretch the current raster to the new size at once, so the page
+// keeps its previewed size and position while the sharp render is in flight.
+function stretchSinglePage(ratio,anchor){
+  if(!(ratio>0)||Math.abs(ratio-1)<.001)return;
+  for(const el of [canvas,highlightLayer,textLayer,annotationLayer]){
+    const w=parseFloat(el.style.width),h=parseFloat(el.style.height);
+    if(w>0)el.style.width=w*ratio+'px';
+    if(h>0)el.style.height=h*ratio+'px';
+  }
+  if(!anchor)return;
+  const r=canvasWrap.getBoundingClientRect();
+  viewer.scrollBy(r.left+anchor.x*r.width-anchor.clientX,r.top+anchor.y*r.height-anchor.clientY);
+}
+function commitZoomGesture(nextScale,g,clientX){
+  if(g.continuous&&continuousMode&&continuousRoot){
+    commitContinuousScale(nextScale,g.anchor,false);
+    const r=continuousRoot.getBoundingClientRect();viewer.scrollLeft+=r.left+r.width*g.horizontal-clientX;
+    return;
+  }
+  const previous=scale;scale=clampScale(nextScale);
+  stretchSinglePage(scale/previous,g.anchor);
+  updateControls();void renderPage(g.anchor?{anchor:g.anchor}:{});
+}
+
+let wheelZoom=null;
+function paintWheelZoom(){
+  const z=wheelZoom;if(!z)return;
+  z.frame=0;
+  // A mouse-wheel notch is a big step: ease towards it. Trackpad pinch deltas are already fine-grained.
+  const diff=Math.log(z.targetScale/z.shown);
+  z.shown=Math.abs(diff)<.002||!z.smooth?z.targetScale:z.shown*Math.exp(diff*.35);
+  z.target.style.transform='scale('+z.shown/z.startScale+')';
+  zoomLabel.value=String(Math.round(z.shown*100));
+  if(z.shown!==z.targetScale)z.frame=requestAnimationFrame(paintWheelZoom);
+}
+function scheduleWheelZoomPaint(){if(!wheelZoom.frame)wheelZoom.frame=requestAnimationFrame(paintWheelZoom)}
+function beginWheelZoom(clientX,clientY){
+  if(!wheelZoom){
+    wheelZoom=startZoomPreview(clientX,clientY);
+    if(!wheelZoom)return null;
+    wheelZoom.shown=scale;wheelZoom.timer=0;wheelZoom.frame=0;
+  }
+  closePageJump();fitWidth=false;gestureActive=true;lockReaderChrome(900);
+  clearTimeout(wheelZoom.timer);
+  return wheelZoom;
+}
 function finishWheelZoom(){
-  if(!wheelZoomTargetScale)return;
-  const nextScale=wheelZoomTargetScale,anchor=wheelZoomAnchor,wasContinuous=wheelZoomContinuous;
-  wheelZoomTargetScale=0;wheelZoomStartScale=0;wheelZoomAnchor=null;wheelZoomContinuous=false;wheelZoomTimer=0;
-  canvasWrap.classList.remove('pinch-preview');
-  canvasWrap.style.transform='';canvasWrap.style.transformOrigin='';
-  continuousRoot?.classList.remove('pinch-preview');
-  if(continuousRoot){continuousRoot.style.transform='';continuousRoot.style.transformOrigin=''}
+  const z=wheelZoom;if(!z)return;
+  // Let an eased step land before committing, or the page would jump to the target.
+  if(z.frame){z.timer=setTimeout(finishWheelZoom,40);return}
+  wheelZoom=null;
+  endZoomPreview(z.target);
   gestureActive=false;lockReaderChrome(650);
-  if(wasContinuous&&continuousMode)commitContinuousScale(nextScale,anchor,false);
-  else{scale=clampScale(nextScale);updateControls();void renderPage(anchor?{anchor}:{})}
+  if(Math.abs(z.shown-z.startScale)<.002){updateControls();scheduleContinuousSweep();return}
+  commitZoomGesture(z.shown,z,z.clientX);
 }
 function handleWheelZoom(e){
   if(!pdf||(!e.ctrlKey&&!e.metaKey))return;
-  e.preventDefault();e.stopPropagation();closePageJump();fitWidth=false;gestureActive=true;lockReaderChrome(900);
+  e.preventDefault();e.stopPropagation();
+  if(pinchState)return;
+  const z=beginWheelZoom(e.clientX,e.clientY);if(!z)return;
   const sensitivity=e.deltaMode===1?.045:e.deltaMode===2?.18:.0026;
-
-  if(!wheelZoomTargetScale){
-    wheelZoomStartScale=scale;
-    wheelZoomTargetScale=scale;
-    wheelZoomContinuous=continuousMode;
-    wheelZoomAnchor=continuousMode?continuousAnchorFromClient(e.clientY):null;
-  }
-  wheelZoomTargetScale=clampScale(wheelZoomTargetScale*Math.exp(-e.deltaY*sensitivity));
-  const previewRatio=wheelZoomTargetScale/wheelZoomStartScale;
-
-  if(continuousMode&&continuousRoot){
-    if(!wheelZoomAnchor)wheelZoomAnchor=continuousAnchorFromClient(e.clientY);
-    const rect=continuousRoot.getBoundingClientRect();
-    continuousRoot.classList.add('pinch-preview');
-    continuousRoot.style.transformOrigin=(e.clientX-rect.left)+'px '+(e.clientY-rect.top)+'px';
-    continuousRoot.style.transform='scale('+previewRatio+')';
-  }else{
-    const rect=canvasWrap.getBoundingClientRect();
-    if(rect.width<1||rect.height<1)return;
-    const clientX=Math.max(rect.left,Math.min(rect.right,e.clientX));
-    const clientY=Math.max(rect.top,Math.min(rect.bottom,e.clientY));
-    wheelZoomAnchor=zoomAnchorFromClient(clientX,clientY);
-    canvasWrap.classList.add('pinch-preview');
-    canvasWrap.style.transformOrigin=(clientX-rect.left)+'px '+(clientY-rect.top)+'px';
-    canvasWrap.style.transform='scale('+previewRatio+')';
-  }
-  zoomLabel.value=String(Math.round(wheelZoomTargetScale*100));
-  clearTimeout(wheelZoomTimer);
-  wheelZoomTimer=setTimeout(finishWheelZoom,90);
+  z.smooth=e.deltaMode!==0||Math.abs(e.deltaY)>=40;
+  z.targetScale=clampScale(z.targetScale*Math.exp(-e.deltaY*sensitivity));
+  scheduleWheelZoomPaint();
+  // Trackpads pause mid-pinch; a short idle timeout would commit and re-render halfway through.
+  z.timer=setTimeout(finishWheelZoom,z.smooth?200:180);
 }
 window.addEventListener('wheel',handleWheelZoom,{passive:false,capture:true});
+// Safari reports trackpad pinch as gesture* events instead of ctrl+wheel. On iOS the
+// touch handlers below own the pinch; these only stop the page itself from zooming.
+window.addEventListener('gesturestart',e=>{
+  e.preventDefault();
+  if(!pdf||pinchState)return;
+  const z=beginWheelZoom(e.clientX,e.clientY);if(!z)return;
+  z.gestureBase=z.targetScale;z.smooth=false;
+},{passive:false});
+window.addEventListener('gesturechange',e=>{
+  e.preventDefault();
+  const z=wheelZoom;if(!z||z.gestureBase==null)return;
+  z.targetScale=clampScale(z.gestureBase*e.scale);
+  scheduleWheelZoomPaint();
+},{passive:false});
+window.addEventListener('gestureend',e=>{
+  e.preventDefault();
+  const z=wheelZoom;if(!z||z.gestureBase==null)return;
+  z.gestureBase=null;clearTimeout(z.timer);z.timer=setTimeout(finishWheelZoom,60);
+},{passive:false});
 
 function touchDistance(touches){const dx=touches[0].clientX-touches[1].clientX,dy=touches[0].clientY-touches[1].clientY;return Math.hypot(dx,dy)}
 function touchMidpoint(touches){return{x:(touches[0].clientX+touches[1].clientX)/2,y:(touches[0].clientY+touches[1].clientY)/2}}
 let pinchState=null,pinchPreviewRaf=0;
 function paintPinchPreview(){
   pinchPreviewRaf=0;
-  if(!pinchState)return;
-  const ratio=pinchState.targetScale/pinchState.startScale;
-  const dx=pinchState.mid.x-pinchState.startMid.x,dy=pinchState.mid.y-pinchState.startMid.y;
-  const transform=`translate(${dx}px,${dy}px) scale(${ratio})`;
-  if(pinchState.continuous&&continuousRoot)continuousRoot.style.transform=transform;
-  else canvasWrap.style.transform=transform;
+  const p=pinchState;if(!p)return;
+  // If the browser already started a two-finger pan it keeps scrolling the viewer;
+  // cancel that out so the page follows the fingers exactly once.
+  const dx=p.mid.x-p.startMid.x+viewer.scrollLeft-p.scrollX,dy=p.mid.y-p.startMid.y+viewer.scrollTop-p.scrollY;
+  p.target.style.transform=`translate(${dx}px,${dy}px) scale(${p.targetScale/p.startScale})`;
+  zoomLabel.value=String(Math.round(p.targetScale*100));
 }
+function schedulePinchPreview(){if(!pinchPreviewRaf)pinchPreviewRaf=requestAnimationFrame(paintPinchPreview)}
 viewer.addEventListener('touchstart',e=>{
   if(!pdf||e.touches.length!==2||notes.rejectPalm()||[...e.touches].some(t=>t.touchType==='stylus'))return;
   notes.cancelGesture();
-  e.preventDefault();closePageJump();fitWidth=false;gestureActive=true;lockReaderChrome(1000);
+  e.preventDefault();
   const mid=touchMidpoint(e.touches),distance=touchDistance(e.touches);
-  if(distance<8)return;
-
-  if(continuousMode&&continuousRoot){
-    const rect=continuousRoot.getBoundingClientRect();
-    const anchor=continuousAnchorFromClient(mid.y);
-    pinchState={startDistance:distance,startScale:scale,targetScale:scale,anchor,continuous:true,startMid:mid,mid,horizontal:(mid.x-rect.left)/rect.width};
-    continuousRoot.classList.add('pinch-preview');
-    continuousRoot.style.transformOrigin=(mid.x-rect.left)+'px '+(mid.y-rect.top)+'px';
-    return;
-  }
-
-  const rect=canvasWrap.getBoundingClientRect();
-  if(rect.width<1||rect.height<1)return;
-  pinchState={
-    startDistance:distance,startScale:scale,targetScale:scale,continuous:false,startMid:mid,mid,
-    anchor:{x:Math.max(0,Math.min(1,(mid.x-rect.left)/rect.width)),y:Math.max(0,Math.min(1,(mid.y-rect.top)/rect.height)),clientX:mid.x,clientY:mid.y}
-  };
-  canvasWrap.classList.add('pinch-preview');
-  canvasWrap.style.transformOrigin=(mid.x-rect.left)+'px '+(mid.y-rect.top)+'px';
+  if(distance<8||wheelZoom)return;
+  const p=startZoomPreview(mid.x,mid.y);if(!p)return;
+  closePageJump();fitWidth=false;gestureActive=true;lockReaderChrome(1000);
+  pinchState=Object.assign(p,{startDistance:distance,startMid:mid,mid,scrollX:viewer.scrollLeft,scrollY:viewer.scrollTop});
 },{passive:false});
 viewer.addEventListener('touchmove',e=>{
   if(!pinchState||e.touches.length<2||notes.rejectPalm())return;
-  e.preventDefault();
+  if(e.cancelable)e.preventDefault();
   const distance=touchDistance(e.touches);if(distance<8)return;
   pinchState.mid=touchMidpoint(e.touches);
   pinchState.targetScale=clampScale(pinchState.startScale*distance/pinchState.startDistance);
-  zoomLabel.value=String(Math.round(pinchState.targetScale*100));
-  if(!pinchPreviewRaf)pinchPreviewRaf=requestAnimationFrame(paintPinchPreview);
+  schedulePinchPreview();
 },{passive:false});
+viewer.addEventListener('scroll',()=>{if(pinchState)schedulePinchPreview()},{passive:true});
 function finishPinch(e){
-  if(!pinchState||(e.touches&&e.touches.length>=2))return;
-  const nextScale=pinchState.targetScale,anchor=pinchState.anchor,wasContinuous=pinchState.continuous;
-  const {mid,startMid,horizontal}=pinchState;
-  anchor.clientY=mid.y;if(!wasContinuous)anchor.clientX=mid.x;
+  const p=pinchState;
+  if(!p||(e.touches&&e.touches.length>=2))return;
   pinchState=null;
   if(pinchPreviewRaf){cancelAnimationFrame(pinchPreviewRaf);pinchPreviewRaf=0}
-  canvasWrap.classList.remove('pinch-preview');canvasWrap.style.transform='';canvasWrap.style.transformOrigin='';
-  continuousRoot?.classList.remove('pinch-preview');
-  if(continuousRoot){continuousRoot.style.transform='';continuousRoot.style.transformOrigin=''}
+  endZoomPreview(p.target);
   gestureActive=false;lockReaderChrome(700);
-  if(Math.abs(nextScale-scale)<.005){viewer.scrollBy(startMid.x-mid.x,startMid.y-mid.y);updateControls();return}
-  if(wasContinuous&&continuousMode){commitContinuousScale(nextScale,anchor,false);const r=continuousRoot.getBoundingClientRect();viewer.scrollLeft+=r.left+r.width*horizontal-mid.x;}
-  else{scale=clampScale(nextScale);updateControls();void renderPage({anchor})}
+  const {mid,startMid}=p;
+  if(Math.abs(p.targetScale-p.startScale)<.005){viewer.scrollTo(p.scrollX+startMid.x-mid.x,p.scrollY+startMid.y-mid.y);updateControls();scheduleContinuousSweep();return}
+  if(p.anchor){p.anchor.clientY=mid.y;if(!p.continuous)p.anchor.clientX=mid.x}
+  commitZoomGesture(p.targetScale,p,mid.x);
 }
 viewer.addEventListener('touchend',finishPinch,{passive:true});
 viewer.addEventListener('touchcancel',finishPinch,{passive:true});

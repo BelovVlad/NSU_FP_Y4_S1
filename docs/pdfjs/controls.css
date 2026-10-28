@@ -170,8 +170,10 @@ body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 1
 .compact-view.pdf-tone-black .canvas-wrap,.compact-view.pdf-tone-black .continuous-page{background:#15191c}
 .compact-view.pdf-tone-mine .canvas-wrap,.compact-view.pdf-tone-mine .continuous-page{background:#293133}
 
-/* Temporary transform used during pinch / trackpad zoom in the continuous strip. */
-.continuous-pages.pinch-preview{transition:none;will-change:transform}
+/* Temporary transform used during pinch / trackpad zoom. */
+.continuous-pages.pinch-preview,.canvas-wrap.pinch-preview{transition:none;will-change:transform}
+/* Pinch zooms the document, never the whole page (touchscreen laptops too). */
+.viewer{touch-action:pan-x pan-y}
 
 /* Site-wide search preview: the parent card owns navigation and actions.
    Render only the matched document page here; never stack a second toolbar,
