@@ -1,4 +1,4 @@
-"""Notes persistence, PDF-space geometry, recovery, backup and explicit offline library."""
+"""Notes persistence, PDF-space geometry, carry-over, backup and explicit offline library."""
 import json
 import unittest
 from pathlib import Path
@@ -88,7 +88,7 @@ class AnnotationTests(unittest.TestCase):
         self.page.evaluate('() => {NSUAnnotations.save=savedWriter;}')
         self.page.locator('.notes-status button').click();self.saved_count(1)
 
-    def test_notes_backup_validation_merge_and_version_recovery(self):
+    def test_notes_backup_validation_merge_and_version_carry_over(self):
         self.pdf('&v=old');self.page.locator('#notesToggle').click();self.draw();self.saved_count(1)
         backup=self.page.evaluate('NSUAnnotations.backup()')
         self.page.evaluate('NSUAnnotations.clear()');self.saved_count(0)
@@ -98,12 +98,9 @@ class AnnotationTests(unittest.TestCase):
         self.saved_count(1)
         if not fixtures.REAL_PDFJS:
             self.pdf('&v=new')
-            self.page.locator('.notes-recovery summary').click()
-            self.assertEqual(self.page.locator('.continuous-page:first-child .user-notes path').count(),0)
-            self.page.once('dialog',lambda d:d.accept())
-            self.page.get_by_role('button',name='Восстановить в текущем PDF').click()
             self.saved_count(2)
-            self.assertEqual(self.page.locator('.continuous-page:first-child .user-notes path').count(),1)
+            self.assertEqual(self.page.locator('.notes-recovery').count(),0)
+            self.page.wait_for_function("document.querySelectorAll('.continuous-page:first-child .user-notes path').length===1")
 
     def test_notes_settings_backup_ui_and_responsive_layout(self):
         self.pdf();self.page.locator('#notesToggle').click();self.draw();self.saved_count(1)

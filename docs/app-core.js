@@ -362,12 +362,11 @@
   const ready = supported ? navigator.serviceWorker.register(new URL('sw.js',base),{scope:base.pathname,updateViaCache:'none'}).then(async value=>{
     registration=value;
     value.update().catch(()=>{});
+    // A new version is applied silently: the waiting worker takes over and the page reloads.
     function offerUpdate(){
       if(!registration.waiting || !registration.active || !navigator.serviceWorker.controller)return;
       if(nativeAndroid)return;
-      settingsButton?.classList.add('has-update');
-      settingsButton?.setAttribute('title','Доступно обновление приложения');
-      notice('Доступно обновление приложения. Откройте «Приложение» → «Обновить сейчас».');
+      void activateWaitingWorker();
     }
     offerUpdate();
     registration.addEventListener('updatefound',()=>{const worker=registration.installing;worker?.addEventListener('statechange',()=>{if(worker.state==='installed')offerUpdate();});});

@@ -150,22 +150,13 @@ export class ReaderNotes {
       const existing=docs.find(d=>d.revision===revision);
       this.doc=existing||{docId,revision,path,title,pageCount:pdf.numPages,formatVersion:1,createdAt:Date.now(),updatedAt:Date.now()};
       this.doc.pageCount=pdf.numPages;
-      await this.reload();this.button.disabled=false;
+      // A replaced PDF silently inherits the notes of the latest earlier version (once, on first open).
       const older=docs.filter(d=>d.revision!==revision).sort((a,b)=>b.updatedAt-a.updatedAt);
-      if(older.length){
-        this.recovery=document.createElement('details');this.recovery.className='notes-recovery';
-        const summary=document.createElement('summary');summary.textContent='PDF изменился: доступны прежние заметки';this.recovery.append(summary);
-        const note=document.createElement('p');note.textContent='Старая копия сохранена отдельно. При изменении страниц положение пометок может не совпасть. Экспортируйте резервную копию в настройках.';this.recovery.append(note);
-        const select=document.createElement('select');select.setAttribute('aria-label','Версия прежних заметок');
-        for(const d of older){const option=document.createElement('option');option.value=d.revision;option.textContent=new Date(d.updatedAt).toLocaleString('ru-RU')+' · '+d.pageCount+' стр.';select.append(option);}
-        const restore=document.createElement('button');restore.textContent='Восстановить в текущем PDF';
-        restore.onclick=async()=>{try{
-          if(!confirm('Скопировать прежние пометки в этот PDF? Проверьте совпадение страниц. Исходная копия останется в резервном хранилище.'))return;
-          const objects=await window.NSUAnnotations.objects(docId,select.value);
-          this.change(objects.filter(a=>a.page<=pdf.numPages).map(a=>({...a,id:uid(),revision,updatedAt:Date.now()})));
-        }catch(error){this.message('Не удалось восстановить заметки: '+error.message);}};
-        this.recovery.append(select,restore);document.body.append(this.recovery);
+      if(!existing&&older.length){
+        const objects=await window.NSUAnnotations.objects(docId,older[0].revision);
+        await window.NSUAnnotations.save(this.doc,objects.filter(a=>a.page<=pdf.numPages).map(a=>({...a,revision})));
       }
+      await this.reload();this.button.disabled=false;
     }catch(error){this.doc=null;this.message('Заметки недоступны: '+error.message);}
   }
   async reload(){

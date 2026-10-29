@@ -1,6 +1,6 @@
 // PDF.js is served by the site itself: the reader must not depend on a CDN being reachable.
 import * as pdfjsLib from '../vendor/pdfjs-4.10.38/pdf.min.mjs';
-import {ReaderNotes} from './notes.js?v=cc44e7db2f';
+import {ReaderNotes} from './notes.js?v=01d30fc6e0';
 import {currentMaterialPath} from './material-paths.js?v=ca1e61a965';
 import {renderViewerIcons} from './icons.js?v=c6753488af';
 import {applyToneToCanvas,PDF_TONES} from './pdf-tone.js?v=37583b871e';
