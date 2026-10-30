@@ -1,3 +1,4 @@
+@import url("fonts/fonts.css");
 /* Main site: layout, sidebar, subjects, search, previews, themes. */
 :root{
   --bg:#080d12;--bg2:#0b1117;--side:#0a0f14;--panel:#0e151c;--panel2:#121a22;
@@ -7,7 +8,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
-body{font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;line-height:1.45}
+body{font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;line-height:1.45}
 button,input,select{font:inherit}button{color:inherit}a{color:inherit}
 button,a,input,select{-webkit-tap-highlight-color:transparent}
 .hidden{display:none!important}
@@ -22,7 +23,7 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .brand{display:flex;align-items:center;gap:14px;padding:2px 6px 20px;border-bottom:1px solid var(--line2)}
 .brand-mark{width:60px;height:60px;display:grid;place-items:center;border:0;border-radius:12px;background:transparent;overflow:hidden;flex:0 0 60px}
 .brand-mark img{width:60px;height:60px;display:block;object-fit:cover;border-radius:12px}
-.brand-title{font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;font-size:20px;font-weight:700;color:var(--cream);letter-spacing:.02em}
+.brand-title{font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;font-size:20px;font-weight:700;color:var(--cream);letter-spacing:.02em}
 .brand-sub{margin-top:1px;color:var(--muted);font-size:11px}
 .main-nav{padding:19px 0 13px}
 .nav-btn{
@@ -78,8 +79,8 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .breadcrumbs .sep{opacity:.45}
 .hero-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-top:17px}
 .hero-copy{position:relative;z-index:2;max-width:calc(100% - 500px)}
-.hero h1{margin:0;font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;color:var(--cream);font-size:36px;line-height:1;letter-spacing:.01em}
-.hero-sub{margin-top:8px;color:#a9a39d;font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;font-size:15px}
+.hero h1{margin:0;font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;color:var(--cream);font-size:36px;line-height:1;letter-spacing:.01em}
+.hero-sub{margin-top:8px;color:#a9a39d;font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;font-size:15px}
 .hero-art{position:absolute;right:24px;top:10px;width:455px;height:144px;overflow:hidden;border:1px solid rgba(183,139,98,.18);border-radius:10px;opacity:.92;pointer-events:none;box-shadow:0 12px 34px rgba(0,0,0,.28)}
 .hero-art img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;object-position:center 56%;opacity:0;visibility:hidden;filter:grayscale(.15) sepia(.38) saturate(.92) brightness(.68) contrast(1.18);transition:opacity .65s ease;will-change:opacity}
 .hero-art .hero-art-base{opacity:1;visibility:visible}
@@ -97,8 +98,8 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .panel{border:1px solid var(--line);border-radius:10px;background:linear-gradient(180deg,#0d141b,#0b1218);overflow:hidden}
 .list-panel{min-width:0}
 .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 11px}
-.panel-title{margin:0;font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;color:#eadbc9;font-size:19px}
-.panel-count{display:inline-grid;place-items:center;min-width:27px;height:27px;margin-left:6px;padding:0 7px;border-radius:999px;background:#1b232b;color:#bfc5ca;font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;font-size:11px}
+.panel-title{margin:0;font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;color:#eadbc9;font-size:19px}
+.panel-count{display:inline-grid;place-items:center;min-width:27px;height:27px;margin-left:6px;padding:0 7px;border-radius:999px;background:#1b232b;color:#bfc5ca;font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;font-size:11px}
 .sort-select{
   height:34px;padding:0 30px 0 10px;border:1px solid var(--line);border-radius:7px;background:#111920;color:#b5bdc4;font-size:11px;outline:0
 }
@@ -127,9 +128,9 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .extra-icon{width:30px;height:30px;display:grid;place-items:center;flex:none;color:#e05256}.extra-icon .ui-icon{width:23px;height:23px;stroke-width:1.7}.extra-title{font-size:12px}.extra-sub{margin-top:3px;color:#69737d;font-size:10px}
 .preview-panel{min-width:0;align-self:start;position:sticky;top:12px}
 .preview-head{padding:15px 16px 10px}
-.preview-kicker{color:#8d969e;font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;font-size:13px}
-.preview-title{margin:3px 0 0;font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;color:#f0dfcb;font-size:20px;line-height:1.2}
-.preview-date{float:right;color:#6f7a84;font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;font-size:10px;font-weight:400}
+.preview-kicker{color:#8d969e;font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;font-size:13px}
+.preview-title{margin:3px 0 0;font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;color:#f0dfcb;font-size:20px;line-height:1.2}
+.preview-date{float:right;color:#6f7a84;font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;font-size:10px;font-weight:400}
 .preview-tabs{display:flex;align-items:center;padding:0 12px;border-bottom:1px solid var(--line2)}
 .preview-tab{height:36px;padding:0 12px;border:0;background:transparent;color:#858e97;font-size:10.5px;cursor:pointer}
 .preview-tab.active{border-bottom:2px solid var(--accent);background:rgba(214,76,80,.08);color:#ead6ca}
@@ -139,7 +140,7 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .preview-frame-wrap{height:calc(100vh - 250px);min-height:560px;max-height:900px;padding:10px;background:#0a1016}
 .preview-frame{width:100%;height:100%;border:1px solid #202a33;border-radius:7px;background:#101820}
 .preview-placeholder{height:100%;display:grid;place-items:center;padding:36px;text-align:center;color:#737e88}
-.preview-placeholder .big{font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;color:#cbb79f;font-size:22px}
+.preview-placeholder .big{font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;color:#cbb79f;font-size:22px}
 .preview-placeholder .small{margin-top:8px;color:#6b757e;font-size:12px}
 .preview-info{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line2)}
 .info-box{padding:13px 14px;min-height:118px}
@@ -153,7 +154,7 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 .action.primary{border-color:rgba(214,76,80,.36);background:rgba(214,76,80,.17);color:#f0d6cf}
 .action:hover{filter:brightness(1.13)}
 .search-view{max-width:1180px;margin:14px auto 0}
-.search-title{margin:0 0 5px;font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;color:var(--cream);font-size:28px}
+.search-title{margin:0 0 5px;font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;color:var(--cream);font-size:28px}
 .search-note{margin-bottom:14px;color:#727d87;font-size:12px}
 .literature-tabs{display:flex;gap:6px;width:max-content;max-width:100%;margin:12px 0 14px;padding:4px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
 .literature-tab{height:36px;padding:0 14px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:650;white-space:nowrap}
@@ -168,11 +169,11 @@ button,a,input,select{-webkit-tap-highlight-color:transparent}
 mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d2}
 .home-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-top:14px}
 .welcome{padding:20px}
-.welcome h2{margin:0;font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;color:var(--cream);font-size:28px}
+.welcome h2{margin:0;font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;color:var(--cream);font-size:28px}
 .welcome p{margin:7px 0 0;color:#848e97;font-size:12px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:18px}
 .stat{padding:13px;border:1px solid var(--line2);border-radius:8px;background:#0f171e}
-.stat-num{font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;color:#efe1d0;font-size:22px}.stat-label{margin-top:2px;color:#6d7780;font-size:9px}
+.stat-num{font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;color:#efe1d0;font-size:22px}.stat-label{margin-top:2px;color:#6d7780;font-size:9px}
 .course-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:17px}
 .course-card{padding:12px;border:1px solid var(--line2);border-radius:8px;background:#0e151b;cursor:pointer}
 .course-card:hover{border-color:#3a444e;background:#111a21}
@@ -185,7 +186,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 .history-empty{padding:10px 0;color:#69747d;font-size:10.5px;line-height:1.45}
 .links-panel{padding:18px}
 .links-content{font-size:13px;line-height:1.65;color:#cfd3d6}
-.links-content h1,.links-content h2,.links-content h3{margin:0 0 14px;color:#eee2d5;font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;font-weight:600;line-height:1.25}
+.links-content h1,.links-content h2,.links-content h3{margin:0 0 14px;color:#eee2d5;font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;font-weight:600;line-height:1.25}
 .links-content h1{font-size:22px}.links-content h2{font-size:18px}.links-content h3{font-size:15px}
 .links-content p{margin:10px 0}.links-content ul{margin:10px 0;padding-left:20px}
 .links-content a{color:#87bfd0;text-decoration:none;border-bottom:1px solid rgba(135,191,208,.35)}
@@ -276,7 +277,7 @@ mark{padding:0 2px;border-radius:2px;background:rgba(214,76,80,.25);color:#ffd7d
 .search-pro-preview{position:sticky;top:82px;min-height:430px}
 .search-preview-head{display:flex;justify-content:space-between;gap:12px;padding:14px 15px 10px}
 .search-preview-kicker{color:#d37370;font-size:9px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}
-.search-preview-title{margin:4px 0 0;color:#ecdfcf;font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;font-size:19px;line-height:1.2}
+.search-preview-title{margin:4px 0 0;color:#ecdfcf;font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;font-size:19px;line-height:1.2}
 .search-preview-close{display:none;width:34px;height:34px;border:1px solid var(--line);border-radius:8px;background:#111920;color:#cfc9c2;cursor:pointer}
 .search-preview-toolbar{display:flex;align-items:center;gap:8px;padding:0 15px 11px}
 .search-open{height:34px;padding:0 11px;border:1px solid rgba(214,76,80,.36);border-radius:7px;background:rgba(214,76,80,.14);color:#efd0ca;text-decoration:none;font-size:10px;display:inline-flex;align-items:center}
@@ -719,7 +720,7 @@ body.music-na19x::after{
 .feedback-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:18px 20px 14px;border-bottom:1px solid var(--line2)}
 .feedback-copy{max-width:720px}
 .feedback-kicker{margin-bottom:4px;color:var(--accent);font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
-.feedback-title{margin:0;color:var(--cream);font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;font-size:21px;line-height:1.16}
+.feedback-title{margin:0;color:var(--cream);font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;font-size:21px;line-height:1.16}
 .feedback-desc{margin:6px 0 0;color:var(--muted);font-size:11px;line-height:1.55}
 .giscus-wrap{min-height:118px;padding:14px 18px 18px;background:color-mix(in srgb,var(--panel) 96%,var(--accent) 4%)}
 .giscus-wrap .giscus,.giscus-wrap .giscus-frame{width:100%}

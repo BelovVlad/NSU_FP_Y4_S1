@@ -5,10 +5,11 @@ import {currentMaterialPath} from './material-paths.js?v=ca1e61a965';
 import {renderViewerIcons} from './icons.js?v=c6753488af';
 import {applyToneToCanvas,PDF_TONES} from './pdf-tone.js?v=37583b871e';
 import {normalizeText,findMatches,itemHighlightRanges} from './search-text.js?v=3770976b57';
+import READER from './reader-config.js?v=dbc1f3de2c';
 const PDFJS_BASE=new URL('../vendor/pdfjs-4.10.38/',location.href).href;
 pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_BASE+'pdf.worker.min.mjs';
 
-const OWNER='BelovVlad',REPO='NSU_FP_Y4_S1',BRANCH='main';
+const {owner:OWNER,name:REPO,branch:BRANCH}=READER.repo;
 const params=new URLSearchParams(location.search);
 const sourceFileParam=params.get('file')||'';
 const raw=currentMaterialPath(sourceFileParam);
@@ -19,6 +20,8 @@ const findParam=params.get('find')||'';
 const versionParam=params.get('v')||'';
 const themeParam=params.get('theme')||'';
 const embedParam=params.get('embed')==='1';
+// Word documents are shown as their PDF copy; «Файл» still gives the original.
+const sourceParam=params.get('source')||'';
 const searchPreviewParam=params.get('searchpreview')==='1';
 if(embedParam)document.body.classList.add('embed-view');
 if(searchPreviewParam)document.body.classList.add('search-preview-mode');
@@ -1147,9 +1150,9 @@ landscapePhoneQuery.addEventListener('change',()=>{
 async function open(){
   if(!raw){fail('В ссылке не указан файл.');return}
   lockReaderChrome(1000);
-  title.textContent=titleParam||raw.split('/').pop();document.title=(titleParam||'PDF')+' · ФФ НГУ';showLoading('Открываю документ…');
+  title.textContent=titleParam||raw.split('/').pop();document.title=(titleParam||READER.defaultTitle)+READER.titleSuffix;showLoading('Открываю документ…');
   try{
-    pdfUrl=resolvePdfUrl(raw);direct.href=pdfUrl;
+    pdfUrl=resolvePdfUrl(raw);direct.href=sourceParam?new URL('../../'+encPath(sourceParam),location.href).href:pdfUrl;
     const hints=searchPreviewParam?Promise.resolve(null):loadPageSizeHints();
     pdf=await loadPdfDocument(pdfUrl);
     const sizes=await Promise.race([hints,new Promise(resolve=>setTimeout(()=>resolve(null),1500))]);
@@ -1166,7 +1169,7 @@ async function applyNavigation(){
   const nextPage=url.searchParams.has('page')?validPage(url.searchParams.get('page')):pageNum;
   const query=url.searchParams.get('find')||'';
   title.textContent=url.searchParams.get('title')||raw.split('/').pop();
-  document.title=title.textContent+' · ФФ НГУ';
+  document.title=title.textContent+READER.titleSuffix;
   history.replaceState(null,'',url.href);
   closeSearch();resetSearch();
   if(nextPage!==pageNum){pageNum=nextPage;savePage();await renderPage()}
@@ -1188,7 +1191,7 @@ back.onclick=async()=>{
     return;
   }
   if(history.length>1)history.back();
-  else location.href='../'+(subject?`#subject=${encodeURIComponent(subject)}`:'');
+  else location.href=READER.backUrl(subject);
 };
 outlineToggle.onclick=()=>outlinePanel.classList.contains('open')?closeOutline():void openOutline();outlineClose.onclick=closeOutline;outlineBackdrop.onclick=closeOutline;
 prev.onclick=()=>go(-1);next.onclick=()=>go(1);mPrev.onclick=()=>go(-1);mNext.onclick=()=>go(1);mPageInfo.onclick=()=>pageJump.classList.contains('open')?closePageJump():openPageJump();pageJumpClose.onclick=closePageJump;pageJumpForm.addEventListener('submit',e=>{e.preventDefault();jumpToPage()});document.addEventListener('pointerdown',e=>{if(!pageJump.classList.contains('open'))return;if(pageJump.contains(e.target)||mPageInfo.contains(e.target))return;closePageJump()});

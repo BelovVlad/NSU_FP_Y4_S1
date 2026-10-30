@@ -1391,11 +1391,11 @@ else{state.view='home';setActiveNav('home')}
       if(!document.querySelector('link[data-secret-dashboard]')){
         const css=document.createElement('link');
         css.rel='stylesheet';
-        css.href='secret-dashboard.css?v=3826256c1f';
+        css.href='secret-dashboard.css?v=03b8e44abc';
         css.dataset.secretDashboard='1';
         document.head.appendChild(css);
         const karmaCss=document.createElement('link');
-        karmaCss.rel='stylesheet';karmaCss.href='Karma/karma.css?v=e70a050bef';
+        karmaCss.rel='stylesheet';karmaCss.href='Karma/karma.css?v=dd85893077';
         document.head.appendChild(karmaCss);
       }
 

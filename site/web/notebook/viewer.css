@@ -1,3 +1,4 @@
+@import url("../fonts/fonts.css");
 :root{
   --bg:#080d12;--bar:#0b1117;--panel:#0e151c;--panel2:#111a22;--line:#28343e;--line2:#202a33;
   --text:#e7e5e2;--text2:#c5c8ca;--muted:#768591;--cream:#f0dfca;--accent:#d64c50;--accent-rgb:214,76,80;
@@ -16,7 +17,7 @@ body.theme-na19x{
 html{box-sizing:border-box}
 /* Leave MathJax's own box model and layout to its generated stylesheet. */
 body,header,main,section,div,button,input,select,a,pre,table,th,td{box-sizing:inherit}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif}
 button,input,select,a{font:inherit}
 .toolbar{
   position:sticky;z-index:30;top:0;min-height:58px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;
@@ -57,7 +58,7 @@ button,input,select,a{font:inherit}
 .notebook-shell{width:min(980px,100%);margin:0 auto;padding:16px 16px 58px}
 .notebook-shell,.cells,.cell,.cell-body,.markdown-body,.output-body{min-width:0}
 .notebook-head{margin:0 0 12px;padding:13px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
-.notebook-head h1{margin:0;color:var(--cream);font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;font-size:24px;line-height:1.2;overflow-wrap:anywhere}
+.notebook-head h1{margin:0;color:var(--cream);font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;font-size:24px;line-height:1.2;overflow-wrap:anywhere}
 .notebook-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;color:var(--muted);font-size:11px}
 .meta-chip{padding:3px 7px;border:1px solid var(--line2);border-radius:999px;background:var(--panel2)}
 .cells{display:flex;flex-direction:column;gap:4px}
@@ -65,7 +66,7 @@ button,input,select,a{font:inherit}
 .cell.find-hit{border-color:var(--accent);box-shadow:0 0 0 2px rgba(var(--accent-rgb),.08)}
 .prompt{padding:10px 6px 0 0;color:var(--prompt);font:10px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;text-align:right;user-select:none}
 .markdown-cell .cell-body{padding:7px 9px}
-.markdown-body{font:16px/1.6 "Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;color:var(--text2);overflow-wrap:break-word}
+.markdown-body{font:16px/1.6 "Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;color:var(--text2);overflow-wrap:break-word}
 .markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{color:var(--cream);line-height:1.25;margin:1em 0 .5em}
 .markdown-body :is(h1,h2,h3):first-child{margin-top:.1em}
 .markdown-body h1{font-size:28px}.markdown-body h2{font-size:23px}.markdown-body h3{font-size:19px}
@@ -87,13 +88,13 @@ button,input,select,a{font:inherit}
 .math-display{display:block;width:100%;overflow-x:auto;overflow-y:hidden;padding:.15em 0;overscroll-behavior-x:contain;scrollbar-width:thin}
 .math-error{padding:6px 8px;color:#efb0b4;background:rgba(134,36,42,.13);font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
 .table-scroll{width:100%;overflow-x:auto;margin:10px 0;overscroll-behavior-x:contain;scrollbar-width:thin}
-.table-scroll table{width:max-content;min-width:100%;border-collapse:collapse;font:14px/1.5 "Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif}
+.table-scroll table{width:max-content;min-width:100%;border-collapse:collapse;font:14px/1.5 "Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif}
 .table-scroll th,.table-scroll td{min-width:100px;padding:8px 9px;border:1px solid var(--line);text-align:left;vertical-align:top}
 .table-scroll th{position:static;background:var(--panel2);color:var(--cream)}
-.table-scroll-hint{color:var(--muted);font:11px/1.5 "Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;margin-top:10px}
+.table-scroll-hint{color:var(--muted);font:11px/1.5 "Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;margin-top:10px}
 .table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.reference-reader .markdown-body{font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.75}
-.reference-reader .markdown-body :is(h1,h2,h3){font-family:"Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif}
+.reference-reader .markdown-body{font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.75}
+.reference-reader .markdown-body :is(h1,h2,h3){font-family:"Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif}
 .reference-reader .markdown-body h2{padding-bottom:10px;border-bottom:1px solid var(--line);margin-top:24px}
 .reference-reader .table-scroll table{font-size:14px;font-variant-numeric:tabular-nums}
 .reference-reader .table-scroll :is(table,thead,tbody,tr,th,td){box-sizing:border-box}
