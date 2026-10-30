@@ -81,10 +81,12 @@ class KarmaBrowserTests(unittest.TestCase):
         self.assertIn('Что сейчас не закрыто',debts.inner_text())
         self.assertEqual(debts.locator('.secret-debt').count(),6)
         self.assertEqual(debts.locator('.secret-debt').filter(has_text='ФиХАиМ').locator('.secret-debt-name').inner_text(),'ФиХАиМ · Семинары')
-        flower=page.locator('.karma-tracks > div').nth(0)
+        # Only the highest-karma track is shown, across the whole width.
+        self.assertEqual(page.locator('.karma-tracks > div').count(),1)
+        self.assertIn('Высшая карма',page.locator('.karma-tracks').inner_text())
         self.assertEqual(page.locator('.karma-tracks b').count(),0)
         self.assertNotIn('дней',page.locator('.karma-tracks').inner_text())
-        self.assertAlmostEqual(flower.locator('em').evaluate('(el)=>parseFloat(el.style.width)'),0,places=4)
+        self.assertGreater(page.locator('.karma-tracks i').bounding_box()['width'],page.locator('.karma-series').bounding_box()['width']*.9)
         self.assertTrue(page.evaluate("document.querySelector('#secretAcademicKarma').compareDocumentPosition(document.querySelector('#secretAcademicSummary')) & Node.DOCUMENT_POSITION_FOLLOWING"))
         self.assertTrue(page.evaluate("Array.from(document.querySelector('.karma-display canvas').getContext('2d').getImageData(0,0,280,310).data).some(x=>x>0)"))
         page.locator('#secretAcademicRefresh').click()
@@ -160,17 +162,10 @@ class KarmaBrowserTests(unittest.TestCase):
             view.render(result,now);
             const tracks=host.querySelectorAll('.karma-tracks>div');
             return {level:host.dataset.level,label:host.querySelector('.karma-display').getAttribute('aria-label'),
-              width:parseFloat(tracks[0].querySelector('em').style.width),
-              maximum:parseFloat(tracks[1].querySelector('em').style.width)};
+              maximum:parseFloat(tracks[0].querySelector('em').style.width)};
           };
           const states={initial:read([{at:iso(now-day/2),counts:fill(0)}]),oneDay:read(climb(1)),
             all:read([{at:iso(now-day),counts:fill(100)}]),beforeTop:read(climb(14)),top:read(climb(15))};
-          const empty=Object.fromEntries(rules.series.map(s=>[s.id,0]));
-          const full=Object.fromEntries(rules.series.map(s=>[s.id,100]));
-          view.render(KarmaEngine.calculate({rules,snapshots:[
-            {at:new Date(now-day).toISOString(),counts:empty},
-            {at:new Date(now).toISOString(),counts:full}]},now),now);
-          states.flower={width:parseFloat(host.querySelector('.karma-tracks em').style.width)};
           const counts=Object.fromEntries(rules.series.map(s=>[s.id,0]));
           counts['fiham-lectures']=6;counts['fiham-seminars']=2;
           view.render(KarmaEngine.calculate({rules,snapshots:[{at:new Date(now).toISOString(),counts}]},now),now);
@@ -180,9 +175,8 @@ class KarmaBrowserTests(unittest.TestCase):
         }""")
         self.assertEqual(states['initial']['level'],'1')
         self.assertEqual(states['initial']['label'],'Карма 1 из 10')
-        self.assertEqual(states['initial']['width'],0)
+        self.assertEqual(states['initial']['maximum'],0)
         self.assertEqual(states['oneDay']['level'],'2')
-        self.assertEqual(states['flower'],{'width':100})
         self.assertEqual(states['all']['level'],'1')
         self.assertEqual(states['beforeTop']['level'],'9')
         self.assertEqual(states['top']['level'],'10')

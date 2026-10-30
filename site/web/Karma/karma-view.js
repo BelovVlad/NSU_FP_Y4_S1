@@ -36,10 +36,9 @@
         :result.level===9?'Высшая карма. Семь календарных суток на девятой карме завершены.'
         :result.shield?'Карма закреплена кармацветом.':'';
       status.hidden=!status.textContent;
-      const flowerShare=result.shield||result.protectedUntil?1:result.flowerProgress??0;
       const maximumShare=result.level===9?1:completedDays(result.fullSince,7,now)/7;
       const track=(label,share)=>`<div><span>${label}</span><i role="progressbar" aria-label="${label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(share*100)}"><em style="width:${share*100}%"></em></i></div>`;
-      h.querySelector('.karma-tracks').innerHTML=track('Кармацвет',flowerShare)+track('Высшая карма',maximumShare);
+      h.querySelector('.karma-tracks').innerHTML=track('Высшая карма',maximumShare);
       const subjects=new Map();
       for(const row of result.rows){
         if(!subjects.has(row.subject))subjects.set(row.subject,[]);

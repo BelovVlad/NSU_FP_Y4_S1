@@ -1,12 +1,12 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'c284962f98';
+const SHELL_VERSION = '637ab2864d';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
-const CORE = ['index.html', 'site.css?v=f083842d23', 'site.js?v=c2edffd032', 'app.js?v=e8dd489fbc', 'app.css?v=47ceb5854f', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=6f2c01727f', 'manifest.webmanifest?v=6bddccb735',
+const CORE = ['index.html', 'site.css?v=f083842d23', 'site.js?v=f1f6546378', 'app.js?v=e8dd489fbc', 'app.css?v=47ceb5854f', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=6f2c01727f', 'manifest.webmanifest?v=6bddccb735',
   'Overseer/overseer.js?v=c6c82cab8a', 'Overseer/overseer.css?v=3c70ee01aa',
   'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
   'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
