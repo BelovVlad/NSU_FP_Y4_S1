@@ -512,6 +512,12 @@ def latex_search_text(text: str) -> str:
     return clean_text(text)
 
 
+def search_words(text: str) -> set[str]:
+    """Words long enough to tell paragraphs apart; PDF line-break hyphens joined."""
+    text = re.sub(r"(\w)- (\w)", r"\1\2", text.lower().replace("ё", "е"))
+    return set(re.findall(r"[a-zа-я]{4,}", text))
+
+
 def enrich_pdf_record_from_sources(record: dict, rel: Path) -> None:
     if len(rel.parts) < 3 or rel.suffix.lower() != ".pdf":
         return
@@ -531,34 +537,47 @@ def enrich_pdf_record_from_sources(record: dict, rel: Path) -> None:
         return
 
     by_page = {int(p["n"]): p for p in record.get("pages", []) if p.get("n")}
+    page_words = {n: search_words(p.get("t") or "") for n, p in by_page.items()}
     changed = False
 
     for item in group.get("items", []):
-        page_no = item.get("page")
+        first, last = item.get("page"), item.get("end_page")
         source = item.get("source")
-        if not isinstance(page_no, int) or not source:
+        if not isinstance(first, int) or not source:
             continue
+        if not isinstance(last, int):
+            last = first
 
         source_path = ROOT / source
         if not source_path.exists():
             continue
 
         try:
-            source_text = latex_search_text(source_path.read_text("utf-8", errors="ignore"))
+            source = source_path.read_text("utf-8", errors="ignore")
         except OSError:
             continue
 
-        if len(source_text) < 24:
-            continue
-
-        page_rec = by_page.get(page_no)
-        if page_rec is None:
-            page_rec = {"n": page_no, "t": source_text}
-            record.setdefault("pages", []).append(page_rec)
-            by_page[page_no] = page_rec
-        else:
-            page_rec["t"] = clean_text((page_rec.get("t") or "") + " " + source_text)
-        changed = True
+        # A part spans many pages. Attach each paragraph to the page whose PDF
+        # text it matches, and only when the extractor lost some of its words;
+        # otherwise every word of a chapter would be "found" on its first page.
+        for paragraph in re.split(r"\n\s*\n", source):
+            text = latex_search_text(paragraph)
+            words = search_words(text)
+            if len(text) < 24 or not words:
+                continue
+            page_no = max(range(first, last + 1),
+                          key=lambda n: len(words & page_words.get(n, set())))
+            found = words & page_words.get(page_no, set())
+            if len(found) < len(words) / 2 or found == words:
+                continue  # Not located in the PDF, or already searchable there.
+            page_rec = by_page.get(page_no)
+            if page_rec is None:
+                page_rec = {"n": page_no, "t": ""}
+                record.setdefault("pages", []).append(page_rec)
+                by_page[page_no] = page_rec
+            page_rec["t"] = clean_text(page_rec["t"] + " " + text)
+            page_words[page_no] = page_words.get(page_no, set()) | words
+            changed = True
 
     if changed:
         record["pages"].sort(key=lambda p: int(p.get("n") or 0))
