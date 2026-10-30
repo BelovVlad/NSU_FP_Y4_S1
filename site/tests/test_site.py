@@ -69,6 +69,7 @@ class SiteTests(unittest.TestCase):
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(repo_file(relative), target)
         shutil.copytree(WEB/'vendor',cls.root/'docs/vendor')
+        shutil.copytree(WEB/'fonts',cls.root/'docs/fonts')
         if not REAL_PDFJS:
             # Deterministic SW tests exercise preparation/verification with local assets.
             # The optional real-runtime check retains the complete pinned CDN manifest.

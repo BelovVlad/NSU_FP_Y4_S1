@@ -300,6 +300,11 @@
         await checkForUpdate(updateStatus,update);
       };
     }
+    if(!nativeAndroid&&!installed()){
+      const install=document.createElement('button');install.type='button';install.className='app-manager-btn primary';
+      install.textContent=matchMedia('(pointer:fine)').matches?'Установить на компьютер':'Установить приложение';
+      install.onclick=()=>void installApp();appActions.append(install);
+    }
     appActions.append(update);appSection.append(updateStatus);paragraph(appSection,'Версия оболочки: 84 · формат заметок: 1');body.append(appSection);
 
     const dataSection=document.createElement('section');dataSection.className='app-manager-section';
@@ -328,7 +333,8 @@
     panel.addEventListener('close',()=>{bulkStop=true;});
   }
   settingsButton?.addEventListener('click',()=>{void openManager()});
-  installButton?.addEventListener('click',async()=>{
+  // Installing (Edge/Chrome on a computer, Android, iOS) gives a window that opens without the internet.
+  async function installApp(){
     if(nativeAndroid)return;
     if(installPrompt) {
       const prompt=installPrompt;installPrompt=null;
@@ -338,10 +344,12 @@
     const panel=dialog(installed()?'Приложение на устройстве':'Установка приложения');
     paragraph(panel,installed()?'Вы уже открыли установленное приложение. Материалы обновляются при подключении к интернету.':
       /iPad|iPhone|iPod/.test(navigator.userAgent)?'В Safari нажмите «Поделиться», затем «На экран Домой».':
+      matchMedia('(pointer:fine)').matches?'На компьютере: в Edge — меню ⋯ → «Приложения» → «Установить этот сайт как приложение», в Chrome — значок установки справа в адресной строке. Приложение появится в меню «Пуск» и на рабочем столе и будет открываться без интернета.':
       'На Android откройте этот сайт в Chrome, нажмите ⋮ → «Установить приложение» или «Добавить на главный экран». Если сайт открыт внутри мессенджера, сначала выберите «Открыть в браузере».');
     paragraph(panel,'Страницы базы сохраняются после открытия. Чтобы PDF открывались без интернета, откройте шестерёнку рядом с «Главная» → «Сохранить все материалы». Первый запуск и несохранённые материалы требуют интернета.');
     if(!supported)paragraph(panel,'Установка и офлайн-режим доступны на опубликованном сайте с HTTPS.');
-  });
+  }
+  installButton?.addEventListener('click',()=>void installApp());
   downloadsButton?.addEventListener('click',async()=>{
     const panel=dialog('Сохранённые материалы');
     paragraph(panel,'Эти файлы доступны без интернета в этом браузере и установленном через него приложении. При очистке данных сайта они удалятся.');
@@ -359,6 +367,9 @@
       }
     }catch(error){state.textContent=error.message;}
   });
+  // The short address (…/NSU_FP_Y4_S1/ and its particles/ link) only redirects here; its own tiny worker
+  // keeps those pages for offline use. The more specific scope of sw.js still controls this site.
+  if(supported)navigator.serviceWorker.register(new URL('../offline-root.js',base),{scope:new URL('../',base).pathname,updateViaCache:'none'}).catch(()=>{});
   const ready = supported ? navigator.serviceWorker.register(new URL('sw.js',base),{scope:base.pathname,updateViaCache:'none'}).then(async value=>{
     registration=value;
     value.update().catch(()=>{});
