@@ -23,7 +23,8 @@ button,input,a{font:inherit}
 .page-total{font-size:12px;line-height:1;color:var(--muted);font-variant-numeric:tabular-nums}
 .zoom-edit{width:60px;height:32px;display:flex;align-items:center;justify-content:center;gap:2px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--muted);font-size:10px}
 .zoom-input{width:34px;min-width:0;height:28px;padding:0;border:0;outline:0;background:transparent;color:var(--text);font-size:12px;text-align:right;appearance:textfield;-moz-appearance:textfield}
-.expand-viewer{display:none}.embed-view .expand-viewer{display:inline-flex}
+/* An embedded reader opens full screen from its card on the site, so it has no button of its own. */
+.expand-viewer{display:none}
 .tools-toggle,.tools-heading,.mobile-nav,.tools-backdrop{display:none}
 .btn:focus-visible,.tone-btn:focus-visible,.m-btn:focus-visible,.m-page-info:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .page-input:focus,.zoom-edit:focus-within{border-color:var(--accent)}
