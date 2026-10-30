@@ -55,7 +55,7 @@ class SiteTests(unittest.TestCase):
         cls.temp = tempfile.TemporaryDirectory()
         cls.root = Path(cls.temp.name)
         for relative in ['docs/index.html', 'docs/site.css', 'docs/site.js', 'docs/knowledge.css', 'docs/search-worker.js', 'docs/pdfjs/viewer.html', 'docs/pdfjs/viewer.css', 'docs/pdfjs/viewer.js', 'docs/pdfjs/icons.js', 'docs/pdfjs/pdf-tone.js',
-                         'docs/pdfjs/search-text.js', 'docs/pdfjs/material-paths.js', 'docs/pdfjs/reader-config.js', 'docs/pdfjs/renamed-materials.js', 'docs/pdfjs/controls.css',
+                         'docs/pdfjs/search-text.js', 'docs/pdfjs/material-paths.js', 'docs/pdfjs/renamed-materials.js', 'docs/pdfjs/controls.css',
                          'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/notebook/outline.js', 'docs/giscus-config.json',
                          'docs/app.js', 'docs/app.css', 'docs/sw.js', 'docs/manifest.webmanifest',
                          'docs/annotations-store.js', 'docs/pdfjs/notes.js', 'docs/pdfjs/notes.css', 'docs/offline-resources.json',

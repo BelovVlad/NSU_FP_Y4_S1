@@ -413,17 +413,9 @@ python site/scripts/build_search_index.py
 
 Материалы предназначены для учебных целей.
 
-## Общий PDF-ридер и шрифт
+## PDF-ридер и шрифт
 
-Ридер (`site/web/pdfjs`, `site/web/vendor`, `site/web/annotations-store.js`) и шрифт (`site/web/fonts`)
-общие для всех сайтов PweB: копии лежат в `Diploma/site/viewer` и `Department/site/viewer`.
-Правьте ридер только здесь, затем из корня этого репозитория:
-
-```sh
-python site/scripts/sync_reader.py          # обновить копии в соседних папках Diploma и Department
-python site/scripts/sync_reader.py --check  # проверить, что копии не отстали
-```
-
-У каждой копии остаются свои `pdfjs/reader-config.js` (репозиторий, подпись в заголовке, куда ведёт «Назад»),
-`pdfjs/material-paths.js` и `<head>` страницы `pdfjs/viewer.html`; у диплома — ещё общие зашифрованные заметки.
-Шрифт — Bahnschrift (как в презентации), а где его нет (телефоны, Mac) — Roboto Condensed из `site/web/fonts` (OFL).
+Ридер сайта — `site/web/pdfjs` (pdf.js 4.10.38 из `site/web/vendor`, заметки в `site/web/annotations-store.js`).
+У Diploma и Department свои копии ридера в их `site/viewer`, они правятся независимо.
+Шрифт — Bahnschrift (как в презентации), а где его нет (телефоны, Mac) — Roboto Condensed из `site/web/fonts` (OFL);
+правила `@font-face` записаны прямо в CSS страниц, без `@import`, чтобы страница не ждала лишний файл.

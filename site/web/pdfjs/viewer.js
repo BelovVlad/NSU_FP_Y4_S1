@@ -5,7 +5,13 @@ import {currentMaterialPath} from './material-paths.js?v=ca1e61a965';
 import {renderViewerIcons} from './icons.js?v=c6753488af';
 import {applyToneToCanvas,PDF_TONES} from './pdf-tone.js?v=37583b871e';
 import {normalizeText,findMatches,itemHighlightRanges} from './search-text.js?v=3770976b57';
-import READER from './reader-config.js?v=dbc1f3de2c';
+// This site's reader: its repository, page title and where «Назад» leads.
+const READER={
+  repo:{owner:'BelovVlad',name:'NSU_FP_Y4_S1',branch:'main'},
+  defaultTitle:'PDF',
+  titleSuffix:' · ФФ НГУ',
+  backUrl:subject=>'../'+(subject?`#subject=${encodeURIComponent(subject)}`:''),
+};
 const PDFJS_BASE=new URL('../vendor/pdfjs-4.10.38/',location.href).href;
 pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_BASE+'pdf.worker.min.mjs';
 
