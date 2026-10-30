@@ -44,5 +44,15 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
-      - id: deployment
+      # Pages refuses a deployment while the previous one is still being processed,
+      # which happens when several build workflows finish one after another.
+      - id: first_try
         uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - if: steps.first_try.outcome == 'failure'
+        run: sleep 90
+      - id: second_try
+        if: steps.first_try.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+      - id: deployment
+        run: echo "page_url=${{ steps.first_try.outputs.page_url || steps.second_try.outputs.page_url }}" >> "$GITHUB_OUTPUT"
