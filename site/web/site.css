@@ -1064,10 +1064,14 @@ body{
 }
 @media (display-mode: fullscreen){
   html,body,.shell,.app{
-    width:100%;
-    min-width:100%;
     min-height:100dvh;
     background:var(--bg);
+  }
+  /* .app sits beside the sidebar (margin-left), so a full width would push the page sideways.
+     Desktop browsers also match this query in F11 full screen. */
+  html,body,.shell{
+    width:100%;
+    min-width:100%;
   }
   .topbar{
     padding-left:max(10px,env(safe-area-inset-left,0px));
