@@ -24,8 +24,8 @@ button,input,a{font:inherit}
 .zoom-edit{width:60px;height:32px;display:flex;align-items:center;justify-content:center;gap:2px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--muted);font-size:10px}
 .zoom-input{width:34px;min-width:0;height:28px;padding:0;border:0;outline:0;background:transparent;color:var(--text);font-size:12px;text-align:right;appearance:textfield;-moz-appearance:textfield}
 .expand-viewer{display:none}.embed-view .expand-viewer{display:inline-flex}
-.tools-toggle,.tools-heading,.mobile-nav,.tools-backdrop,.reader-reveal{display:none}
-.btn:focus-visible,.tone-btn:focus-visible,.m-btn:focus-visible,.m-page-info:focus-visible,.reader-reveal:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tools-toggle,.tools-heading,.mobile-nav,.tools-backdrop{display:none}
+.btn:focus-visible,.tone-btn:focus-visible,.m-btn:focus-visible,.m-page-info:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .page-input:focus,.zoom-edit:focus-within{border-color:var(--accent)}
 
 /* Wide layout: back · title · page · zoom · tone · file · notes · outline · search, in one row. */
@@ -38,7 +38,7 @@ body:not(.compact-view) .rail-button{width:auto;height:38px;flex-direction:row;g
 body:not(.compact-view) .tool-caption{font-size:12px;line-height:1}
 body:not(.compact-view) :is(#back,#fit,#direct){width:38px;padding:0}
 body:not(.compact-view) :is(#back,#fit,#direct) .tool-caption{display:none}
-body:not(.compact-view) .toolbar .reader-actions>.btn:not(.rail-button){border-color:transparent;background:transparent}
+body:not(.compact-view) .toolbar .reader-actions>.btn:not(.rail-button):not([aria-expanded=true]){border-color:transparent;background:transparent}
 body:not(.compact-view) .toolbar .btn[aria-pressed=true],body:not(.compact-view) .toolbar .btn[aria-expanded=true]{background:var(--accent-soft);border-color:var(--accent)}
 body:not(.compact-view) .control-group{padding:0 8px;margin-left:4px;border-left:1px solid var(--line)}
 body:not(.compact-view) .control-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
@@ -64,13 +64,11 @@ body.continuous-mode .stage{padding:20px}
 .loading{top:calc(var(--reader-head) + 16px)}
 body.search-open .loading{top:calc(var(--reader-head) + var(--search-height) + 12px)}
 
-/* While reading the bar slides away; scrolling up, the top edge or the round button bring it back,
-   and the page badge stays in the corner. */
+/* While reading the bar slides away; scrolling up or the top edge bring it back,
+   and the page badge stays in the corner, clear of the document's scrollbar. */
 .reader-chrome-hidden .toolbar{transform:translateY(-100%);opacity:0;pointer-events:none;visibility:hidden}
 .reader-chrome-hidden .loading{top:10px}
-@media(pointer:fine){.reader-chrome-hidden .reader-reveal{display:grid;place-items:center;position:fixed;z-index:46;top:calc(env(safe-area-inset-top,0px) + 8px);right:max(10px,env(safe-area-inset-right,0px));width:40px;height:40px;padding:0;border:1px solid var(--line);border-radius:50%;background:color-mix(in srgb,var(--bar) 84%,transparent);color:var(--muted);box-shadow:0 2px 8px #0003;cursor:pointer}}
-.reader-reveal:hover{color:var(--text);border-color:var(--accent)}
-body:not(.compact-view).reader-chrome-hidden .mobile-nav{display:block;position:fixed;z-index:45;right:max(14px,env(safe-area-inset-right,0px));bottom:14px;opacity:.75}
+body:not(.compact-view).reader-chrome-hidden .mobile-nav{display:block;position:fixed;z-index:45;right:calc(var(--viewer-scrollbar,0px) + 14px);bottom:14px;opacity:.75}
 body:not(.compact-view) .mobile-nav :is(#mPrev,#mNext){display:none}
 
 .embed-view{--reader-head:48px}
@@ -109,7 +107,7 @@ body.embed-view:not(.compact-view) .reader-controls{margin-left:auto}
 .compact-view .search-close{grid-column:4;grid-row:1}.compact-view .search-prev{grid-column:2;grid-row:1}.compact-view .search-next{grid-column:3;grid-row:1}
 
 /* Page badge: the strip scrolls by itself, so only the page number and the jump remain. */
-.compact-view .mobile-nav{position:fixed;z-index:45;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 10px);display:block;transition:opacity .16s ease}
+.compact-view .mobile-nav{position:fixed;z-index:45;right:max(calc(var(--viewer-scrollbar,0px) + 10px),env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 10px);display:block;transition:opacity .16s ease}
 .compact-view #mPrev,.compact-view #mNext{display:none}
 /* The notes toolbar takes the bottom edge while drawing. */
 .compact-view.notes-mode .mobile-nav{opacity:0;pointer-events:none}

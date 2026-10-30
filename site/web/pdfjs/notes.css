@@ -64,7 +64,7 @@ body[data-note-tool=eraser].notes-drawing .user-notes>svg{cursor:cell}
 /* Computers and tablets: the drawing tools stand in a column at the right edge, clear of the text;
    options open to their left. Phones keep the bar at the bottom, under the thumb. */
 @media (min-width:601px) and (min-height:601px){
-  .notes-tools,.compact-view .notes-tools{left:auto;right:max(12px,env(safe-area-inset-right,0px));top:calc(50% + var(--reader-head)/2);bottom:auto;transform:translateY(-50%);
+  .notes-tools,.compact-view .notes-tools{left:auto;right:max(calc(var(--viewer-scrollbar,0px) + 12px),env(safe-area-inset-right,0px));top:calc(50% + var(--reader-head)/2);bottom:auto;transform:translateY(-50%);
     width:auto;max-width:none;max-height:calc(100dvh - var(--reader-head) - 24px);flex-direction:column;flex-wrap:nowrap;gap:6px;padding:6px;border-radius:18px}
   .notes-tool-group,.notes-actions{flex-direction:column;width:auto;gap:2px}
   .notes-actions,.compact-view .notes-actions{border-left:0;padding:6px 0 0;border-top:1px solid var(--line)}

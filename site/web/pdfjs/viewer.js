@@ -1098,12 +1098,9 @@ function lockReaderChrome(ms=650){
   readerChromeDirection=0;
   setReaderChromeHidden(false);
 }
-const showReaderControls=document.createElement('button');
-showReaderControls.className='reader-reveal';showReaderControls.type='button';
-showReaderControls.setAttribute('aria-label','Показать панель PDF');showReaderControls.title='Показать панель';
-showReaderControls.innerHTML='<svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
-document.body.append(showReaderControls);
-showReaderControls.onclick=()=>{lockReaderChrome(1200);document.getElementById('notesToggle').focus({preventScroll:true});};
+// Floating controls (page badge, notes column) keep clear of the document's scrollbar.
+const syncViewerScrollbar=()=>document.body.style.setProperty('--viewer-scrollbar',Math.max(0,viewer.offsetWidth-viewer.clientWidth)+'px');
+new ResizeObserver(syncViewerScrollbar).observe(viewer);syncViewerScrollbar();
 // With a mouse, the top edge brings the bar back, and it stays while the pointer is on it.
 const readerToolbar=document.querySelector('.toolbar');
 document.addEventListener('mousemove',e=>{
@@ -1139,7 +1136,7 @@ viewer.addEventListener('scroll',()=>{
 },{passive:true});
 viewer.addEventListener('notesmodechange',()=>lockReaderChrome(800));
 viewer.addEventListener('notesgesturestart',()=>lockReaderChrome(650));
-document.addEventListener('focusin',e=>{if(e.target.closest('.toolbar,.notes-tools,.mobile-nav,.reader-reveal'))lockReaderChrome(800);});
+document.addEventListener('focusin',e=>{if(e.target.closest('.toolbar,.notes-tools,.mobile-nav'))lockReaderChrome(800);});
 landscapePhoneQuery.addEventListener('change',()=>{
   lockReaderChrome(1000);
   closeTools();
