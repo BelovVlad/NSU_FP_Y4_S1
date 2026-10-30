@@ -6,10 +6,10 @@ on:
   push:
     branches: [main]
     paths:
-      - 'docs/**'
-      - '!docs/search-index/**'
-      - '.github/scripts/build_site.py'
-      - '.github/scripts/build_app_bundle.py'
+      - 'site/web/**'
+      - '!site/web/search-index/**'
+      - 'site/scripts/build_site.py'
+      - 'site/scripts/build_app_bundle.py'
       - '.github/workflows/build-site.yml'
   workflow_dispatch:
 
@@ -29,12 +29,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python .github/scripts/build_site.py
+      - run: python site/scripts/build_site.py
       - name: Commit derived site files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs
+          git add site/web
           if git diff --cached --quiet; then
             echo "Derived site files unchanged"
           else

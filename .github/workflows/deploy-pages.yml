@@ -1,0 +1,48 @@
+name: Deploy site
+# GitHub Pages is published from this workflow, not from the branch: the site sources
+# live in site/ and are assembled into the old layout (docs/ + subject folders).
+# Commits made by the other workflows' bot do not trigger push events,
+# so the site is also redeployed after each of them finishes.
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows:
+      - Build site files
+      - Build search index
+      - Build QM course
+      - Build Android app
+      - Build giscus config
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python site/scripts/assemble_pages.py _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -5,7 +5,7 @@
 
 # ============================================================
 # Локальное извлечение ресурсов Rain World и инструменты
-# Сайт использует docs/Karma/ и docs/Overseer/, а не папки извлечения.
+# Сайт использует site/web/Karma/ и site/web/Overseer/, а не папки извлечения.
 # ============================================================
 
 /overseer-extracted/
@@ -15,11 +15,11 @@
 /tools/
 
 # Старый звук открытия отключён и не загружается сайтом.
-/docs/Karma/audio/UIArp.wav
+/site/web/Karma/audio/UIArp.wav
 
 # ============================================================
 # Зависимости, кэши и отчёты локальной разработки
-# Исходники, _dev/ и .github/ нужны для сборки и проверки сайта.
+# Исходники site/ и .github/ нужны для сборки и проверки сайта.
 # ============================================================
 
 node_modules/
@@ -28,10 +28,10 @@ node_modules/
 .mypy_cache/
 .ruff_cache/
 .gradle/
-/_dev/android-app/local.properties
+/site/android-app/local.properties
 # Ключ подписи обновлений хранится в секретах GitHub, а не в репозитории.
-/_dev/android-app/keys/
-/_dev/android-app/keystore.properties
+/site/android-app/keys/
+/site/android-app/keystore.properties
 /playwright-report/
 /test-results/
 *.tsbuildinfo
@@ -136,3 +136,6 @@ venv/
 *.temp
 *.bak
 *.backup
+
+# Локальные служебные папки сайта (логи, скриншоты, временные окружения)
+/site/tmp/

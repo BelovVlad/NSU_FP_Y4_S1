@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'База/КМ/Исходники/*.pdf'
-      - '.github/scripts/build_qm_course.py'
+      - 'site/scripts/build_qm_course.py'
       - '.github/workflows/build-qm-course.yml'
   workflow_dispatch:
 
@@ -30,13 +30,13 @@ jobs:
           python-version: '3.12'
 
       - run: pip install pymupdf
-      - run: python .github/scripts/build_qm_course.py
+      - run: python site/scripts/build_qm_course.py
 
       - name: Commit QM course outputs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "База/КМ/Квантовая_механика_полный_курс.pdf" ".github/generated/qm_lecture_texts.json"
+          git add "База/КМ/Квантовая_механика_полный_курс.pdf" "site/generated/qm_lecture_texts.json"
           if git diff --cached --quiet; then
             echo "QM course outputs unchanged"
           else

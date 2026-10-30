@@ -34,20 +34,24 @@ https://belovvlad.github.io/NSU_FP_Y4_S1/
     └── Литература
 ```
 
-Сайт и всё, что к нему относится, собрано в нескольких служебных местах:
+Сайт и всё, что к нему относится, собрано в папке `site/`:
 
 ```
 .
-├── docs/          сайт: главная, просмотрщики PDF/Notebook, поиск, Karma, Overseer, карта частиц
-├── _dev/          разработка сайта (не публикуется):
-│   ├── android-app/   Android-приложение (WebView)
-│   └── tests/         браузерные и node-тесты
-├── .github/       workflows и скрипты сборки (индекс поиска, app.js, APK)
-├── particles/     короткая ссылка …/particles/ → docs/particles/
-├── index.html     перенаправление на docs/
-├── _config.yml    настройки GitHub Pages
-└── giscus.json    настройки комментариев (должен лежать в корне)
+├── site/
+│   ├── web/           сайт: главная, просмотрщики PDF/Notebook, поиск, Karma, Overseer, карта частиц
+│   ├── root/          корень публикации: index.html (→ docs/) и короткая ссылка particles/
+│   ├── scripts/       сборка: индекс поиска, app.js, курс КМ, раскладка Pages
+│   ├── generated/     промежуточные данные сборки
+│   ├── tests/         браузерные и node-тесты
+│   └── android-app/   Android-приложение (WebView)
+├── .github/       workflows (GitHub ищет их только здесь)
+└── giscus.json    настройки комментариев (giscus читает его только из корня)
 ```
+
+Pages публикуется workflow `Deploy site`: `site/scripts/assemble_pages.py` собирает
+прежнюю раскладку — `site/web` как `docs/`, `site/root` в корне и папки предметов, —
+поэтому адреса сайта не изменились: https://belovvlad.github.io/NSU_FP_Y4_S1/docs/.
 
 ## 📝 Формат материалов
 
@@ -363,7 +367,7 @@ https://belovvlad.github.io/NSU_FP_Y4_S1/
 
 ```powershell
 # Из корня репозитория; требуется Python с PyMuPDF.
-python .github/scripts/build_search_index.py
+python site/scripts/build_search_index.py
 ```
 
 На GitHub это также делает workflow `Build search index` после push.

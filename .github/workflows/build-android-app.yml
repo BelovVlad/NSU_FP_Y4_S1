@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - '_dev/android-app/**'
+      - 'site/android-app/**'
       - '.github/workflows/build-android-app.yml'
 
 permissions:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: _dev/android-app
+        working-directory: site/android-app
 
     steps:
       - name: Checkout
@@ -66,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: NSU-FP-Android-debug
-          path: _dev/android-app/NSU-FP-Android-debug.apk
+          path: site/android-app/NSU-FP-Android-debug.apk
           if-no-files-found: error
 
 
@@ -75,22 +75,22 @@ jobs:
         run: |
           cd ../..
           git pull --rebase origin main
-          mkdir -p docs/android
-          cp _dev/android-app/app/build/outputs/apk/debug/app-debug.apk docs/android/NSU-FP.apk
+          mkdir -p site/web/android
+          cp site/android-app/app/build/outputs/apk/debug/app-debug.apk site/web/android/NSU-FP.apk
           # Publish the version the APK was built with, so installed apps see the update.
-          VERSION_CODE=$(sed -n 's/^ *versionCode \([0-9]*\).*/\1/p' _dev/android-app/app/build.gradle)
-          VERSION_NAME=$(sed -n "s/^ *versionName '\([^']*\)'.*/\1/p" _dev/android-app/app/build.gradle)
-          cat > docs/android/version.json <<EOF
+          VERSION_CODE=$(sed -n 's/^ *versionCode \([0-9]*\).*/\1/p' site/android-app/app/build.gradle)
+          VERSION_NAME=$(sed -n "s/^ *versionName '\([^']*\)'.*/\1/p" site/android-app/app/build.gradle)
+          cat > site/web/android/version.json <<EOF
           {
             "versionCode": $VERSION_CODE,
             "versionName": "$VERSION_NAME",
-            "apkUrl": "https://raw.githubusercontent.com/BelovVlad/NSU_FP_Y4_S1/main/docs/android/NSU-FP.apk",
+            "apkUrl": "https://raw.githubusercontent.com/BelovVlad/NSU_FP_Y4_S1/main/site/web/android/NSU-FP.apk",
             "requiresReinstallBelow": 6
           }
           EOF
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/android/NSU-FP.apk docs/android/version.json
+          git add site/web/android/NSU-FP.apk site/web/android/version.json
           if ! git diff --cached --quiet; then
             git commit -m "Publish Android APK $VERSION_NAME [skip ci]"
             git push origin HEAD:main
