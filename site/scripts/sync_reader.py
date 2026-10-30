@@ -29,11 +29,12 @@ TARGETS = {
     'Department': {'root': PWEB / 'Department' / 'site' / 'viewer', 'own_notes': False},
 }
 SHARED = ['pdfjs/viewer.js', 'pdfjs/viewer.css', 'pdfjs/controls.css', 'pdfjs/icons.js',
-          'pdfjs/pdf-tone.js', 'pdfjs/search-text.js', 'pdfjs/notes.css']
+          'pdfjs/pdf-tone.js', 'pdfjs/search-text.js', 'pdfjs/notes.css',
+          'search-worker.js']  # full-text search over a site's search-index/ (Department builds one)
 NOTES = ['pdfjs/notes.js', 'annotations-store.js']
 VENDOR = 'vendor/pdfjs-4.10.38'
 FONTS = 'fonts'  # the reader's stylesheet imports ../fonts/fonts.css; the site's pages use it too
-STAMPED = ['pdfjs/viewer.js', 'pdfjs/viewer.html']  # stamp viewer.js first: the page refers to it
+STAMPED = ['search-worker.js', 'pdfjs/viewer.js', 'pdfjs/viewer.html']  # stamp viewer.js first: the page refers to it
 REFERENCE = re.compile(r'''(?P<path>[A-Za-z0-9_./-]+\.(?:js|mjs|css))\?v=(?P<version>[A-Za-z0-9._-]*)''')
 BODY = re.compile(r'<body>.*</body>', re.S)
 
