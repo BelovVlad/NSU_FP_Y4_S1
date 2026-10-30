@@ -1,20 +1,20 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'f4c41fd461';
+const SHELL_VERSION = 'c284962f98';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
-const CORE = ['index.html', 'site.css?v=c348357b12', 'site.js?v=b288eeb3d9', 'app.js?v=e8dd489fbc', 'app.css?v=4e2e52a233', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=5db485695e', 'manifest.webmanifest?v=6bddccb735',
+const CORE = ['index.html', 'site.css?v=f083842d23', 'site.js?v=c2edffd032', 'app.js?v=e8dd489fbc', 'app.css?v=47ceb5854f', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=6f2c01727f', 'manifest.webmanifest?v=6bddccb735',
   'Overseer/overseer.js?v=c6c82cab8a', 'Overseer/overseer.css?v=3c70ee01aa',
   'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
   'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
-  'search-worker.js?v=32d5520b7c', 'notebook/viewer.html', 'notebook/viewer.css?build=2aa53795ce', 'notebook/outline.js?build=d72f570ee4',
-  'pdfjs/viewer.html', 'pdfjs/viewer.css?v=1e131249af', 'pdfjs/viewer.js?v=933265bec3', 'pdfjs/icons.js?v=c6753488af', 'pdfjs/pdf-tone.js?v=37583b871e',
-  'pdfjs/search-text.js?v=3770976b57', 'pdfjs/material-paths.js?v=ca1e61a965', 'pdfjs/renamed-materials.js?v=b94bf2d584', 'pdfjs/controls.css?v=cfe888a5d0', 'pdfjs/notes.js?v=01d30fc6e0', 'pdfjs/notes.css?v=703429765d', 'assets/nsu-fp-emblem.webp',
+  'search-worker.js?v=32d5520b7c', 'notebook/viewer.html', 'notebook/viewer.css?build=1325e88f31', 'notebook/outline.js?build=d72f570ee4',
+  'pdfjs/viewer.html', 'pdfjs/viewer.css?v=8cbe45a872', 'pdfjs/viewer.js?v=29926571b4', 'pdfjs/icons.js?v=c6753488af', 'pdfjs/pdf-tone.js?v=37583b871e',
+  'pdfjs/search-text.js?v=3770976b57', 'pdfjs/material-paths.js?v=ca1e61a965', 'pdfjs/renamed-materials.js?v=b94bf2d584', 'pdfjs/controls.css?v=19f57fcfb4', 'pdfjs/notes.js?v=01d30fc6e0', 'pdfjs/notes.css?v=d2a00255c9', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png?v=f299e7a63c', 'assets/app-512.png?v=9f41a6f2fa', 'particles/index.html', 'particles/particles.js',
-  'particles/explorer.css?v=ab913786e6', 'particles/explorer.js?v=4f8c5e98ad', 'particles/layout.js?v=14224e1e89', 'particles/routes.js?v=1127b43bc0', 'particles/extra-particles.js?v=f0a2243a75', 'particles/remaining-particles.js?v=f1ed737ba7'];
+  'particles/explorer.css?v=73b67f9ef7', 'particles/explorer.js?v=4f8c5e98ad', 'particles/layout.js?v=14224e1e89', 'particles/routes.js?v=1127b43bc0', 'particles/extra-particles.js?v=f0a2243a75', 'particles/remaining-particles.js?v=f1ed737ba7'];
 const META = ['search-index/files.json', 'search-index/structure.json', 'search-index/manifest.json', 'search-index/karma-history.json'];
 const absolute = path => new URL(path, BASE).href;
 const local = url => url.origin === BASE.origin && url.pathname.startsWith(ROOT.pathname);
@@ -107,7 +107,7 @@ async function resource(request, event) {
     try { return await network; }
     catch {
       if(cached) return cached;
-      if(request.mode === 'navigate') return new Response('<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Нет подключения</title><body style="background:#080d12;color:#eee;font:18px system-ui;padding:24px"><h1>Этот материал ещё не сохранён</h1><p>Откройте его при подключении к интернету.</p><a style="color:#f4b8a5" href="'+BASE.href+'">К материалам</a></body></html>',{status:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
+      if(request.mode === 'navigate') return new Response('<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Нет подключения</title><body style="background:#080d12;color:#eee;font:18px "Bahnschrift","DIN Alternate","DIN 2014","Segoe UI",system-ui,sans-serif;padding:24px"><h1>Этот материал ещё не сохранён</h1><p>Откройте его при подключении к интернету.</p><a style="color:#f4b8a5" href="'+BASE.href+'">К материалам</a></body></html>',{status:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
       return Response.error();
     }
   }

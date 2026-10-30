@@ -333,7 +333,7 @@ class AnnotationTests(unittest.TestCase):
         self.page.locator('#viewer').evaluate('el=>el.scrollTop=140')
         self.page.wait_for_function("document.body.classList.contains('reader-chrome-hidden')")
         self.assertEqual(surface,self.page.locator('#viewer').bounding_box())
-        self.assertEqual(self.page.locator('.reader-reveal').count(),0)
+        self.assertFalse(self.page.locator('.reader-reveal').is_visible())  # touch: scrolling up brings the bar back
         self.page.locator('#viewer').evaluate('el=>el.scrollTop=100')
         self.page.wait_for_function("!document.body.classList.contains('reader-chrome-hidden')")
         self.page.locator('#notesToggle').click();self.page.wait_for_timeout(900)

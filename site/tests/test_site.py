@@ -353,9 +353,12 @@ class SiteTests(unittest.TestCase):
             self.assertEqual(self.page.locator('.continuous-pages').count(),1)
             self.assertEqual(self.page.locator('#stage .error').count(),0)
 
-    def test_reader_side_controls_and_responsive_embed(self):
+    def test_reader_top_bar_and_responsive_embed(self):
         self.pdf()
-        self.assertLessEqual(self.page.locator('.toolbar').bounding_box()['width'],80)
+        bar=self.page.locator('.toolbar').bounding_box()
+        self.assertLessEqual(bar['height'],56)
+        self.assertEqual(bar['width'],self.page.viewport_size['width'])
+        self.assertGreaterEqual(self.page.locator('.continuous-page').first.bounding_box()['y'],bar['height']-1)
         self.assertTrue(self.page.locator('#fit').is_visible())
         self.assertTrue(self.page.locator('#searchToggle').is_visible())
         self.page.set_viewport_size({'width':640,'height':720})

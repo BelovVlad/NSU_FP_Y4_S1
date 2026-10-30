@@ -1090,7 +1090,7 @@ async function startContinuous(){
 }
 let readerChromeLastScroll=viewer.scrollTop,readerChromeDirection=0,readerChromeLockUntil=0;
 function setReaderChromeHidden(hidden){
-  document.body.classList.toggle('reader-chrome-hidden',!!hidden&&phoneStripQuery.matches&&compactQuery.matches);
+  document.body.classList.toggle('reader-chrome-hidden',!!hidden&&!embedParam&&!searchPreviewParam);
 }
 function lockReaderChrome(ms=650){
   readerChromeLockUntil=Math.max(readerChromeLockUntil,performance.now()+ms);
@@ -1098,10 +1098,22 @@ function lockReaderChrome(ms=650){
   readerChromeDirection=0;
   setReaderChromeHidden(false);
 }
+const showReaderControls=document.createElement('button');
+showReaderControls.className='reader-reveal';showReaderControls.type='button';
+showReaderControls.setAttribute('aria-label','Показать панель PDF');showReaderControls.title='Показать панель';
+showReaderControls.innerHTML='<svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+document.body.append(showReaderControls);
+showReaderControls.onclick=()=>{lockReaderChrome(1200);document.getElementById('notesToggle').focus({preventScroll:true});};
+// With a mouse, the top edge brings the bar back, and it stays while the pointer is on it.
+const readerToolbar=document.querySelector('.toolbar');
+document.addEventListener('mousemove',e=>{
+  const edge=document.body.classList.contains('reader-chrome-hidden')?24:readerToolbar.getBoundingClientRect().bottom;
+  if(e.clientY<=edge)lockReaderChrome(900);
+},{passive:true});
 function updateReaderChrome(){
   const y=viewer.scrollTop,delta=y-readerChromeLastScroll;
   readerChromeLastScroll=y;
-  if(performance.now()<readerChromeLockUntil||gestureActive||!phoneStripQuery.matches||!compactQuery.matches||
+  if(performance.now()<readerChromeLockUntil||gestureActive||embedParam||searchPreviewParam||
     document.body.classList.contains('tools-open')||notes.draft||notes.eraser||notes.panel.querySelector('details').open||
     pageJump.classList.contains('open')||!notes.selectionMenu.hidden||
      document.body.classList.contains('search-open')||
@@ -1127,7 +1139,7 @@ viewer.addEventListener('scroll',()=>{
 },{passive:true});
 viewer.addEventListener('notesmodechange',()=>lockReaderChrome(800));
 viewer.addEventListener('notesgesturestart',()=>lockReaderChrome(650));
-document.addEventListener('focusin',e=>{if(e.target.closest('.toolbar,.notes-tools,.mobile-nav'))lockReaderChrome(800);});
+document.addEventListener('focusin',e=>{if(e.target.closest('.toolbar,.notes-tools,.mobile-nav,.reader-reveal'))lockReaderChrome(800);});
 landscapePhoneQuery.addEventListener('change',()=>{
   lockReaderChrome(1000);
   closeTools();
