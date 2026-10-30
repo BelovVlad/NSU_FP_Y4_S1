@@ -1236,11 +1236,6 @@ expandViewer.onclick=()=>{
   else document.documentElement.requestFullscreen?.().catch?.(()=>{});
 };
 searchToggle.onclick=openSearch;searchClose.onclick=closeSearch;searchNext.onclick=()=>searchStep(1);searchPrev.onclick=()=>searchStep(-1);searchInput.oninput=resetSearch;searchInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchStep(e.shiftKey?-1:1)}});
-// The installed app keeps element fullscreen so the camera cutout is not a black strip.
-document.addEventListener('pointerup',()=>{
-  if(window.parent===window||!compactQuery.matches)return;
-  try{window.parent.nsuKeepImmersive?.()}catch{}
-},true);
 window.addEventListener('keydown',e=>{if(e.target.closest('dialog,textarea,select'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();openSearch();return}if(e.key==='Escape'){if(document.body.classList.contains('tools-open'))closeTools(true);else if(pageJump.classList.contains('open'))closePageJump();else if(outlinePanel.classList.contains('open'))closeOutline();else if(searchPanel.classList.contains('open'))closeSearch();else if(notes.enabled){notes.button.click();}else back.click();return}if(document.activeElement===searchInput||document.activeElement===pageInput||document.activeElement===pageJumpInput||document.activeElement===zoomLabel||e.target.closest('input'))return;if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)});
 // Zoom gestures preview with a CSS transform around a point fixed at gesture start
 // (measured before any transform is applied), then commit one real scale change.

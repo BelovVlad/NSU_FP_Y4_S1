@@ -1303,17 +1303,15 @@ function enableMobileImmersiveMode(){
   }catch{}
 }
 const installedApp=()=>window.matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone===true;
-// Only element fullscreen lets the page draw under the camera cutout (viewport-fit=cover);
-// without it the area is a black strip. The browser drops it after the keyboard, app
-// switches or dialogs, so the installed app restores it on the next tap.
+// A browser tab enters element fullscreen once, on the first tap. The installed app stays
+// in standalone mode: every fullscreen entry makes the browser show its "swipe down to exit"
+// hint, and re-entering it after the keyboard or app switches showed the hint again and again.
 function mobileImmersiveGesture(event){
   if(event.target.closest('#installApp,#offlineFiles,#appSettings,.app-dialog'))return;
-  if(!installedApp())document.removeEventListener('pointerup',mobileImmersiveGesture,true);
-  enableMobileImmersiveMode();
+  document.removeEventListener('pointerup',mobileImmersiveGesture,true);
+  if(!installedApp())enableMobileImmersiveMode();
 }
 document.addEventListener('pointerup',mobileImmersiveGesture,true);
-// Taps inside the PDF frame never reach this document; the viewer calls this instead.
-window.nsuKeepImmersive=()=>{if(installedApp())enableMobileImmersiveMode()};
 
 window.addEventListener('hashchange',()=>{
   if(location.hash.startsWith('#search=')){if(FILES.length)takeHashSearch();return}
