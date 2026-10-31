@@ -99,17 +99,19 @@
     drop() { this.sizer.disconnect(); visibility.unobserve(this.el); patches.delete(this); }
   }
 
-  let running = false, last = -Infinity;
-  function frame(time) {
+  // About 30 frames a second on a timer rather than requestAnimationFrame: the dots need no frame sync, and other
+  // animations on the page (NSU's Overseer) keep the animation frames to themselves.
+  let running = false;
+  function frame() {
+    const time = performance.now();
     let any = false;
     for (const patch of patches) {
       if (!patch.el.isConnected) { patch.drop(); continue; }
-      if (patch.live) { any = true; if (time - last >= 33) patch.draw(time); }
+      if (patch.live) { any = true; patch.draw(time); }
     }
-    if (time - last >= 33) last = time;
-    if (any) requestAnimationFrame(frame); else running = false;
+    if (any) setTimeout(frame, 33); else running = false;
   }
-  function start() { if (!running && !still.matches) { running = true; requestAnimationFrame(frame); } }
+  function start() { if (!running && !still.matches) { running = true; setTimeout(frame, 0); } }
 
   const rules = [];
   function scan(root) {
