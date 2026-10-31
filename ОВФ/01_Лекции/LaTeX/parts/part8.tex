@@ -1,0 +1,567 @@
+% !TeX root = part8.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% При отдельной сборке продолжаем нумерацию полного конспекта.
+% Глава о линейной алгебре открывается в part7 и заканчивается прогонкой.
+\ifSubfilesClassLoaded{\setcounter{chapter}{6}\setcounter{section}{3}}{}
+\captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+
+% Окончание предыдущей лекции: оценки собственных значений.
+% Сам степенной метод в тетради не записан.
+
+\section{Степенной метод}
+
+\subsection{Оценки собственных значений по итерациям}
+
+После установления итерационного процесса отношение норм соседних
+приближений даёт оценку собственного значения.
+
+В \rconcept{степенном методе} $\vec x^{(k+1)}=A\vec x^{(k)}$, и
+\begin{equation*}
+    |\lambda_1|\simeq\frac{\|\vec x^{(k+1)}\|}{\|\vec x^{(k)}\|},
+\end{equation*}
+где $\lambda_1$ --- наибольшее по модулю собственное значение.
+
+В \rconcept{обратном степенном методе} $\vec x^{(k+1)}=A^{-1}\vec x^{(k)}$.
+Наибольшее по модулю собственное значение матрицы $A^{-1}$ равно
+$1/\lambda_n$, где $\lambda_n$ --- наименьшее по модулю
+собственное значение $A$:
+\begin{equation*}
+    \frac{1}{|\lambda_n|}\simeq
+    \frac{\|\vec x^{(k+1)}\|}{\|\vec x^{(k)}\|}.
+\end{equation*}
+
+В \rconcept{методе обратных итераций со сдвигом}
+$\vec x^{(k+1)}=\bigl(A-\lambda_i^{(0)}E\bigr)^{-1}\vec x^{(k)}$,
+где $\lambda_i^{(0)}$ --- начальное приближение к $\lambda_i$.
+Процесс сходится к собственному значению, ближайшему к сдвигу:
+\begin{equation*}
+    \frac{1}{\bigl|\lambda_i-\lambda_i^{(0)}\bigr|}\simeq
+    \frac{\|\vec x^{(k+1)}\|}{\|\vec x^{(k)}\|}
+    \quad\Longrightarrow\quad
+    \lambda_i\simeq\lambda_i^{(0)}\pm
+    \frac{\|\vec x^{(k)}\|}{\|\vec x^{(k+1)}\|}.
+\end{equation*}
+Отношение норм определяет только модуль. \rnote{Знак поправки
+определяется тем, сохраняет ли $\vec x^{(k+1)}$ направление
+$\vec x^{(k)}$ или меняет его на противоположное.}
+
+% ============================================================
+% Лекция 27.10.2026
+% Решение задач линейной алгебры: поиск собственных значений
+% и собственных векторов
+% ============================================================
+
+\section{Метод вращений Якоби}
+
+\subsection{Идея метода}
+
+Пусть $A$ --- \rassumption{вещественная симметричная матрица}.
+Тогда существует \rconcept{ортогональная матрица} $O$, $O^TO=E$,
+приводящая $A$ к диагональному виду:
+\begin{equation*}
+    \Lambda=O^TAO=\operatorname{diag}(\lambda_1,\ldots,\lambda_n).
+\end{equation*}
+На диагонали $\Lambda$ стоят собственные значения $A$,
+а столбцы $O$ --- соответствующие собственные векторы.
+
+Метод Якоби строит $O$ итерационно, как произведение элементарных
+вращений. Каждое вращение обнуляет один внедиагональный элемент.
+
+\subsection{Шаг итерации}
+
+Пусть $A^{(k)}$ --- приближение к диагональной матрице $\Lambda$
+на $k$-й итерации, $A^{(0)}=A$. Выберем наибольший по модулю
+внедиагональный элемент:
+\begin{equation*}
+    \bigl|a^{(k)}_{i_kj_k}\bigr|=\max_{i<j}\bigl|a^{(k)}_{ij}\bigr|,
+\end{equation*}
+где $i_k$ и $j_k$ --- номер строки и номер столбца максимального
+элемента на $k$-й итерации. Благодаря симметрии достаточно
+просматривать элементы над диагональю.
+
+Следующее приближение получаем преобразованием
+\begin{equation*}
+    A^{(k+1)}=V_{i_kj_k}^TA^{(k)}V_{i_kj_k},
+\end{equation*}
+где $V_{i_kj_k}$ --- \rconcept{матрица вращения} в плоскости
+координат $i_k$, $j_k$ на угол $\theta_k$. Она совпадает с единичной
+матрицей всюду, кроме четырёх элементов на пересечениях строк
+и столбцов с номерами $i_k$ и $j_k$:
+\begin{equation*}
+    V_{i_kj_k}=
+    \begin{pmatrix}
+        1      &        &               &        &               &        &   \\
+               & \ddots &               &        &               &        &   \\
+               &        & \cos\theta_k  & \cdots & -\sin\theta_k &        &   \\
+               &        & \vdots        & \ddots & \vdots        &        &   \\
+               &        & \sin\theta_k  & \cdots & \cos\theta_k  &        &   \\
+               &        &               &        &               & \ddots &   \\
+               &        &               &        &               &        & 1
+    \end{pmatrix}
+    \begin{matrix}
+        \\ \\ \leftarrow i_k \\ \\ \leftarrow j_k \\ \\ \\
+    \end{matrix}
+\end{equation*}
+Матрица $V_{i_kj_k}$ ортогональна, поэтому преобразование
+сохраняет симметрию и собственные значения.
+
+\subsection{Выбор угла поворота}
+
+Угол $\theta_k$ выбираем так, чтобы элемент на месте
+$(i_k,j_k)$ обратился в нуль и матрица $A^{(k+1)}$ стала
+ближе к диагональной. Непосредственное перемножение даёт
+\begin{equation*}
+    a^{(k+1)}_{i_kj_k}
+    =\bigl(\cos^2\theta_k-\sin^2\theta_k\bigr)a^{(k)}_{i_kj_k}
+    +\cos\theta_k\sin\theta_k
+    \bigl(a^{(k)}_{j_kj_k}-a^{(k)}_{i_ki_k}\bigr)=0.
+\end{equation*}
+Так как $\cos^2\theta-\sin^2\theta=\cos2\theta$ и
+$2\cos\theta\sin\theta=\sin2\theta$, отсюда
+\begin{equation*}
+    \tg2\theta_k=
+    \frac{2a^{(k)}_{i_kj_k}}{a^{(k)}_{i_ki_k}-a^{(k)}_{j_kj_k}}
+    \quad\Longrightarrow\quad
+    \theta_k=\frac12\arctg
+    \frac{2a^{(k)}_{i_kj_k}}{a^{(k)}_{i_ki_k}-a^{(k)}_{j_kj_k}}.
+\end{equation*}
+При $a^{(k)}_{i_ki_k}=a^{(k)}_{j_kj_k}$ берут $\theta_k=\pm\pi/4$
+со знаком $a^{(k)}_{i_kj_k}$.
+
+\remark
+Обнулённый элемент на следующих шагах может снова стать ненулевым.
+Однако сумма квадратов внедиагональных элементов при каждом вращении
+уменьшается ровно на $2\bigl(a^{(k)}_{i_kj_k}\bigr)^2$, поэтому
+\rresult{матрицы $A^{(k)}$ сходятся к диагональной}.
+
+\subsection{Собственные значения и векторы}
+
+Раскроем последовательность преобразований:
+\begin{align*}
+    A^{(k+1)}
+    &=V_{i_kj_k}^TA^{(k)}V_{i_kj_k}
+    =V_{i_kj_k}^TV_{i_{k-1}j_{k-1}}^TA^{(k-1)}
+    V_{i_{k-1}j_{k-1}}V_{i_kj_k}=\ldots\\
+    &=\underbrace{V_{i_kj_k}^T\cdots V_{i_1j_1}^T}_{\simeq\,O^T}\,
+    A\,
+    \underbrace{V_{i_1j_1}\cdots V_{i_kj_k}}_{\simeq\,O}.
+\end{align*}
+Итерации продолжают, пока внедиагональные элементы не станут
+меньше заданной точности $\varepsilon$. Тогда $A^{(k+1)}$
+\rnote{практически диагональна}, и
+\begin{itemize}
+    \item собственные значения --- это \rresult{диагональные элементы}
+    $A^{(k+1)}$;
+    \item собственные векторы --- это \rresult{столбцы матрицы}
+    $V_{i_1j_1}\cdots V_{i_kj_k}\simeq O$.
+\end{itemize}
+
+% ============================================================
+% Решение уравнения теплопроводности
+% ============================================================
+
+\chapter{Решение уравнения теплопроводности}
+\rsubtitle{Явная, неявная схемы и схема Кранка--Николсон}
+
+\section{Разностная схема и её свойства}
+
+\subsection{Невязка и порядок аппроксимации}
+
+Пусть $L_hy=f$ --- \rconcept{численная схема} решения краевой задачи
+для функции $y(x,t)$ с граничными условиями
+\begin{equation*}
+    \begin{cases}
+        y(0,t)=g_0(t),\\
+        y(L,t)=g_1(t)
+    \end{cases}
+\end{equation*}
+и начальным условием $y(x,0)=u_0(x)$.
+Здесь $h$ и $\tau$ --- шаги сетки по пространству и по времени.
+
+\rconcept{Невязкой} $\psi_{h,\tau}$ численной аппроксимации
+дифференциального уравнения называют результат подстановки
+точного решения $u$ дифференциального уравнения в численную
+аппроксимацию:
+\begin{equation*}
+    \psi_{h,\tau}=L_hu-f.
+\end{equation*}
+
+Говорят, что численная схема \rconcept{аппроксимирует} дифференциальное
+уравнение с порядком $p$ по пространству и $s$ по времени, если
+\begin{equation*}
+    \psi_{h,\tau}=O(h^p+\tau^s).
+\end{equation*}
+
+\subsection{Устойчивость}
+
+Разностная схема называется \rconcept{устойчивой}, если существуют
+$h_0$, $\tau_0$ и $\delta$ такие, что при всех $h<h_0$, $\tau<\tau_0$
+и любом возмущении $\|\varepsilon\|<\delta$ решение возмущённой задачи
+\begin{equation*}
+    L_h\tilde y=f+\varepsilon
+\end{equation*}
+удовлетворяет оценке
+\begin{equation*}
+    \|\tilde y-y\|<C\|\varepsilon\|.
+\end{equation*}
+Малое возмущение правой части приводит к малому изменению решения.
+
+Если схема устойчива при любых $h$ и $\tau$
+($h_0,\tau_0\to\infty$), то она \rconcept{абсолютно устойчива}.
+Если схема устойчива только при определённых соотношениях
+$h$ и $\tau$, то она \rconcept{условно устойчива}.
+
+\subsection{Сходимость}
+
+\textbf{Теорема.} Если разностная схема аппроксимирует дифференциальное
+уравнение с порядком точности $p$ по пространству и $s$ по времени
+и схема устойчива, то имеет место оценка
+\begin{equation*}
+    \|u-y\|<C_1h^p+C_2\tau^s.
+\end{equation*}
+Таким образом, \rresult{аппроксимация и устойчивость вместе
+обеспечивают сходимость} численного решения к точному.
+
+\section{Уравнение теплопроводности}
+
+\subsection{Постановка задачи}
+
+\rconcept{Уравнение теплопроводности} (диффузии) имеет вид
+\begin{equation*}
+    \frac{\partial u}{\partial t}
+    =a\frac{\partial^2u}{\partial x^2}+f(x,t,u),
+\end{equation*}
+где $a$ --- коэффициент диффузии (температуропроводности).
+Функция $u$ --- это температура $T$ в уравнении теплопроводности
+или концентрация $n$ в уравнении диффузии.
+
+Решение ищем в области
+\begin{equation*}
+    0\le x\le 1,\qquad 0\le t\le T.
+\end{equation*}
+Отрезок $[0,L]$ приводится к $[0,1]$ \rassumption{заменой переменных}.
+
+Задаётся \rconcept{начальное условие}
+\begin{equation*}
+    u(x,0)=u_0(x)
+\end{equation*}
+и граничные условия на концах отрезка.
+\rconcept{Граничные условия I рода} (Дирихле) задают значения функции:
+\begin{equation*}
+    \begin{cases}
+        u(0,t)=g_0(t),\\
+        u(1,t)=g_1(t).
+    \end{cases}
+\end{equation*}
+\rconcept{Граничные условия II рода} (Неймана) задают значения
+производной, то есть поток:
+\begin{equation*}
+    \begin{cases}
+        \dfrac{\partial u}{\partial x}(0,t)=g_0(t),\\[0.8em]
+        \dfrac{\partial u}{\partial x}(1,t)=g_1(t).
+    \end{cases}
+\end{equation*}
+
+\subsection{Переход к однородным граничным условиям}
+
+От неоднородных граничных условий можно перейти к однородным,
+выделив из решения известную функцию, которая сама удовлетворяет
+граничным условиям.
+
+\subsubsection{Условия I рода}
+
+Положим
+\begin{equation*}
+    u(x,t)=v(x,t)+(1-x)g_0(t)+xg_1(t).
+\end{equation*}
+Тогда
+\begin{align*}
+    x=0:&\quad u(0,t)=v(0,t)+g_0(t)=g_0(t)
+    \;\Longrightarrow\; v(0,t)=0,\\
+    x=1:&\quad u(1,t)=v(1,t)+g_1(t)=g_1(t)
+    \;\Longrightarrow\; v(1,t)=0.
+\end{align*}
+
+\subsubsection{Условия II рода}
+
+Ищем добавку в виде квадратичного полинома по $x$:
+\begin{equation*}
+    u(x,t)=v(x,t)+\alpha\frac{x^2}{2}+\beta x.
+\end{equation*}
+Потребуем $v'_x=0$ на обеих границах:
+\begin{equation*}
+    \begin{cases}
+        u'_x\big|_{x=0}=v'_x\big|_{x=0}+\alpha\cdot0+\beta=g_0(t),\\
+        u'_x\big|_{x=1}=v'_x\big|_{x=1}+\alpha+\beta=g_1(t),
+    \end{cases}
+    \quad\Longrightarrow\quad
+    \alpha=g_1-g_0,\qquad\beta=g_0.
+\end{equation*}
+Следовательно,
+\begin{equation*}
+    u(x,t)=v(x,t)+\frac{x^2}{2}\bigl[g_1(t)-g_0(t)\bigr]+xg_0(t).
+\end{equation*}
+
+\remark
+Добавка зависит от $t$ и, для условий II рода, не является линейной
+по $x$. Поэтому функция $v$ удовлетворяет \rnote{тому же уравнению
+с изменённой правой частью}:
+\begin{equation*}
+    \frac{\partial v}{\partial t}=a\frac{\partial^2v}{\partial x^2}
+    +\tilde f,\qquad
+    \tilde f=f-\frac{\partial w}{\partial t}
+    +a\frac{\partial^2w}{\partial x^2},
+\end{equation*}
+где $w=u-v$ --- выделенная добавка. Начальное условие также
+пересчитывается: $v(x,0)=u_0(x)-w(x,0)$.
+
+\section{Конечно-разностная аппроксимация}
+
+\subsection{Сетка}
+
+В области $0\le x\le L$, $0\le t\le T$ введём
+\rconcept{равномерную сетку}:
+\begin{equation*}
+    x_j=jh,\quad h=\frac LN,\quad 0\le j\le N;
+    \qquad
+    t_n=n\tau,\quad \tau=\frac TM,\quad 0\le n\le M.
+\end{equation*}
+Значение численного решения в узле обозначим
+$y_j^n\simeq u(x_j,t_n)$: \rnote{номер шага по времени пишется сверху,
+номер узла по пространству --- снизу}.
+
+\begin{rbox}[breakable=false,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[x=1.05cm,y=0.75cm,
+        every node/.style={text=rtext,font=\small}]
+        \draw[rtext!30] (0,0) grid (8,5);
+        \draw[rtext,-{Stealth[length=2.2mm]}] (0,0)--(8.8,0) node[right] {$x$};
+        \draw[rtext,-{Stealth[length=2.2mm]}] (0,0)--(0,5.7) node[left] {$t$};
+        \draw[p3,line width=1.3pt] (0,0)--(8,0);
+        \draw[red3,line width=1.3pt] (0,0)--(0,5);
+        \draw[red3,line width=1.3pt] (8,0)--(8,5);
+        \foreach \i in {0,...,8}{
+            \foreach \n in {0,...,5}{
+                \fill[rtext] (\i,\n) circle(1.3pt);
+            }
+        }
+        \node[below=3pt] at (0,0) {$0$};
+        \node[below=3pt] at (4,0) {$x_j$};
+        \node[below=3pt] at (8,0) {$L$};
+        \node[left=3pt] at (0,3) {$t_n$};
+        \node[left=3pt] at (0,5) {$T$};
+        \draw[rtext,{Stealth[length=1.6mm]}-{Stealth[length=1.6mm]}]
+            (5,-0.45)--(6,-0.45) node[midway,below] {$h$};
+        \draw[rtext,{Stealth[length=1.6mm]}-{Stealth[length=1.6mm]}]
+            (8.45,3)--(8.45,4) node[midway,right] {$\tau$};
+        \fill[rc4] (4,3) circle(2.2pt);
+        \node[rc4,above right] at (4,3) {$y_j^n$};
+        \node[p3,above] at (2,0) {$u_0(x)$};
+        \node[red3,left,align=right] at (-0.1,1.5) {$g_0(t)$};
+        \node[red3,right] at (8.1,1.5) {$g_1(t)$};
+    \end{tikzpicture}
+    \captionof{figure}{Равномерная сетка: на нижнем слое задано начальное
+    условие, на боковых границах --- граничные условия.}
+    \label{fig:ovf8_grid}
+\end{rbox}
+
+\subsection{Явная схема}
+
+Заменим производные разностями:
+\begin{equation*}
+    \frac{\partial u}{\partial t}\to\frac{y_j^{n+1}-y_j^n}{\tau},
+    \qquad
+    \frac{\partial^2u}{\partial x^2}\to
+    \frac{y_{j+1}^n-2y_j^n+y_{j-1}^n}{h^2}.
+\end{equation*}
+Пусть \rassumption{$a=1$, $f=0$}, то есть
+\begin{equation*}
+    \frac{\partial u}{\partial t}=\frac{\partial^2u}{\partial x^2}.
+\end{equation*}
+Вторую производную по $x$ можно взять как на $n$-м, так и на
+$(n+1)$-м временном слое. Выбор $n$-го слоя даёт
+\rconcept{явную схему}:
+\begin{equation*}
+    \frac{y_j^{n+1}-y_j^n}{\tau}
+    =\frac{y_{j+1}^n-2y_j^n+y_{j-1}^n}{h^2}.
+\end{equation*}
+Значение $y_j^{n+1}$ на новом слое выражается явно через три
+известных значения на предыдущем слое.
+
+\subsection{Неявная схема}
+
+Если вторую производную по $x$ взять на $(n+1)$-м слое, получаем
+\rconcept{неявную схему}:
+\begin{equation*}
+    \frac{y_j^{n+1}-y_j^n}{\tau}
+    =\frac{y_{j+1}^{n+1}-2y_j^{n+1}+y_{j-1}^{n+1}}{h^2}.
+\end{equation*}
+Каждое уравнение связывает три неизвестных значения нового слоя,
+поэтому на каждом шаге по времени решается система
+с трёхдиагональной матрицей, например методом прогонки.
+
+\subsection{Схема Кранка--Николсон}
+
+Полусумма явной и неявной аппроксимаций второй производной даёт
+\rconcept{схему Кранка--Николсон}:
+\begin{equation*}
+    \frac{y_j^{n+1}-y_j^n}{\tau}
+    =\frac12\,\frac{y_{j+1}^n-2y_j^n+y_{j-1}^n}{h^2}
+    +\frac12\,\frac{y_{j+1}^{n+1}-2y_j^{n+1}+y_{j-1}^{n+1}}{h^2}.
+\end{equation*}
+Эта схема имеет \rresult{порядок аппроксимации $O(\tau^2+h^2)$}.
+
+\subsection{Шаблоны схем}
+
+Набор узлов, которые входят в одно разностное уравнение, называется
+\rconcept{шаблоном схемы}.
+
+\begin{rbox}[breakable=false,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[x=0.95cm,y=1.05cm,
+        every node/.style={text=rtext,font=\small}]
+        \foreach \dx/\name in {0/{Явная},5/{Неявная},10/{Кранк--Николсон}}{
+            \begin{scope}[xshift=\dx cm]
+                \draw[rtext!30] (-1.5,0)--(1.5,0);
+                \draw[rtext!30] (-1.5,1)--(1.5,1);
+                \node[left] at (-1.5,0) {$n$};
+                \node[left] at (-1.5,1) {$n+1$};
+                \foreach \xx/\lab in {-1/{j-1},0/{j},1/{j+1}}{
+                    \draw[rtext!30,dashed] (\xx,-0.15)--(\xx,1.15);
+                    \node[below=4pt] at (\xx,-0.1) {$\lab$};
+                }
+                \node[above=8pt] at (0,1.15) {\name};
+            \end{scope}
+        }
+        % Явная схема.
+        \draw[p3,line width=1.1pt] (-1,0)--(1,0);
+        \draw[red3,line width=1.1pt] (0,0)--(0,1);
+        \foreach \xx in {-1,0,1}{\fill[p3] (\xx,0) circle(2.2pt);}
+        \fill[red3] (0,1) circle(2.2pt);
+        % Неявная схема.
+        \begin{scope}[xshift=5cm]
+            \draw[red3,line width=1.1pt] (-1,1)--(1,1);
+            \draw[p3,line width=1.1pt] (0,0)--(0,1);
+            \foreach \xx in {-1,0,1}{\fill[red3] (\xx,1) circle(2.2pt);}
+            \fill[p3] (0,0) circle(2.2pt);
+        \end{scope}
+        % Схема Кранка--Николсон.
+        \begin{scope}[xshift=10cm]
+            \draw[p3,line width=1.1pt] (-1,0)--(1,0);
+            \draw[red3,line width=1.1pt] (-1,1)--(1,1);
+            \draw[rtext,line width=0.8pt] (0,0)--(0,1);
+            \foreach \xx in {-1,0,1}{
+                \fill[p3] (\xx,0) circle(2.2pt);
+                \fill[red3] (\xx,1) circle(2.2pt);
+            }
+        \end{scope}
+    \end{tikzpicture}
+    \captionof{figure}{Шаблоны схем: голубые узлы лежат на известном
+    слое $n$, розовые --- на новом слое $n+1$.}
+    \label{fig:ovf8_stencils}
+\end{rbox}
+
+\section{Порядок аппроксимации}
+
+Рассмотрим уравнение с \rassumption{$a=1$, $f=0$}.
+Подставим в разностные схемы точное решение $u$ и разложим
+все значения по формуле Тейлора в узле $(x_j,t_n)$.
+Производные без верхнего индекса берутся в этом узле.
+
+\subsection{Явная схема}
+
+Невязка явной схемы равна
+\begin{equation*}
+    \psi_{h,\tau}=L_hu-f
+    =\frac{u_j^{n+1}-u_j^n}{\tau}
+    -\frac{u_{j+1}^n-2u_j^n+u_{j-1}^n}{h^2}.
+\end{equation*}
+Разложения по времени и по пространству:
+\begin{align*}
+    u_j^{n+1}&=u_j^n+\frac{\partial u}{\partial t}\tau
+    +\frac{\partial^2u}{\partial t^2}\frac{\tau^2}{2}+O(\tau^3),\\
+    u_{j\pm1}^n&=u_j^n\pm\frac{\partial u}{\partial x}h
+    +\frac{\partial^2u}{\partial x^2}\frac{h^2}{2}
+    \pm\frac{\partial^3u}{\partial x^3}\frac{h^3}{3!}
+    +\frac{\partial^4u}{\partial x^4}\frac{h^4}{4!}+O(h^5).
+\end{align*}
+При сложении $u_{j+1}^n$ и $u_{j-1}^n$ нечётные члены сокращаются:
+\begin{equation*}
+    \frac{u_{j+1}^n-2u_j^n+u_{j-1}^n}{h^2}
+    =\frac{\partial^2u}{\partial x^2}
+    +\frac{h^2}{12}\frac{\partial^4u}{\partial x^4}+O(h^4).
+\end{equation*}
+Подставляя, получаем
+\begin{align*}
+    \psi_{h,\tau}
+    &=\frac{\partial u}{\partial t}
+    +\frac{\partial^2u}{\partial t^2}\frac{\tau}{2}
+    -\frac{\partial^2u}{\partial x^2}
+    -\frac{h^2}{12}\frac{\partial^4u}{\partial x^4}
+    +O(\tau^2+h^4)\\
+    &=\frac{\tau}{2}\frac{\partial^2u}{\partial t^2}
+    -\frac{h^2}{12}\frac{\partial^4u}{\partial x^4}
+    +O(\tau^2+h^4)=O(\tau+h^2).
+\end{align*}
+Здесь $\dfrac{\partial u}{\partial t}-\dfrac{\partial^2u}{\partial x^2}=0$,
+так как $u$ --- решение дифференциального уравнения.
+Явная схема имеет \rresult{первый порядок точности по $t$
+и второй порядок по $x$}.
+
+\subsection{Неявная схема}
+
+Для неявной схемы пространственная разность берётся на слое $n+1$:
+\begin{equation*}
+    \psi_{h,\tau}
+    =\frac{\partial u}{\partial t}
+    +\frac{\partial^2u}{\partial t^2}\frac{\tau}{2}
+    -\left[\frac{\partial^2u^{n+1}}{\partial x^2}
+    +\frac{h^2}{12}\frac{\partial^4u^{n+1}}{\partial x^4}\right]
+    +O(\tau^2+\tau h^2+h^4).
+\end{equation*}
+Перенесём вторую производную с нового слоя в узел $(x_j,t_n)$:
+\begin{equation*}
+    \frac{\partial^2u^{n+1}}{\partial x^2}
+    =\frac{\partial^2}{\partial x^2}
+    \left(u+\tau\frac{\partial u}{\partial t}\right)+O(\tau^2)
+    =\frac{\partial^2u}{\partial x^2}
+    +\tau\frac{\partial}{\partial t}\frac{\partial^2u}{\partial x^2}
+    +O(\tau^2)
+    =\frac{\partial^2u}{\partial x^2}
+    +\tau\frac{\partial^2u}{\partial t^2}+O(\tau^2).
+\end{equation*}
+В последнем переходе использовано уравнение
+$\dfrac{\partial^2u}{\partial x^2}=\dfrac{\partial u}{\partial t}$.
+Тогда
+\begin{align*}
+    \psi_{h,\tau}
+    &=\frac{\partial u}{\partial t}
+    +\frac{\tau}{2}\frac{\partial^2u}{\partial t^2}
+    -\frac{\partial^2u}{\partial x^2}
+    -\tau\frac{\partial^2u}{\partial t^2}
+    -\frac{h^2}{12}\frac{\partial^4u}{\partial x^4}
+    +O(\tau^2+\tau h^2+h^4)\\
+    &=-\frac{\tau}{2}\frac{\partial^2u}{\partial t^2}
+    -\frac{h^2}{12}\frac{\partial^4u}{\partial x^4}
+    +O(\tau^2+\tau h^2+h^4)=O(\tau+h^2).
+\end{align*}
+Неявная схема также имеет \rresult{первый порядок точности по $t$
+и второй порядок по $x$}.
+
+\subsection{Схема Кранка--Николсон}
+
+Невязка схемы Кранка--Николсон равна полусумме невязок явной
+и неявной схем. Главные члены по времени у них равны
+$\pm\dfrac{\tau}{2}\dfrac{\partial^2u}{\partial t^2}$
+и при усреднении сокращаются:
+\begin{equation*}
+    \psi_{h,\tau}
+    =-\frac{h^2}{12}\frac{\partial^4u}{\partial x^4}
+    +O(\tau^2+\tau h^2+h^4)=O(\tau^2+h^2).
+\end{equation*}
+Отсюда \rresult{второй порядок точности по $t$ и по $x$}.
+
+\end{document}

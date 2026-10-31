@@ -1,0 +1,474 @@
+% !TeX root = part7.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% Лекция 13.10.2026.
+% Источник: Desktop/4.jpg (с отметки 13.10), 5.jpg, 6.jpg, 7.jpg, 8.jpg.
+\ifSubfilesClassLoaded{\setcounter{chapter}{5}\setcounter{section}{8}}{}
+\captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+
+\section{Устойчивость явной и неявной схем Эйлера}
+
+\subsection{Тестовое уравнение}
+
+Рассмотрим одну затухающую моду линейной системы:
+\begin{equation*}
+    u'=-\lambda u,\qquad u(0)=u_0,\qquad \lambda>0.
+\end{equation*}
+Её точное решение
+\begin{equation*}
+    u(x)=u_0e^{-\lambda x}
+\end{equation*}
+стремится к нулю. Возмущение начальных данных также убывает как
+$e^{-\lambda x}$. Численный метод должен воспроизводить это затухание.
+
+Для схемы, которая на этом уравнении имеет вид
+\begin{equation*}
+    y_{i+1}=q(\lambda h)y_i,
+\end{equation*}
+величина $q$ называется \rconcept{множителем усиления}.
+Если $\widetilde y_i=y_i+\delta_i$, то
+\begin{equation*}
+    \widetilde y_{i+1}=q(y_i+\delta_i),\qquad
+    \delta_{i+1}=q\delta_i,\qquad
+    \delta_i=q^i\delta_0.
+\end{equation*}
+Поэтому $|q|\le1$ означает, что начальное возмущение не возрастает,
+а при $|q|<1$ оно затухает.
+
+\subsection{Явная схема: ограничение на шаг}
+
+Для явного метода Эйлера
+\begin{equation*}
+    \frac{y_{i+1}-y_i}{h}=-\lambda y_i
+    \quad\Longrightarrow\quad
+    y_{i+1}=(1-\lambda h)y_i.
+\end{equation*}
+Следовательно,
+\begin{equation*}
+    q_{\text{явн}}=1-\lambda h,\qquad
+    \delta_{i+1}=(1-\lambda h)\delta_i.
+\end{equation*}
+Чтобы ошибка не росла, необходимо
+\begin{equation*}
+    |1-\lambda h|\le1
+    \quad\Longleftrightarrow\quad
+    0\le\lambda h\le2.
+\end{equation*}
+При положительном шаге получаем \rresult{условие устойчивости}
+\begin{equation*}
+    0<h\le\frac2\lambda.
+\end{equation*}
+При $0<\lambda h<1$ приближения убывают без смены знака,
+при $\lambda h=1$ следующее значение равно нулю, а при
+$1<\lambda h<2$ знак чередуется, но модуль убывает.
+На границе $\lambda h=2$ множитель равен $-1$: возмущение
+не затухает. При $\lambda h>2$ схема неустойчива.
+
+\remark
+\rnote{Устойчивость не гарантирует точности}. Даже при $|q|<1$
+численное решение может заметно отличаться от $e^{-\lambda x}$.
+В частности, чередование знака отсутствует у точного решения
+с положительным $u_0$.
+
+\subsection{Условная и безусловная устойчивость}
+
+Схема называется \rconcept{условно устойчивой}, если условие
+устойчивости выполняется лишь при ограничении на шаг. Явная схема
+Эйлера на рассматриваемом уравнении требует $h\le2/\lambda$.
+
+Если схема устойчива при любом $h>0$ для данного класса задач,
+говорят о \rconcept{безусловной устойчивости}. В записи лекции
+для этого также используется выражение «абсолютная устойчивость
+при любом шаге».
+
+\subsection{Неявная схема Эйлера}
+
+В неявной схеме правая часть вычисляется на новом слое:
+\begin{equation*}
+    y_{i+1}=y_i+h f(x_{i+1},y_{i+1}).
+\end{equation*}
+Для тестового уравнения получаем
+\begin{align*}
+    y_{i+1}&=y_i-\lambda h y_{i+1},\\
+    (1+\lambda h)y_{i+1}&=y_i,\\
+    y_{i+1}&=\frac{y_i}{1+\lambda h}.
+\end{align*}
+Возмущение изменяется по закону
+\begin{equation*}
+    \delta_{i+1}=\frac{\delta_i}{1+\lambda h}.
+\end{equation*}
+При $\lambda>0$ и любом $h>0$
+\begin{equation*}
+    0<q_{\text{неявн}}=\frac1{1+\lambda h}<1.
+\end{equation*}
+Следовательно, неявный метод Эйлера
+\rresult{безусловно устойчив на затухающем тестовом уравнении}.
+
+\subsection{Решение неявного уравнения на каждом шаге}
+
+В общем случае формула для $y_{i+1}$ не разрешается явно.
+На каждом шаге нужно решить уравнение
+\begin{equation*}
+    G(v)=v-y_i-h f(x_{i+1},v)=0.
+\end{equation*}
+Простейший вариант --- \rconcept{простые итерации}:
+\begin{equation*}
+    y_{i+1}^{(k+1)}=y_i+h f(x_{i+1},y_{i+1}^{(k)}),
+    \qquad k=0,1,\ldots.
+\end{equation*}
+Индекс $i$ нумерует узлы сетки, а $k$ --- внутренние итерации.
+Начальным приближением может служить $y_i$ или явный прогноз Эйлера.
+
+Если $f$ удовлетворяет условию Липшица по второму аргументу
+с константой $L$, то достаточное условие сжатия этой итерации --- $hL<1$.
+Для $f=-\lambda u$ ошибка внутренней итерации умножается на $-h\lambda$,
+и требуется $h\lambda<1$.
+
+\remark
+\rnote{Устойчивость схемы и сходимость внутренней итерации --- разные
+условия}. Неявная схема Эйлера устойчива на тестовом уравнении при любом
+шаге, однако выбранный способ решения неявного уравнения может
+потребовать ограничения $h$. Для больших шагов используют, например,
+метод Ньютона или прямое решение линейной системы.
+
+\section{Жёсткие системы дифференциальных уравнений}
+
+\subsection{Разные масштабы затухания}
+
+Пусть после выделения собственных мод линейная система содержит
+уравнения
+\begin{equation*}
+    u_j'=-\lambda_j u_j,\qquad \lambda_j>0.
+\end{equation*}
+Каждая компонента затухает на своём характерном масштабе
+\begin{equation*}
+    \tau_j=\frac1{\lambda_j}.
+\end{equation*}
+Если $\max_j\lambda_j/\min_j\lambda_j$ велико, то в системе
+одновременно присутствуют быстро и медленно затухающие моды.
+Это характерный пример \rconcept{жёсткой системы}.
+
+\begin{rbox}[breakable=false,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[x=1.5cm,y=2.6cm,
+        every node/.style={text=rtext,font=\small}]
+        \draw[rtext,-{Stealth[length=2.2mm]}] (0,0)--(5.1,0) node[right] {$x$};
+        \draw[rtext,-{Stealth[length=2.2mm]}] (0,0)--(0,1.2) node[left] {$u/u_0$};
+        \draw[p3,line width=1.4pt,domain=0:4.7,samples=100]
+            plot(\x,{exp(-0.55*\x)});
+        \draw[red3,line width=1.4pt,domain=0:4.7,samples=100]
+            plot(\x,{exp(-4*\x)});
+        \node[p3,above right] at (1.8,0.372) {$e^{-\lambda_1 x}$};
+        \node[red3,above right] at (0.32,0.278) {$e^{-\lambda_2 x}$};
+        \node at (3.4,0.86) {$\lambda_2\gg\lambda_1$};
+    \end{tikzpicture}
+    \captionof{figure}{Быстрая мода почти исчезает раньше, чем существенно
+    меняется медленная. Ограничение устойчивости явной схемы продолжает
+    определяться быстрым масштабом.}
+    \label{fig:ovf7_stiff_modes}
+\end{rbox}
+
+\subsection{Почему явная схема требует малого шага}
+
+Для устойчивости явного метода Эйлера каждая мода должна удовлетворять
+$h\lambda_j\le2$. Поэтому
+\begin{equation*}
+    h\le\frac2{\lambda_{\max}},\qquad
+    \lambda_{\max}=\max_j\lambda_j.
+\end{equation*}
+Но интересующая динамика может происходить на медленном масштабе
+$1/\lambda_{\min}$. Даже когда быстрая компонента стала очень малой,
+слишком большой шаг будет усиливать возмущения этой компоненты,
+в том числе ошибки округления.
+
+Например, для $\lambda_1=1$ и $\lambda_2=1000$ явная схема требует
+$h\le0.002$, хотя медленная компонента меняется на масштабе порядка
+единицы. На отрезке длины $1$ приходится делать не менее $500$ шагов
+уже по условию устойчивости.
+
+Неявная схема позволяет выбирать шаг по требованиям точности
+медленной динамики, а не только по быстрому масштабу затухания.
+Это объясняет её пользу при решении жёстких задач.
+
+\chapter{Численные методы линейной алгебры}
+\rsubtitle{Метод Гаусса и прогонка для трёхдиагональных систем}
+
+\section{Система линейных алгебраических уравнений}
+
+Рассмотрим \rconcept{систему линейных алгебраических уравнений}
+\begin{equation*}
+    A\boldsymbol x=\boldsymbol b,\qquad \det A\ne0,
+\end{equation*}
+где
+\begin{equation*}
+    A=\begin{pmatrix}
+        a_{11}&a_{12}&\cdots&a_{1n}\\
+        a_{21}&a_{22}&\cdots&a_{2n}\\
+        \vdots&\vdots&\ddots&\vdots\\
+        a_{n1}&a_{n2}&\cdots&a_{nn}
+    \end{pmatrix},\qquad
+    \boldsymbol x=\begin{pmatrix}x_1\\x_2\\\vdots\\x_n\end{pmatrix},\qquad
+    \boldsymbol b=\begin{pmatrix}b_1\\b_2\\\vdots\\b_n\end{pmatrix}.
+\end{equation*}
+Матрица $A$ и правая часть $\boldsymbol b$ заданы. Требуется найти
+вектор неизвестных $\boldsymbol x$. Условие $\det A\ne0$
+обеспечивает существование и единственность решения.
+
+\section{Метод Гаусса}
+
+\subsection{Идея исключения неизвестных}
+
+\rconcept{Метод Гаусса} состоит из двух этапов.
+На \rconcept{прямом ходе} последовательно исключают неизвестные
+из нижних строк и приводят систему к верхнетреугольному виду:
+\begin{equation*}
+    \widetilde A\boldsymbol x=\widetilde{\boldsymbol b},\qquad
+    \widetilde A=
+    \begin{pmatrix}
+        \widetilde a_{11}&\widetilde a_{12}&\cdots&\widetilde a_{1n}\\
+        0&\widetilde a_{22}&\cdots&\widetilde a_{2n}\\
+        \vdots&\ddots&\ddots&\vdots\\
+        0&\cdots&0&\widetilde a_{nn}
+    \end{pmatrix}.
+\end{equation*}
+На \rconcept{обратном ходе} неизвестные находят снизу вверх:
+сначала $x_n$, затем $x_{n-1}$ и так далее до $x_1$.
+
+\subsection{Прямой ход: один шаг алгоритма}
+
+Пусть первые $k-1$ столбцов под диагональю уже обнулены.
+Для каждой строки $i=k+1,\ldots,n$ вычислим множитель
+\begin{equation*}
+    m_{ik}=\frac{a_{ik}}{a_{kk}}.
+\end{equation*}
+Из строки $i$ вычитаем строку $k$, умноженную на $m_{ik}$:
+\begin{align*}
+    a_{ij}&\leftarrow a_{ij}-m_{ik}a_{kj},
+        &&j=k+1,\ldots,n,\\
+    b_i&\leftarrow b_i-m_{ik}b_k,\\
+    a_{ik}&\leftarrow0.
+\end{align*}
+Здесь используются текущие, уже преобразованные коэффициенты.
+Множитель $m_{ik}$ нужно сохранить \emph{до} обнуления $a_{ik}$.
+Одинаковое преобразование применяется к матрице и правой части,
+поэтому множество решений системы не меняется.
+
+\subsection{Пример нескольких шагов}
+
+Рассмотрим систему
+\begin{equation*}
+    \begin{cases}
+        2x_1+x_2-x_3=1,\\
+        4x_1+x_2+x_3=7,\\
+        -2x_1+2x_2+x_3=4.
+    \end{cases}
+\end{equation*}
+На первом шаге опорный элемент $a_{11}=2$.
+Множители равны $m_{21}=2$ и $m_{31}=-1$:
+\begin{equation*}
+    \left(\begin{array}{rrr|r}
+        2&1&-1&1\\
+        4&1&1&7\\
+        -2&2&1&4
+    \end{array}\right)
+    \longrightarrow
+    \left(\begin{array}{rrr|r}
+        2&1&-1&1\\
+        0&-1&3&5\\
+        0&3&0&5
+    \end{array}\right).
+\end{equation*}
+На втором шаге $a_{22}=-1$, $m_{32}=-3$. Прибавляя к третьей
+строке вторую, умноженную на $3$, получаем
+\begin{equation*}
+    \left(\begin{array}{rrr|r}
+        2&1&-1&1\\
+        0&-1&3&5\\
+        0&0&9&20
+    \end{array}\right).
+\end{equation*}
+Теперь система имеет треугольный вид.
+
+\subsection{Обратный ход}
+
+Последнее уравнение содержит только $x_n$:
+\begin{equation*}
+    x_n=\frac{\widetilde b_n}{\widetilde a_{nn}}.
+\end{equation*}
+После нахождения $x_{i+1},\ldots,x_n$ из строки $i$ получаем
+\begin{equation*}
+    x_i=\frac{\widetilde b_i-
+        \displaystyle\sum_{j=i+1}^{n}\widetilde a_{ij}x_j}
+        {\widetilde a_{ii}},\qquad i=n-1,\ldots,1.
+\end{equation*}
+В приведённом примере
+\begin{equation*}
+    x_3=\frac{20}{9},\qquad
+    x_2=3x_3-5=\frac53,\qquad
+    x_1=\frac{1-x_2+x_3}{2}=\frac79.
+\end{equation*}
+
+\subsection{Опорный элемент и стоимость}
+
+Элемент $a_{kk}$, на который делят при исключении, называется
+\rconcept{опорным}. Даже при $\det A\ne0$ он может оказаться нулевым
+без перестановок строк. Например, у невырожденной матрицы
+$\bigl(\begin{smallmatrix}0&1\\1&1\end{smallmatrix}\bigr)$ первый
+диагональный элемент равен нулю.
+
+При \rconcept{частичном выборе главного элемента} на шаге $k$
+выбирают строку $p\ge k$, для которой $|a_{pk}|$ максимально,
+и меняют местами строки $p$ и $k$ вместе с элементами правой части.
+Это позволяет избежать деления на нуль и уменьшить влияние
+малых опорных элементов на ошибки округления.
+
+Для плотной матрицы прямой ход требует $O(n^3)$ операций,
+обратный --- $O(n^2)$. Если матрица имеет специальную структуру,
+её можно использовать для уменьшения стоимости решения.
+
+\section{Метод прогонки для трёхдиагональной системы}
+
+\subsection{Структура системы}
+
+\rconcept{Трёхдиагональная матрица} имеет ненулевые элементы
+только на главной диагонали и на двух соседних:
+\begin{equation*}
+    A=\begin{pmatrix}
+        b_1&c_1&0&\cdots&0\\
+        a_2&b_2&c_2&\ddots&\vdots\\
+        0&a_3&b_3&\ddots&0\\
+        \vdots&\ddots&\ddots&\ddots&c_{n-1}\\
+        0&\cdots&0&a_n&b_n
+    \end{pmatrix}.
+\end{equation*}
+Чтобы не путать главную диагональ $b_i$ с правой частью, последнюю
+здесь обозначим через $d_i$. Система имеет вид
+\begin{equation*}
+    a_i x_{i-1}+b_i x_i+c_i x_{i+1}=d_i,
+    \qquad i=1,\ldots,n,
+\end{equation*}
+где $a_1=0$ и $c_n=0$, то есть отсутствующие крайние слагаемые опускаются.
+
+\rconcept{Метод прогонки}, или алгоритм Томаса, представляет собой
+метод Гаусса с учётом этой структуры. При исключении достаточно
+изменять одну диагональ и правую часть.
+
+\subsection{Прямой ход прогонки}
+
+Начнём с первой строки:
+\begin{equation*}
+    \widetilde b_1=b_1,\qquad \widetilde d_1=d_1.
+\end{equation*}
+Чтобы исключить $x_{i-1}$ из строки $i$, используем уже
+преобразованную строку $i-1$:
+\begin{equation*}
+    \widetilde b_{i-1}x_{i-1}+c_{i-1}x_i=\widetilde d_{i-1}.
+\end{equation*}
+Множитель исключения равен
+\begin{equation*}
+    m_i=\frac{a_i}{\widetilde b_{i-1}}.
+\end{equation*}
+Вычитая предыдущую строку, умноженную на $m_i$, получаем
+\begin{align*}
+    \widetilde b_i&=b_i-\frac{a_i c_{i-1}}{\widetilde b_{i-1}},\\
+    \widetilde d_i&=d_i-\frac{a_i\widetilde d_{i-1}}
+        {\widetilde b_{i-1}},\qquad i=2,\ldots,n.
+\end{align*}
+Поддиагональный элемент обнуляется, а верхняя диагональ
+$c_i$ остаётся без изменения. В результате система становится
+двухдиагональной:
+\begin{equation*}
+    \widetilde b_i x_i+c_i x_{i+1}=\widetilde d_i.
+\end{equation*}
+
+\subsection{Обратный ход прогонки}
+
+В последней строке нет $x_{n+1}$, поэтому
+\begin{equation*}
+    x_n=\frac{\widetilde d_n}{\widetilde b_n}.
+\end{equation*}
+Далее движемся справа налево:
+\begin{equation*}
+    x_i=\frac{\widetilde d_i-c_i x_{i+1}}{\widetilde b_i},
+    \qquad i=n-1,n-2,\ldots,1.
+\end{equation*}
+В отличие от общего обратного хода Гаусса, здесь для нахождения
+$x_i$ используется только одно уже найденное значение $x_{i+1}$.
+На каждой строке выполняется фиксированное число действий,
+поэтому прогонка требует \rresult{$O(n)$ операций} и $O(n)$ памяти.
+
+\remark
+Формулы требуют ненулевых знаменателей $\widetilde b_i$.
+Одной невырожденности исходной матрицы для прогонки без перестановок
+недостаточно. Достаточное условие отсутствия нулевых опорных элементов ---
+строгое диагональное преобладание
+\begin{equation*}
+    |b_i|>|a_i|+|c_i|\qquad\text{для всех }i.
+\end{equation*}
+Это достаточное, а не необходимое условие применимости алгоритма.
+
+\subsection{Откуда возникают трёхдиагональные матрицы}
+
+Такие системы появляются при разностной аппроксимации второй
+производной. Например, уравнение диффузии
+\begin{equation*}
+    \frac{\partial u}{\partial t}
+    =D\frac{\partial^2u}{\partial x^2},\qquad D>0,
+\end{equation*}
+в стационарном случае сводится к $u''(x)=0$.
+На равномерной сетке вторая производная заменяется формулой
+\begin{equation*}
+    \frac{y_{i+1}-2y_i+y_{i-1}}{h^2}=0.
+\end{equation*}
+Каждое уравнение связывает только три соседних значения.
+
+\begin{rbox}[breakable=false,left=18pt,right=18pt,top=14pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[x=2.5cm,y=1cm,
+        every node/.style={text=rtext,font=\small}]
+        \draw[rtext,-{Stealth[length=2.2mm]}] (-0.25,0)--(3.25,0) node[right] {$x$};
+        \foreach \xx/\lab in {0/{x_{i-1}},1.5/{x_i},3/{x_{i+1}}}{
+            \fill[p3] (\xx,0) circle(2pt);
+            \node[below=5pt] at (\xx,0) {$\lab$};
+        }
+        \node[above=7pt] at (0,0) {$y_{i-1}$};
+        \node[above=7pt] at (1.5,0) {$y_i$};
+        \node[above=7pt] at (3,0) {$y_{i+1}$};
+        \draw[rtext!65,{Stealth[length=1.5mm]}-{Stealth[length=1.5mm]}]
+            (0,-0.85)--(1.5,-0.85) node[midway,fill=rbg] {$h$};
+        \draw[rtext!65,{Stealth[length=1.5mm]}-{Stealth[length=1.5mm]}]
+            (1.5,-0.85)--(3,-0.85) node[midway,fill=rbg] {$h$};
+    \end{tikzpicture}
+    \captionof{figure}{Трёхточечный шаблон второй производной:
+    строка матрицы содержит коэффициенты при $y_{i-1}$, $y_i$, $y_{i+1}$.}
+    \label{fig:ovf7_three_point_stencil}
+\end{rbox}
+
+Пусть заданы граничные значения $y_0=U_L$ и $y_{n+1}=U_R$,
+а неизвестны $y_1,\ldots,y_n$. После умножения уравнений на $-h^2$
+и переноса граничных значений вправо получаем
+\begin{equation*}
+    \begin{pmatrix}
+        2&-1&0&\cdots&0\\
+        -1&2&-1&\ddots&\vdots\\
+        0&\ddots&\ddots&\ddots&0\\
+        \vdots&\ddots&-1&2&-1\\
+        0&\cdots&0&-1&2
+    \end{pmatrix}
+    \begin{pmatrix}y_1\\y_2\\\vdots\\y_{n-1}\\y_n\end{pmatrix}
+    =\begin{pmatrix}U_L\\0\\\vdots\\0\\U_R\end{pmatrix}.
+\end{equation*}
+Во внутренних строках правая часть нулевая, но в крайних строках
+в неё входят известные граничные значения.
+
+Для этой матрицы $\widetilde b_1=2$ и
+\begin{equation*}
+    \widetilde b_i=2-\frac1{\widetilde b_{i-1}}
+    =\frac{i+1}{i}>0.
+\end{equation*}
+Поэтому прогонка работает без нулевых знаменателей, хотя во внутренних
+строках диагональное преобладание нестрогое.
+
+\end{document}
