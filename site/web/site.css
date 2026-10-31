@@ -1120,22 +1120,55 @@ body{
 .pdf-fullscreen.open{animation:pdf-in .3s cubic-bezier(.2,.8,.2,1)}
 @keyframes pdf-in{from{opacity:0;transform:translateY(14px)}}
 
-/* Dots, the motif shared with the PweB hub: on hover its dot grid (sparse red accent) surfaces in the
-   card's top corner and a slow wave runs through it. Touch screens keep a faint still patch. */
-.course-card,.knowledge-card{position:relative;isolation:isolate}
-.course-card:before,.knowledge-card:before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .4s ease;
-  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 75%,transparent) 1.25px,transparent 1.75px) 22px 22px/55px 55px,radial-gradient(circle,color-mix(in srgb,var(--cream,#ead4b7) 34%,transparent) 1.1px,transparent 1.6px) 0 0/11px 11px;
-  -webkit-mask:radial-gradient(circle at 100% 0,#000,transparent 62%),linear-gradient(110deg,#0006 0,#000 26%,#0008 52%,#000e 76%,#0006 100%) 0 0/300% 100%;
+/* Dots, the motif shared with the PweB hub: on hover its dot grid (sparse red accent) surfaces in the top
+   corner of a card or lecture row and a slow wave runs through it. Neighbouring cards get different waves
+   (direction, length, speed, red spacing), the chosen lecture keeps its dots. Touch screens keep a faint still patch. */
+.course-card,.knowledge-card,.file-row{position:relative;isolation:isolate}
+.course-card:before,.knowledge-card:before,.file-row:before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .4s ease;
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 75%,transparent) 1.25px,transparent 1.75px) var(--dw-rx,22px) var(--dw-ry,22px)/var(--dw-tile,55px) var(--dw-tile,55px),radial-gradient(circle,color-mix(in srgb,var(--cream,#ead4b7) 34%,transparent) 1.1px,transparent 1.6px) 0 0/11px 11px;
+  -webkit-mask:radial-gradient(circle at 100% 0,#000,transparent var(--dw-reach,62%)),linear-gradient(var(--dw-angle,110deg),#0006 0,#000 26%,#0008 52%,#000e 76%,#0006 100%) 0 0/var(--dw-len,300%) 100%;
   -webkit-mask-composite:source-in;
-  mask:radial-gradient(circle at 100% 0,#000,transparent 62%),linear-gradient(110deg,#0006 0,#000 26%,#0008 52%,#000e 76%,#0006 100%) 0 0/300% 100%;
+  mask:radial-gradient(circle at 100% 0,#000,transparent var(--dw-reach,62%)),linear-gradient(var(--dw-angle,110deg),#0006 0,#000 26%,#0008 52%,#000e 76%,#0006 100%) 0 0/var(--dw-len,300%) 100%;
   mask-composite:intersect}
-.course-card:hover:before,.knowledge-card:hover:before,.course-card:focus-visible:before,.knowledge-card:focus-visible:before{opacity:1;animation:card-dots 6s linear infinite}
-@keyframes card-dots{to{-webkit-mask-position:0 0,-150% 0;mask-position:0 0,-150% 0}}
-@media(hover:none){.course-card:before,.knowledge-card:before{opacity:.45}.course-card:active:before,.knowledge-card:active:before{opacity:.65;animation:card-dots 6s linear infinite}}
+.file-row:before{background:radial-gradient(circle,color-mix(in srgb,var(--accent) 75%,transparent) 1.25px,transparent 1.75px) var(--dw-rx,22px) var(--dw-ry,22px)/var(--dw-tile,55px) var(--dw-tile,55px),radial-gradient(circle,color-mix(in srgb,var(--cream,#ead4b7) 42%,transparent) 1.1px,transparent 1.6px) 0 0/11px 11px;-webkit-mask:radial-gradient(ellipse 100% 190% at 100% 0,#000 10%,transparent var(--dw-reach,75%)),linear-gradient(var(--dw-angle,110deg),#0006 0,#000 26%,#0008 52%,#000e 76%,#0006 100%) 0 0/var(--dw-len,300%) 100%;-webkit-mask-composite:source-in;mask:radial-gradient(ellipse 100% 190% at 100% 0,#000 10%,transparent var(--dw-reach,75%)),linear-gradient(var(--dw-angle,110deg),#0006 0,#000 26%,#0008 52%,#000e 76%,#0006 100%) 0 0/var(--dw-len,300%) 100%;mask-composite:intersect}
+.course-card:hover:before,.knowledge-card:hover:before,.file-row:hover:before,.course-card:focus-visible:before,.knowledge-card:focus-visible:before,.file-row:focus-visible:before{opacity:1;animation:card-dots var(--dw-time,6s) linear infinite var(--dw-dir,normal)}
+.file-row.active:before{opacity:.75;animation:card-dots var(--dw-time,6s) linear infinite var(--dw-dir,normal)}
+@keyframes card-dots{to{-webkit-mask-position:0 0,var(--dw-end,-150%) 0;mask-position:0 0,var(--dw-end,-150%) 0}}
+@media(hover:none){.course-card:before,.knowledge-card:before,.file-row:before{opacity:.45}.course-card:active:before,.knowledge-card:active:before,.file-row:active:before{opacity:1;animation:card-dots var(--dw-time,6s) linear infinite var(--dw-dir,normal)}}
+.course-card:nth-child(2n),.knowledge-card:nth-child(2n),.file-row:nth-child(2n){--dw-dir:reverse}
+.course-card:nth-child(3n+1),.knowledge-card:nth-child(3n+1),.file-row:nth-child(3n+1){--dw-angle:70deg;--dw-time:5s;--dw-len:200%;--dw-end:-200%}
+.course-card:nth-child(3n+2),.knowledge-card:nth-child(3n+2),.file-row:nth-child(3n+2){--dw-angle:145deg;--dw-time:7.6s;--dw-len:400%;--dw-end:-133.333%}
+.course-card:nth-child(5n+1),.knowledge-card:nth-child(5n+1),.file-row:nth-child(5n+1){--dw-tile:44px;--dw-rx:16.5px;--dw-ry:5.5px;--dw-reach:55%}
+.course-card:nth-child(5n+2),.knowledge-card:nth-child(5n+2),.file-row:nth-child(5n+2){--dw-tile:66px;--dw-rx:5.5px;--dw-ry:27.5px;--dw-reach:70%}
+.course-card:nth-child(5n+3),.knowledge-card:nth-child(5n+3),.file-row:nth-child(5n+3){--dw-tile:77px;--dw-rx:33px;--dw-ry:11px}
+.course-card:nth-child(5n+4),.knowledge-card:nth-child(5n+4),.file-row:nth-child(5n+4){--dw-tile:55px;--dw-rx:0px;--dw-ry:33px;--dw-reach:58%}
+/* The empty foot of the sidebar: the same dots, fading upwards, with a wave that never stops (slowly). */
+.sidebar:after{content:"";position:absolute;left:0;right:0;bottom:0;height:min(320px,45%);z-index:-1;pointer-events:none;opacity:.9;
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 70%,transparent) 1.2px,transparent 1.7px) 22px 0/55px 55px,radial-gradient(circle,color-mix(in srgb,var(--cream) 42%,transparent) 1.05px,transparent 1.55px) 0 0/11px 11px;
+  -webkit-mask:linear-gradient(0deg,#000 0,#0009 45%,transparent 100%),linear-gradient(160deg,#0005 0,#000 26%,#0006 52%,#000c 76%,#0005 100%) 0 0/100% 300%;
+  -webkit-mask-composite:source-in;
+  mask:linear-gradient(0deg,#000 0,#0009 45%,transparent 100%),linear-gradient(160deg,#0005 0,#000 26%,#0006 52%,#000c 76%,#0005 100%) 0 0/100% 300%;
+  mask-composite:intersect;animation:sidebar-dots 14s linear infinite}
+@keyframes sidebar-dots{to{-webkit-mask-position:0 0,0 -150%;mask-position:0 0,0 -150%}}
 .hub-link{margin-bottom:9px}
 
 @media(prefers-reduced-motion:reduce){
   .sidebar,.sidebar.open,.mobile-overlay,.mobile-overlay.show{transition:none}
   .sidebar.open .main-nav .nav-btn,.sidebar.open .subject-nav>*,.main.view-enter>*,.pdf-fullscreen.open,
-  .course-card:before,.knowledge-card:before{animation:none!important}
+  .course-card:before,.knowledge-card:before,.file-row:before,.sidebar:after{animation:none!important}
+}
+
+/* Home on wide screens: two columns of their own height. Materials with the recent updates right under them on
+   the left; the open history fills the right column to the same height and scrolls inside (contain:size keeps
+   its list from stretching the rows); the discussion spans both below. Narrow screens keep one column. */
+@media(min-width:901px){
+  .home-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);grid-template-rows:auto 1fr;grid-template-areas:"welcome history" "updates history" "feedback feedback";align-items:start}
+  .home-grid>.welcome{grid-area:welcome}
+  .home-grid>#recentUpdates{grid-area:updates}
+  .home-grid>#openHistory{grid-area:history;align-self:stretch;contain:size;min-height:280px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+  .home-grid>.feedback-panel{grid-area:feedback}
+  /* With nothing opened yet the panel still fills the column: the note sits in the middle of a faint dot field. */
+  .home-grid>#openHistory:has(.history-empty){display:flex;flex-direction:column}
+  .home-grid>#openHistory .history-empty{flex:1;display:grid;place-items:center;margin-top:12px;padding:24px;border:1px dashed var(--line2);border-radius:8px;text-align:center;font-size:12px;
+    background:radial-gradient(circle,color-mix(in srgb,var(--cream) 13%,transparent) 1px,transparent 1.5px) 0 0/11px 11px}
 }
