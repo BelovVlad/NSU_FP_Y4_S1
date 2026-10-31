@@ -2,12 +2,19 @@
 // drawn like the banner — dots swell along a travelling wave and red patches follow a noise field — with its own
 // wave direction, frequency, speed and noise picked from the element's identity, so neighbours differ.
 // A patch animates only while it is "on" (hovered or focused, or always for the chosen ones) and on screen;
-// touch screens get one still frame, and reduced motion draws still frames only.
+// touch patches show only while pressed, and reduced motion draws still frames only.
 // Usage: PwebDots.attach(selector, { anchor:'corner'|'bottom', reach, maxReach, fadeEnd, mode:'hover'|'always', alwaysWhen, gap }).
 (() => {
   'use strict';
   const still = matchMedia('(prefers-reduced-motion: reduce)');
-  const canHover = matchMedia('(hover: hover)');
+  // Keep touch holds inside the app instead of opening the browser's link/selection menu.
+  // Document content remains selectable; this applies only to navigation and card controls.
+  document.addEventListener('contextmenu', event => {
+    if ((event.pointerType === 'touch' || matchMedia('(hover: none)').matches) &&
+        event.target.closest?.('a,button,summary,[role="button"],.resource-card,.course-card,.knowledge-card,.file-row,.file')) {
+      event.preventDefault();
+    }
+  });
 
   function rng(seed) {
     return () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
@@ -47,10 +54,23 @@
       this.sizer = new ResizeObserver(() => this.resize()); this.sizer.observe(el); this.sizer.observe(this.canvas);
       visibility.observe(el);
       if (options.mode === 'hover') {
-        const on = () => { this.hot = true; el.classList.add('dots-hot'); this.wake(); };
-        const off = () => { if (!el.matches(':focus-within')) { this.hot = false; el.classList.remove('dots-hot'); } };
-        el.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse' || canHover.matches) on(); });
-        el.addEventListener('pointerleave', off); el.addEventListener('focusin', on); el.addEventListener('focusout', off);
+        let hovered = false, pressed = false;
+        const update = () => {
+          // Touch can leave a link focused after release; only keyboard focus keeps its patch on.
+          this.hot = hovered || pressed || el.matches(':focus-visible') || !!el.querySelector(':focus-visible');
+          el.classList.toggle('dots-hot', this.hot); this.wake();
+        };
+        const release = () => { pressed = false; update(); };
+        el.addEventListener('pointerenter', event => {
+          if (event.pointerType !== 'touch') { hovered = true; update(); }
+        });
+        el.addEventListener('pointerleave', () => { hovered = false; release(); });
+        el.addEventListener('pointerdown', event => {
+          if (event.isPrimary && event.button === 0 && event.pointerType !== 'mouse') { pressed = true; update(); }
+        });
+        for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) el.addEventListener(type, release);
+        el.addEventListener('focusin', update);
+        el.addEventListener('focusout', () => queueMicrotask(update));
       } else el.classList.add('dots-on');
       patches.add(this);
     }
