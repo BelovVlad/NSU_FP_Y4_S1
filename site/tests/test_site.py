@@ -461,6 +461,54 @@ class SiteTests(unittest.TestCase):
         }""")
         self.assertEqual(self.page.evaluate("path=>localStorage.getItem('nsu-pdf-page:'+path)",self.a),'2')
 
+    def check_mobile_pdf_back_without_element_fullscreen(self, display_mode):
+        self.page.set_viewport_size({'width':390,'height':844})
+        self.context.add_init_script("""(() => {
+            const mode = %s;
+            const original = window.matchMedia.bind(window);
+            window.matchMedia = query => {
+                const media = original(query);
+                if (query.includes('display-mode:')) Object.defineProperty(media, 'matches', {
+                    value: query.includes('display-mode: ' + mode)
+                });
+                return media;
+            };
+            window.fullscreenRequests = 0;
+            Element.prototype.requestFullscreen = function() {
+                window.fullscreenRequests++;
+                return Promise.resolve();
+            };
+        })()""" % json.dumps(display_mode))
+        self.home()
+        self.page.locator('#menuBtn').tap()
+        self.page.locator('.nav-btn[data-view="home"]').tap()
+        self.assertEqual(self.page.evaluate('window.fullscreenRequests'),0)
+        for index in [0,1]:
+            self.page.evaluate('(index)=>openPdfFullscreen(viewerUrl(FILES[index]),niceName(FILES[index]))',index)
+            self.page.wait_for_function("document.querySelector('#pdfFullscreen').classList.contains('ready')")
+            frame=self.page.frame_locator('#pdfFullscreenFrame')
+            frame.locator('#mPageInfo').tap()
+            frame.locator('#pageJumpClose').tap()
+            self.assertEqual(frame.locator('html').evaluate('()=>window.fullscreenRequests'),0)
+            self.page.go_back()
+            self.page.wait_for_function("!document.querySelector('#pdfFullscreen').classList.contains('open')")
+            self.assertEqual(self.page.url,self.base)
+            self.assertEqual(self.page.evaluate('window.fullscreenRequests'),0)
+            self.assertFalse(self.page.evaluate('!!document.fullscreenElement'))
+        self.page.locator('#appSettings').tap()
+        self.page.locator('.app-manager').get_by_role('button',name='Проверить обновления',exact=True).wait_for()
+        install_buttons=self.page.locator('.app-manager button').filter(has_text='Установить')
+        self.assertEqual(install_buttons.count(),1 if display_mode == 'browser' else 0)
+
+    def test_mobile_fullscreen_app_closes_pdf_with_one_back_without_fullscreen_requests(self):
+        self.check_mobile_pdf_back_without_element_fullscreen('fullscreen')
+
+    def test_mobile_legacy_app_closes_pdf_with_one_back_without_fullscreen_requests(self):
+        self.check_mobile_pdf_back_without_element_fullscreen('standalone')
+
+    def test_mobile_browser_closes_pdf_with_one_back_without_fullscreen_requests(self):
+        self.check_mobile_pdf_back_without_element_fullscreen('browser')
+
     def test_android_back_saves_continuous_page_even_without_iframe_pagehide(self):
         self.home()
         self.page.evaluate("""() => openPdfFullscreen(viewerUrl(FILES[0]),niceName(FILES[0]))""")

@@ -3,7 +3,7 @@
   "short_name": "NSU FP",
   "start_url": "./",
   "scope": "./",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#080d12",
   "theme_color": "#080d12",
   "description": "Материалы ФФ НГУ: база, конспекты и сохранённые PDF без интернета",

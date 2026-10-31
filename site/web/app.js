@@ -5,7 +5,7 @@
   let registration, installPrompt;
   const nativeBridge = window.NSUFPAndroid || null;
   const nativeAndroid = !!nativeBridge || /\bNSUFPAndroid\//.test(navigator.userAgent);
-  const installed = () => nativeAndroid || matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+  const installed = () => nativeAndroid || matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone===true;
   const installButton = document.getElementById('installApp');
   const downloadsButton = document.getElementById('offlineFiles');
   const settingsButton = document.getElementById('appSettings');

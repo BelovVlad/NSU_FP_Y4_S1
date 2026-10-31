@@ -1294,26 +1294,9 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-function enableMobileImmersiveMode(){
-  if(!window.matchMedia('(max-width:720px), (pointer:coarse)').matches)return;
-  if(document.fullscreenElement||!document.documentElement.requestFullscreen)return;
-  try{
-    const result=document.documentElement.requestFullscreen({navigationUI:'hide'});
-    if(result?.catch)result.catch(()=>{});
-  }catch{}
-}
-const installedApp=()=>window.matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone===true;
-// Only element fullscreen lets the page draw under the camera cutout (viewport-fit=cover);
-// without it the area is a black strip. The browser drops it after the keyboard, app
-// switches or dialogs, so the installed app restores it on the next tap.
-function mobileImmersiveGesture(event){
-  if(event.target.closest('#installApp,#offlineFiles,#appSettings,.app-dialog'))return;
-  if(!installedApp())document.removeEventListener('pointerup',mobileImmersiveGesture,true);
-  enableMobileImmersiveMode();
-}
-document.addEventListener('pointerup',mobileImmersiveGesture,true);
-// Taps inside the PDF frame never reach this document; the viewer calls this instead.
-window.nsuKeepImmersive=()=>{if(installedApp())enableMobileImmersiveMode()};
+// The installed app uses the manifest's fullscreen display mode. Do not request element
+// fullscreen on taps: Chrome consumes Android Back to exit it before PDF history can close
+// the overlay, and the next tap would enter it again with another browser exit hint.
 
 window.addEventListener('hashchange',()=>{
   if(location.hash.startsWith('#search=')){if(FILES.length)takeHashSearch();return}

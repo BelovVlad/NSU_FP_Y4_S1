@@ -161,8 +161,7 @@ class AnnotationTests(unittest.TestCase):
         self.page.evaluate('openPdfFullscreen(viewerUrl(FILES[0]))')
         frame=self.page.frame_locator('#pdfFullscreenFrame')
         frame.locator('.continuous-page .user-notes svg').first.wait_for()
-        # The menu tap requests browser fullscreen (immersive mode); a fullscreen window cannot be resized.
-        self.page.evaluate('async()=>{if(document.fullscreenElement)await document.exitFullscreen()}')
+        self.assertFalse(self.page.evaluate('!!document.fullscreenElement'))
         for width,height in [(1024,1366),(1366,1024),(820,1180)]:
             self.page.set_viewport_size({'width':width,'height':height})
             self.assertTrue(frame.locator('body').evaluate("el=>el.classList.contains('compact-view')&&el.classList.contains('continuous-mode')"))

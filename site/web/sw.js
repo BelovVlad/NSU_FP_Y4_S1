@@ -1,17 +1,17 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'b66b7a7492';
+const SHELL_VERSION = 'd33256cbe1';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
-const CORE = ['index.html', 'site.css?v=6275680126', 'site.js?v=2ed909a48e', 'app.js?v=4cf253284e', 'app.css?v=14a9166752', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=a679564c38', 'manifest.webmanifest?v=6bddccb735',
+const CORE = ['index.html', 'site.css?v=6275680126', 'site.js?v=c807728df3', 'app.js?v=762ca0b170', 'app.css?v=14a9166752', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=a679564c38', 'manifest.webmanifest?v=78bf5d5133',
   'Overseer/overseer.js?v=c6c82cab8a', 'Overseer/overseer.css?v=3c70ee01aa',
   'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
   'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
   'dots.js?v=1792f7e31a', 'search-worker.js?v=32d5520b7c', 'notebook/viewer.html', 'notebook/viewer.css?build=286b961300', 'notebook/outline.js?build=d72f570ee4',
-  'pdfjs/viewer.html', 'pdfjs/viewer.css?v=816b9be83e', 'pdfjs/viewer.js?v=dc7776eeb6', 'pdfjs/icons.js?v=c6753488af', 'pdfjs/pdf-tone.js?v=37583b871e',
+  'pdfjs/viewer.html', 'pdfjs/viewer.css?v=816b9be83e', 'pdfjs/viewer.js?v=0c1310fc04', 'pdfjs/icons.js?v=c6753488af', 'pdfjs/pdf-tone.js?v=37583b871e',
   'pdfjs/search-text.js?v=3770976b57', 'fonts/roboto-condensed-cyrillic-wght-normal.woff2', 'fonts/roboto-condensed-latin-wght-normal.woff2', 'fonts/roboto-condensed-latin-ext-wght-normal.woff2', 'pdfjs/material-paths.js?v=ca1e61a965', 'pdfjs/renamed-materials.js?v=b94bf2d584', 'pdfjs/controls.css?v=87cc11725e', 'pdfjs/notes.js?v=01d30fc6e0', 'pdfjs/notes.css?v=dd61ee64c9', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png?v=f299e7a63c', 'assets/app-512.png?v=9f41a6f2fa', 'particles/index.html', 'particles/particles.js',
   'particles/explorer.css?v=b47a894efb', 'particles/explorer.js?v=4f8c5e98ad', 'particles/layout.js?v=14224e1e89', 'particles/routes.js?v=1127b43bc0', 'particles/extra-particles.js?v=f0a2243a75', 'particles/remaining-particles.js?v=f1ed737ba7'];
