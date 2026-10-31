@@ -1459,4 +1459,50 @@ else{state.view='home';setActiveNav('home')}
   });
 })();
 
+// Motion (site.css, «Motion»). A view fades up when the page itself changes (another view or subject),
+// not when the same page re-renders. On phones the open drawer follows a finger that pulls it to the left
+// and closes past a third of its width or on a quick flick; otherwise it springs back.
+(()=>{
+  const still=matchMedia('(prefers-reduced-motion: reduce)');
+  let shown='';
+  new MutationObserver(()=>{
+    const key=state.view+'|'+(state.view==='subjects'?state.subject:'');
+    if(key===shown||still.matches){shown=key;return}
+    shown=key;main.classList.remove('view-enter');void main.offsetWidth;main.classList.add('view-enter');
+  }).observe(main,{childList:true});
+  // Re-renders of the same page must not replay it, so the class goes once the last block has arrived.
+  main.addEventListener('animationend',event=>{if(event.target===main.lastElementChild)main.classList.remove('view-enter')});
+
+  let start=null;
+  const reset=()=>{sidebar.classList.remove('dragging');overlay.classList.remove('dragging');sidebar.style.transform='';overlay.style.opacity='';};
+  const begin=event=>{
+    if(!sidebar.classList.contains('open')||event.touches.length!==1)return;
+    const t=event.touches[0];start={x:t.clientX,y:t.clientY,time:event.timeStamp,dx:0,axis:''};
+  };
+  const move=event=>{
+    if(!start)return;
+    const t=event.touches[0],dx=t.clientX-start.x,dy=t.clientY-start.y;
+    if(!start.axis){if(Math.abs(dx)<8&&Math.abs(dy)<8)return;start.axis=Math.abs(dx)>Math.abs(dy)?'x':'y'}
+    if(start.axis!=='x'){start=null;return}
+    start.dx=Math.min(0,dx);
+    const width=sidebar.offsetWidth||1;
+    sidebar.classList.add('dragging');overlay.classList.add('dragging');
+    sidebar.style.transform='translateX('+start.dx+'px)';overlay.style.opacity=String(1+start.dx/width);
+  };
+  const end=event=>{
+    if(!start)return;
+    const {dx,time,axis}=start;start=null;
+    if(axis!=='x'){reset();return}
+    const width=sidebar.offsetWidth||1,fast=dx<-30&&event.timeStamp-time<220;
+    reset();
+    if(dx<-width/3||fast)closeMenu();
+  };
+  for(const node of [sidebar,overlay]){
+    node.addEventListener('touchstart',begin,{passive:true});
+    node.addEventListener('touchmove',move,{passive:true});
+    node.addEventListener('touchend',end);
+    node.addEventListener('touchcancel',()=>{start=null;reset()});
+  }
+})();
+
 loadMeta();

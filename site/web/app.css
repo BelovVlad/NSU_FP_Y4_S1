@@ -77,3 +77,12 @@
 
 .topbar-actions svg{display:block;flex:none}
 @media(pointer:coarse){.topbar-actions .ghost-btn,.topbar .menu-btn{width:44px;height:44px}.topbar{min-height:52px}.workspace-resizer{display:none}.workspace{display:block}.subject-list-col{padding-right:0}}
+
+/* Motion: dialogs rise and the backdrop fades in; the button the hub sent us to («#offline») pulses once. */
+.app-dialog[open]{animation:app-dialog-in .28s cubic-bezier(.2,.8,.2,1)}
+.app-dialog[open]::backdrop{animation:app-fade-in .28s ease}
+@keyframes app-dialog-in{from{opacity:0;transform:translateY(10px) scale(.985)}}
+@keyframes app-fade-in{from{opacity:0}}
+.app-manager-btn.app-manager-attention{animation:app-attention 1.6s ease-out 2;border-color:var(--accent,#d45d68)}
+@keyframes app-attention{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent,#d45d68) 55%,transparent)}100%{box-shadow:0 0 0 12px transparent}}
+@media(prefers-reduced-motion:reduce){.app-dialog[open],.app-dialog[open]::backdrop,.app-manager-btn.app-manager-attention{animation:none}}

@@ -1094,3 +1094,48 @@ body{
   .hero{min-height:clamp(184px,24vw,290px)}
   .hero-art .hero-art-base{object-position:80% 88%}
 }
+
+/* Motion. On phones the drawer slides with a soft ease (slower in, quicker out) and the backdrop fades
+   instead of popping in; the drawer follows a finger that pulls it back (site.js, .dragging). Its items
+   arrive in a short cascade, views fade up when the page changes, and the PDF viewer rises in.
+   Reduced motion switches all of it off. */
+@media(max-width:720px), (pointer:coarse){
+  .sidebar{transition:transform .26s cubic-bezier(.4,0,.6,1)}
+  .sidebar.open{transition:transform .4s cubic-bezier(.22,.9,.24,1)}
+  .mobile-overlay{display:block;position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.5);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .26s ease,visibility 0s .26s}
+  .mobile-overlay.show{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .4s ease}
+  .sidebar.dragging,.mobile-overlay.dragging{transition:none}
+  .sidebar.open .main-nav .nav-btn,.sidebar.open .subject-nav>*{animation:nav-in .42s cubic-bezier(.2,.8,.2,1) both}
+  .sidebar.open .main-nav .nav-btn:nth-child(2){animation-delay:.03s}.sidebar.open .main-nav .nav-btn:nth-child(3){animation-delay:.06s}
+  .sidebar.open .subject-nav>:nth-child(1){animation-delay:.08s}.sidebar.open .subject-nav>:nth-child(2){animation-delay:.1s}
+  .sidebar.open .subject-nav>:nth-child(3){animation-delay:.12s}.sidebar.open .subject-nav>:nth-child(4){animation-delay:.14s}
+  .sidebar.open .subject-nav>:nth-child(5){animation-delay:.16s}.sidebar.open .subject-nav>:nth-child(6){animation-delay:.18s}
+  .sidebar.open .subject-nav>:nth-child(n+7){animation-delay:.2s}
+}
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){.mobile-overlay{z-index:200}}
+@keyframes nav-in{from{opacity:0;transform:translateX(-10px)}}
+.main.view-enter>*{animation:view-in .34s cubic-bezier(.2,.8,.2,1) both}
+.main.view-enter>:nth-child(2){animation-delay:.04s}.main.view-enter>:nth-child(n+3){animation-delay:.08s}
+@keyframes view-in{from{opacity:0;transform:translateY(8px)}}
+.pdf-fullscreen.open{animation:pdf-in .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes pdf-in{from{opacity:0;transform:translateY(14px)}}
+
+/* Dots, the motif shared with the PweB hub: on hover its dot grid (sparse red accent) surfaces in the
+   card's top corner and a slow wave runs through it. Touch screens keep a faint still patch. */
+.course-card,.knowledge-card{position:relative;isolation:isolate}
+.course-card:before,.knowledge-card:before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .4s ease;
+  background:radial-gradient(circle,color-mix(in srgb,var(--accent) 75%,transparent) 1.25px,transparent 1.75px) 22px 22px/55px 55px,radial-gradient(circle,color-mix(in srgb,var(--cream,#ead4b7) 34%,transparent) 1.1px,transparent 1.6px) 0 0/11px 11px;
+  -webkit-mask:radial-gradient(circle at 100% 0,#000,transparent 62%),linear-gradient(110deg,#0006 0,#000 26%,#0008 52%,#000e 76%,#0006 100%) 0 0/300% 100%;
+  -webkit-mask-composite:source-in;
+  mask:radial-gradient(circle at 100% 0,#000,transparent 62%),linear-gradient(110deg,#0006 0,#000 26%,#0008 52%,#000e 76%,#0006 100%) 0 0/300% 100%;
+  mask-composite:intersect}
+.course-card:hover:before,.knowledge-card:hover:before,.course-card:focus-visible:before,.knowledge-card:focus-visible:before{opacity:1;animation:card-dots 6s linear infinite}
+@keyframes card-dots{to{-webkit-mask-position:0 0,-150% 0;mask-position:0 0,-150% 0}}
+@media(hover:none){.course-card:before,.knowledge-card:before{opacity:.45}.course-card:active:before,.knowledge-card:active:before{opacity:.65;animation:card-dots 6s linear infinite}}
+.hub-link{margin-bottom:9px}
+
+@media(prefers-reduced-motion:reduce){
+  .sidebar,.sidebar.open,.mobile-overlay,.mobile-overlay.show{transition:none}
+  .sidebar.open .main-nav .nav-btn,.sidebar.open .subject-nav>*,.main.view-enter>*,.pdf-fullscreen.open,
+  .course-card:before,.knowledge-card:before{animation:none!important}
+}
