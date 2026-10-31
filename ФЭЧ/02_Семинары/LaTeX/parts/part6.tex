@@ -1,0 +1,283 @@
+% !TeX root = part6.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% Линии фейнмановских диаграмм: стрелка фермиона и волнистый фотон.
+\tikzset{
+    feyn fermion/.style={
+        draw=rtext,
+        line width=0.9pt,
+        postaction={decorate},
+        decoration={
+            markings,
+            mark=at position 0.55 with {\arrow{Latex}}
+        }
+    },
+    feyn photon/.style={
+        draw=rtext,
+        line width=0.85pt,
+        decorate,
+        decoration={
+            snake,
+            amplitude=1.6pt,
+            segment length=6pt
+        }
+    }
+}
+
+\practice{6}{08.10.2026}{Квантовая электродинамика}
+
+\rtheory{Сечение процесса \texorpdfstring{$AB\to CD$}{AB → CD}}
+
+Рассматриваем процессы
+\begin{equation*}
+    e^+e^-\longrightarrow\mu^+\mu^-,
+    \qquad
+    \pi^+\pi^-\longrightarrow\pi^+\pi^-.
+\end{equation*}
+\rassumption{Будем считать, что это элементарные точечные частицы},
+и для начала \rassumption{пренебрегаем спином: $s=0$}.
+% В записи далее идёт пункт «2) … = 0», первый символ не читается.
+
+Дифференциальное сечение записывается как
+\begin{equation*}
+    d\sigma=\frac{|\mathcal M|^2}{F}\,dQ,
+\end{equation*}
+где $\mathcal M$ --- \rconcept{инвариантная амплитуда},
+\begin{equation*}
+    F=|\vec v_{\text{отн}}|\,2E_A\,2E_B
+\end{equation*}
+--- \rconcept{начальная плотность потока}, а
+\begin{equation*}
+    dQ=(2\pi)^4\delta^{(4)}(p_C+p_D-p_A-p_B)\,
+    \frac{d^3p_C}{(2\pi)^32E_C}\,
+    \frac{d^3p_D}{(2\pi)^32E_D}
+\end{equation*}
+--- \rconcept{элемент фазового объёма}. Здесь $\delta^{(4)}$ ---
+четырёхмерная дельта-функция, $p_A,\dots,p_D$ --- 4-векторы.
+
+В системе центра масс получается
+\begin{equation*}
+    \left.\frac{d\sigma}{d\Omega}\right|_{\text{с.ц.м.}}
+    =\frac{1}{64\pi^2s}\,\frac{p_f}{p_i}\,|\mathcal M|^2,
+    \qquad
+    s=(E_A+E_B)^2,
+\end{equation*}
+\begin{equation*}
+    |\vec p_A|=|\vec p_B|=p_i,
+    \qquad
+    |\vec p_C|=|\vec p_D|=p_f.
+\end{equation*}
+
+\task[1]{Сечение в системе центра масс}
+\label{task:cm_cross_section_sem6}
+
+\condition
+Получить выражение для $d\sigma/d\Omega$ в системе центра масс.
+
+\solution
+\subsection*{Фазовый объём}
+
+В системе центра масс $\vec p_A+\vec p_B=0$ и полная энергия равна $\sqrt s$,
+поэтому
+\begin{equation*}
+    \delta^{(4)}=\delta\!\left(E_C+E_D-\sqrt s\right)\cdot
+    \delta^{(3)}\!\left(\vec p_C+\vec p_D\right).
+\end{equation*}
+Интегрируем по $d^3p_C$ с помощью трёхмерной дельта-функции:
+\begin{equation*}
+    dQ=\frac{(2\pi)^{4-6}}{4}\,
+    \delta\!\left(E_C+E_D-\sqrt s\right)
+    \frac{d^3p_D}{E_CE_D}
+    =\frac{1}{16\pi^2}\,
+    \delta\!\left(E_C+E_D-\sqrt s\right)
+    \frac{d^3p_D}{E_CE_D}.
+\end{equation*}
+В сферических координатах
+\begin{equation*}
+    d^3p_D=p_D^2\,dp_D\,\underbrace{\sin\theta\,d\theta\,d\varphi}_{d\Omega}.
+\end{equation*}
+
+\subsection*{Переход к дельта-функции от энергии}
+
+Из $E^2=p^2+m^2$ и $|\vec p_C|=|\vec p_D|=p_f$:
+\begin{equation*}
+    d(E_C+E_D)
+    =d\!\left(\sqrt{p_f^2+m_C^2}+\sqrt{p_f^2+m_D^2}\right)
+    =p_f\,dp_f\,\frac{E_C+E_D}{E_CE_D}.
+\end{equation*}
+Тогда
+\begin{equation*}
+    dQ=\frac{p_D\,d\Omega}{16\pi^2}
+    \int\delta\!\left(E_C+E_D-\sqrt s\right)
+    \frac{d(E_C+E_D)}{E_C+E_D}
+    =\frac{p_D\,d\Omega}{16\pi^2}\cdot\frac{1}{\sqrt s}.
+\end{equation*}
+
+\subsection*{Поток}
+
+Относительная скорость встречных частиц
+$|\vec v_{\text{отн}}|=p_i/E_A+p_i/E_B$, поэтому
+\begin{equation*}
+    F=|\vec v_{\text{отн}}|\,2E_A\cdot2E_B
+    =4p_i(E_A+E_B)
+    =4p_i\sqrt s.
+\end{equation*}
+
+\answer
+\begin{equation*}
+    \frac{d\sigma}{d\Omega}
+    =\frac{|\mathcal M|^2}{4p_i\sqrt s}\cdot
+    \frac{p_f}{16\pi^2\sqrt s}
+    =\frac{1}{64\pi^2s}\,\frac{p_f}{p_i}\,|\mathcal M|^2.
+\end{equation*}
+
+\rtheory{Четырёхвекторы и метрика}
+
+\begin{align*}
+    A^\mu&=(A^0,\vec A) && \text{--- \rconcept{контравариантный} вектор},\\
+    A_\mu&=(A^0,-\vec A) && \text{--- \rconcept{ковариантный} вектор}.
+\end{align*}
+Скалярное произведение:
+\begin{equation*}
+    A\cdot B=A^0B^0-\vec A\vec B
+    =A_\mu B^\mu=A^\mu B_\mu
+    =g_{\mu\nu}A^\mu B^\nu
+    =g^{\mu\nu}A_\mu B_\nu.
+\end{equation*}
+\rconcept{Метрический тензор}
+\begin{equation*}
+    g_{\mu\nu}=g^{\mu\nu}=
+    \begin{pmatrix}
+        1&0&0&0\\
+        0&-1&0&0\\
+        0&0&-1&0\\
+        0&0&0&-1
+    \end{pmatrix},
+    \qquad
+    g_{\mu\nu}g^{\mu\nu}=4.
+\end{equation*}
+
+\rtheory{Правила Фейнмана для бесспиновых частиц}
+
+\subsection*{Рассеяние \texorpdfstring{$e^-\mu^-\to e^-\mu^-$}{e-mu- → e-mu-}}
+
+\rassumption{Пока $s=0$}: электрон и мюон считаем бесспиновыми.
+Обмен фотоном изображается диаграммой на рисунке.
+
+\begin{rbox}[left=16pt,right=16pt,top=12pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[>=Latex,every node/.style={text=rtext}]
+        \coordinate (V1) at (0,1);
+        \coordinate (V2) at (0,-1);
+        \draw[feyn fermion] (-2.4,1) -- (V1)
+            node[pos=0.45,above] {$p_A$};
+        \draw[feyn fermion] (V1) -- (2.4,1)
+            node[pos=0.55,above] {$p_C$};
+        \draw[feyn fermion] (-2.4,-1) -- (V2)
+            node[pos=0.45,below] {$p_B$};
+        \draw[feyn fermion] (V2) -- (2.4,-1)
+            node[pos=0.55,below] {$p_D$};
+        \draw[feyn photon] (V1) -- (V2);
+        \draw[->,rtextmuted] (0.35,0.55) -- (0.35,-0.55)
+            node[midway,right] {$q$};
+        \node[left] at (-0.05,0) {$\gamma$};
+        \node[left] at (-2.4,1) {$e^-$};
+        \node[right] at (2.4,1) {$e^-$};
+        \node[left] at (-2.4,-1) {$\mu^-$};
+        \node[right] at (2.4,-1) {$\mu^-$};
+        \fill[rtext] (V1) circle(1.6pt);
+        \fill[rtext] (V2) circle(1.6pt);
+    \end{tikzpicture}
+    \captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+    \captionof{figure}{Диаграмма Фейнмана для рассеяния $e^-\mu^-\to e^-\mu^-$
+    с обменом фотоном.}
+    \label{fig:emu_scattering_sem6}
+\end{rbox}
+
+Амплитуда:
+\begin{equation*}
+    -i\mathcal M=
+    \underbrace{ie(p_A+p_C)^\mu}_{\substack{\text{вершинный}\\\text{множитель }e^-}}
+    \underbrace{\left(\frac{-ig_{\mu\nu}}{q^2}\right)}_{\substack{\text{пропагатор}\\\gamma}}
+    \underbrace{ie(p_B+p_D)^\nu}_{\substack{\text{вершинный}\\\text{множитель }\mu^-}}.
+\end{equation*}
+Из сохранения 4-импульса в вершине
+\begin{equation*}
+    p_A=q+p_C
+    \quad\Longrightarrow\quad
+    q=p_A-p_C.
+\end{equation*}
+
+\subsection*{Элементы диаграмм}
+
+\begin{center}
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{>{\raggedright\arraybackslash}m{0.32\textwidth}
+        >{\centering\arraybackslash}m{0.25\textwidth}m{0.25\textwidth}}
+        \hline
+        \rconcept{\bfseries Элемент} & \rconcept{\bfseries Диаграмма}
+        & \rconcept{\bfseries Множитель}\\
+        \hline
+        Вершина: частица с $s=0$, фотон с $s=1$ &
+        \begin{tikzpicture}[>=Latex,every node/.style={text=rtext},baseline=(V)]
+            \coordinate (V) at (0,0);
+            \draw[feyn fermion] (-0.9,0.6) -- (V) node[pos=0,left] {$p$};
+            \draw[feyn fermion] (V) -- (0.9,0.6) node[pos=1,right] {$p'$};
+            \draw[feyn photon] (V) -- (0,-0.8);
+            \fill[rtext] (V) circle(1.4pt);
+        \end{tikzpicture}
+        & $ie\,(p+p')^\mu$\\
+        Пропагатор фотона, $s=1$ &
+        \begin{tikzpicture}[>=Latex,every node/.style={text=rtext},baseline=(A)]
+            \coordinate (A) at (-0.9,0);
+            \draw[feyn photon] (A) -- (0.9,0);
+            \node[below] at (0,-0.1) {$q$};
+        \end{tikzpicture}
+        & $\dfrac{-ig^{\mu\nu}}{q^2}$\\
+        Вершина античастицы ($e^+$) &
+        \begin{tikzpicture}[>=Latex,every node/.style={text=rtext},baseline=(V)]
+            \coordinate (V) at (0,0);
+            \draw[feyn fermion] (V) -- (-0.9,0.6) node[pos=1,left] {$p$};
+            \draw[feyn fermion] (0.9,0.6) -- (V) node[pos=0,right] {$p'$};
+            \draw[feyn photon] (V) -- (0,-0.8);
+            \fill[rtext] (V) circle(1.4pt);
+        \end{tikzpicture}
+        & $ie\,(-p-p')^\mu$\\
+        Аннигиляция $e^-$ с импульсом $p$ и $e^+$ с импульсом $p'$ &
+        \begin{tikzpicture}[>=Latex,every node/.style={text=rtext},baseline=(V)]
+            \coordinate (V) at (0,0);
+            \draw[feyn fermion] (-0.8,0.65) -- (V) node[pos=0,left] {$p$};
+            \draw[feyn fermion] (V) -- (-0.8,-0.65) node[pos=1,left] {$p'$};
+            \draw[feyn photon] (V) -- (1.1,0);
+            \fill[rtext] (V) circle(1.4pt);
+        \end{tikzpicture}
+        & $ie\,(p-p')^\mu$\\
+        \hline
+    \end{tabular}
+\end{center}
+Стрелка на линии показывает направление движения заряда частицы;
+у античастицы она \rnote{направлена против её импульса}.
+
+\task{Двухфотонный распад \texorpdfstring{$\eta$}{η}-мезона}
+\label{task:eta_gg_sem6}
+
+\remark
+Условие этой задачи в записи не сохранилось; от решения остался только фрагмент.
+
+\solution
+Энергия $\eta$-мезона делится между двумя фотонами:
+\begin{equation*}
+    E_1+E_2=E.
+\end{equation*}
+Инвариантная масса пары фотонов:
+\begin{equation*}
+    m_\eta^2=2E_1E_2(1-\cos\theta).
+\end{equation*}
+При $\cos\theta=0$ отсюда
+\begin{equation*}
+    m_\eta^2=2E_1E_2=2E_1(E-E_1).
+\end{equation*}
+
+\end{document}

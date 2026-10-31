@@ -1,0 +1,228 @@
+% !TeX root = part8.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+\practice{8}{22.10.2026}{Уравнение Дирака. \texorpdfstring{$\gamma$}{γ}-матрицы}
+
+\rtheory{Уравнение Дирака}
+
+\begin{equation*}
+    \left(i\gamma^\mu\partial_\mu-m\right)\psi=0,
+    \qquad
+    \partial_\mu=\left(\frac{\partial}{\partial t},\,\nabla\right).
+\end{equation*}
+Здесь $\psi$ --- \rconcept{спинор}, $\gamma^\mu$ --- \rconcept{матрицы Дирака}.
+
+\subsection*{Представление Паули--Дирака}
+
+\begin{equation*}
+    \gamma^\mu=\left(\beta,\,\beta\vec\alpha\right),
+    \qquad
+    \vec\alpha=
+    \begin{pmatrix}
+        0&\vec\sigma\\
+        \vec\sigma&0
+    \end{pmatrix},
+    \qquad
+    \beta=
+    \begin{pmatrix}
+        I&0\\
+        0&-I
+    \end{pmatrix}.
+\end{equation*}
+\rconcept{Матрицы Паули}:
+\begin{equation*}
+    \sigma_1=
+    \begin{pmatrix}
+        0&1\\
+        1&0
+    \end{pmatrix},
+    \qquad
+    \sigma_2=
+    \begin{pmatrix}
+        0&-i\\
+        i&0
+    \end{pmatrix},
+    \qquad
+    \sigma_3=
+    \begin{pmatrix}
+        1&0\\
+        0&-1
+    \end{pmatrix}.
+\end{equation*}
+
+\subsection*{Свойства \texorpdfstring{$\gamma$}{γ}-матриц}
+
+\rconcept{Антикоммутационное соотношение}:
+\begin{equation*}
+    \gamma^\mu\gamma^\nu+\gamma^\nu\gamma^\mu=2g^{\mu\nu}.
+\end{equation*}
+Компоненты:
+\begin{equation*}
+    \gamma^\mu=\left(\gamma^0,\gamma^1,\gamma^2,\gamma^3\right),
+    \qquad
+    \gamma^0=
+    \begin{pmatrix}
+        I&0\\
+        0&-I
+    \end{pmatrix},
+    \qquad
+    \vec\gamma=
+    \begin{pmatrix}
+        0&\vec\sigma\\
+        -\vec\sigma&0
+    \end{pmatrix}.
+\end{equation*}
+Квадраты:
+\begin{align*}
+    (\gamma^0)^2&=\mathbf 1 \quad\text{--- единичная матрица},\\
+    (\gamma^k)^2&=
+    \begin{pmatrix}
+        0&\sigma_k\\
+        -\sigma_k&0
+    \end{pmatrix}
+    \begin{pmatrix}
+        0&\sigma_k\\
+        -\sigma_k&0
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        -\sigma_k^2&0\\
+        0&-\sigma_k^2
+    \end{pmatrix}
+    =-\mathbf 1.
+\end{align*}
+Эрмитово сопряжение:
+\begin{align*}
+    (\gamma^0)^\dagger&=\gamma^0,\\
+    (\gamma^k)^\dagger&=
+    \begin{pmatrix}
+        0&\sigma_k\\
+        -\sigma_k&0
+    \end{pmatrix}^\dagger
+    =
+    \begin{pmatrix}
+        0&-\sigma_k^\dagger\\
+        \sigma_k^\dagger&0
+    \end{pmatrix}
+    =-\gamma^k.
+\end{align*}
+
+\task[1]{Свёртки \texorpdfstring{$\gamma$}{γ}-матриц}
+\label{task:gamma_contractions_sem8}
+
+\condition
+Обозначим $\hat a=a^\mu\gamma_\mu$ (в другой записи $a\!\!\!/$).
+Упростить свёртки
+\begin{equation*}
+    \gamma^\mu\gamma_\mu,\qquad
+    \gamma^\mu\hat a\gamma_\mu,\qquad
+    \gamma^\mu\hat a\hat b\gamma_\mu,\qquad
+    \gamma^\mu\hat a\hat b\hat c\gamma_\mu.
+\end{equation*}
+
+\solution
+\subsection*{1) \texorpdfstring{$\gamma^\mu\gamma_\mu$}{γ^μ γ_μ}}
+
+\begin{equation*}
+    \gamma^\mu\gamma_\mu=\gamma^\mu\gamma^\nu g_{\mu\nu}
+    =\frac12\left(\gamma^\mu\gamma^\nu+\gamma^\nu\gamma^\mu\right)g_{\mu\nu}
+    =\frac12\cdot2g^{\mu\nu}g_{\mu\nu}=4.
+\end{equation*}
+
+\subsection*{2) \texorpdfstring{$\gamma^\mu\hat a\gamma_\mu$}{γ^μ a γ_μ}}
+
+\begin{align*}
+    \gamma^\mu\hat a\gamma_\mu
+    &=a_\nu\gamma^\mu\gamma^\nu\gamma_\mu
+    =a_\nu\left(2g^{\mu\nu}-\gamma^\nu\gamma^\mu\right)\gamma_\mu\\
+    &=2a^\mu\gamma_\mu-a_\nu\gamma^\nu\cdot4
+    =2\hat a-4\hat a=-2\hat a.
+\end{align*}
+
+\subsection*{3) \texorpdfstring{$\gamma^\mu\hat a\hat b\gamma_\mu$}{γ^μ a b γ_μ}}
+
+\begin{align*}
+    \gamma^\mu\hat a\hat b\gamma_\mu
+    &=a_\nu\gamma^\mu\gamma^\nu\hat b\gamma_\mu
+    =a_\nu\left(2g^{\mu\nu}-\gamma^\nu\gamma^\mu\right)\hat b\gamma_\mu\\
+    &=2a^\mu\hat b\gamma_\mu-a_\nu\gamma^\nu\left(\gamma^\mu\hat b\gamma_\mu\right)
+    =2\hat b\hat a+2\hat a\hat b
+    =2\left(\hat b\hat a+\hat a\hat b\right)\\
+    &=2\left(\gamma_\mu a^\mu\gamma_\nu b^\nu+\gamma_\nu b^\nu\gamma_\mu a^\mu\right)
+    =2a^\mu b^\nu\left(\gamma_\mu\gamma_\nu+\gamma_\nu\gamma_\mu\right)\\
+    &=4a^\mu b^\nu g_{\mu\nu}=4(a\cdot b).
+\end{align*}
+
+\subsection*{4) \texorpdfstring{$\gamma^\mu\hat a\hat b\hat c\gamma_\mu$}{γ^μ a b c γ_μ}}
+
+\begin{align*}
+    \gamma^\mu\hat a\hat b\hat c\gamma_\mu
+    &=a_\nu\gamma^\mu\gamma^\nu\hat b\hat c\gamma_\mu
+    =a_\nu\left(2g^{\mu\nu}-\gamma^\nu\gamma^\mu\right)\hat b\hat c\gamma_\mu\\
+    &=2a^\mu\hat b\hat c\gamma_\mu-a_\nu\gamma^\nu
+    \left(\gamma^\mu\hat b\hat c\gamma_\mu\right)
+    =2\hat b\hat c\hat a-2\hat a\left(\hat c\hat b+\hat b\hat c\right)\\
+    &=2\hat b\hat c\hat a-2\hat a\hat c\hat b-2\hat a\hat b\hat c.
+\end{align*}
+Скобка $\hat c\hat b+\hat b\hat c=2(b\cdot c)$ --- \rnote{число}, поэтому её
+можно переставить через $\hat a$:
+\begin{equation*}
+    \gamma^\mu\hat a\hat b\hat c\gamma_\mu
+    =2\hat b\hat c\hat a-2\left(\hat c\hat b+\hat b\hat c\right)\hat a
+    =-2\hat c\hat b\hat a.
+\end{equation*}
+
+\answer
+\begin{align*}
+    \gamma^\mu\gamma_\mu&=4, &
+    \gamma^\mu\hat a\gamma_\mu&=-2\hat a,\\
+    \gamma^\mu\hat a\hat b\gamma_\mu&=4(a\cdot b), &
+    \gamma^\mu\hat a\hat b\hat c\gamma_\mu&=-2\hat c\hat b\hat a.
+\end{align*}
+Для нечётного числа множителей в общем виде
+\begin{equation*}
+    \gamma^\mu\hat a_1\hat a_2\ldots\hat a_{2n+1}\gamma_\mu
+    =-2\hat a_{2n+1}\hat a_{2n}\ldots\hat a_1.
+\end{equation*}
+
+\rtheory{Матрица \texorpdfstring{$\gamma^5$}{γ5}}
+
+\begin{equation*}
+    \gamma^5=i\gamma^0\gamma^1\gamma^2\gamma^3=
+    \begin{pmatrix}
+        0&I\\
+        I&0
+    \end{pmatrix}.
+\end{equation*}
+Свойства:
+\begin{align*}
+    (\gamma^5)^2&=
+    \begin{pmatrix}
+        0&I\\
+        I&0
+    \end{pmatrix}
+    \begin{pmatrix}
+        0&I\\
+        I&0
+    \end{pmatrix}
+    =\mathbf 1,\\
+    (\gamma^5)^\dagger&=\gamma^5,\\
+    \gamma^5\gamma^\mu+\gamma^\mu\gamma^5&=0.
+\end{align*}
+
+\task[2]{Следы \texorpdfstring{$\gamma$}{γ}-матриц}
+\label{task:gamma_traces_sem8}
+
+\condition
+Вычислить следы $\operatorname{Tr}\mathbf 1$ и $\operatorname{Tr}[\hat a\hat b]$.
+
+\solution
+\begin{enumerate}[label=\arabic*)]
+    \item $\operatorname{Tr}\mathbf 1=4$.
+    \item $\operatorname{Tr}[\hat a\hat b]$ вычисляется на следующем занятии
+    с помощью общей формулы для следа произведения $\gamma$-матриц.
+\end{enumerate}
+
+\end{document}

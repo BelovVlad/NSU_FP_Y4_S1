@@ -1,0 +1,522 @@
+% !TeX root = part9.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+\practice{9}{29.10.2026}{Следы \texorpdfstring{$\gamma$}{γ}-матриц. Спиноры Дирака}
+
+\rtheory{След произведения \texorpdfstring{$\gamma$}{γ}-матриц}
+
+След произведения $n$ матриц сводится к следам произведений $n-2$ матриц:
+\begin{equation*}
+    \operatorname{Tr}\left[\gamma^{\mu_1}\ldots\gamma^{\mu_n}\right]
+    =\sum_{i=2}^{n}(-1)^i g^{\mu_1\mu_i}
+    \operatorname{Tr}\left[\gamma^{\mu_2}\ldots
+    \gamma^{\mu_{i-1}}\gamma^{\mu_{i+1}}\ldots\gamma^{\mu_n}\right],
+\end{equation*}
+где в оставшемся следе пропущены $\gamma^{\mu_1}$ и $\gamma^{\mu_i}$. Формула получается,
+если переносить $\gamma^{\mu_1}$ вправо антикоммутатором
+$\gamma^{\mu_1}\gamma^{\mu_i}=2g^{\mu_1\mu_i}-\gamma^{\mu_i}\gamma^{\mu_1}$
+и воспользоваться цикличностью следа.
+
+\subsection*{Окончание задачи 2 занятия 8}
+
+При $n=2$ формула даёт
+$\operatorname{Tr}[\gamma^\mu\gamma^\nu]=g^{\mu\nu}\operatorname{Tr}\mathbf 1=4g^{\mu\nu}$,
+поэтому
+\begin{equation*}
+    \operatorname{Tr}[\hat a\hat b]
+    =a_\mu b_\nu\operatorname{Tr}[\gamma^\mu\gamma^\nu]
+    =4(a\cdot b).
+\end{equation*}
+
+\task[1]{Следы с \texorpdfstring{$\gamma^5$}{γ5}}
+\label{task:gamma5_traces_sem9}
+
+\condition
+Вычислить $\operatorname{Tr}[\gamma^5]$, $\operatorname{Tr}[\gamma^5\hat a]$,
+$\operatorname{Tr}[\gamma^5\hat a\hat b]$.
+
+\solution
+\subsection*{\texorpdfstring{$\operatorname{Tr}[\gamma^5]$}{Tr γ5}}
+
+\begin{equation*}
+    \operatorname{Tr}[\gamma^5]
+    =i\operatorname{Tr}\left[\gamma^0\gamma^1\gamma^2\gamma^3\right]
+    =4i\left[g^{01}g^{23}-g^{02}g^{13}+g^{03}g^{12}\right]=0,
+\end{equation*}
+так как все недиагональные компоненты метрики равны нулю.
+
+\subsection*{\texorpdfstring{$\operatorname{Tr}[\gamma^5\hat a]$}{Tr γ5 a}}
+
+\begin{equation*}
+    \operatorname{Tr}[\gamma^5\hat a]
+    =\operatorname{Tr}\left[\gamma^5a^\mu\gamma_\mu\right]
+    =a^\mu\operatorname{Tr}\left[\gamma^5\gamma_\mu\right]=0:
+\end{equation*}
+под следом нечётное число (пять) матриц $\gamma^\mu$.
+
+\subsection*{\texorpdfstring{$\operatorname{Tr}[\gamma^5\hat a\hat b]$}{Tr γ5 a b}}
+
+\begin{align*}
+    \operatorname{Tr}[\gamma^5\hat a\hat b]
+    &=a_\mu b_\nu\,i\operatorname{Tr}\left[\gamma^0\gamma^1\gamma^2\gamma^3
+    \gamma^\mu\gamma^\nu\right]\\
+    &=a_\mu b_\nu\cdot i\left[
+    -g^{0\mu}\operatorname{Tr}\left[\gamma^1\gamma^2\gamma^3\gamma^\nu\right]
+    +g^{0\nu}\operatorname{Tr}\left[\gamma^1\gamma^2\gamma^3\gamma^\mu\right]
+    \right]=0.
+\end{align*}
+Слагаемые с $g^{01}$, $g^{02}$, $g^{03}$ равны нулю, а каждый оставшийся след
+четырёх матриц содержит только произведения $g^{12}$, $g^{13}$, $g^{23}$
+и снова обращается в нуль.
+
+\answer
+\begin{equation*}
+    \operatorname{Tr}[\gamma^5]=\operatorname{Tr}[\gamma^5\hat a]
+    =\operatorname{Tr}[\gamma^5\hat a\hat b]=0.
+\end{equation*}
+
+\rtheory{Спиноры}
+
+\subsection*{Уравнение для амплитуды}
+
+\begin{equation*}
+    \left(i\gamma^\mu\partial_\mu-m\right)\psi=0,
+    \qquad
+    \psi=u(\vec p)e^{-ipx},
+    \qquad
+    H\psi=E\psi,
+\end{equation*}
+\begin{equation*}
+    \left(\vec\alpha\vec p+\beta m\right)u=Eu,
+    \qquad
+    \vec\alpha=
+    \begin{pmatrix}
+        0&\vec\sigma\\
+        \vec\sigma&0
+    \end{pmatrix},
+    \qquad
+    \beta=
+    \begin{pmatrix}
+        I&0\\
+        0&-I
+    \end{pmatrix}.
+\end{equation*}
+Записываем $u$ через два двухкомпонентных столбца $u_A$, $u_B$:
+\begin{equation*}
+    \left(
+    \begin{pmatrix}
+        0&\vec\sigma\vec p\\
+        \vec\sigma\vec p&0
+    \end{pmatrix}
+    +
+    \begin{pmatrix}
+        m&0\\
+        0&-m
+    \end{pmatrix}
+    \right)
+    \begin{pmatrix}
+        u_A\\ u_B
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        m&\vec\sigma\vec p\\
+        \vec\sigma\vec p&-m
+    \end{pmatrix}
+    \begin{pmatrix}
+        u_A\\ u_B
+    \end{pmatrix}
+    =E
+    \begin{pmatrix}
+        u_A\\ u_B
+    \end{pmatrix}.
+\end{equation*}
+Отсюда
+\begin{equation*}
+    \left\{
+    \begin{aligned}
+        \vec\sigma\vec p\,u_B&=(E-m)\,u_A,\\
+        \vec\sigma\vec p\,u_A&=(E+m)\,u_B.
+    \end{aligned}
+    \right.
+\end{equation*}
+
+\subsection*{Решения с положительной и отрицательной энергией}
+
+\begin{enumerate}[label=\arabic*)]
+    \item $E>0$:
+    \begin{equation*}
+        u_A^{1,2}=\chi^{1,2},
+        \qquad
+        \chi^1=
+        \begin{pmatrix}
+            1\\0
+        \end{pmatrix},
+        \quad
+        \chi^2=
+        \begin{pmatrix}
+            0\\1
+        \end{pmatrix},
+        \qquad
+        u_B^{1,2}=\frac{\vec\sigma\vec p}{E+m}\,\chi^{1,2}.
+    \end{equation*}
+    \item $E<0$:
+    \begin{equation*}
+        u_A^{3,4}=\frac{-\vec\sigma\vec p}{|E|+m}\,\chi^{1,2},
+        \qquad
+        u_B^{3,4}=\chi^{1,2}.
+    \end{equation*}
+\end{enumerate}
+Решения с отрицательной энергией описывают античастицы:
+\begin{equation*}
+    u^{3,4}(-\vec p)\,e^{-i(-p)x}=v^{2,1}(\vec p)\,e^{ipx}.
+\end{equation*}
+
+\subsection*{Частицы и античастицы}
+
+\rconcept{Частицы}:
+\begin{equation*}
+    \underset{s=1/2}{
+    \begin{pmatrix}
+        \chi^1\\[0.3em]
+        \dfrac{\vec\sigma\vec p}{E+m}\chi^1
+    \end{pmatrix}},
+    \qquad
+    \underset{s=-1/2}{
+    \begin{pmatrix}
+        \chi^2\\[0.3em]
+        \dfrac{\vec\sigma\vec p}{E+m}\chi^2
+    \end{pmatrix}}.
+\end{equation*}
+\rconcept{Античастицы}:
+\begin{equation*}
+    \underset{s=1/2}{
+    \begin{pmatrix}
+        \dfrac{-\vec\sigma\vec p}{|E|+m}\chi^2\\[0.6em]
+        \chi^2
+    \end{pmatrix}},
+    \qquad
+    \underset{s=-1/2}{
+    \begin{pmatrix}
+        \dfrac{-\vec\sigma\vec p}{|E|+m}\chi^1\\[0.6em]
+        \chi^1
+    \end{pmatrix}}.
+\end{equation*}
+
+\remark
+Здесь выписаны решения $u^{4}$ и $u^{3}$ с импульсом $\vec p$.
+Спинор античастицы с физическим импульсом $\vec p$ по формуле выше
+равен $v(\vec p)=u(-\vec p)$, то есть отличается \rnote{знаком перед
+$\vec\sigma\vec p$}:
+\begin{equation*}
+    v^{1}(\vec p)=
+    \begin{pmatrix}
+        \dfrac{\vec\sigma\vec p}{E+m}\chi^2\\[0.6em]
+        \chi^2
+    \end{pmatrix}\sqrt{E+m},
+    \qquad
+    v^{2}(\vec p)=
+    \begin{pmatrix}
+        \dfrac{\vec\sigma\vec p}{E+m}\chi^1\\[0.6em]
+        \chi^1
+    \end{pmatrix}\sqrt{E+m}.
+\end{equation*}
+
+\subsection*{Нормировка}
+
+Все спиноры умножаются на $\sqrt{E+m}$. При $\vec p=0$ это $\sqrt{2m}$,
+и спиноры, делённые на $\sqrt{2m}$, совпадают с базисными столбцами:
+\begin{align*}
+    e^-&:&
+    \begin{pmatrix}
+        1\\0\\0\\0
+    \end{pmatrix}
+    &\longleftrightarrow
+    \begin{pmatrix}
+        \chi^1\\0
+    \end{pmatrix},
+    &
+    \begin{pmatrix}
+        0\\1\\0\\0
+    \end{pmatrix}
+    &\longleftrightarrow
+    \begin{pmatrix}
+        \chi^2\\0
+    \end{pmatrix},\\[0.5em]
+    e^+&:&
+    \begin{pmatrix}
+        0\\0\\0\\1
+    \end{pmatrix}
+    &\longleftrightarrow
+    \begin{pmatrix}
+        0\\\chi^2
+    \end{pmatrix},
+    &
+    \begin{pmatrix}
+        0\\0\\1\\0
+    \end{pmatrix}
+    &\longleftrightarrow
+    \begin{pmatrix}
+        0\\\chi^1
+    \end{pmatrix}.
+\end{align*}
+
+\subsection*{Нерелятивистская частица}
+
+Пусть $\vec p\parallel z$. Тогда
+\begin{equation*}
+    \frac{\vec\sigma\vec p}{E+m}
+    =\frac{\sigma_zp}{E+m}
+    =
+    \begin{pmatrix}
+        1&0\\
+        0&-1
+    \end{pmatrix}
+    \frac{p}{E+m}.
+\end{equation*}
+При $v\ll c$ имеем $p\simeq mv$, $E+m\simeq2m$:
+\begin{align*}
+    \chi^1&:\quad
+    \frac{p}{E+m}
+    \begin{pmatrix}
+        1\\0
+    \end{pmatrix}
+    \simeq\frac{mv}{2m}
+    \begin{pmatrix}
+        1\\0
+    \end{pmatrix},\\
+    \chi^2&:\quad
+    \frac{p}{E+m}
+    \begin{pmatrix}
+        0\\-1
+    \end{pmatrix}
+    \simeq\frac{mv}{2m}
+    \begin{pmatrix}
+        0\\-1
+    \end{pmatrix}.
+\end{align*}
+С восстановленной скоростью света $v\to v/c$.
+
+\subsubsection*{Электрон}
+
+\begin{equation*}
+    \frac{u^{1}(\vec p)}{\sqrt{2m}}
+    \simeq
+    \begin{pmatrix}
+        \chi^1\\[0.2em]
+        \dfrac{v}{2c}\sigma_z\chi^1
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        1\\0\\ \dfrac{v}{2c}\\0
+    \end{pmatrix},
+    \qquad
+    \frac{u^{2}(\vec p)}{\sqrt{2m}}
+    \simeq
+    \begin{pmatrix}
+        \chi^2\\[0.2em]
+        \dfrac{v}{2c}\sigma_z\chi^2
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        0\\1\\0\\ -\dfrac{v}{2c}
+    \end{pmatrix}.
+\end{equation*}
+
+\subsubsection*{Позитрон}
+
+Для физического импульса $\vec p\parallel +z$ берём $v(\vec p)=u(-\vec p)$,
+поэтому знак перед $\sigma_z$ положительный:
+\begin{equation*}
+    \frac{v^{1}(\vec p)}{\sqrt{2m}}
+    \simeq
+    \begin{pmatrix}
+        \dfrac{v}{2c}\sigma_z\chi^2\\[0.4em]
+        \chi^2
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        0\\ -\dfrac{v}{2c}\\0\\1
+    \end{pmatrix},
+    \qquad
+    \frac{v^{2}(\vec p)}{\sqrt{2m}}
+    \simeq
+    \begin{pmatrix}
+        \dfrac{v}{2c}\sigma_z\chi^1\\[0.4em]
+        \chi^1
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        \dfrac{v}{2c}\\0\\1\\0
+    \end{pmatrix}.
+\end{equation*}
+Решения с отрицательной энергией $u^{4,3}(\vec p)$ отличаются от этих
+знаком перед $v/(2c)$.
+
+\rtheory{Уравнения для \texorpdfstring{$u$}{u} и \texorpdfstring{$v$}{v}}
+
+В обозначении $\hat p=p^\mu\gamma_\mu$:
+\begin{align*}
+    (\hat p-m)\,u(\vec p)&=0,\\
+    (-\hat p-m)\,u^{3,4}(-\vec p)&=0 \quad\text{--- ветвь с $E<0$},\\
+    (\hat p+m)\,v(\vec p)&=0 \quad\text{--- для античастицы}.
+\end{align*}
+\rconcept{Дираковски сопряжённые} спиноры $\bar u$, $\bar v$ --- строки:
+\begin{equation*}
+    \bar u=u^\dagger\gamma^0,
+    \qquad
+    \bar v=v^\dagger\gamma^0.
+\end{equation*}
+Нормировка:
+\begin{equation*}
+    \left\{
+    \begin{aligned}
+        \bar u^{(s)}u^{(s)}&=2m,\\
+        \bar v^{(s)}v^{(s)}&=-2m,
+    \end{aligned}
+    \right.
+    \qquad
+    s=1,2\ \text{--- спиновый индекс}.
+\end{equation*}
+Для $\vec p=p\,\vec e_z$
+\begin{equation*}
+    u^{(s)}=
+    \begin{pmatrix}
+        \chi^{(s)}\\[0.2em]
+        \dfrac{\vec\sigma\vec p}{E+m}\chi^{(s)}
+    \end{pmatrix}\sqrt{E+m}
+    =
+    \begin{pmatrix}
+        \chi^{(s)}\\[0.2em]
+        \dfrac{\sigma_zp_z}{E+m}\chi^{(s)}
+    \end{pmatrix}\sqrt{E+m}.
+\end{equation*}
+
+\remark[Домашнее задание.]
+\begin{enumerate}[label=\arabic*)]
+    \item Вывести уравнения Дирака для $\bar u$ и $\bar v$.
+    \item Найти $\bar u^{(s)}$ для $\vec p=p\,\vec e_z$ и проверить нормировку
+    $\bar u^{(s)}u^{(s)}=2m$.
+\end{enumerate}
+
+\rtheory{Сводка: следы и суммы по спинам}
+
+\remark
+Раздел дополняет разобранное у доски. Здесь собраны соотношения,
+которые понадобятся при вычислении $|\mathcal M|^2$ для частиц со спином.
+Все формулы проверены прямым вычислением в представлении Паули--Дирака.
+
+\subsection*{Общие свойства следа}
+
+\begin{equation*}
+    \operatorname{Tr}[A+B]=\operatorname{Tr}A+\operatorname{Tr}B,
+    \qquad
+    \operatorname{Tr}[AB]=\operatorname{Tr}[BA],
+    \qquad
+    \operatorname{Tr}[ABC]=\operatorname{Tr}[CAB]=\operatorname{Tr}[BCA].
+\end{equation*}
+Переставлять под следом можно только \rnote{циклически}:
+в общем случае $\operatorname{Tr}[ABC]\ne\operatorname{Tr}[ACB]$.
+
+\subsection*{След нечётного числа \texorpdfstring{$\gamma$}{γ}-матриц}
+
+\begin{equation*}
+    \operatorname{Tr}\left[\gamma^{\mu_1}\gamma^{\mu_2}\ldots\gamma^{\mu_{2n+1}}\right]=0.
+\end{equation*}
+Доказательство: вставим $\mathbf 1=(\gamma^5)^2$, перенесём один $\gamma^5$
+циклически в конец и затем пронесём его налево через все $2n+1$ матриц,
+каждый раз меняя знак:
+\begin{align*}
+    \operatorname{Tr}\left[\gamma^{\mu_1}\ldots\gamma^{\mu_{2n+1}}\right]
+    &=\operatorname{Tr}\left[\gamma^5\gamma^5\gamma^{\mu_1}\ldots\gamma^{\mu_{2n+1}}\right]
+    =\operatorname{Tr}\left[\gamma^5\gamma^{\mu_1}\ldots\gamma^{\mu_{2n+1}}\gamma^5\right]\\
+    &=(-1)^{2n+1}\operatorname{Tr}\left[\gamma^5\gamma^5\gamma^{\mu_1}\ldots\gamma^{\mu_{2n+1}}\right]
+    =-\operatorname{Tr}\left[\gamma^{\mu_1}\ldots\gamma^{\mu_{2n+1}}\right].
+\end{align*}
+След равен минус самому себе, значит, он равен нулю.
+По той же причине $\operatorname{Tr}[\gamma^5\gamma^\mu]=0$
+и $\operatorname{Tr}[\gamma^5\gamma^\mu\gamma^\nu\gamma^\rho]=0$.
+
+\subsection*{Следы чётного числа \texorpdfstring{$\gamma$}{γ}-матриц}
+
+\begin{align*}
+    \operatorname{Tr}\mathbf 1&=4,\\
+    \operatorname{Tr}\left[\gamma^\mu\gamma^\nu\right]&=4g^{\mu\nu},\\
+    \operatorname{Tr}\left[\gamma^\mu\gamma^\nu\gamma^\rho\gamma^\sigma\right]
+    &=4\left(g^{\mu\nu}g^{\rho\sigma}-g^{\mu\rho}g^{\nu\sigma}
+    +g^{\mu\sigma}g^{\nu\rho}\right).
+\end{align*}
+В свёртке с векторами:
+\begin{align*}
+    \operatorname{Tr}[\hat a\hat b]&=4(a\cdot b),\\
+    \operatorname{Tr}[\hat a\hat b\hat c\hat d]
+    &=4\left[(a\cdot b)(c\cdot d)-(a\cdot c)(b\cdot d)+(a\cdot d)(b\cdot c)\right].
+\end{align*}
+След не меняется при записи матриц в обратном порядке:
+\begin{equation*}
+    \operatorname{Tr}\left[\gamma^{\mu_1}\gamma^{\mu_2}\ldots\gamma^{\mu_n}\right]
+    =\operatorname{Tr}\left[\gamma^{\mu_n}\ldots\gamma^{\mu_2}\gamma^{\mu_1}\right].
+\end{equation*}
+
+\subsection*{Следы с \texorpdfstring{$\gamma^5$}{γ5}}
+
+\begin{align*}
+    \operatorname{Tr}\gamma^5&=0,\\
+    \operatorname{Tr}\left[\gamma^5\gamma^\mu\gamma^\nu\right]&=0,\\
+    \operatorname{Tr}\left[\gamma^5\gamma^\mu\gamma^\nu\gamma^\rho\gamma^\sigma\right]
+    &=-4i\varepsilon^{\mu\nu\rho\sigma},
+\end{align*}
+где $\varepsilon^{\mu\nu\rho\sigma}$ --- полностью антисимметричный тензор,
+\rassumption{$\varepsilon^{0123}=+1$}, $\varepsilon_{0123}=-1$.
+При другом соглашении о знаке $\varepsilon^{0123}$ знак в последней формуле
+меняется. Полезны также свёртки
+\begin{equation*}
+    \varepsilon^{\mu\nu\rho\sigma}\varepsilon_{\mu\nu\rho\sigma}=-24,
+    \qquad
+    \varepsilon^{\alpha\beta\mu\nu}\varepsilon_{\alpha\beta\rho\sigma}
+    =-2\left(\delta^\mu_\rho\delta^\nu_\sigma-\delta^\mu_\sigma\delta^\nu_\rho\right).
+\end{equation*}
+
+\subsection*{Свёртки}
+
+К результатам задачи~1 занятия~8 добавляется
+случай четырёх множителей:
+\begin{equation*}
+    \gamma^\mu\hat a\hat b\hat c\hat d\gamma_\mu
+    =2\left(\hat d\hat a\hat b\hat c+\hat c\hat b\hat a\hat d\right).
+\end{equation*}
+
+\subsection*{Эрмитово сопряжение}
+
+Из $(\gamma^0)^\dagger=\gamma^0$, $(\gamma^k)^\dagger=-\gamma^k$ и антикоммутации
+\begin{equation*}
+    \gamma^0\gamma^{\mu\dagger}\gamma^0=\gamma^\mu,
+    \qquad
+    \gamma^0\gamma^{5\dagger}\gamma^0=-\gamma^5.
+\end{equation*}
+Для произвольной матрицы $\Gamma$ вводят $\bar\Gamma=\gamma^0\Gamma^\dagger\gamma^0$.
+Тогда $\left(\bar u_1\Gamma u_2\right)^*=\bar u_2\bar\Gamma u_1$,
+и, в частности, $\overline{\gamma^\mu}=\gamma^\mu$,
+$\overline{\gamma^\mu\gamma^\nu}=\gamma^\nu\gamma^\mu$.
+
+\subsection*{Суммы по спинам}
+
+Для спиноров $u^{(s)}$ и $v^{(s)}$, нормированных множителем $\sqrt{E+m}$,
+\begin{equation*}
+    \sum_{s=1,2}u^{(s)}(p)\,\bar u^{(s)}(p)=\hat p+m,
+    \qquad
+    \sum_{s=1,2}v^{(s)}(p)\,\bar v^{(s)}(p)=\hat p-m.
+\end{equation*}
+Отсюда получается правило вычисления квадрата амплитуды:
+сумма по спинам сводится к следу
+\begin{equation*}
+    \sum_{s,s'}\left[\bar u^{(s')}(p')\,\Gamma_1\,u^{(s)}(p)\right]
+    \left[\bar u^{(s')}(p')\,\Gamma_2\,u^{(s)}(p)\right]^*
+    =\operatorname{Tr}\left[\Gamma_1(\hat p+m)\bar\Gamma_2(\hat p'+m)\right].
+\end{equation*}
+Для античастицы соответствующий множитель $\hat p+m$ заменяется на $\hat p-m$.
+При усреднении по начальным спинам неполяризованных частиц добавляется множитель
+$1/2$ на каждый начальный фермион.
+
+\end{document}

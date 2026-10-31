@@ -1,0 +1,442 @@
+% !TeX root = part7.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% Линии фейнмановских диаграмм: стрелка фермиона и волнистый фотон.
+\tikzset{
+    feyn fermion/.style={
+        draw=rtext,
+        line width=0.9pt,
+        postaction={decorate},
+        decoration={
+            markings,
+            mark=at position 0.55 with {\arrow{Latex}}
+        }
+    },
+    feyn photon/.style={
+        draw=rtext,
+        line width=0.85pt,
+        decorate,
+        decoration={
+            snake,
+            amplitude=1.6pt,
+            segment length=6pt
+        }
+    },
+    feyn line/.style={
+        draw=rtext,
+        line width=0.9pt
+    }
+}
+
+\practice{7}{15.10.2026}{Бесспиновая электродинамика. Кроссинг и переменные Мандельштама}
+
+\rtheory{Пропагатор и вершина}
+
+Напомним элементы диаграмм для бесспиновых частиц:
+\begin{align*}
+    &\text{пропагатор фотона ($s=1$, импульс $q$):}
+    && \frac{-ig^{\mu\nu}}{q^2},\\
+    &\text{вершинный множитель ($s=0$, $p\to p'$, фотон $s=1$):}
+    && ie\,(p+p')^\mu.
+\end{align*}
+
+\task[1]{Бесспиновое \texorpdfstring{$e^-\mu^-$}{e-μ-}-рассеяние}
+\label{task:spinless_emu_sem7}
+
+\condition
+Найти $d\sigma/d\Omega$ для рассеяния $e^-\mu^-\to e^-\mu^-$ бесспиновых частиц.
+
+\solution
+\subsection*{Амплитуда}
+
+\begin{rbox}[left=16pt,right=16pt,top=12pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[>=Latex,every node/.style={text=rtext}]
+        \coordinate (V1) at (0,0.9);
+        \coordinate (V2) at (0,-0.9);
+        \draw[feyn fermion] (-1.6,2.3) -- (V1)
+            node[pos=0.3,left] {$p_1$};
+        \draw[feyn fermion] (V1) -- (1.6,2.3)
+            node[pos=0.7,right] {$p_3$};
+        \draw[feyn fermion] (-1.6,-2.3) -- (V2)
+            node[pos=0.3,left] {$p_2$};
+        \draw[feyn fermion] (V2) -- (1.6,-2.3)
+            node[pos=0.7,right] {$p_4$};
+        \draw[feyn photon] (V1) -- (V2);
+        \draw[->,rtextmuted] (0.4,0.45) -- (0.4,-0.45)
+            node[midway,right] {$q$};
+        \node[above left] at (-1.6,2.3) {$e^-$};
+        \node[below left] at (-1.6,-2.3) {$\mu^-$};
+        \fill[rtext] (V1) circle(1.6pt);
+        \fill[rtext] (V2) circle(1.6pt);
+    \end{tikzpicture}
+    \captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+    \captionof{figure}{Диаграмма бесспинового рассеяния $e^-\mu^-\to e^-\mu^-$.}
+    \label{fig:spinless_emu_sem7}
+\end{rbox}
+
+По правилам Фейнмана
+\begin{equation*}
+    -i\mathcal M=ie(p_1+p_3)_\mu
+    \left(\frac{-ig^{\mu\nu}}{q^2}\right)
+    ie(p_2+p_4)_\nu,
+    \qquad
+    q=p_1-p_3.
+\end{equation*}
+Отсюда
+\begin{equation*}
+    \mathcal M=-e^2\,\frac{1}{(p_1-p_3)^2}\,
+    \bigl((p_1+p_3)\cdot(p_2+p_4)\bigr).
+\end{equation*}
+
+\subsection*{Кинематика в системе центра масс}
+
+\rassumption{Работаем в системе центра масс и пренебрегаем массами}
+(ультрарелятивистский случай). Тогда у всех частиц одна энергия $E$:
+\begin{align*}
+    p_1&=(E,\,E\vec n), & p_2&=(E,\,-E\vec n),\\
+    p_3&=(E,\,E\vec n'), & p_4&=(E,\,-E\vec n'),
+    \qquad \vec n\cdot\vec n'=\cos\theta.
+\end{align*}
+Знаменатель:
+\begin{equation*}
+    (p_1-p_3)^2=-2p_1\cdot p_3=-2E^2(1-\cos\theta).
+\end{equation*}
+Числитель:
+\begin{align*}
+    (p_1+p_3)\cdot(p_2+p_4)
+    &=p_1p_2+p_1p_4+p_3p_2+p_3p_4\\
+    &=2E^2+E^2(1+\cos\theta)+E^2(1+\cos\theta)+2E^2
+    =2E^2(3+\cos\theta).
+\end{align*}
+Поэтому
+\begin{equation*}
+    \mathcal M=e^2\,\frac{3+\cos\theta}{1-\cos\theta}.
+\end{equation*}
+
+\subsection*{Сечение}
+
+Для упругого рассеяния $p_f=p_i$, и по формуле
+из задачи~1 занятия~6
+\begin{equation*}
+    \frac{d\sigma}{d\Omega}=\frac{1}{64\pi^2s}|\mathcal M|^2
+    =\frac{e^4}{64\pi^2s}
+    \left(\frac{3+\cos\theta}{1-\cos\theta}\right)^2,
+    \qquad
+    s=(E_1+E_2)^2.
+\end{equation*}
+
+\answer
+С $e^2=4\pi\alpha$:
+\begin{equation*}
+    \frac{d\sigma}{d\Omega}=\frac{\alpha^2}{4s}
+    \left(\frac{3+\cos\theta}{1-\cos\theta}\right)^2.
+\end{equation*}
+
+\task[2]{Рассеяние \texorpdfstring{$e^-\mu^+\to e^-\mu^+$}{e-μ+ → e-μ+}}
+\label{task:spinless_emu_plus_sem7}
+
+\solution
+\begin{rbox}[left=16pt,right=16pt,top=12pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[>=Latex,every node/.style={text=rtext}]
+        \coordinate (V1) at (0,0.9);
+        \coordinate (V2) at (0,-0.9);
+        \draw[feyn fermion] (-1.6,2.3) -- (V1)
+            node[pos=0.3,left] {$p_1$};
+        \draw[feyn fermion] (V1) -- (1.6,2.3)
+            node[pos=0.7,right] {$p_3$};
+        \draw[feyn fermion] (V2) -- (-1.6,-2.3)
+            node[pos=0.7,left] {$p_2$};
+        \draw[feyn fermion] (1.6,-2.3) -- (V2)
+            node[pos=0.3,right] {$p_4$};
+        \draw[feyn photon] (V1) -- (V2);
+        \draw[->,rtextmuted] (0.4,0.45) -- (0.4,-0.45)
+            node[midway,right] {$q$};
+        \node[above left] at (-1.6,2.3) {$e^-$};
+        \node[below left] at (-1.6,-2.3) {$\mu^+$};
+        \fill[rtext] (V1) circle(1.6pt);
+        \fill[rtext] (V2) circle(1.6pt);
+    \end{tikzpicture}
+    \captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+    \captionof{figure}{Рассеяние $e^-\mu^+\to e^-\mu^+$. На линии $\mu^+$
+    стрелки направлены против импульсов $p_2$ и $p_4$.}
+    \label{fig:spinless_emu_plus_sem7}
+\end{rbox}
+
+Вершина античастицы даёт множитель $ie(-p_2-p_4)$:
+\begin{equation*}
+    -i\mathcal M=ie(p_1+p_3)_\mu
+    \left(\frac{-ig^{\mu\nu}}{q^2}\right)
+    ie(-p_2-p_4)_\nu,
+    \qquad
+    q=p_1-p_3.
+\end{equation*}
+% В записи пропагатор здесь без минуса, i g^{μν}/q^2, а вершина μ+ записана как (+ie)(-p2-p4).
+% Выше использован пропагатор из правил Фейнмана; общий знак на |M|^2 не влияет.
+Амплитуда отличается от задачи~\ref{task:spinless_emu_sem7} только знаком,
+поэтому \rresult{сечение то же самое}.
+
+\task[3]{Аннигиляция \texorpdfstring{$e^+e^-\to\mu^+\mu^-$}{e+e- → μ+μ-}}
+\label{task:spinless_annihilation_sem7}
+
+\solution
+Диаграмму с обменом фотоном между линиями $e$ и $\mu$, нарисованную
+по аналогии с рассеянием, \rnote{рисовать так нельзя}: пара $e^+e^-$
+должна исчезнуть, а пара $\mu^+\mu^-$ --- родиться. Правильная диаграмма ---
+аннигиляция в виртуальный фотон.
+
+\begin{rbox}[left=16pt,right=16pt,top=12pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[>=Latex,every node/.style={text=rtext}]
+        \coordinate (V1) at (-1.1,0);
+        \coordinate (V2) at (1.1,0);
+        \draw[feyn fermion] (V1) -- (-2.5,1.3)
+            node[pos=0.8,above] {$e^+\ p_1$};
+        \draw[feyn fermion] (-2.5,-1.3) -- (V1)
+            node[pos=0.2,below] {$e^-\ p_2$};
+        \draw[feyn fermion] (V2) -- (2.5,1.3)
+            node[pos=0.8,above] {$\mu^-\ p_4$};
+        \draw[feyn fermion] (2.5,-1.3) -- (V2)
+            node[pos=0.2,below] {$\mu^+\ p_3$};
+        \draw[feyn photon] (V1) -- (V2);
+        \draw[->,rtextmuted] (-0.45,0.35) -- (0.45,0.35)
+            node[midway,above] {$q$};
+        \fill[rtext] (V1) circle(1.6pt);
+        \fill[rtext] (V2) circle(1.6pt);
+    \end{tikzpicture}
+    \captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+    \captionof{figure}{Аннигиляция $e^+e^-\to\mu^+\mu^-$ через виртуальный фотон.}
+    \label{fig:spinless_annihilation_sem7}
+\end{rbox}
+% В записи μ+ нарисован вверху справа, μ- внизу; импульсы p3 (μ+) и p4 (μ-) те же.
+
+Амплитуда:
+\begin{equation*}
+    -i\mathcal M=ie(-p_1+p_2)_\mu
+    \left(\frac{-ig^{\mu\nu}}{q^2}\right)
+    ie(-p_3+p_4)_\nu,
+    \qquad
+    q=p_1+p_2.
+\end{equation*}
+
+\rtheory{Кроссинг}
+
+\rconcept{Кроссинг} --- метод получения амплитуды одного процесса из амплитуды
+другого: античастица в начальном состоянии эквивалентна частице в конечном
+с противоположным 4-импульсом, и наоборот.
+\begin{equation*}
+    \mathcal M(AB\to CD)\longrightarrow
+    \mathcal M(\overline A,\overline B,\overline C,\overline D).
+\end{equation*}
+
+\begin{rbox}[left=16pt,right=16pt,top=12pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[>=Latex,every node/.style={text=rtext}]
+        \begin{scope}
+            \draw[feyn line] (0,0) circle(0.75);
+            \draw[rtextmuted,dashed] (0,1.15) -- (0,-1.15);
+            \draw[feyn fermion] (-1.9,1.3) -- (-0.6,0.45)
+                node[pos=0.2,above] {$e^-\ p_A$};
+            \draw[feyn fermion] (-1.9,-1.3) -- (-0.6,-0.45)
+                node[pos=0.2,below] {$\mu^-\ p_B$};
+            \draw[feyn fermion] (0.6,0.45) -- (1.9,1.3)
+                node[pos=0.8,above] {$e^-\ p_C$};
+            \draw[feyn fermion] (0.6,-0.45) -- (1.9,-1.3)
+                node[pos=0.8,below] {$\mu^-\ p_D$};
+            \node at (0,-2.05) {$e^-\mu^-\to e^-\mu^-$};
+        \end{scope}
+        \begin{scope}[xshift=6.2cm]
+            \draw[feyn line] (0,0) circle(0.75);
+            \draw[rtextmuted,dashed] (0,1.15) -- (0,-1.15);
+            \draw[feyn fermion] (-1.9,1.3) -- (-0.6,0.45)
+                node[pos=0.2,above] {$e^-\ p_A'$};
+            \draw[feyn fermion] (-0.6,-0.45) -- (-1.9,-1.3)
+                node[pos=0.8,below] {$\mu^+\ p_B'$};
+            \draw[feyn fermion] (0.6,0.45) -- (1.9,1.3)
+                node[pos=0.8,above] {$e^-\ p_C'$};
+            \draw[feyn fermion] (1.9,-1.3) -- (0.6,-0.45)
+                node[pos=0.2,below] {$\mu^+\ p_D'$};
+            \node at (0,-2.05) {$e^-\mu^+\to e^-\mu^+$};
+        \end{scope}
+        \begin{scope}[xshift=3.1cm,yshift=-4.9cm]
+            \draw[feyn line] (0,0) circle(0.75);
+            \draw[rtextmuted,dashed] (0,1.15) -- (0,-1.15);
+            \draw[feyn fermion] (-1.9,1.3) -- (-0.6,0.45)
+                node[pos=0.2,above] {$e^-\ p_A'$};
+            \draw[feyn fermion] (-0.6,-0.45) -- (-1.9,-1.3)
+                node[pos=0.8,below] {$e^+\ p_B'$};
+            \draw[feyn fermion] (0.6,0.45) -- (1.9,1.3)
+                node[pos=0.8,above] {$\mu^-\ p_C'$};
+            \draw[feyn fermion] (1.9,-1.3) -- (0.6,-0.45)
+                node[pos=0.2,below] {$\mu^+\ p_D'$};
+            \node at (0,-2.05) {$e^-e^+\to\mu^-\mu^+$};
+        \end{scope}
+    \end{tikzpicture}
+    \captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+    \captionof{figure}{Кроссинг: из $e^-\mu^-\to e^-\mu^-$ получаем
+    $e^-\mu^+\to e^-\mu^+$ и $e^-e^+\to\mu^-\mu^+$.
+    Пунктир отделяет начальное состояние от конечного.}
+    \label{fig:crossing_sem7}
+\end{rbox}
+
+Для перехода к рассеянию $e^-\mu^+\to e^-\mu^+$
+\begin{equation*}
+    p_B'=-p_D,\qquad p_C'=p_C,\qquad p_D'=-p_B.
+\end{equation*}
+Если же начальный $\mu^-$ перенести в конечное состояние (как $\mu^+$),
+а конечный $e^-$ --- в начальное (как $e^+$), получаем аннигиляцию
+$e^-e^+\to\mu^-\mu^+$ с
+\begin{equation*}
+    p_B'=-p_C,\qquad p_C'=+p_D,\qquad p_D'=-p_B.
+\end{equation*}
+
+\rtheory{Переменные Мандельштама}
+
+Для процесса $AB\to CD$ вводятся \rconcept{переменные Мандельштама}:
+\begin{align*}
+    s&=(p_A+p_B)^2=(p_C+p_D)^2,\\
+    t&=(p_A-p_C)^2=(p_D-p_B)^2,\\
+    u&=(p_A-p_D)^2=(p_C-p_B)^2.
+\end{align*}
+
+\begin{rbox}[left=16pt,right=16pt,top=12pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[>=Latex,every node/.style={text=rtext}]
+        % s-канал
+        \begin{scope}
+            \coordinate (V1) at (-0.7,0);
+            \coordinate (V2) at (0.7,0);
+            \draw[feyn line] (-1.6,1.1) -- (V1) node[pos=0,above left] {$A$};
+            \draw[feyn line] (-1.6,-1.1) -- (V1) node[pos=0,below left] {$B$};
+            \draw[feyn line] (V2) -- (1.6,1.1) node[pos=1,above right] {$C$};
+            \draw[feyn line] (V2) -- (1.6,-1.1) node[pos=1,below right] {$D$};
+            \draw[feyn photon] (V1) -- (V2) node[midway,below=3pt] {$\mathcal M_s$};
+            \node at (0,1.6) {$s$-канал};
+        \end{scope}
+        % t-канал
+        \begin{scope}[xshift=4.6cm]
+            \coordinate (V1) at (0,0.7);
+            \coordinate (V2) at (0,-0.7);
+            \draw[feyn line] (-1.1,1.6) -- (V1) node[pos=0,above left] {$\overline D$};
+            \draw[feyn line] (V1) -- (1.1,1.6) node[pos=1,above right] {$C$};
+            \draw[feyn line] (-1.1,-1.6) -- (V2) node[pos=0,below left] {$B$};
+            \draw[feyn line] (V2) -- (1.1,-1.6) node[pos=1,below right] {$\overline A$};
+            \draw[feyn photon] (V1) -- (V2) node[midway,right=3pt] {$\mathcal M_t$};
+            \node at (0,2.25) {$t$-канал};
+        \end{scope}
+        % u-канал
+        \begin{scope}[xshift=9.2cm]
+            \coordinate (V1) at (0,0.7);
+            \coordinate (V2) at (0,-0.7);
+            \draw[feyn line] (-1.1,1.6) -- (V1) node[pos=0,above left] {$A$};
+            \draw[feyn line] (V1) -- (1.1,-1.6) node[pos=1,below right] {$C$};
+            \draw[feyn line] (-1.1,-1.6) -- (V2) node[pos=0,below left] {$\overline D$};
+            \draw[feyn line] (V2) -- (1.1,1.6) node[pos=1,above right] {$\overline B$};
+            \draw[feyn photon] (V1) -- (V2) node[midway,left=3pt] {$\mathcal M_u$};
+            \node at (0,2.25) {$u$-канал};
+        \end{scope}
+    \end{tikzpicture}
+    \captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+    \captionof{figure}{Диаграммы $s$-, $t$- и $u$-каналов.}
+    \label{fig:stu_channels_sem7}
+\end{rbox}
+
+Амплитуды каналов связаны кроссингом:
+\begin{equation*}
+    \mathcal M_t=\mathcal M_s(s\leftrightarrow t),
+    \qquad
+    \mathcal M_u=\mathcal M_s(s\leftrightarrow u)=\mathcal M_t(t\leftrightarrow u).
+\end{equation*}
+
+\subsection*{Сумма переменных}
+
+\begin{equation*}
+    s+t+u=m_A^2+m_B^2+m_C^2+m_D^2.
+\end{equation*}
+Действительно, раскрывая квадраты,
+\begin{equation*}
+    s+t+u=3m_A^2+m_B^2+m_C^2+m_D^2
+    +2p_A\cdot(p_B-p_C-p_D),
+\end{equation*}
+а из сохранения импульса $p_B-p_C-p_D=-p_A$, так что последнее слагаемое
+равно $-2m_A^2$.
+
+\task[4]{Переменные Мандельштама для \texorpdfstring{$e^-e^-\to e^-e^-$}{e-e- → e-e-}}
+\label{task:moller_mandelstam_sem7}
+
+\condition
+Для рассеяния $e^-e^-\to e^-e^-$ в системе центра масс заданы
+масса $m$ и угол рассеяния $\theta$; $p=|\vec p_i|=|\vec p_f|$.
+Найти $s$, $t$, $u$.
+
+\solution
+Электроны в конечном состоянии \rnote{мы не различаем}, поэтому рисуем
+две диаграммы Фейнмана. \rnote{Если работаем с фермионами, то амплитуды
+вычитаем}:
+\begin{equation*}
+    \mathcal M=\mathcal M_t-\mathcal M_u.
+\end{equation*}
+
+\begin{rbox}[left=16pt,right=16pt,top=12pt,bottom=10pt]{[]}
+    \centering
+    \begin{tikzpicture}[>=Latex,every node/.style={text=rtext}]
+        \begin{scope}
+            \coordinate (V1) at (0,0.55);
+            \coordinate (V2) at (0,-0.55);
+            \draw[feyn fermion] (-1.3,1.4) -- (V1) node[pos=0,above left] {$e^-\ A$};
+            \draw[feyn fermion] (V1) -- (1.3,1.4) node[pos=1,above right] {$C$};
+            \draw[feyn fermion] (-1.3,-1.4) -- (V2) node[pos=0,below left] {$e^-\ B$};
+            \draw[feyn fermion] (V2) -- (1.3,-1.4) node[pos=1,below right] {$D$};
+            \draw[feyn photon] (V1) -- (V2);
+        \end{scope}
+        \node at (2.6,0) {\Large$-$};
+        \begin{scope}[xshift=5.2cm]
+            \coordinate (V1) at (0,0.55);
+            \coordinate (V2) at (0,-0.55);
+            \draw[feyn fermion] (-1.3,1.4) -- (V1) node[pos=0,above left] {$A$};
+            \draw[feyn fermion] (V1) -- (1.3,-1.4) node[pos=1,below right] {$D$};
+            \draw[feyn fermion] (-1.3,-1.4) -- (V2) node[pos=0,below left] {$B$};
+            \draw[feyn fermion] (V2) -- (1.3,1.4) node[pos=1,above right] {$C$};
+            \draw[feyn photon] (V1) -- (V2);
+        \end{scope}
+        % Кинематика в с.ц.м.
+        \begin{scope}[xshift=9.6cm]
+            \draw[->,rtext,thick] (-1.3,0) -- (-0.15,0) node[pos=0,left] {$\vec p$};
+            \draw[->,rtext,thick] (1.3,0) -- (0.15,0) node[pos=0,right] {$-\vec p$};
+            \draw[->,p3,thick] (0,0) -- (1.2,0.9);
+            \draw[->,p3,thick] (0,0) -- (-1.2,-0.9);
+            \draw[rtextmuted] (0.6,0) arc[start angle=0,end angle=37,radius=0.6];
+            \node at (0.85,0.25) {$\theta$};
+        \end{scope}
+    \end{tikzpicture}
+    \captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+    \captionof{figure}{Две диаграммы рассеяния $e^-e^-\to e^-e^-$ и кинематика
+    в системе центра масс.}
+    \label{fig:moller_sem7}
+\end{rbox}
+
+В системе центра масс
+\begin{align*}
+    p_A&=(E,\,\vec p), & p_B&=(E,\,-\vec p),\\
+    p_C&=(E,\,\vec p'), & p_D&=(E,\,-\vec p'),
+    \qquad |\vec p'|=p,\quad \vec p\cdot\vec p'=p^2\cos\theta,
+\end{align*}
+где $E^2=m^2+p^2$. Тогда
+\begin{align*}
+    s&=(2E)^2=4m^2+4p^2=4(m^2+p^2),\\
+    t&=-(\vec p-\vec p')^2=-2p^2(1-\cos\theta),\\
+    u&=-(\vec p+\vec p')^2=-2p^2(1+\cos\theta).
+\end{align*}
+
+\answer
+\begin{equation*}
+    s=4(m^2+p^2),\qquad
+    t=-2p^2(1-\cos\theta),\qquad
+    u=-2p^2(1+\cos\theta).
+\end{equation*}
+Проверка: $s+t+u=4m^2$, как и должно быть для четырёх электронов.
+
+\end{document}
