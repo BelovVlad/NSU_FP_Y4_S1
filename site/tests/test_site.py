@@ -57,7 +57,7 @@ class SiteTests(unittest.TestCase):
         for relative in ['docs/index.html', 'docs/site.css', 'docs/site.js', 'docs/knowledge.css', 'docs/search-worker.js', 'docs/pdfjs/viewer.html', 'docs/pdfjs/viewer.css', 'docs/pdfjs/viewer.js', 'docs/pdfjs/icons.js', 'docs/pdfjs/pdf-tone.js',
                          'docs/pdfjs/search-text.js', 'docs/pdfjs/material-paths.js', 'docs/pdfjs/renamed-materials.js', 'docs/pdfjs/controls.css',
                          'docs/notebook/viewer.html', 'docs/notebook/viewer.css', 'docs/notebook/outline.js', 'docs/giscus-config.json',
-                         'docs/app.js', 'docs/app.css', 'docs/sw.js', 'docs/manifest.webmanifest',
+                         'docs/app.js', 'docs/dots.js', 'docs/app.css', 'docs/sw.js', 'docs/manifest.webmanifest',
                          'docs/annotations-store.js', 'docs/pdfjs/notes.js', 'docs/pdfjs/notes.css', 'docs/offline-resources.json',
                          'docs/particles/index.html', 'docs/particles/particles.js',
                          'docs/particles/explorer.js', 'docs/particles/explorer.css', 'docs/particles/layout.js', 'docs/particles/routes.js', 'docs/particles/contours.js', 'docs/particles/extra-particles.js', 'docs/particles/remaining-particles.js',

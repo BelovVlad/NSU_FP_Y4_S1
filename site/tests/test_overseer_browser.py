@@ -616,8 +616,9 @@ class OverseerBrowserTests(unittest.TestCase):
     def test_fast_cursor_does_not_jerk_feelers(self):
         page = self.page(clock=True, config={'activeMax': 60000})
         page.evaluate("""() => {
-          window.__frames=0;const raf=window.requestAnimationFrame.bind(window);
-          window.requestAnimationFrame=callback=>raf(time=>{window.__frames++;callback(time)});
+          // A frame is a distinct timestamp: other loops on the page (the sidebar dots) share the same frames.
+          window.__frames=0;window.__frameTime=null;const raf=window.requestAnimationFrame.bind(window);
+          window.requestAnimationFrame=callback=>raf(time=>{if(time!==window.__frameTime){window.__frameTime=time;window.__frames++}callback(time)});
         }""")
         page.locator('#musicToggle').evaluate("node=>node.style.visibility='hidden'")
         page.evaluate("NSUOverseer.show('ambient')")
