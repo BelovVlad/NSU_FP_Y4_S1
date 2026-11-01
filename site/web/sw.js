@@ -95,7 +95,9 @@ async function resource(request, event) {
   if(!html && cached && immutable) return cached;
 
   const network = (async () => {
-    const response = await fetch(request,{cache:html?'no-cache':'default'});
+    // Unversioned files (search-index data, Karma history) are revalidated: Pages lets
+    // the HTTP cache keep them for 10 minutes, which would hide a fresh deploy.
+    const response = await fetch(request,{cache:html||!immutable?'no-cache':'default'});
     if(!response.ok && response.type !== 'opaque') throw new Error('HTTP '+response.status);
     await put(cache,key,response.clone());
     return response;
