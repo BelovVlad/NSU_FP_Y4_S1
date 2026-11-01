@@ -1,0 +1,773 @@
+% !TeX root = part5.tex
+
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% При отдельной сборке продолжаем нумерацию полного конспекта.
+\ifSubfilesClassLoaded{\setcounter{chapter}{2}\setcounter{section}{10}}{}
+
+
+% ============================================================
+% Лекция 29.10
+% ============================================================
+
+% ============================================================
+\section{Комптоновское рассеяние на скалярной частице}
+% ============================================================
+
+% ------------------------------------------------------------
+\subsection{Вершина с реальным фотоном}
+% ------------------------------------------------------------
+
+Потенциал взаимодействия после интегрирования по частям
+удобно записывать в виде
+
+\begin{equation*}
+    \hat V
+    =
+    -e\left(A^\mu\partial_\mu-\partial_\mu A^\mu\right)
+    -e^2A_\mu A^\mu,
+\end{equation*}
+
+где первое слагаемое отвечает вершине с одним фотоном,
+второе --- вершине с двумя фотонами
+(см. вершины скалярной электродинамики в разделе~\ref{sec:free_em_field}).
+Для $\varphi=Ne^{-ipx}$ и $A^\mu=\varepsilon^\mu e^{-ikx}$
+
+\begin{equation*}
+    T_{fi}
+    =
+    -i\int\varphi_f^*\hat V\varphi_i\,d^4x
+    =
+    ieN_iN_f\,
+    \underbrace{
+        \varepsilon^\mu\left(p_i+k+p_f\right)_\mu
+    }_{\varepsilon^\mu j_\mu}
+    \int e^{i(p_f-p_i-k)x}\,d^4x.
+\end{equation*}
+
+\remark
+Поскольку $\varepsilon k=0$, слагаемое $k$ в скобке можно
+добавлять или убирать: $\varepsilon(p_i+k+p_f)=\varepsilon(p_i+p_f)$.
+Запись с $k$ удобна, когда $p_f=p_i+k$:
+тогда $\varepsilon(p_i+p_f)=\varepsilon(2p_i+k)$.
+
+
+% ------------------------------------------------------------
+\subsection{Диаграммы}
+% ------------------------------------------------------------
+
+Рассмотрим процесс
+
+\begin{equation*}
+    \gamma(k_1)+\pi(p_1)\rightarrow\gamma(k_2)+\pi(p_2).
+\end{equation*}
+
+В порядке $e^2$ ему соответствуют три диаграммы.
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext},
+        photon/.style={
+            draw=rtext,
+            line width=0.85pt,
+            decorate,
+            decoration={snake, amplitude=1.4pt, segment length=5pt}
+        },
+        scalar/.style={draw=rc3, line width=1.15pt}
+    ]
+        % a) s-канал
+        \begin{scope}[shift={(-5.2,0)}]
+            \coordinate (A) at (-0.7,0);
+            \coordinate (B) at (0.7,0);
+            \draw[scalar, ->] (-1.9,-1.2) -- (-1.3,-0.6);
+            \draw[scalar] (-1.3,-0.6) -- (A);
+            \draw[scalar] (A) -- (B);
+            \draw[scalar, ->] (B) -- (1.3,-0.6);
+            \draw[scalar] (1.3,-0.6) -- (1.9,-1.2);
+            \draw[photon] (-1.6,1.2) -- (A);
+            \draw[photon] (B) -- (1.6,1.2);
+            \fill[rc4] (A) circle (1.5pt);
+            \fill[rc4] (B) circle (1.5pt);
+            \node[font=\small] at (-1.85,1.45) {$k_1$};
+            \node[font=\small] at (1.85,1.45) {$k_2$};
+            \node[font=\small] at (-2.1,-1.4) {$p_1$};
+            \node[font=\small] at (2.1,-1.4) {$p_2$};
+            \node[font=\small] at (0,-2.0) {а)};
+        \end{scope}
+
+        % b) u-канал
+        \begin{scope}[shift={(0,0)}]
+            \coordinate (A) at (-0.7,0);
+            \coordinate (B) at (0.7,0);
+            \draw[scalar, ->] (-1.9,-1.2) -- (-1.3,-0.6);
+            \draw[scalar] (-1.3,-0.6) -- (A);
+            \draw[scalar] (A) -- (B);
+            \draw[scalar, ->] (B) -- (1.3,-0.6);
+            \draw[scalar] (1.3,-0.6) -- (1.9,-1.2);
+            \draw[photon] (-1.6,1.2) -- (B);
+            \draw[photon] (A) -- (1.6,1.2);
+            \fill[rc4] (A) circle (1.5pt);
+            \fill[rc4] (B) circle (1.5pt);
+            \node[font=\small] at (-1.85,1.45) {$k_1$};
+            \node[font=\small] at (1.85,1.45) {$k_2$};
+            \node[font=\small] at (-2.1,-1.4) {$p_1$};
+            \node[font=\small] at (2.1,-1.4) {$p_2$};
+            \node[font=\small] at (0,-2.0) {б)};
+        \end{scope}
+
+        % c) контактная
+        \begin{scope}[shift={(5.0,0)}]
+            \coordinate (C) at (0,0);
+            \draw[scalar, ->] (-1.3,-1.2) -- (-0.65,-0.6);
+            \draw[scalar] (-0.65,-0.6) -- (C);
+            \draw[scalar, ->] (C) -- (0.65,-0.6);
+            \draw[scalar] (0.65,-0.6) -- (1.3,-1.2);
+            \draw[photon] (-1.2,1.2) -- (C);
+            \draw[photon] (C) -- (1.2,1.2);
+            \fill[rc4] (C) circle (1.5pt);
+            \node[font=\small] at (-1.45,1.45) {$k_1$};
+            \node[font=\small] at (1.45,1.45) {$k_2$};
+            \node[font=\small] at (-1.5,-1.4) {$p_1$};
+            \node[font=\small] at (1.5,-1.4) {$p_2$};
+            \node[font=\small] at (0,-2.0) {в)};
+        \end{scope}
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Комптоновское рассеяние на бесспиновой частице:
+        а) сначала поглощается $k_1$, затем испускается $k_2$;
+        б) сначала испускается $k_2$, затем поглощается $k_1$;
+        в) контактная двухфотонная вершина.
+    }
+    \label{fig:scalar_compton}
+\end{rbox}
+
+
+% ------------------------------------------------------------
+\subsection{Пропагатор и амплитуды}
+% ------------------------------------------------------------
+
+Во внутренней линии диаграммы а) частица несёт импульс
+$q=p_1+k_1$, причём $q^2\neq m^2$ --- она виртуальна. Соединение
+двух токов через такую линию даёт множитель
+
+\begin{equation*}
+    \frac{1}{-q^2+m^2}
+\end{equation*}
+
+--- \rconcept{пропагатор} скалярной частицы (сравните с $-1/q^2$
+для фотона, у которого $m=0$). Тогда
+
+\begin{equation*}
+    \mathcal M_a
+    =
+    \left(j_1\varepsilon\right)
+    \left(j_2\varepsilon\right)
+    \frac{1}{m^2-q^2}
+    =
+    e^2\,
+    \frac{
+        \left[\left(2p_2+k_2\right)\varepsilon_2\right]
+        \left[\left(2p_1+k_1\right)\varepsilon_1\right]
+    }{
+        \left(p_1+k_1\right)^2-m^2
+    },
+\end{equation*}
+
+\begin{equation*}
+    \mathcal M_b
+    =
+    e^2\,
+    \frac{
+        \left[\left(2p_2-k_1\right)\varepsilon_1\right]
+        \left[\left(2p_1-k_2\right)\varepsilon_2\right]
+    }{
+        \left(p_1-k_2\right)^2-m^2
+    },
+\end{equation*}
+
+\begin{equation*}
+    \mathcal M_c
+    =
+    2e^2\left(\varepsilon_1\varepsilon_2\right).
+\end{equation*}
+
+\remark
+В знаменателе $\mathcal M_b$ стоит $(p_1-k_2)^2$: во внутренней
+линии диаграммы б) частица уже испустила $k_2$.
+Множитель $2$ в $\mathcal M_c$ возникает потому, что в $A^2$
+каждый из двух фотонов можно сопоставить любому из двух
+множителей $A$. Знаки слагаемых зависят от соглашений; ниже
+используется только $\mathcal M_c$.
+
+\subsubsection{Лабораторная система}
+
+Пусть мишень покоится: $p_1=(m,\mathbf 0)$. Выберем калибровку
+$\varepsilon^0=0$, тогда $\varepsilon_1p_1=\varepsilon_2p_1=0$ и
+$\varepsilon_ik_i=0$. Значит,
+
+\begin{equation*}
+    \left(2p_1+k_1\right)\varepsilon_1=0,
+    \qquad
+    \left(2p_1-k_2\right)\varepsilon_2=0,
+\end{equation*}
+
+т.\,е. $\mathcal M_a=\mathcal M_b=0$ и
+\rresult{в лабораторной системе работает только контактная
+диаграмма}:
+
+\begin{equation*}
+    |\mathcal M|^2=4e^4\left(\varepsilon_1\varepsilon_2\right)^2.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection{Сечение}
+% ------------------------------------------------------------
+
+Поток налетающих фотонов $j=1$, поэтому
+
+\begin{equation*}
+    d\sigma
+    =
+    \frac{dW}{j}
+    =
+    \frac{|\mathcal M|^2}{2E_1\,2k_1}\,
+    \frac{d^3p_2}{(2\pi)^3\,2E_2}\,
+    \frac{d^3k_2}{(2\pi)^3\,2k_2}\,
+    (2\pi)^4\delta^4(p_f-p_i).
+\end{equation*}
+
+Интегрируем по $d^3p_2$ с помощью $\delta^3$, затем по $dk_2$
+с помощью $\delta(k_1+m-k_2-E_2)$. Поскольку
+$E_2^2=m^2+|\mathbf k_1-\mathbf k_2|^2$,
+
+\begin{equation*}
+    \frac{d(k_2+E_2)}{dk_2}
+    =
+    \frac{k_1+m-k_1\cos\theta}{E_2},
+\end{equation*}
+
+и в лабораторной системе ($E_1=m$)
+
+\begin{equation*}
+    d\sigma
+    =
+    \frac{|\mathcal M|^2}{16\pi^2}\,
+    \frac{1}{4k_1m}\,
+    \frac{k_2\,d\Omega}{k_1+m-k_1\cos\theta}.
+\end{equation*}
+
+Здесь $\theta$ --- угол рассеяния фотона, $m$ --- масса частицы,
+\rnote{на которой происходит рассеяние}. Из законов сохранения
+следует \rresult{формула Комптона}
+
+\begin{equation*}
+    k_2
+    =
+    \frac{mk_1}{m+k_1\left(1-\cos\theta\right)},
+\end{equation*}
+
+так что $k_1+m-k_1\cos\theta=mk_1/k_2$, и
+
+\begin{equation*}
+    \frac{d\sigma}{d\Omega}
+    =
+    \frac{e^4}{16\pi^2m^2}\,
+    \frac{\left(\boldsymbol\varepsilon_1\boldsymbol\varepsilon_2\right)^2}
+         {\left[1+\dfrac{k_1}{m}\left(1-\cos\theta\right)\right]^2}.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection{Неполяризованные фотоны}
+% ------------------------------------------------------------
+
+\rassumption{Для неполяризованных частиц} нужно усреднить по двум
+поляризациям начального фотона и просуммировать по поляризациям
+конечного:
+$\left(\boldsymbol\varepsilon_1\boldsymbol\varepsilon_2\right)^2
+\to\left\langle\left(\boldsymbol\varepsilon_1\boldsymbol\varepsilon_2\right)^2\right\rangle$.
+Сумма по поперечным поляризациям конечного фотона равна
+$1-(\boldsymbol\varepsilon_1\hat{\mathbf k}_2)^2$, а усреднение по
+$\boldsymbol\varepsilon_1\perp\mathbf k_1$ даёт
+
+\begin{equation*}
+    \left\langle
+        \left(\boldsymbol\varepsilon_1\boldsymbol\varepsilon_2\right)^2
+    \right\rangle
+    =
+    \frac{1}{2}\sum_{\lambda,\lambda'}
+    \left(\boldsymbol\varepsilon_\lambda\boldsymbol\varepsilon'_{\lambda'}\right)^2
+    =
+    \frac{1}{2}\left(2-\sin^2\theta\right)
+    =
+    \frac{1+\cos^2\theta}{2}.
+\end{equation*}
+
+Итого
+
+\begin{equation*}
+    \frac{d\sigma}{d\Omega}
+    =
+    \frac{e^4}{16\pi^2m^2}\,
+    \frac{1+\cos^2\theta}{2\left[1+\dfrac{k_1}{m}\left(1-\cos\theta\right)\right]^2}
+    =
+    \frac{r^2}{2}\,
+    \frac{1+\cos^2\theta}{\left[1+\dfrac{k_1}{m}\left(1-\cos\theta\right)\right]^2},
+    \qquad
+    r=\frac{\alpha}{m}.
+\end{equation*}
+
+\remark
+На лекции множитель $\tfrac12$ от усреднения по начальной
+поляризации не был выписан. Он нужен, чтобы в пределе
+$k_1\ll m$ получить правильное \rresult{томсоновское сечение}:
+
+\begin{equation*}
+    \sigma
+    =
+    \frac{r^2}{2}\int\left(1+\cos^2\theta\right)d\Omega
+    =
+    \frac{r^2}{2}\cdot2\pi\cdot\frac{8}{3}
+    =
+    \frac{8\pi}{3}r^2
+    =
+    \sigma_{\mathrm{Th}},
+\end{equation*}
+
+которое для электрона равно $665\,\mathrm{mb}$
+(см. раздел о фотоэффекте в первой главе).
+
+\begin{rbox}[left=18pt,right=18pt,top=12pt,bottom=10pt,unbreakable]{[]}
+    \centering
+
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.78\linewidth,
+            height=6cm,
+            xmin=0, xmax=180,
+            ymin=0, ymax=1.45,
+            ytick={0,0.5,1},
+            xtick={0,30,60,90,120,150,180},
+            xlabel={$\theta$, градусы},
+            ylabel={$\dfrac{1}{r^2}\dfrac{d\sigma}{d\Omega}$},
+            axis line style={rtext},
+            tick style={rtext},
+            every tick label/.style={text=rtext},
+            label style={text=rtext},
+            legend style={
+                draw=none, fill=none, text=rtext,
+                at={(0.97,0.97)}, anchor=north east, font=\small
+            },
+            legend cell align=left
+        ]
+            \addplot[rconceptcolor, thick, smooth, samples=91, domain=0:180]
+            {0.5*(1+cos(x)^2)};
+            \addlegendentry{$k_1\ll m$ (Томсон)}
+
+            \addplot[rc3, thick, smooth, samples=91, domain=0:180]
+            {0.5*(1+cos(x)^2)/(1+0.5*(1-cos(x)))^2};
+            \addlegendentry{$k_1=0.5\,m$}
+
+            \addplot[rresultcolor, thick, smooth, samples=91, domain=0:180]
+            {0.5*(1+cos(x)^2)/(1+2*(1-cos(x)))^2};
+            \addlegendentry{$k_1=2\,m$}
+        \end{axis}
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Угловое распределение рассеянных фотонов.
+        С ростом энергии фотона рассеяние назад подавляется
+        и распределение вытягивается вперёд.
+    }
+    \label{fig:scalar_compton_angular}
+\end{rbox}
+
+
+% ============================================================
+\section{Частицы со спином: уравнение Дирака}
+% ============================================================
+
+% ------------------------------------------------------------
+\subsection{Идея Дирака}
+% ------------------------------------------------------------
+
+Уравнение Клейна--Гордона второго порядка по времени, поэтому
+его плотность $\rho$ не положительно определена. Дирак искал
+уравнение \rassumption{первого порядка} и по времени,
+и по координатам:
+
+\begin{equation*}
+    i\frac{\partial\psi}{\partial t}
+    =
+    \hat H\psi
+    =
+    \left(\boldsymbol\alpha\hat{\mathbf p}+\beta m\right)\psi.
+\end{equation*}
+
+Каждая компонента $\psi$ должна при этом удовлетворять
+уравнению Клейна--Гордона:
+
+\begin{equation*}
+    \hat H^2\psi
+    =
+    \left(\hat{\mathbf p}^2+m^2\right)\psi.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection{Условия на матрицы}
+% ------------------------------------------------------------
+
+Возводя гамильтониан в квадрат,
+
+\begin{equation*}
+    \left(\alpha_ip_i+\beta m\right)
+    \left(\alpha_jp_j+\beta m\right)\psi
+    =
+    \Big[
+        \alpha_i^2p_i^2
+        +\sum_{i<j}\left(\alpha_i\alpha_j+\alpha_j\alpha_i\right)p_ip_j
+        +\left(\alpha_i\beta+\beta\alpha_i\right)p_im
+        +\beta^2m^2
+    \Big]\psi.
+\end{equation*}
+
+Чтобы получить $\mathbf p^2+m^2$, нужно
+
+\begin{equation*}
+    \alpha_i^2=1,
+    \qquad
+    \beta^2=1,
+    \qquad
+    \left\{\alpha_i,\alpha_j\right\}=0\;(i\neq j),
+    \qquad
+    \left\{\alpha_i,\beta\right\}=0.
+\end{equation*}
+
+Значит, $\alpha_i$ и $\beta$ --- \rnote{не числа, а матрицы}.
+Их свойства:
+
+\begin{itemize}
+    \item \rconcept{эрмитовость} (гамильтониан эрмитов):
+    $A=A^\dagger=A^{*T}$;
+
+    \item собственные значения $\lambda=\pm1$: из
+    $Av=\lambda v$ следует $AAv=v=\lambda^2v$;
+
+    \item нулевой след: $\operatorname{Tr}\alpha_i=0$,
+    $\operatorname{Tr}\beta=0$. Например,
+    $\alpha_i=-\beta\alpha_i\beta$, откуда
+    $\operatorname{Tr}\alpha_i=-\operatorname{Tr}(\alpha_i\beta^2)
+    =-\operatorname{Tr}\alpha_i$.
+\end{itemize}
+
+Приведённая к диагональному виду матрица
+$A\to\operatorname{diag}(\lambda_1,\lambda_2,\ldots)$ с $\lambda=\pm1$
+и нулевым следом имеет \rresult{чётную размерность}.
+В размерности $2$ есть только три антикоммутирующие матрицы
+(матрицы Паули), а нужно четыре. Поэтому минимальная размерность
+--- \rresult{$4\times4$}, и $\psi$ --- четырёхкомпонентный
+\rconcept{биспинор}.
+
+
+% ------------------------------------------------------------
+\subsection{Представление Дирака}
+% ------------------------------------------------------------
+
+Стандартный выбор:
+
+\begin{equation*}
+    \boldsymbol\alpha
+    =
+    \begin{pmatrix}
+        0 & \boldsymbol\sigma\\
+        \boldsymbol\sigma & 0
+    \end{pmatrix},
+    \qquad
+    \beta
+    =
+    \begin{pmatrix}
+        I & 0\\
+        0 & -I
+    \end{pmatrix},
+\end{equation*}
+
+где $\boldsymbol\sigma$ --- \rconcept{матрицы Паули}:
+
+\begin{equation*}
+    \sigma_1
+    =
+    \begin{pmatrix}
+        0 & 1\\
+        1 & 0
+    \end{pmatrix},
+    \qquad
+    \sigma_2
+    =
+    \begin{pmatrix}
+        0 & -i\\
+        i & 0
+    \end{pmatrix},
+    \qquad
+    \sigma_3
+    =
+    \begin{pmatrix}
+        1 & 0\\
+        0 & -1
+    \end{pmatrix}.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection{Ковариантная форма}
+% ------------------------------------------------------------
+
+Умножим уравнение на $\beta$ и введём \rconcept{гамма-матрицы}
+
+\begin{equation*}
+    \gamma^\mu=\left(\beta,\,\beta\boldsymbol\alpha\right).
+\end{equation*}
+
+Получаем \rconcept{уравнение Дирака}
+
+\begin{equation*}
+    \left(i\gamma^\mu\partial_\mu-m\right)\psi=0.
+\end{equation*}
+
+Свойства гамма-матриц:
+
+\begin{equation*}
+    \gamma^\mu\gamma^\nu+\gamma^\nu\gamma^\mu=2g^{\mu\nu}I,
+\end{equation*}
+
+\begin{equation*}
+    \left(\gamma^0\right)^2=I,
+    \quad
+    \gamma^{0\dagger}=\gamma^0,
+    \qquad
+    \left(\gamma^i\right)^2=-I,
+    \quad
+    \gamma^{i\dagger}=-\gamma^i,
+\end{equation*}
+
+\begin{equation*}
+    \gamma^0
+    =
+    \begin{pmatrix}
+        I & 0\\
+        0 & -I
+    \end{pmatrix},
+    \qquad
+    \boldsymbol\gamma
+    =
+    \begin{pmatrix}
+        0 & \boldsymbol\sigma\\
+        -\boldsymbol\sigma & 0
+    \end{pmatrix}.
+\end{equation*}
+
+Для краткости будем писать $\hat p=\gamma^\mu p_\mu$.
+
+
+% ------------------------------------------------------------
+\subsection{Сохраняющийся ток}
+% ------------------------------------------------------------
+
+Введём \rconcept{дираковски сопряжённый спинор}
+
+\begin{equation*}
+    \bar\psi=\psi^\dagger\gamma^0.
+\end{equation*}
+
+Он удовлетворяет уравнению
+$i\,\partial_\mu\bar\psi\,\gamma^\mu+m\bar\psi=0$.
+Умножим уравнение Дирака слева на $\bar\psi$, сопряжённое ---
+справа на $\psi$, и сложим:
+
+\begin{equation*}
+    \bar\psi\gamma^\mu\partial_\mu\psi
+    +
+    \left(\partial_\mu\bar\psi\right)\gamma^\mu\psi
+    =
+    \partial_\mu\left(\bar\psi\gamma^\mu\psi\right)
+    =
+    0.
+\end{equation*}
+
+Сохраняющийся ток $j^\mu=\bar\psi\gamma^\mu\psi$, и его
+временная компонента
+
+\begin{equation*}
+    \rho
+    =
+    \bar\psi\gamma^0\psi
+    =
+    \psi^\dagger\psi
+    =
+    \sum_{i=1}^{4}|\psi_i|^2
+    \geqslant0.
+\end{equation*}
+
+\rresult{Плотность положительно определена} --- в отличие
+от уравнения Клейна--Гордона.
+
+
+% ------------------------------------------------------------
+\subsection{Покоящаяся частица}
+% ------------------------------------------------------------
+
+Ищем решение в виде
+
+\begin{equation*}
+    \psi=N\,u(p)\,e^{-ipx}.
+\end{equation*}
+
+Для частицы в покое $\mathbf p=0$ остаётся
+
+\begin{equation*}
+    \left(\gamma^0E-mI\right)u=0
+    \qquad\Longleftrightarrow\qquad
+    \begin{pmatrix}
+        E & & & \\
+         & E & & \\
+         & & -E & \\
+         & & & -E
+    \end{pmatrix}
+    \begin{pmatrix}
+        u_1\\ u_2\\ u_3\\ u_4
+    \end{pmatrix}
+    =
+    m
+    \begin{pmatrix}
+        u_1\\ u_2\\ u_3\\ u_4
+    \end{pmatrix}.
+\end{equation*}
+
+Четыре решения:
+
+\begin{equation*}
+    E_1=m\;\text{(спин вверх)},
+    \qquad
+    E_2=m\;\text{(спин вниз)},
+    \qquad
+    E_3=-m,
+    \qquad
+    E_4=-m.
+\end{equation*}
+
+Решения с $E<0$ \rnote{нефизичны} как состояния частицы ---
+их отбрасывают, а соответствующие им состояния описывают
+\rconcept{античастицы}.
+
+
+% ------------------------------------------------------------
+\subsection{Движущаяся частица}
+% ------------------------------------------------------------
+
+Для движущейся частицы уравнение
+$\left(i\gamma^\mu\partial_\mu-m\right)\psi=0$ даёт
+
+\begin{equation*}
+    \left(\hat p-m\right)u(p)=0.
+\end{equation*}
+
+Заметим, что
+
+\begin{equation*}
+    \left(\gamma^\mu p_\mu-m\right)
+    \left(\gamma^\nu p_\nu+m\right)u(0)
+    =
+    \left(p^2-m^2\right)u(0)
+    =
+    0.
+\end{equation*}
+
+Следовательно, \rresult{$u(p)=(\hat p+m)\,u(0)$ --- решение
+уравнения Дирака}:
+
+\begin{equation*}
+    u(p)
+    =
+    \left[
+        \begin{pmatrix}
+            I & 0\\
+            0 & -I
+        \end{pmatrix}E
+        -
+        \begin{pmatrix}
+            0 & \boldsymbol\sigma\\
+            -\boldsymbol\sigma & 0
+        \end{pmatrix}\mathbf p
+        +
+        mI
+    \right]u(0).
+\end{equation*}
+
+Взяв $u(0)=\begin{pmatrix}\chi\\0\end{pmatrix}$, получаем решения
+с положительной энергией:
+
+\begin{equation*}
+    u_{1,2}(p)
+    =
+    N
+    \begin{pmatrix}
+        \chi\\[4pt]
+        \dfrac{\boldsymbol\sigma\mathbf p}{E+m}\,\chi
+    \end{pmatrix},
+    \qquad
+    \chi_1
+    =
+    \begin{pmatrix}
+        1\\0
+    \end{pmatrix},
+    \quad
+    \chi_2
+    =
+    \begin{pmatrix}
+        0\\1
+    \end{pmatrix}.
+\end{equation*}
+
+Аналогично, из $u(0)=\begin{pmatrix}0\\\chi\end{pmatrix}$ получаются
+решения с отрицательной энергией ($E<0$):
+
+\begin{equation*}
+    u_{3,4}(p)
+    =
+    N
+    \begin{pmatrix}
+        \dfrac{-\boldsymbol\sigma\mathbf p}{-E+m}\,\chi\\[8pt]
+        \chi
+    \end{pmatrix}.
+\end{equation*}
+
+При нормировке $u^\dagger u=2E$ (как в уравнении Клейна--Гордона)
+$N=\sqrt{|E|+m}$.
+
+Для античастиц удобно перейти к положительной энергии и
+импульсу, т.\,е. записать решение в виде
+
+\begin{equation*}
+    \psi=v(p)\,e^{ipx}.
+\end{equation*}
+
+\end{document}
