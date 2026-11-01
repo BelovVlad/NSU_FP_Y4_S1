@@ -1120,7 +1120,7 @@ body{
 .pdf-fullscreen.open{animation:pdf-in .3s cubic-bezier(.2,.8,.2,1)}
 @keyframes pdf-in{from{opacity:0;transform:translateY(14px)}}
 
-/* Dots, the motif shared with the PweB hub (dots.js draws them like its banner): subject and knowledge cards
+/* Dots, the motif shared with the Hyle hub (dots.js draws them like its banner): subject and knowledge cards
    and lecture rows on hover, the chosen lecture always, the foot of the sidebar always. */
 .course-card,.knowledge-card,.file-row{position:relative;isolation:isolate}
 /* Living dot patches appear on hover, keyboard focus or touch press; selected items keep theirs on. */

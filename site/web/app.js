@@ -346,7 +346,7 @@
       /iPad|iPhone|iPod/.test(navigator.userAgent)?'В Safari нажмите «Поделиться», затем «На экран Домой».':
       matchMedia('(pointer:fine)').matches?'На компьютере: в Edge — меню ⋯ → «Приложения» → «Установить этот сайт как приложение», в Chrome — значок установки справа в адресной строке. Приложение появится в меню «Пуск» и на рабочем столе и будет открываться без интернета.':
       'На Android откройте этот сайт в Chrome, нажмите ⋮ → «Установить приложение» или «Добавить на главный экран». Если сайт открыт внутри мессенджера, сначала выберите «Открыть в браузере».');
-    paragraph(panel,'Устанавливается общее приложение PweB: в его окне открываются хаб, эти материалы, Кафедра и диплом.');
+    paragraph(panel,'Устанавливается общее приложение Hyle: в его окне открываются хаб, эти материалы, Кафедра и диплом.');
     paragraph(panel,'Страницы базы сохраняются после открытия. Чтобы PDF открывались без интернета, откройте шестерёнку рядом с «Главная» → «Сохранить все материалы». Первый запуск и несохранённые материалы требуют интернета.');
     if(!supported)paragraph(panel,'Установка и офлайн-режим доступны на опубликованном сайте с HTTPS.');
   }
@@ -394,7 +394,7 @@
   window.NSUApp={ready,request};
   updateInstallButton();
 
-  // The PweB hub sends here with #offline («Сохранить материалы НГУ»): open the manager at that button.
+  // The Hyle hub sends here with #offline («Сохранить материалы НГУ»): open the manager at that button.
   if(location.hash==='#offline'){
     history.replaceState(null,'',location.pathname+location.search);
     void openManager().then(()=>{

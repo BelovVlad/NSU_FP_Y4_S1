@@ -47,7 +47,7 @@ const main=$('#main'),subjectNav=$('#subjectNav'),searchInput=$('#globalSearch')
 let searchStems=[],searchRun=0,searchTimer=0,searchWorker=null,searchGroupsAll=[],searchGroups=[],searchFilterSubject='all',searchFilterSection='all',searchSelectedGroup=0,searchSelectedHit=0,searchQuery='',searchMobilePreview=false;
 function hashSubject(){if(!location.hash.startsWith('#subject='))return'';try{return decodeURIComponent(location.hash.slice(9).split('&')[0])}catch{return''}}
 function syncSubjectHash(){if(state.view!=='subjects'||!ORDER.includes(state.subject))return;const h='#subject='+encodeURIComponent(state.subject);if(location.hash!==h)history.replaceState(null,'',h)}
-// #search=<query> opens the search view; other sites (the PweB hub) link here with it.
+// #search=<query> opens the search view; other sites (the Hyle hub) link here with it.
 function takeHashSearch(){
   if(!location.hash.startsWith('#search='))return false;
   let q='';try{q=decodeURIComponent(location.hash.slice(8)).trim()}catch{}
