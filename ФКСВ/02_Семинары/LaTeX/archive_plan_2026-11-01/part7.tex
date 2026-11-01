@@ -1,0 +1,275 @@
+% !TeX root = part7.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% Продолжение по плану семинаров: тема 5; сборник, задача 4.9.
+\practice{7}{17.10.2026}{Теплоёмкость кристаллической решётки}
+\captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+
+\rtheory{Энергия фононов и вклад одной моды}
+
+В гармоническом приближении нормальные моды независимы:
+\[
+    \hat H=\sum_{\boldsymbol k,s}\hbar\omega_{\boldsymbol k s}
+       \left(\hat n_{\boldsymbol k s}+\frac12\right).
+\]
+Обозначим $x_{\boldsymbol k s}=\hbar\omega_{\boldsymbol k s}/(k_{\mathrm B}T)$.
+При фиксированном объёме частоты в этой модели от температуры не зависят,
+и потому нулевая энергия в теплоёмкость не входит:
+\begin{align*}
+    U&=U_0+\sum_{\boldsymbol k,s}
+       \frac{\hbar\omega_{\boldsymbol k s}}{e^{x_{\boldsymbol k s}}-1},\\
+    C_V&=\left(\frac{\partial U}{\partial T}\right)_V
+       =k_{\mathrm B}\sum_{\boldsymbol k,s}
+          \frac{x_{\boldsymbol k s}^2e^{x_{\boldsymbol k s}}}
+               {(e^{x_{\boldsymbol k s}}-1)^2}.
+\end{align*}
+Для одной моды при $x\ll1$ получаем $C\to k_{\mathrm B}$,
+а при $x\gg1$ --- $C\simeq k_{\mathrm B}x^2e^{-x}$.
+Вклад дают преимущественно моды с энергиями порядка $k_{\mathrm B}T$
+или меньше.
+
+\begingroup
+\renewcommand{\thesection}{4.\arabic{section}}
+\task[9]{Акустические фононы в одном, двух и трёх измерениях}
+\label{task:fksv_debye}
+
+\condition
+Найти фононную энергию и теплоёмкость гармонической решётки.
+Рассмотреть $d=1,2,3$, низкие и высокие температуры.
+В низкотемпературном пределе использовать акустические ветви
+с дисперсиями $\omega_s=c_sk$.
+
+\solution
+
+\subsection*{Плотность состояний}
+
+Для системы длины, площади или объёма $V_d$ число волновых векторов
+в сферическом слое $[k,k+dk]$ на одну поляризацию равно
+\[
+    d\mathcal N_s=\frac{V_d S_{d-1}}{(2\pi)^d}k^{d-1}dk.
+\]
+При $k=\omega/c_s$ получаем
+\[
+    D_s(\omega)=\frac{d\mathcal N_s}{d\omega}
+       =\frac{V_d S_{d-1}}{(2\pi)^d}
+          \frac{\omega^{d-1}}{c_s^d}.
+\]
+Здесь $D_s(\omega)d\omega$ --- полное число мод данной ветви
+в интервале частот. При переходе к частоте множитель
+$dk/d\omega=1/c_s$ необходимо учесть дополнительно к $k^{d-1}$.
+
+\subsection*{Низкотемпературная энергия}
+
+Пусть $k_{\mathrm B}T$ мало по сравнению с энергией на границе
+линейной области. Верхний предел интеграла можно продолжить до бесконечности:
+\begin{align*}
+    U_{\mathrm{th}}
+       &=\sum_s\int_0^\infty D_s(\omega)
+          \frac{\hbar\omega}{e^{\hbar\omega/(k_{\mathrm B}T)}-1}\,d\omega\\
+       &=\frac{V_d S_{d-1}}{(2\pi)^d}
+          \sum_s\frac{(k_{\mathrm B}T)^{d+1}}{\hbar^d c_s^d}
+          \int_0^\infty\frac{x^d}{e^x-1}\,dx.
+\end{align*}
+Разложение $(e^x-1)^{-1}=\sum_{n=1}^\infty e^{-nx}$ даёт
+\[
+    \int_0^\infty\frac{x^d}{e^x-1}\,dx
+       =\sum_{n=1}^\infty\frac{\Gamma(d+1)}{n^{d+1}}
+       =\Gamma(d+1)\zeta(d+1).
+\]
+Следовательно,
+\[
+    C_V=\frac{V_d S_{d-1}}{(2\pi)^d}(d+1)\Gamma(d+1)\zeta(d+1)
+       k_{\mathrm B}\left(\frac{k_{\mathrm B}T}{\hbar}\right)^d
+       \sum_s c_s^{-d}.
+\]
+\rresult{Для линейного акустического спектра $C_V\propto T^d$.}
+
+\subsection*{Явные результаты}
+
+Для одной ветви одномерной цепочки ($V_1=L$, $S_0=2$)
+\[
+    \frac{U_{\mathrm{th}}}{L}
+       =\frac{\pi}{6}\frac{(k_{\mathrm B}T)^2}{\hbar c},
+    \qquad
+    \frac{C_V}{L}=\frac{\pi}{3}
+       \frac{k_{\mathrm B}^2T}{\hbar c}.
+\]
+Для двумерной системы с линейными ветвями ($V_2=A$, $S_1=2\pi$)
+\[
+    \frac{U_{\mathrm{th}}}{A}
+       =\frac{\zeta(3)}{\pi}
+          \frac{(k_{\mathrm B}T)^3}{\hbar^2}\sum_s\frac1{c_s^2},
+    \qquad
+    \frac{C_V}{A}=\frac{3\zeta(3)}{\pi}
+          \frac{k_{\mathrm B}^3T^2}{\hbar^2}\sum_s\frac1{c_s^2}.
+\]
+Для трёхмерного изотропного кристалла с одной продольной и двумя
+поперечными ветвями ($V_3=V$, $S_2=4\pi$)
+\begin{align*}
+    \frac{U_{\mathrm{th}}}{V}
+       &=\frac{\pi^2}{30}\frac{(k_{\mathrm B}T)^4}{\hbar^3}
+          \left(\frac1{c_l^3}+\frac2{c_t^3}\right),\\
+    \frac{C_V}{V}
+       &=\frac{2\pi^2}{15}\frac{k_{\mathrm B}^4T^3}{\hbar^3}
+          \left(\frac1{c_l^3}+\frac2{c_t^3}\right).
+\end{align*}
+Степень температуры определяется размерностью, а коэффициент
+зависит от числа поляризаций и скоростей звука.
+
+\subsection*{Дебаевское обрезание и высокие температуры}
+
+В модели Дебая заменяем зону Бриллюэна сферой того же объёма.
+Для каждой ветви одноатомной решётки должно остаться $N$ мод:
+\[
+    \frac{V_d S_{d-1}}{d(2\pi)^d}k_D^d=N,
+    \qquad \omega_{D,s}=c_sk_D,
+    \qquad \Theta_{D,s}=\frac{\hbar\omega_{D,s}}{k_{\mathrm B}}.
+\]
+С учётом конечного обрезания
+\[
+    C_V=\frac{V_d S_{d-1}}{(2\pi)^d}
+       k_{\mathrm B}\sum_s
+       \left(\frac{k_{\mathrm B}T}{\hbar c_s}\right)^d
+       \int_0^{\Theta_{D,s}/T}
+          \frac{x^{d+1}e^x}{(e^x-1)^2}\,dx.
+\]
+При $T\gg\max_s\Theta_{D,s}$ каждая мода даёт $k_{\mathrm B}$,
+так что $C_V\to dNk_{\mathrm B}$ для $d$ ветвей идеальной
+$d$-мерной модели. Для трёхмерного кристалла это
+\rconcept{закон Дюлонга--Пти}: $C_V\to3Nk_{\mathrm B}$.
+Если движения атомов не ограничены плоскостью, двумерная геометрия
+не уменьшает число степеней свободы с трёх до двух.
+
+При одинаковой дебаевской частоте в трёхмерной модели
+\[
+    C_V=9Nk_{\mathrm B}\left(\frac T{\Theta_D}\right)^3
+       \int_0^{\Theta_D/T}\frac{x^4e^x}{(e^x-1)^2}\,dx,
+\]
+откуда
+\[
+    C_V\simeq\frac{12\pi^4}{5}Nk_{\mathrm B}
+       \left(\frac T{\Theta_D}\right)^3
+       \quad(T\ll\Theta_D).
+\]
+
+\answer
+Акустический вклад при низких температурах подчиняется законам
+$C_V\propto T$, $T^2$, $T^3$ в размерностях $1$, $2$, $3$ соответственно.
+При классическом возбуждении всех мод теплоёмкость равна
+$k_{\mathrm B}$, умноженной на их число.
+\endgroup
+
+\clearpage
+\task[2]{Вклад оптических фононов}
+
+\condition
+Определить вклад в теплоёмкость от оптических фононов.
+Пренебречь дисперсией оптической ветви: $\omega_{\boldsymbol k}=\omega_0$.
+Пусть $\mathcal N_{\mathrm{opt}}$ --- полное число таких нормальных мод.
+
+\solution
+
+\subsection*{Модель Эйнштейна}
+
+Каждая мода является осциллятором одной и той же частоты. Обозначим
+$\Theta_E=\hbar\omega_0/k_{\mathrm B}$. Тогда
+\begin{align*}
+    U_{\mathrm{opt}}&=\mathcal N_{\mathrm{opt}}\hbar\omega_0
+       \left(\frac12+\frac1{e^{\Theta_E/T}-1}\right),\\
+    C_{\mathrm{opt}}&=\mathcal N_{\mathrm{opt}}k_{\mathrm B}
+       \left(\frac{\Theta_E}{T}\right)^2
+       \frac{e^{\Theta_E/T}}{(e^{\Theta_E/T}-1)^2}.
+\end{align*}
+При низкой температуре оптический фонон требует конечной энергии,
+поэтому число возбуждений экспоненциально мало:
+\[
+    C_{\mathrm{opt}}\simeq\mathcal N_{\mathrm{opt}}k_{\mathrm B}
+       \left(\frac{\Theta_E}{T}\right)^2e^{-\Theta_E/T},
+       \qquad T\ll\Theta_E.
+\]
+При $T\gg\Theta_E$ восстанавливается классический предел
+\[
+    C_{\mathrm{opt}}\longrightarrow\mathcal N_{\mathrm{opt}}k_{\mathrm B}.
+\]
+
+\subsection*{Подсчёт мод и область применимости}
+
+В трёхмерном кристалле с $r$ атомами в ячейке и $N_c$ ячейками
+имеется $3r$ ветвей: три акустические и $3r-3$ оптических.
+Если всем оптическим ветвям приписать одну частоту, то
+$\mathcal N_{\mathrm{opt}}=(3r-3)N_c$.
+При высоких температурах сумма обоих вкладов равна
+$3rN_ck_{\mathrm B}$.
+
+\rnote{Экспоненциальное подавление связано с щелью, а не с
+полным отсутствием дисперсии.} Для диспергирующей оптической ветви
+с минимумом $\omega_{\min}>0$ сохраняется множитель
+$e^{-\hbar\omega_{\min}/(k_{\mathrm B}T)}$,
+но степенной предэкспоненциальный множитель зависит от формы минимума.
+
+\answer
+В приближении Эйнштейна оптический вклад определяется формулой выше;
+при $T\ll\Theta_E$ он экспоненциально мал, при $T\gg\Theta_E$
+каждая оптическая мода даёт $k_{\mathrm B}$.
+
+\Needspace{16\baselineskip}
+\task[3]{Изгибная ветвь графена}
+
+\condition
+Найти вклад в теплоёмкость от одной нижней фононной ветви
+двумерного листа графена с дисперсией $\omega=\beta k^2$, $\beta>0$.
+Обсудить температурную зависимость.
+
+\solution
+
+\subsection*{Плотность состояний квадратичной ветви}
+
+Для одной ветви в плоскости
+\[
+    d\mathcal N=\frac A{(2\pi)^2}2\pi k\,dk.
+\]
+Поскольку $d\omega=2\beta k\,dk$, получаем
+\[
+    D(\omega)=\frac A{4\pi\beta}.
+\]
+Плотность состояний постоянна. Она не пропорциональна $\omega$,
+как у линейной двумерной ветви.
+
+\subsection*{Энергия и теплоёмкость}
+
+При температуре много меньше характерной энергии верхней границы ветви
+\begin{align*}
+    U_{\mathrm{ZA,th}}
+       &=\frac A{4\pi\beta}\int_0^\infty
+          \frac{\hbar\omega\,d\omega}{e^{\hbar\omega/(k_{\mathrm B}T)}-1}\\
+       &=\frac A{4\pi\beta}\frac{(k_{\mathrm B}T)^2}{\hbar}
+          \int_0^\infty\frac{x\,dx}{e^x-1}
+        =\frac{A\pi}{24}\frac{(k_{\mathrm B}T)^2}{\hbar\beta}.
+\end{align*}
+Следовательно,
+\[
+    \frac{C_{\mathrm{ZA}}}{A}
+       =\frac\pi{12}\frac{k_{\mathrm B}^2T}{\hbar\beta}.
+\]
+\rresult{Квадратичная изгибная ветвь даёт линейную теплоёмкость.}
+Линейные продольная и поперечная ветви в плоскости дают $T^2$,
+поэтому в этой модели изгибная ветвь доминирует при достаточно малых $T$.
+
+\subsection*{Область применимости}
+
+Результат относится к \rassumption{гармонической модели свободного ненатянутого листа}.
+Натяжение может сделать спектр линейным при самых малых $k$;
+подложка и ангармонизм также меняют низкочастотный спектр.
+В конечном образце континуальный закон требует
+$\hbar\beta(2\pi/L)^2\ll k_{\mathrm B}T$.
+
+\answer
+Для одной ветви $\omega=\beta k^2$
+\[
+    U_{\mathrm{ZA,th}}=\frac{A\pi k_{\mathrm B}^2T^2}{24\hbar\beta},
+    \qquad C_{\mathrm{ZA}}=\frac{A\pi k_{\mathrm B}^2T}{12\hbar\beta}.
+\]
+
+\end{document}
