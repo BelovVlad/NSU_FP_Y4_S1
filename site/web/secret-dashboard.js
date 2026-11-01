@@ -10,7 +10,7 @@
     {subject:'ТДиСФ', section:'Семинары', label:'Семинары', weekday:5, start:'12:40', end:'14:15', firstDate:'2026-09-04'},
     {subject:'ФКСВ', section:'Семинары', label:'Семинары', weekday:6, start:'12:40', end:'14:15', firstDate:'2026-09-05', cancelled:['2026-10-31']},
     {subject:'ФЭЧ', section:'Семинары', label:'Семинары', weekday:4, start:'09:20', end:'10:55', firstDate:'2026-09-03'},
-    {subject:'ФЭЧ', section:'Лекции', label:'Лекции', weekday:4, start:'11:00', end:'12:35', firstDate:'2026-09-03'},
+    {subject:'ФЭЧ', section:'Лекции', label:'Лекции', weekday:4, start:'11:00', end:'12:35', firstDate:'2026-09-03', cancelled:['2026-09-17','2026-09-24','2026-10-01']},
     {subject:'ФиХАиМ', section:'Семинары', label:'Семинары', weekday:2, start:'16:20', end:'17:55', firstDate:'2026-09-01'}
   ];
 

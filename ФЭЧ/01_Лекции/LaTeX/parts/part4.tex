@@ -5,67 +5,42 @@
 \begin{document}
 
 % При отдельной сборке продолжаем нумерацию полного конспекта.
-\ifSubfilesClassLoaded{\setcounter{chapter}{2}\setcounter{section}{5}}{}
+\ifSubfilesClassLoaded{\setcounter{chapter}{2}\setcounter{section}{2}}{}
 
 
 % ============================================================
-% Лекция 22.10
+% Лекция 15.10
 % ============================================================
 
+
 % ============================================================
-\section{Рассеяние двух заряженных частиц}
+\section{Нерелятивистская теория возмущений}
 % ============================================================
-
-% ------------------------------------------------------------
-\subsection{Амплитуда через токи перехода}
-% ------------------------------------------------------------
-
-Рассмотрим рассеяние двух разных бесспиновых частиц
-
-\begin{equation*}
-    \pi^-(p_1)+K^-(p_2)\rightarrow\pi^-(p_3)+K^-(p_4).
-\end{equation*}
 
 \begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
     \centering
 
     \begin{tikzpicture}[
         >=Latex,
-        every node/.style={text=rtext},
-        photon/.style={
-            draw=rtext,
-            line width=0.9pt,
-            decorate,
-            decoration={snake, amplitude=1.6pt, segment length=6pt}
-        },
-        scalar/.style={draw=rc3, line width=1.2pt}
+        every node/.style={text=rtext}
     ]
-        \coordinate (A) at (0,1);
-        \coordinate (B) at (0,-1);
+        \draw[draw=rc4, line width=1.1pt, fill=rc4, fill opacity=0.08]
+        (0,0) circle (1.25);
 
-        \draw[scalar, ->] (-2.6,1) -- (-1.3,1);
-        \draw[scalar] (-1.3,1) -- (A);
-        \draw[scalar, ->] (A) -- (2.6,1.7);
+        \draw[->, draw=rc3, line width=1.3pt]
+        (-4.2,-1.05) -- (-0.6,0.05);
 
-        \draw[scalar, ->] (-2.6,-1) -- (-1.3,-1);
-        \draw[scalar] (-1.3,-1) -- (B);
-        \draw[scalar, ->] (B) -- (2.6,-1.7);
+        \draw[draw=rc3, line width=1.3pt]
+        (-0.6,0.05) -- (0,0.25);
 
-        \draw[photon] (A) -- (B);
+        \draw[->, draw=rc3, line width=1.3pt]
+        (0,0.25) -- (3.9,-0.95);
 
-        \node[font=\small, left] at (-2.6,1) {$\pi^-$};
-        \node[font=\small, left] at (-2.6,-1) {$K^-$};
-        \node[font=\small, above] at (-1.6,1) {$p_1$};
-        \node[font=\small, below] at (-1.6,-1) {$p_2$};
-        \node[font=\small, right] at (2.6,1.7) {$p_3$};
-        \node[font=\small, right] at (2.6,-1.7) {$p_4$};
-        \node[font=\small] at (0.45,0) {$q$};
+        \fill[rc4] (0,0.25) circle (1.7pt);
 
-        \node[font=\scriptsize] at (1.0,1.75) {$j^{(1)}_\mu$};
-        \node[font=\scriptsize] at (1.0,-1.75) {$j^{(2)}_\nu$};
-
-        \fill[rc4] (A) circle (1.7pt);
-        \fill[rc4] (B) circle (1.7pt);
+        \node[font=\small] at (-3.5,-0.45) {$H_0$};
+        \node[font=\small] at (0.05,-0.55) {$H_0+\hat V$};
+        \node[font=\small] at (3.4,-0.25) {$H_0$};
     \end{tikzpicture}
 
     \captionsetup{
@@ -75,40 +50,282 @@
     }
 
     \captionof{figure}{
-        Диаграмма рассеяния $\pi^-K^-\rightarrow\pi^-K^-$.
-        Вершины соответствуют токам перехода $j^{(1)}$ и $j^{(2)}$,
-        волнистая линия --- виртуальному фотону с импульсом
-        $q=p_3-p_1$.
+        Постановка задачи рассеяния. Вне области взаимодействия
+        частица свободна и описывается гамильтонианом $H_0$,
+        внутри действует возмущение $\hat V$.
     }
-    \label{fig:piK_scattering}
+    \label{fig:perturbation_region}
 \end{rbox}
 
-Пион рассеивается в поле $A^\mu$, созданном каоном. Это поле
-удовлетворяет уравнениям Максвелла $\Box A^\mu=j^\mu_{(2)}$.
-Поскольку ток каона $j^\mu_{(2)}\propto e^{iqx}$, а
-$\Box e^{iqx}=-q^2e^{iqx}$,
+% ------------------------------------------------------------
+\subsection{Разложение по невозмущённым состояниям}
+% ------------------------------------------------------------
+
+Пусть собственные функции невозмущённого гамильтониана известны:
 
 \begin{equation*}
-    A^\mu=-\frac{1}{q^2}\,j^\mu_{(2)}.
+    H_0\varphi_n=E_n\varphi_n,
+    \qquad
+    \int\varphi_i^*\varphi_j\,d^3x=\delta_{ij}.
 \end{equation*}
 
-Подставляя в $T_{fi}=-i\int j^{(1)}_\mu A^\mu\,d^4x$, получаем
-симметричное по двум частицам выражение
+В области взаимодействия
+
+\begin{equation*}
+    \left(H_0+\hat V(\mathbf x,t)\right)\psi
+    =
+    i\frac{\partial\psi}{\partial t}.
+\end{equation*}
+
+Решение ищем в виде разложения по полному набору $\varphi_n$
+с зависящими от времени коэффициентами:
+
+\begin{equation*}
+    \psi(\mathbf x,t)
+    =
+    \sum_n a_n(t)\,\varphi_n(\mathbf x)\,e^{-iE_nt}.
+\end{equation*}
+
+Подставляя, получаем
+
+\begin{equation*}
+    i\sum_n
+    \frac{da_n}{dt}\,
+    \varphi_n(\mathbf x)\,e^{-iE_nt}
+    =
+    \sum_n
+    \hat V(\mathbf x,t)\,a_n(t)\,\varphi_n(\mathbf x)\,e^{-iE_nt}.
+\end{equation*}
+
+Умножаем на $\varphi_f^*e^{iE_ft}$ и интегрируем по $d^3x$.
+В силу ортонормированности слева остаётся одно слагаемое:
+
+\begin{equation*}
+    \frac{da_f}{dt}
+    =
+    -i\sum_n a_n(t)
+    \int\varphi_f^*\hat V\varphi_n\,d^3x\;
+    e^{i(E_f-E_n)t}.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection{Первый порядок теории возмущений}
+% ------------------------------------------------------------
+
+\rassumption{Предположение:} в момент $t_0=-T/2$ до взаимодействия
+система находится в состоянии $i$:
+
+\begin{equation*}
+    a_i(t_0)=1,
+    \qquad
+    a_n(t_0)=0,\quad n\neq i.
+\end{equation*}
+
+Если возмущение мало, то в первом порядке в правой части можно
+оставить только $a_i\simeq1$:
+
+\begin{equation*}
+    a_f(t)
+    =
+    -i\int_{-T/2}^{t}dt'
+    \underbrace{
+        \int\varphi_f^*\hat V\varphi_i\,d^3x
+    }_{V_{fi}(t')}
+    \,e^{i(E_f-E_i)t'}.
+\end{equation*}
+
+\rconcept{Амплитуда перехода} --- значение коэффициента после
+окончания взаимодействия:
 
 \begin{equation*}
     T_{fi}
     =
-    -i\int
-    j^{(1)}_\mu(x)
-    \left(-\frac{g^{\mu\nu}}{q^2}\right)
-    j^{(2)}_\nu(x)\,
-    d^4x,
+    a_f\!\left(t\to+\infty\right)
+    =
+    -i\int d^4x\;
+    \varphi_f^*(x)\,\hat V(x)\,\varphi_i(x),
 \end{equation*}
 
-где токи перехода
+где теперь $\varphi_n(x)=\varphi_n(\mathbf x)e^{-iE_nt}$ включает
+временную зависимость. Именно в такой ковариантной форме
+амплитуда будет использоваться дальше.
+
+
+% ------------------------------------------------------------
+\subsection{Золотое правило Ферми}
+% ------------------------------------------------------------
+
+Для не зависящего от времени возмущения
 
 \begin{equation*}
-    j_\mu
+    T_{fi}
+    =
+    -iV_{fi}
+    \int_{-T/2}^{T/2}
+    e^{i(E_f-E_i)t}\,dt
+    \;\xrightarrow[T\to\infty]{}\;
+    -2\pi i\,V_{fi}\,\delta(E_f-E_i).
+\end{equation*}
+
+Вероятность перехода в единицу времени
+
+\begin{equation*}
+    W_{fi}
+    =
+    \lim_{T\to\infty}
+    \frac{|T_{fi}|^2}{T}.
+\end{equation*}
+
+При возведении в квадрат один из интегралов даёт
+$2\pi\delta(E_f-E_i)$, а второй при $E_f=E_i$ равен просто $T$:
+
+\begin{equation*}
+    |T_{fi}|^2
+    =
+    |V_{fi}|^2
+    \left|
+        \int_{-T/2}^{T/2}e^{i(E_f-E_i)t}\,dt
+    \right|^2
+    =
+    |V_{fi}|^2\,
+    T\,
+    2\pi\delta(E_f-E_i).
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    W_{fi}
+    =
+    2\pi\,|V_{fi}|^2\,\delta(E_f-E_i).
+\end{equation*}
+
+Переход в одно точное состояние физического смысла не имеет:
+нужно проинтегрировать по группе конечных состояний с
+\rconcept{плотностью конечных состояний} $\rho(E_f)$.
+Получаем \rconcept{золотое правило Ферми}:
+
+\begin{equation*}
+    W_{fi}
+    =
+    2\pi\,|V_{fi}|^2\,\rho(E_f).
+\end{equation*}
+
+
+% ============================================================
+\section{Электромагнитное взаимодействие}
+% ============================================================
+
+% ------------------------------------------------------------
+\subsection{Минимальная подстановка}
+% ------------------------------------------------------------
+
+Как включить взаимодействие с электромагнитным полем?
+Как и в классической механике, для частицы с зарядом $-e$
+(электрон) делается замена
+
+\begin{equation*}
+    \mathbf p\;\longrightarrow\;\mathbf p+e\mathbf A,
+    \qquad
+    \hat p^\mu\;\longrightarrow\;\hat p^\mu+eA^\mu,
+    \qquad
+    A^\mu=(\varphi,\mathbf A),
+\end{equation*}
+
+где $A^\mu$ --- \rnote{четырёхмерный потенциал}, а не поле.
+Поскольку $\hat p^\mu=i\partial^\mu$, это то же самое, что
+
+\begin{equation*}
+    \partial^\mu
+    \;\longrightarrow\;
+    \partial^\mu-ieA^\mu.
+\end{equation*}
+
+Уравнение Клейна--Гордона
+
+\begin{equation*}
+    \left(\partial_\mu\partial^\mu+m^2\right)\varphi=0
+\end{equation*}
+
+переходит в \rconcept{модифицированное уравнение}
+
+\begin{equation*}
+    \left(
+        \partial^\mu\partial_\mu
+        -ie\,\partial_\mu A^\mu
+        -ie\,A^\mu\partial_\mu
+        -e^2A^2
+        +m^2
+    \right)\varphi
+    =
+    0,
+\end{equation*}
+
+которое удобно записать как
+
+\begin{equation*}
+    \left(\partial^\mu\partial_\mu+m^2+\hat V\right)\varphi=0,
+    \qquad
+    \hat V
+    =
+    -ie\left(\partial_\mu A^\mu+A^\mu\partial_\mu\right)
+    -e^2A^2.
+\end{equation*}
+
+Здесь $\partial_\mu A^\mu$ --- оператор, действующий на всё,
+что стоит справа, т.\,е. $\partial_\mu(A^\mu\varphi)$.
+
+
+% ------------------------------------------------------------
+\subsection{Ток перехода}
+% ------------------------------------------------------------
+
+Подставим $\hat V$ в амплитуду перехода. Слагаемое
+$e^2A_\mu A^\mu$ \rassumption{отбрасываем}, так как это
+следующий порядок по $e$:
+
+\begin{equation*}
+    T_{fi}
+    =
+    -i\int\varphi_f^*(x)\,\hat V(x)\,\varphi_i(x)\,d^4x
+    =
+    -e\int\varphi_f^*
+    \left(
+        A^\mu\partial_\mu+\partial_\mu A^\mu
+    \right)
+    \varphi_i\,d^4x.
+\end{equation*}
+
+Во втором слагаемом интегрируем по частям
+(поля на бесконечности обращаются в нуль):
+
+\begin{equation*}
+    \int\varphi_f^*\,\partial_\mu\!\left(A^\mu\varphi_i\right)d^4x
+    =
+    -\int\left(\partial_\mu\varphi_f^*\right)A^\mu\varphi_i\,d^4x.
+\end{equation*}
+
+Тогда
+
+\begin{equation*}
+    T_{fi}
+    =
+    -e\int A^\mu
+    \left[
+        \varphi_f^*\left(\partial_\mu\varphi_i\right)
+        -
+        \varphi_i\left(\partial_\mu\varphi_f^*\right)
+    \right]
+    d^4x
+    =
+    -i\int j^{fi}_\mu\,A^\mu\,d^4x,
+\end{equation*}
+
+где
+
+\begin{equation*}
+    j^{fi}_\mu
     =
     -ie
     \left(
@@ -118,367 +335,62 @@ $\Box e^{iqx}=-q^2e^{iqx}$,
     \right)
 \end{equation*}
 
---- \rconcept{токи перехода}. Для плоских волн
-$\varphi=Ne^{-ipx}$ (нормировка $2E$ частиц в единице объёма,
-$N=1/\sqrt V$):
+--- \rconcept{ток перехода} $i\to f$. Он совпадает с током
+$e\,j^\mu$ из уравнения Клейна--Гордона, если заменить
+$\varphi^*\to\varphi_f^*$, $\varphi\to\varphi_i$.
+
+Для плоских волн $\varphi=Ne^{-ipx}$:
 
 \begin{equation*}
-    j^{(1)}_\mu
+    j^{fi}_\mu
     =
-    -eN_1N_3\left(p_1+p_3\right)_\mu e^{i(p_3-p_1)x},
-    \qquad
-    j^{(2)}_\nu
-    =
-    -eN_2N_4\left(p_2+p_4\right)_\nu e^{i(p_4-p_2)x}.
+    -eN_iN_f\left(p_i+p_f\right)_\mu e^{i(p_f-p_i)x},
 \end{equation*}
-
-Тогда
 
 \begin{equation*}
     T_{fi}
     =
-    -iN_1N_2N_3N_4\,
-    e\left(p_1+p_3\right)^\mu
-    \left(\frac{g_{\mu\nu}}{-q^2}\right)
-    e\left(p_2+p_4\right)^\nu
-    \int e^{i(p_3+p_4-p_1-p_2)x}\,d^4x,
-\end{equation*}
-
-где
-
-\begin{equation*}
-    q=p_3-p_1,
+    ieN_iN_f\left(p_i+p_f\right)_\mu
+    \int A^\mu\,e^{iqx}\,d^4x,
     \qquad
-    q^2
-    =
-    \left(E_3-E_1\right)^2-\left(\mathbf p_3-\mathbf p_1\right)^2.
+    q=p_f-p_i.
 \end{equation*}
 
-В системе центра масс энергии частиц при упругом рассеянии
-не меняются, поэтому $q^2=-|\mathbf q|^2<0$:
-фотон \rnote{виртуальный}, для него $q^2\neq0$.
-Интеграл даёт $(2\pi)^4\delta^4(p_3+p_4-p_1-p_2)$ ---
-закон сохранения 4-импульса.
-
-
-% ------------------------------------------------------------
-\subsection{Лоренц-инвариантный матричный элемент}
-% ------------------------------------------------------------
-
-Запишем амплитуду в виде
-
-\begin{equation*}
-    T_{fi}
-    =
-    -iN_1N_2N_3N_4\,
-    (2\pi)^4\delta^4(p_f-p_i)\,
-    \mathcal M.
-\end{equation*}
-
-Здесь $\mathcal M$ --- \rconcept{лоренц-инвариантный матричный
-элемент}:
-
-\begin{equation*}
-    \mathcal M
-    =
-    j^\mu\left(-\frac{g_{\mu\nu}}{q^2}\right)j^\nu,
-    \qquad
-    \mathcal M
-    =
-    -e\left(p_1+p_3\right)^\mu
-    \left(\frac{g_{\mu\nu}}{-q^2}\right)
-    e\left(p_2+p_4\right)^\nu.
-\end{equation*}
-
-Так он записан на лекции; знак и множители $i$ общей фазы
-для сечения несущественны, важен только $|\mathcal M|^2$.
-Окончательно
-
-\begin{equation*}
-    \mathcal M
-    =
-    -e^2\,
-    \frac{\left(p_1+p_3\right)\left(p_2+p_4\right)}
-         {\left(p_3-p_1\right)^2}.
-\end{equation*}
-
-Каждый множитель имеет наглядный смысл:
-$ie(p_i+p_f)^\mu$ --- \rconcept{вершина},
-$-ig_{\mu\nu}/q^2$ --- \rconcept{пропагатор фотона}.
-Это и есть \rconcept{правила Фейнмана} для скалярной КЭД.
-
-
-% ------------------------------------------------------------
-\subsection{Вероятность перехода}
-% ------------------------------------------------------------
-
-Квадрат $\delta$-функции раскрывается так же, как в золотом правиле
-Ферми: $\left[(2\pi)^4\delta^4\right]^2=(2\pi)^4\delta^4\cdot VT$.
-Вероятность перехода в единицу времени в единице объёма
-
-\begin{equation*}
-    W_{fi}
-    =
-    N_1^2N_2^2N_3^2N_4^2\,
-    (2\pi)^4\delta^4(p_f-p_i)\,
-    |\mathcal M|^2\,
-    \rho,
-\end{equation*}
-
-где $\rho$ --- \rconcept{плотность конечных состояний}.
-При нормировке на $2E$ частиц в объёме $V$ каждая частица
-даёт множитель $1/(2E_jV)$, а каждая конечная частица ---
-$V\,d^3p/(2\pi)^3$ состояний. Объём сокращается.
+Величина $q$ --- переданный 4-импульс.
 
 
 % ============================================================
-\section{Фазовый объём и сечение}
+\section{Рассеяние на кулоновском центре}
 % ============================================================
 
 % ------------------------------------------------------------
-\subsection{Лоренц-инвариантный фазовый объём}
+\subsection{Система Хевисайда--Лоренца}
 % ------------------------------------------------------------
 
-Для процесса с $n_i$ начальными и $n_f$ конечными частицами
+В КЭД принято использовать
+\rassumption{рационализированную систему Хевисайда--Лоренца},
+в которой
 
 \begin{equation*}
-    dW
-    =
-    \frac{|\mathcal M|^2}{\displaystyle\prod_{j=1}^{n_i}2E_j}\;
-    \underbrace{
-        \prod_{i=1}^{n_f}
-        \frac{d^3p_i}{(2\pi)^3\,2E_i}\,
-        (2\pi)^4\delta^4(P_f-P_i)
-    }_{d\Phi_n}.
-\end{equation*}
-
-Величина $d\Phi_n$ называется
-\rconcept{лоренц-инвариантным фазовым объёмом}: каждый множитель
-$d^3p/2E$ инвариантен относительно преобразований Лоренца.
-
-Проинтегрировав по импульсу одной из конечных частиц
-с помощью $\delta^3$, получаем
-
-\begin{equation*}
-    d\Phi_n
-    =
-    \prod_{i=1}^{n_f-1}
-    \frac{d^3p_i}{(2\pi)^3\,2E_i}\;
-    \frac{2\pi\,\delta(E_f-E_i)}{2E_{n_f}}.
-\end{equation*}
-
-
-% ------------------------------------------------------------
-\subsection{Двухчастичный фазовый объём}
-% ------------------------------------------------------------
-
-Пусть в конечном состоянии две частицы с импульсами
-$\mathbf p_1$, $\mathbf p_2$, а полный импульс и энергия равны
-
-\begin{equation*}
-    \mathbf P_0=\mathbf p_1+\mathbf p_2,
+    F=\frac{q_1q_2}{4\pi r^2},
     \qquad
-    E_0=E_1+E_2.
-\end{equation*}
-
-Остаётся интеграл по $d^3p_1=p_1^2\,dp_1\,d\Omega$ с
-$\delta(E_0-E_1-E_2)$, где $E_2$ зависит от $\mathbf p_1$ через
-$\mathbf p_2=\mathbf P_0-\mathbf p_1$. Вычисляя производную
-$d(E_1+E_2)/dp_1$, получаем
-
-\begin{equation*}
-    d\Phi_2
-    =
-    \frac{1}{4(2\pi)^2}\,
-    \frac{p_1^3\,d\Omega}
-         {E_0p_1^2-E_1\,\mathbf P_0\mathbf p_1}.
-\end{equation*}
-
-В системе центра масс $\mathbf P_0=0$:
-
-\begin{equation*}
-    d\Phi_2
-    =
-    \frac{1}{4(2\pi)^2}\,
-    \frac{p_1\,d\Omega_1}{E_0}
-    \qquad\Longrightarrow\qquad
-    dW
-    =
-    \frac{|\mathcal M|^2}{\displaystyle\prod_{j=1}^{n_i}2E_j}\,
-    d\Phi_2.
-\end{equation*}
-
-
-% ------------------------------------------------------------
-\subsection{Поток и сечение}
-% ------------------------------------------------------------
-
-Сечение --- вероятность, нормированная на поток:
-
-\begin{equation*}
-    d\sigma=\frac{dW}{j},
+    \operatorname{div}\mathbf E=\rho,
     \qquad
-    j
-    =
-    \frac{\sqrt{\left(p_1p_2\right)^2-m_1^2m_2^2}}{E_1E_2}
+    \varphi=\frac{q}{4\pi r}.
 \end{equation*}
 
---- \rconcept{общее выражение для потока}
-(относительная скорость сталкивающихся частиц).
-В лабораторной системе, где вторая частица покоится,
-$p_1p_2=E_1m_2$, $E_2=m_2$:
+Постоянная тонкой структуры в ней
 
 \begin{equation*}
-    j
-    =
-    \frac{\sqrt{E_1^2m_2^2-m_1^2m_2^2}}{E_1m_2}
-    =
-    \frac{|\mathbf p_1|}{E_1}
-    =
-    v_1.
+    \alpha=\frac{e^2}{4\pi}\approx\frac{1}{137},
+    \qquad
+    r_e=\frac{e^2}{4\pi m_e}=\frac{\alpha}{m_e}.
 \end{equation*}
-
-Для $2\to2$ в системе центра масс
-$4E_1E_2\,j=4p_iE_0$, где $p_i$ --- импульс каждой из
-начальных частиц, $E_0=\sqrt s$. Отсюда
-
-\begin{equation*}
-    \frac{d\sigma}{d\Omega}
-    =
-    \frac{|\mathcal M|^2}{64\pi^2E_0^2}\,
-    \frac{p_f}{p_i}.
-\end{equation*}
-
-Для упругого рассеяния $p_f=p_i$.
 
 
 % ------------------------------------------------------------
-\subsection{Сечение \texorpdfstring{$\pi^-K^-$}{π⁻K⁻}-рассеяния}
+\subsection{Амплитуда рассеяния}
 % ------------------------------------------------------------
-
-В системе центра масс
-$p_1=(E_1,\mathbf p)$, $p_2=(E_2,-\mathbf p)$,
-$p_3=(E_1,\mathbf p')$, $p_4=(E_2,-\mathbf p')$,
-$|\mathbf p'|=|\mathbf p|=p$, угол между $\mathbf p$
-и $\mathbf p'$ равен $\theta$. Тогда
-
-\begin{equation*}
-    \left(p_1+p_3\right)\left(p_2+p_4\right)
-    =
-    4E_1E_2+|\mathbf p+\mathbf p'|^2
-    =
-    4\left(E_1E_2+p^2\cos^2\frac{\theta}{2}\right),
-\end{equation*}
-
-\begin{equation*}
-    \left(p_3-p_1\right)^2
-    =
-    -|\mathbf p'-\mathbf p|^2
-    =
-    -4p^2\sin^2\frac{\theta}{2}.
-\end{equation*}
-
-Следовательно,
-
-\begin{equation*}
-    \mathcal M
-    =
-    -e^2\,
-    \frac{\left(p_1+p_3\right)\left(p_2+p_4\right)}
-         {\left(p_3-p_1\right)^2}
-    =
-    e^2\,
-    \frac{E_1E_2+p^2\cos^2\dfrac{\theta}{2}}
-         {p^2\sin^2\dfrac{\theta}{2}}.
-\end{equation*}
-
-С учётом $\alpha=\dfrac{e^2}{4\pi}$ и скоростей
-$v_1=p/E_1$, $v_2=p/E_2$:
-
-\begin{equation*}
-    \frac{d\sigma}{d\Omega}
-    =
-    \frac{\alpha^2}{4}\,
-    \frac{\left(E_1E_2\right)^2}{E_0^2}\,
-    \frac{
-        \left(1+v_1v_2\cos^2\dfrac{\theta}{2}\right)^2
-    }{
-        p^4\sin^4\dfrac{\theta}{2}
-    }.
-\end{equation*}
-
-\remark
-В пределе тяжёлого каона ($E_2\to m_2\to\infty$, $v_2\to0$,
-$E_0\to m_2$) получается $\dfrac{d\sigma}{d\Omega}
-=\dfrac{\alpha^2E_1^2}{4p^4\sin^4(\theta/2)}$ ---
-\rresult{формула Резерфорда} из предыдущего раздела.
-
-
-% ============================================================
-\section{Переменные Мандельстама}
-% ============================================================
-
-Для процесса $1+2\rightarrow3+4$ удобно ввести
-\rconcept{переменные Мандельстама}:
-
-\begin{align*}
-    s&=\left(p_1+p_2\right)^2=\left(p_3+p_4\right)^2
-      =\left(E_1+E_2\right)^2_{\text{ц.м.}}
-      =m_1^2+m_2^2+2p_1p_2,\\[4pt]
-    t&=\left(p_3-p_1\right)^2=\left(p_4-p_2\right)^2
-      =m_3^2+m_1^2-2p_3p_1,\\[4pt]
-    u&=\left(p_4-p_1\right)^2=\left(p_3-p_2\right)^2
-      =m_4^2+m_1^2-2p_1p_4.
-\end{align*}
-
-Они лоренц-инвариантны: $s$ --- квадрат полной энергии в системе
-центра масс, $t$ --- квадрат переданного импульса.
-Независимы только две из них:
-
-\begin{equation*}
-    s+t+u=m_1^2+m_2^2+m_3^2+m_4^2.
-\end{equation*}
-
-\rassumption{Если энергии большие}, массами можно пренебречь:
-
-\begin{equation*}
-    s\simeq2p_1p_2=2p_3p_4,
-    \qquad
-    t\simeq-2p_1p_3,
-    \qquad
-    u\simeq-2p_1p_4.
-\end{equation*}
-
-Тогда
-
-\begin{equation*}
-    \left(p_1+p_3\right)\left(p_2+p_4\right)
-    =
-    p_1p_2+p_1p_4+p_3p_2+p_3p_4
-    =
-    s-u,
-\end{equation*}
-
-и матричный элемент $\pi^-K^-$-рассеяния принимает простой вид
-
-\begin{equation*}
-    \mathcal M
-    =
-    -e^2\,\frac{s-u}{t}.
-\end{equation*}
-
-\remark
-На лекции результат записан как $\mathcal M=2e^2\dfrac{s-u}{t}$.
-Прямой подсчёт с $p_1p_2=s/2$, $p_1p_4=-u/2$ и т.\,д. даёт
-$(p_1+p_3)(p_2+p_4)=s-u$ \rnote{без множителя $2$}
-(так же в книге Халзена и Мартина). Знак общий для всех диаграмм
-и на сечение не влияет.
-
-\remark[Высшие порядки.]
-Обмен одним фотоном --- лишь первый член ряда теории возмущений.
-Следующие поправки дают, например, диаграммы с обменом двумя
-фотонами; они подавлены дополнительным множителем $\alpha$
-и будут рассмотрены позже.
 
 \begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
     \centering
@@ -488,32 +400,28 @@ $(p_1+p_3)(p_2+p_4)=s-u$ \rnote{без множителя $2$}
         every node/.style={text=rtext},
         photon/.style={
             draw=rtext,
-            line width=0.85pt,
+            line width=0.9pt,
             decorate,
-            decoration={snake, amplitude=1.4pt, segment length=5pt}
-        },
-        scalar/.style={draw=rc3, line width=1.15pt}
+            decoration={snake, amplitude=1.6pt, segment length=6pt}
+        }
     ]
-        \begin{scope}[shift={(-3,0)}]
-            \draw[scalar] (-1.2,1.6) -- (0,0.8) -- (1.2,1.6);
-            \draw[scalar] (-1.2,-1.6) -- (0,-0.8) -- (1.2,-1.6);
-            \draw[photon] (0,0.8) -- (0,-0.8);
-            \fill[rc4] (0,0.8) circle (1.5pt);
-            \fill[rc4] (0,-0.8) circle (1.5pt);
-        \end{scope}
+        \coordinate (V) at (0,0);
 
-        \node[font=\Large] at (-0.75,0) {$+$};
+        \draw[->, draw=rc3, line width=1.2pt] (-2.6,1.7) -- (-1.1,0.72);
+        \draw[draw=rc3, line width=1.2pt] (-1.1,0.72) -- (V);
+        \draw[->, draw=rc3, line width=1.2pt] (V) -- (2.6,1.7);
 
-        \begin{scope}[shift={(1.9,0)}]
-            \draw[scalar] (-1.4,1.6) -- (-0.7,0.8) -- (0.7,0.8) -- (1.4,1.6);
-            \draw[scalar] (-1.4,-1.6) -- (-0.7,-0.8) -- (0.7,-0.8) -- (1.4,-1.6);
-            \draw[photon] (-0.7,0.8) -- (-0.7,-0.8);
-            \draw[photon] (0.7,0.8) -- (0.7,-0.8);
-            \foreach \p in {(-0.7,0.8),(0.7,0.8),(-0.7,-0.8),(0.7,-0.8)}
-                \fill[rc4] \p circle (1.5pt);
-        \end{scope}
+        \node[font=\small] at (-2.2,0.95) {$p_i$};
+        \node[font=\small] at (2.2,0.95) {$p_f$};
 
-        \node[font=\Large] at (4.2,0) {$+\;\ldots$};
+        \draw[photon] (V) -- (0,-1.9);
+        \node[font=\small] at (0.45,-0.95) {$q$};
+
+        \draw[draw=rc4, line width=1.1pt] (-0.2,-2.1) -- (0.2,-1.7);
+        \draw[draw=rc4, line width=1.1pt] (-0.2,-1.7) -- (0.2,-2.1);
+        \node[font=\small, right=6pt] at (0.2,-1.9) {заряд $e$};
+
+        \fill[rc4] (V) circle (1.7pt);
     \end{tikzpicture}
 
     \captionsetup{
@@ -523,32 +431,198 @@ $(p_1+p_3)(p_2+p_4)=s-u$ \rnote{без множителя $2$}
     }
 
     \captionof{figure}{
-        Обмен одним фотоном (порядок $e^2$) и <<ящичная>>
-        диаграмма с обменом двумя фотонами (порядок $e^4$).
+        Рассеяние заряженной частицы на статическом кулоновском
+        центре. Частица передаёт импульс $q=p_f-p_i$
+        через виртуальный фотон.
     }
-    \label{fig:higher_orders}
+    \label{fig:coulomb_center}
 \end{rbox}
 
+Возьмём статический кулоновский потенциал
 
-% ============================================================
-\section{Античастицы}
-\label{sec:antiparticles}
-% ============================================================
+\begin{equation*}
+    A^\mu
+    =
+    \left(
+        \frac{e}{4\pi|\mathbf r|},\,
+        \mathbf 0
+    \right).
+\end{equation*}
+
+В $T_{fi}$ остаётся только $\mu=0$ и $(p_i+p_f)_0=E_i+E_f$:
+
+\begin{equation*}
+    T_{fi}
+    =
+    ieN_iN_f\left(E_i+E_f\right)
+    \int e^{i(E_f-E_i)t}\,dt
+    \int\frac{e}{4\pi|\mathbf r|}\,
+    e^{-i\mathbf q\mathbf r}\,d^3x.
+\end{equation*}
+
+Интеграл по времени даёт $2\pi\delta(E_f-E_i)$ ---
+рассеяние упругое. Пространственный интеграл --- фурье-образ
+кулоновского потенциала. Направим ось $Oz$ вдоль $\mathbf q$:
+
+\begin{equation*}
+    \frac{e}{4\pi}
+    \int\frac{1}{r}\,
+    e^{-iqr\cos\theta}\,
+    r^2\,dr\,d\varphi\,d\cos\theta
+    =
+    \frac{e}{|\mathbf q|^2}.
+\end{equation*}
+
+\remark[Как считать этот интеграл.]
+Интеграл по $r$ сходится только условно. Его регуляризуют,
+заменяя потенциал на экранированный (юкавский)
+$\dfrac{1}{4\pi r}e^{-\mu r}$:
+
+\begin{equation*}
+    \int\frac{e^{-\mu r}}{4\pi r}\,e^{-i\mathbf q\mathbf r}\,d^3x
+    =
+    \frac{1}{q}\int_0^\infty e^{-\mu r}\sin(qr)\,dr
+    =
+    \frac{1}{|\mathbf q|^2+\mu^2},
+\end{equation*}
+
+а затем полагают $\mu\to0$. На лекции было отмечено, что
+потенциал вида
+$A^0\to\dfrac{1}{4\pi r}e^{-mr}$ \rnote{тоже имеет место быть}
+--- это поле, переносимое массивной частицей; он даёт
+$1/(|\mathbf q|^2+m^2)$ вместо $1/|\mathbf q|^2$.
+Пока такие поля не рассматриваем.
+
+Для упругого рассеяния 4-вектор $q=(0,\mathbf q)$, поэтому
+$q^2=-|\mathbf q|^2$. Итого
+
+\begin{equation*}
+    T_{fi}
+    =
+    -iN_iN_f\,\mathcal M\,2\pi\delta(E_f-E_i),
+    \qquad
+    \mathcal M
+    =
+    -e^2\frac{E_i+E_f}{|\mathbf q|^2}.
+\end{equation*}
+
+Здесь $\mathcal M$ --- \rconcept{матричный элемент},
+не содержащий нормировок и $\delta$-функции.
+
 
 % ------------------------------------------------------------
-\subsection{Интерпретация Фейнмана--Штюкельберга}
+\subsection{Сечение: формула Резерфорда}
 % ------------------------------------------------------------
 
-Решения уравнения Клейна--Гордона с отрицательной энергией
-$e^{-i(-E)t}$ описывают \rconcept{античастицы}: испускание
-античастицы с 4-импульсом $p$ эквивалентно поглощению частицы
-с 4-импульсом $-p$, т.\,е. частицы, \rnote{движущейся назад во
-времени}. На диаграммах античастица изображается линией
-со стрелкой, направленной против хода времени.
+Вероятность перехода в единицу времени
 
-Отсюда простое правило: \rresult{амплитуда с античастицей получается
-из амплитуды с частицей заменой $p\to-p$} для соответствующей
-внешней линии.
+\begin{equation*}
+    W_{fi}
+    =
+    e^4N_i^2N_f^2\,
+    \frac{\left(E_i+E_f\right)^2}{|\mathbf q|^4}\,
+    2\pi\delta(E_f-E_i)
+    =
+    2\pi N_i^2N_f^2\,|\mathcal M|^2\,\delta(E_f-E_i).
+\end{equation*}
+
+Сечение --- это вероятность, делённая на поток падающих частиц
+и умноженная на число конечных состояний:
+
+\begin{equation*}
+    d\sigma
+    =
+    \frac{W_{fi}}{J}\,\rho_f.
+\end{equation*}
+
+\rassumption{Нормировка:} одна частица в объёме $V$, т.\,е.
+$\rho=2E|N|^2=1/V$, $N^2=1/(2EV)$. Тогда поток $J=v_i/V$,
+а число конечных состояний
+
+\begin{equation*}
+    \rho_f
+    =
+    \frac{V\,d^3p_f}{(2\pi\hbar)^3}.
+\end{equation*}
+
+Объём $V$ сокращается, и
+
+\begin{equation*}
+    d\sigma
+    =
+    \frac{e^4}{v_i}\,
+    \frac{1}{2E_i}\,
+    \frac{1}{2E_f}\,
+    \frac{\left(E_i+E_f\right)^2}{|\mathbf q|^4}\,
+    2\pi\delta(E_f-E_i)\,
+    \frac{d^3p_f}{(2\pi)^3}.
+\end{equation*}
+
+Поскольку $p\,dp=E\,dE$, то $d^3p_f=p_f^2\,dp_f\,d\Omega=p_fE_f\,dE_f\,d\Omega$:
+
+\begin{equation*}
+    d\sigma
+    =
+    \frac{e^4}{v_i}\,
+    \frac{1}{2E_i}\,
+    \frac{1}{2E_f}\,
+    \frac{\left(E_i+E_f\right)^2}{|\mathbf q|^4}\,
+    2\pi\delta(E_f-E_i)\,
+    \frac{p_fE_f\,dE_f\,d\Omega}{(2\pi)^3}.
+\end{equation*}
+
+После интегрирования по $dE_f$ положим $E_i=E_f=E$,
+$|\mathbf p_i|=|\mathbf p_f|=p$, $v=p/E$. Переданный импульс
+выражается через угол рассеяния:
+
+\begin{equation*}
+    |\mathbf q|^2
+    =
+    |\mathbf p_f-\mathbf p_i|^2
+    =
+    4p^2\sin^2\frac{\theta}{2}.
+\end{equation*}
+
+В результате
+
+\begin{equation*}
+    \frac{d\sigma}{d\Omega}
+    =
+    \frac{e^4E^2}{4\pi^2|\mathbf q|^4}
+    =
+    \frac{\alpha^2}{4p^2v^2\sin^4\dfrac{\theta}{2}},
+\end{equation*}
+
+или, вводя $r_e=\dfrac{e^2}{4\pi m_e}$,
+
+\begin{equation*}
+    \frac{d\sigma}{d\Omega}
+    =
+    \frac{r_e^2}{4}
+    \left(
+        \frac{m_e}{\beta p}
+    \right)^2
+    \frac{1}{\sin^4\dfrac{\theta}{2}}.
+\end{equation*}
+
+Это \rresult{формула Резерфорда} --- та самая, что использовалась
+в первой главе при выводе ионизационных потерь.
+Квантовый расчёт в первом порядке совпадает с классическим.
+
+
+% ------------------------------------------------------------
+\subsection{Рассеяние двух частиц: первый взгляд}
+% ------------------------------------------------------------
+
+Если вместо статического центра взять вторую движущуюся заряженную
+частицу, например в процессе
+
+\begin{equation*}
+    \pi^++K^+\rightarrow\pi^++K^+,
+\end{equation*}
+
+то каждая частица создаёт свой ток, а фотон с импульсом $q$
+переносит взаимодействие между ними:
 
 \begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
     \centering
@@ -567,24 +641,23 @@ $e^{-i(-E)t}$ описывают \rconcept{античастицы}: испуск
         \coordinate (A) at (0,1);
         \coordinate (B) at (0,-1);
 
-        \draw[scalar, ->] (-2.6,1) -- (-1.3,1);
-        \draw[scalar] (-1.3,1) -- (A);
-        \draw[scalar, ->] (A) -- (2.6,1.7);
+        \draw[scalar, ->] (-2.3,2.4) -- (-1.15,1.7);
+        \draw[scalar] (-1.15,1.7) -- (A);
+        \draw[scalar, ->] (A) -- (2.3,2.4);
 
-        % Античастица: стрелка против хода времени
-        \draw[scalar] (-2.6,-1) -- (-1.3,-1);
-        \draw[scalar, <-] (-1.3,-1) -- (B);
-        \draw[scalar] (B) -- (1.3,-1.35);
-        \draw[scalar, <-] (1.3,-1.35) -- (2.6,-1.7);
+        \draw[scalar, ->] (-2.3,-2.4) -- (-1.15,-1.7);
+        \draw[scalar] (-1.15,-1.7) -- (B);
+        \draw[scalar, ->] (B) -- (2.3,-2.4);
 
         \draw[photon] (A) -- (B);
 
-        \node[font=\small, left] at (-2.6,1) {$\pi^-$};
-        \node[font=\small, left] at (-2.6,-1) {$K^+$};
-
-        \draw[->, draw=rtextmuted, line width=0.7pt]
-        (-2.2,-2.35) -- (2.2,-2.35);
-        \node[font=\scriptsize, below] at (0,-2.35) {время};
+        \node[font=\small] at (-2.5,2.1) {$p_1$};
+        \node[font=\small] at (2.5,2.1) {$p_2$};
+        \node[font=\small] at (-2.5,-2.1) {$p_3$};
+        \node[font=\small] at (2.5,-2.1) {$p_4$};
+        \node[font=\small] at (-2.95,2.65) {$\pi^+$};
+        \node[font=\small] at (-2.95,-2.65) {$K^+$};
+        \node[font=\small] at (0.4,0) {$q$};
 
         \fill[rc4] (A) circle (1.7pt);
         \fill[rc4] (B) circle (1.7pt);
@@ -597,414 +670,22 @@ $e^{-i(-E)t}$ описывают \rconcept{античастицы}: испуск
     }
 
     \captionof{figure}{
-        Рассеяние $\pi^-K^+$. Линия $K^+$ рисуется как линия
-        $K^-$, идущая назад во времени: стрелка направлена
-        от конечного состояния к начальному.
+        Рассеяние $\pi^+K^+\rightarrow\pi^+K^+$ за счёт обмена
+        виртуальным фотоном.
     }
-    \label{fig:antiparticle_line}
+    \label{fig:piK_first}
 \end{rbox}
-
-
-% ------------------------------------------------------------
-\subsection{Рассеяние тождественных частиц}
-% ------------------------------------------------------------
-
-В процессе
-
-\begin{equation*}
-    \pi^-(p_1)+\pi^-(p_2)\rightarrow\pi^-(p_3)+\pi^-(p_4)
-\end{equation*}
-
-конечные частицы \rnote{нельзя различить}: неизвестно, какой
-из пионов в конечном состоянии --- <<первый>>. Поэтому нужно
-сложить две диаграммы, отличающиеся перестановкой $p_3\leftrightarrow p_4$.
-
-\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
-    \centering
-
-    \begin{tikzpicture}[
-        >=Latex,
-        every node/.style={text=rtext},
-        photon/.style={
-            draw=rtext,
-            line width=0.85pt,
-            decorate,
-            decoration={snake, amplitude=1.4pt, segment length=5pt}
-        },
-        scalar/.style={draw=rc3, line width=1.15pt}
-    ]
-        \begin{scope}[shift={(-3.2,0)}]
-            \draw[scalar, ->] (-1.4,1.6) -- (-0.7,1.2);
-            \draw[scalar] (-0.7,1.2) -- (0,0.8);
-            \draw[scalar, ->] (0,0.8) -- (1.4,1.6);
-            \draw[scalar, ->] (-1.4,-1.6) -- (-0.7,-1.2);
-            \draw[scalar] (-0.7,-1.2) -- (0,-0.8);
-            \draw[scalar, ->] (0,-0.8) -- (1.4,-1.6);
-            \draw[photon] (0,0.8) -- (0,-0.8);
-            \fill[rc4] (0,0.8) circle (1.5pt);
-            \fill[rc4] (0,-0.8) circle (1.5pt);
-            \node[font=\small, left] at (-1.4,1.6) {$p_1$};
-            \node[font=\small, left] at (-1.4,-1.6) {$p_2$};
-            \node[font=\small, right] at (1.4,1.6) {$p_3$};
-            \node[font=\small, right] at (1.4,-1.6) {$p_4$};
-            \node[font=\small] at (0,-2.2) {$t$-канал};
-        \end{scope}
-
-        \node[font=\Large] at (0,0) {$+$};
-
-        \begin{scope}[shift={(3.2,0)}]
-            \draw[scalar, ->] (-1.4,1.6) -- (-0.7,1.2);
-            \draw[scalar] (-0.7,1.2) -- (0,0.8);
-            \draw[scalar, ->] (0,0.8) -- (1.4,-1.6);
-            \draw[scalar, ->] (-1.4,-1.6) -- (-0.7,-1.2);
-            \draw[scalar] (-0.7,-1.2) -- (0,-0.8);
-            \draw[scalar, ->] (0,-0.8) -- (1.4,1.6);
-            \draw[photon] (0,0.8) -- (0,-0.8);
-            \fill[rc4] (0,0.8) circle (1.5pt);
-            \fill[rc4] (0,-0.8) circle (1.5pt);
-            \node[font=\small, left] at (-1.4,1.6) {$p_1$};
-            \node[font=\small, left] at (-1.4,-1.6) {$p_2$};
-            \node[font=\small, right] at (1.4,1.6) {$p_3$};
-            \node[font=\small, right] at (1.4,-1.6) {$p_4$};
-            \node[font=\small] at (0,-2.2) {$u$-канал};
-        \end{scope}
-    \end{tikzpicture}
-
-    \captionsetup{
-        font=footnotesize,
-        labelfont=bf,
-        skip=5pt
-    }
-
-    \captionof{figure}{
-        Две диаграммы рассеяния тождественных частиц
-        $\pi^-\pi^-\rightarrow\pi^-\pi^-$: прямая ($t$-канал)
-        и обменная ($u$-канал).
-    }
-    \label{fig:identical_particles}
-\end{rbox}
-
-Бесспиновые частицы --- бозоны, поэтому амплитуды складываются
-со знаком плюс:
 
 \begin{equation*}
     \mathcal M
-    =
-    -e^2\,
-    \frac{\left(p_1+p_3\right)\left(p_2+p_4\right)}
-         {\left(p_3-p_1\right)^2}
-    -e^2\,
-    \frac{\left(p_1+p_4\right)\left(p_2+p_3\right)}
-         {\left(p_4-p_1\right)^2}.
+    \sim
+    e\left(p_1+p_2\right)^\mu
+    \left(-\frac{1}{q^2}\right)
+    e\left(p_3+p_4\right)_\mu.
 \end{equation*}
 
-При больших энергиях
-$(p_1+p_4)(p_2+p_3)=s-t$, и
-
-\begin{equation*}
-    \mathcal M
-    =
-    -e^2
-    \left(
-        \frac{s-u}{t}
-        +
-        \frac{s-t}{u}
-    \right).
-\end{equation*}
-
-Амплитуда \rresult{симметрична относительно $t\leftrightarrow u$},
-как и должно быть для тождественных бозонов.
-
-
-% ------------------------------------------------------------
-\subsection{Процесс аннигиляции}
-% ------------------------------------------------------------
-
-Для частицы и античастицы
-
-\begin{equation*}
-    \pi^-(p_1)+\pi^+(p_2)\rightarrow\pi^-(p_3)+\pi^+(p_4)
-\end{equation*}
-
-кроме обмена фотоном возможен второй механизм: пара
-$\pi^-\pi^+$ \rconcept{аннигилирует} в виртуальный фотон,
-который затем рождает новую пару.
-
-\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
-    \centering
-
-    \begin{tikzpicture}[
-        >=Latex,
-        every node/.style={text=rtext},
-        photon/.style={
-            draw=rtext,
-            line width=0.85pt,
-            decorate,
-            decoration={snake, amplitude=1.4pt, segment length=5pt}
-        },
-        scalar/.style={draw=rc3, line width=1.15pt}
-    ]
-        % Рассеяние (t-канал)
-        \begin{scope}[shift={(-3.4,0)}]
-            \draw[scalar, ->] (-1.4,1.6) -- (-0.7,1.2);
-            \draw[scalar] (-0.7,1.2) -- (0,0.8);
-            \draw[scalar, ->] (0,0.8) -- (1.4,1.6);
-            \draw[scalar, <-] (-1.4,-1.6) -- (-0.7,-1.2);
-            \draw[scalar] (-0.7,-1.2) -- (0,-0.8);
-            \draw[scalar, <-] (0,-0.8) -- (1.4,-1.6);
-            \draw[photon] (0,0.8) -- (0,-0.8);
-            \fill[rc4] (0,0.8) circle (1.5pt);
-            \fill[rc4] (0,-0.8) circle (1.5pt);
-            \node[font=\small, left] at (-1.4,1.6) {$\pi^-,\,p_1$};
-            \node[font=\small, left] at (-1.4,-1.6) {$\pi^+,\,p_2$};
-            \node[font=\small, right] at (1.4,1.6) {$p_3$};
-            \node[font=\small, right] at (1.4,-1.6) {$p_4$};
-            \node[font=\small] at (0,-2.2) {рассеяние, $t$};
-        \end{scope}
-
-        \node[font=\Large] at (-0.6,0) {$+$};
-
-        % Аннигиляция (s-канал)
-        \begin{scope}[shift={(2.6,0)}]
-            \coordinate (L) at (-0.8,0);
-            \coordinate (R) at (0.8,0);
-            \draw[scalar, ->] (-2.0,1.4) -- (-1.4,0.7);
-            \draw[scalar] (-1.4,0.7) -- (L);
-            \draw[scalar, <-] (-2.0,-1.4) -- (-1.4,-0.7);
-            \draw[scalar] (-1.4,-0.7) -- (L);
-            \draw[photon] (L) -- (R);
-            \draw[scalar, ->] (R) -- (2.0,1.4);
-            \draw[scalar, <-] (R) -- (2.0,-1.4);
-            \fill[rc4] (L) circle (1.5pt);
-            \fill[rc4] (R) circle (1.5pt);
-            \node[font=\small, left] at (-2.0,1.4) {$p_1$};
-            \node[font=\small, left] at (-2.0,-1.4) {$p_2$};
-            \node[font=\small, right] at (2.0,1.4) {$p_3$};
-            \node[font=\small, right] at (2.0,-1.4) {$p_4$};
-            \node[font=\small] at (0,-2.2) {аннигиляция, $s$};
-        \end{scope}
-    \end{tikzpicture}
-
-    \captionsetup{
-        font=footnotesize,
-        labelfont=bf,
-        skip=5pt
-    }
-
-    \captionof{figure}{
-        Диаграммы процесса $\pi^-\pi^+\rightarrow\pi^-\pi^+$:
-        рассеяние с обменом фотоном ($t$-канал) и аннигиляция
-        в виртуальный фотон с $q^2=s$ ($s$-канал).
-    }
-    \label{fig:annihilation}
-\end{rbox}
-
-Используем правило замены $p\to-p$ для линий античастицы.
-В $t$-канале ток $\pi^+$ равен $e(-p_4-p_2)$, а в $s$-канале
-вершина $\pi^-\pi^+\gamma$ содержит $(p_1-p_2)$, вершина рождения
-пары --- $(p_3-p_4)$, а импульс фотона $q=p_1+p_2$:
-
-\begin{equation*}
-    \mathcal M
-    =
-    e^2\,
-    \frac{\left(p_1+p_3\right)\left(p_2+p_4\right)}
-         {\left(p_3-p_1\right)^2}
-    -e^2\,
-    \frac{\left(p_1-p_2\right)\left(p_3-p_4\right)}
-         {\left(p_1+p_2\right)^2}.
-\end{equation*}
-
-С учётом $(p_1-p_2)(p_3-p_4)=u-t$ при больших энергиях
-
-\begin{equation*}
-    \mathcal M
-    =
-    e^2
-    \left(
-        \frac{s-u}{t}
-        +
-        \frac{t-u}{s}
-    \right).
-\end{equation*}
-
-\remark
-Сравните с $\pi^-\pi^-$: амплитуда аннигиляции получается
-из обменной диаграммы \rresult{перестановкой $s\leftrightarrow t$}
-(\rconcept{перекрёстная симметрия}). На лекции перед скобкой
-стоял множитель $2e^2$ --- см. замечание о множителе $2$ выше.
-
-
-% ============================================================
-\section{Свободное электромагнитное поле}
-\label{sec:free_em_field}
-% ============================================================
-
-% ------------------------------------------------------------
-\subsection{Уравнения для потенциала}
-% ------------------------------------------------------------
-
-В системе Хевисайда--Лоренца сила Кулона
-$F=\dfrac{q_1q_2}{4\pi r^2}$, $\operatorname{div}\mathbf E=\rho$.
-Наложим \rconcept{лоренцеву калибровку}
-
-\begin{equation*}
-    \operatorname{div}\mathbf A
-    +
-    \frac{1}{c}\frac{\partial\varphi}{\partial t}
-    =
-    0
-    \qquad\Longleftrightarrow\qquad
-    \partial_\mu A^\mu=0.
-\end{equation*}
-
-Тогда в отсутствие зарядов уравнения Максвелла дают волновые
-уравнения
-
-\begin{equation*}
-    \nabla^2\mathbf A
-    -
-    \frac{1}{c^2}\frac{\partial^2\mathbf A}{\partial t^2}
-    =
-    0,
-    \qquad
-    \nabla^2\varphi
-    -
-    \frac{1}{c^2}\frac{\partial^2\varphi}{\partial t^2}
-    =
-    0
-    \qquad\longrightarrow\qquad
-    \Box A^\mu=0.
-\end{equation*}
-
-Это уравнение Клейна--Гордона для частицы с $m=0$ ---
-\rconcept{фотона}.
-
-
-% ------------------------------------------------------------
-\subsection{Поляризация фотона}
-% ------------------------------------------------------------
-
-Решение --- плоская волна
-
-\begin{equation*}
-    A^\mu=\varepsilon^\mu e^{-ikx},
-\end{equation*}
-
-где $\varepsilon^\mu$ --- \rconcept{вектор поляризации}.
-Из уравнения и калибровки
-
-\begin{equation*}
-    k^2=0,
-    \qquad
-    \varepsilon k=0.
-\end{equation*}
-
-Калибровка фиксирована не полностью: преобразование
-
-\begin{equation*}
-    A'_\mu=A_\mu+\partial_\mu f,
-    \qquad
-    \Box f=0,
-\end{equation*}
-
-не нарушает условия $\partial_\mu A^\mu=0$. Выбирая $f$, можно
-положить $\varepsilon^0=0$; тогда
-$\boldsymbol\varepsilon\cdot\mathbf k=0$ ---
-\rresult{фотон поперечен} и имеет только
-\rresult{два независимых состояния поляризации}.
-
-
-% ------------------------------------------------------------
-\subsection{Вершины взаимодействия с фотоном}
-% ------------------------------------------------------------
-
-Вернёмся к потенциалу взаимодействия
-
-\begin{equation*}
-    T_{fi}
-    =
-    -i\int\varphi_f^*(x)\,\hat V(x)\,\varphi_i(x)\,d^4x,
-    \qquad
-    \hat V
-    =
-    \underbrace{
-        -ie\left(\partial_\mu A^\mu+A^\mu\partial_\mu\right)
-    }_{\text{один фотон}}
-    \;
-    \underbrace{
-        -e^2A^2
-    }_{\text{два фотона}}.
-\end{equation*}
-
-Слагаемое первого порядка по $e$ описывает поглощение
-(или испускание) одного фотона, слагаемое $e^2A^2$ ---
-вершину с двумя фотонами (\rconcept{<<морская чайка>>}).
-
-\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
-    \centering
-
-    \begin{tikzpicture}[
-        >=Latex,
-        every node/.style={text=rtext},
-        photon/.style={
-            draw=rtext,
-            line width=0.85pt,
-            decorate,
-            decoration={snake, amplitude=1.4pt, segment length=5pt}
-        },
-        scalar/.style={draw=rc3, line width=1.15pt}
-    ]
-        \begin{scope}[shift={(-3,0)}]
-            \draw[scalar, ->] (-1.8,0) -- (-0.9,0);
-            \draw[scalar] (-0.9,0) -- (0,0);
-            \draw[scalar, ->] (0,0) -- (1.8,0);
-            \draw[photon] (-1.0,1.4) -- (0,0);
-            \fill[rc4] (0,0) circle (1.6pt);
-            \node[font=\small, below] at (-1.4,0) {$p_i$};
-            \node[font=\small, below] at (1.4,0) {$p_f$};
-            \node[font=\small] at (-1.2,1.6) {$k$};
-            \node[font=\scriptsize] at (0,-0.85) {$-ie(\partial A+A\partial)$};
-        \end{scope}
-
-        \begin{scope}[shift={(3,0)}]
-            \draw[scalar, ->] (-1.8,0) -- (-0.9,0);
-            \draw[scalar] (-0.9,0) -- (0,0);
-            \draw[scalar, ->] (0,0) -- (1.8,0);
-            \draw[photon] (-1.0,1.4) -- (0,0);
-            \draw[photon] (0,0) -- (1.0,1.4);
-            \fill[rc4] (0,0) circle (1.6pt);
-            \node[font=\small, below] at (-1.4,0) {$p_i$};
-            \node[font=\small, below] at (1.4,0) {$p_f$};
-            \node[font=\small] at (-1.2,1.6) {$k_1$};
-            \node[font=\small] at (1.2,1.6) {$k_2$};
-            \node[font=\scriptsize] at (0,-0.85) {$-e^2A^2$};
-        \end{scope}
-    \end{tikzpicture}
-
-    \captionsetup{
-        font=footnotesize,
-        labelfont=bf,
-        skip=5pt
-    }
-
-    \captionof{figure}{
-        Вершины скалярной электродинамики: взаимодействие
-        с одним фотоном (порядок $e$) и двухфотонная вершина
-        (порядок $e^2$).
-    }
-    \label{fig:scalar_qed_vertices}
-\end{rbox}
-
-Для поглощения реального фотона $A^\mu=\varepsilon^\mu e^{-ikx}$
-частицей $\varphi=Ne^{-ipx}$ получаем
-
-\begin{equation*}
-    T_{fi}
-    =
-    ieN_fN_i\,
-    \varepsilon_\mu\left(p_i+p_f\right)^\mu
-    (2\pi)^4\delta^4\!\left(p_i+k-p_f\right).
-\end{equation*}
+Множитель $-1/q^2$ --- это фурье-образ кулоновского поля
+(\rconcept{пропагатор фотона}). Подробно этот процесс разобран
+в следующем разделе.
 
 \end{document}

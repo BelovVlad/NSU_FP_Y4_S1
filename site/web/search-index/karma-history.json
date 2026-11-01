@@ -50,7 +50,12 @@
         "subject": "ФЭЧ",
         "section": "Лекции",
         "firstDate": "2026-09-03",
-        "end": "12:35"
+        "end": "12:35",
+        "cancelled": [
+          "2026-09-17",
+          "2026-09-24",
+          "2026-10-01"
+        ]
       },
       {
         "id": "fiham-seminars",
@@ -270,6 +275,19 @@
         "fiham-seminars": 6
       },
       "commit": "9608689478ca143f17ea2e521487d11cfd2760ac"
+    },
+    {
+      "at": "2026-11-01T16:05:05.569961+00:00",
+      "counts": {
+        "ovf-lectures": 8,
+        "tdisf-lectures": 10,
+        "tdisf-seminars": 9,
+        "fksv-seminars": 8,
+        "fech-seminars": 9,
+        "fech-lectures": 6,
+        "fiham-seminars": 6
+      },
+      "source": "index-build"
     }
   ],
   "currentCounts": {
@@ -278,8 +296,8 @@
     "tdisf-seminars": 9,
     "fksv-seminars": 8,
     "fech-seminars": 9,
-    "fech-lectures": 5,
+    "fech-lectures": 6,
     "fiham-seminars": 6
   },
-  "indexGeneratedAt": "2026-11-01T15:48:01.740780+00:00"
+  "indexGeneratedAt": "2026-11-01T16:03:10.029469+00:00"
 }

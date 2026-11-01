@@ -5,66 +5,480 @@
 \begin{document}
 
 % При отдельной сборке продолжаем нумерацию полного конспекта.
-\ifSubfilesClassLoaded{\setcounter{chapter}{2}\setcounter{section}{10}}{}
+\ifSubfilesClassLoaded{\setcounter{chapter}{2}\setcounter{section}{5}}{}
 
 
 % ============================================================
-% Лекция 29.10
+% Лекция 22.10
 % ============================================================
 
 % ============================================================
-\section{Комптоновское рассеяние на скалярной частице}
+\section{Рассеяние двух заряженных частиц}
 % ============================================================
 
 % ------------------------------------------------------------
-\subsection{Вершина с реальным фотоном}
+\subsection{Амплитуда через токи перехода}
 % ------------------------------------------------------------
 
-Потенциал взаимодействия после интегрирования по частям
-удобно записывать в виде
+Рассмотрим рассеяние двух разных бесспиновых частиц
 
 \begin{equation*}
-    \hat V
-    =
-    -e\left(A^\mu\partial_\mu-\partial_\mu A^\mu\right)
-    -e^2A_\mu A^\mu,
+    \pi^-(p_1)+K^-(p_2)\rightarrow\pi^-(p_3)+K^-(p_4).
 \end{equation*}
 
-где первое слагаемое отвечает вершине с одним фотоном,
-второе --- вершине с двумя фотонами
-(см. вершины скалярной электродинамики в разделе~\ref{sec:free_em_field}).
-Для $\varphi=Ne^{-ipx}$ и $A^\mu=\varepsilon^\mu e^{-ikx}$
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext},
+        photon/.style={
+            draw=rtext,
+            line width=0.9pt,
+            decorate,
+            decoration={snake, amplitude=1.6pt, segment length=6pt}
+        },
+        scalar/.style={draw=rc3, line width=1.2pt}
+    ]
+        \coordinate (A) at (0,1);
+        \coordinate (B) at (0,-1);
+
+        \draw[scalar, ->] (-2.6,1) -- (-1.3,1);
+        \draw[scalar] (-1.3,1) -- (A);
+        \draw[scalar, ->] (A) -- (2.6,1.7);
+
+        \draw[scalar, ->] (-2.6,-1) -- (-1.3,-1);
+        \draw[scalar] (-1.3,-1) -- (B);
+        \draw[scalar, ->] (B) -- (2.6,-1.7);
+
+        \draw[photon] (A) -- (B);
+
+        \node[font=\small, left] at (-2.6,1) {$\pi^-$};
+        \node[font=\small, left] at (-2.6,-1) {$K^-$};
+        \node[font=\small, above] at (-1.6,1) {$p_1$};
+        \node[font=\small, below] at (-1.6,-1) {$p_2$};
+        \node[font=\small, right] at (2.6,1.7) {$p_3$};
+        \node[font=\small, right] at (2.6,-1.7) {$p_4$};
+        \node[font=\small] at (0.45,0) {$q$};
+
+        \node[font=\scriptsize] at (1.0,1.75) {$j^{(1)}_\mu$};
+        \node[font=\scriptsize] at (1.0,-1.75) {$j^{(2)}_\nu$};
+
+        \fill[rc4] (A) circle (1.7pt);
+        \fill[rc4] (B) circle (1.7pt);
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Диаграмма рассеяния $\pi^-K^-\rightarrow\pi^-K^-$.
+        Вершины соответствуют токам перехода $j^{(1)}$ и $j^{(2)}$,
+        волнистая линия --- виртуальному фотону с импульсом
+        $q=p_3-p_1$.
+    }
+    \label{fig:piK_scattering}
+\end{rbox}
+
+Пион рассеивается в поле $A^\mu$, созданном каоном. Это поле
+удовлетворяет уравнениям Максвелла $\Box A^\mu=j^\mu_{(2)}$.
+Поскольку ток каона $j^\mu_{(2)}\propto e^{iqx}$, а
+$\Box e^{iqx}=-q^2e^{iqx}$,
+
+\begin{equation*}
+    A^\mu=-\frac{1}{q^2}\,j^\mu_{(2)}.
+\end{equation*}
+
+Подставляя в $T_{fi}=-i\int j^{(1)}_\mu A^\mu\,d^4x$, получаем
+симметричное по двум частицам выражение
 
 \begin{equation*}
     T_{fi}
     =
-    -i\int\varphi_f^*\hat V\varphi_i\,d^4x
+    -i\int
+    j^{(1)}_\mu(x)
+    \left(-\frac{g^{\mu\nu}}{q^2}\right)
+    j^{(2)}_\nu(x)\,
+    d^4x,
+\end{equation*}
+
+где токи перехода
+
+\begin{equation*}
+    j_\mu
     =
-    ieN_iN_f\,
+    -ie
+    \left(
+        \varphi_f^*\,\partial_\mu\varphi_i
+        -
+        \varphi_i\,\partial_\mu\varphi_f^*
+    \right)
+\end{equation*}
+
+--- \rconcept{токи перехода}. Для плоских волн
+$\varphi=Ne^{-ipx}$ (нормировка $2E$ частиц в единице объёма,
+$N=1/\sqrt V$):
+
+\begin{equation*}
+    j^{(1)}_\mu
+    =
+    -eN_1N_3\left(p_1+p_3\right)_\mu e^{i(p_3-p_1)x},
+    \qquad
+    j^{(2)}_\nu
+    =
+    -eN_2N_4\left(p_2+p_4\right)_\nu e^{i(p_4-p_2)x}.
+\end{equation*}
+
+Тогда
+
+\begin{equation*}
+    T_{fi}
+    =
+    -iN_1N_2N_3N_4\,
+    e\left(p_1+p_3\right)^\mu
+    \left(\frac{g_{\mu\nu}}{-q^2}\right)
+    e\left(p_2+p_4\right)^\nu
+    \int e^{i(p_3+p_4-p_1-p_2)x}\,d^4x,
+\end{equation*}
+
+где
+
+\begin{equation*}
+    q=p_3-p_1,
+    \qquad
+    q^2
+    =
+    \left(E_3-E_1\right)^2-\left(\mathbf p_3-\mathbf p_1\right)^2.
+\end{equation*}
+
+В системе центра масс энергии частиц при упругом рассеянии
+не меняются, поэтому $q^2=-|\mathbf q|^2<0$:
+фотон \rnote{виртуальный}, для него $q^2\neq0$.
+Интеграл даёт $(2\pi)^4\delta^4(p_3+p_4-p_1-p_2)$ ---
+закон сохранения 4-импульса.
+
+
+% ------------------------------------------------------------
+\subsection{Лоренц-инвариантный матричный элемент}
+% ------------------------------------------------------------
+
+Запишем амплитуду в виде
+
+\begin{equation*}
+    T_{fi}
+    =
+    -iN_1N_2N_3N_4\,
+    (2\pi)^4\delta^4(p_f-p_i)\,
+    \mathcal M.
+\end{equation*}
+
+Здесь $\mathcal M$ --- \rconcept{лоренц-инвариантный матричный
+элемент}:
+
+\begin{equation*}
+    \mathcal M
+    =
+    j^\mu\left(-\frac{g_{\mu\nu}}{q^2}\right)j^\nu,
+    \qquad
+    \mathcal M
+    =
+    -e\left(p_1+p_3\right)^\mu
+    \left(\frac{g_{\mu\nu}}{-q^2}\right)
+    e\left(p_2+p_4\right)^\nu.
+\end{equation*}
+
+Так он записан на лекции; знак и множители $i$ общей фазы
+для сечения несущественны, важен только $|\mathcal M|^2$.
+Окончательно
+
+\begin{equation*}
+    \mathcal M
+    =
+    -e^2\,
+    \frac{\left(p_1+p_3\right)\left(p_2+p_4\right)}
+         {\left(p_3-p_1\right)^2}.
+\end{equation*}
+
+Каждый множитель имеет наглядный смысл:
+$ie(p_i+p_f)^\mu$ --- \rconcept{вершина},
+$-ig_{\mu\nu}/q^2$ --- \rconcept{пропагатор фотона}.
+Это и есть \rconcept{правила Фейнмана} для скалярной КЭД.
+
+
+% ------------------------------------------------------------
+\subsection{Вероятность перехода}
+% ------------------------------------------------------------
+
+Квадрат $\delta$-функции раскрывается так же, как в золотом правиле
+Ферми: $\left[(2\pi)^4\delta^4\right]^2=(2\pi)^4\delta^4\cdot VT$.
+Вероятность перехода в единицу времени в единице объёма
+
+\begin{equation*}
+    W_{fi}
+    =
+    N_1^2N_2^2N_3^2N_4^2\,
+    (2\pi)^4\delta^4(p_f-p_i)\,
+    |\mathcal M|^2\,
+    \rho,
+\end{equation*}
+
+где $\rho$ --- \rconcept{плотность конечных состояний}.
+При нормировке на $2E$ частиц в объёме $V$ каждая частица
+даёт множитель $1/(2E_jV)$, а каждая конечная частица ---
+$V\,d^3p/(2\pi)^3$ состояний. Объём сокращается.
+
+
+% ============================================================
+\section{Фазовый объём и сечение}
+% ============================================================
+
+% ------------------------------------------------------------
+\subsection{Лоренц-инвариантный фазовый объём}
+% ------------------------------------------------------------
+
+Для процесса с $n_i$ начальными и $n_f$ конечными частицами
+
+\begin{equation*}
+    dW
+    =
+    \frac{|\mathcal M|^2}{\displaystyle\prod_{j=1}^{n_i}2E_j}\;
     \underbrace{
-        \varepsilon^\mu\left(p_i+k+p_f\right)_\mu
-    }_{\varepsilon^\mu j_\mu}
-    \int e^{i(p_f-p_i-k)x}\,d^4x.
+        \prod_{i=1}^{n_f}
+        \frac{d^3p_i}{(2\pi)^3\,2E_i}\,
+        (2\pi)^4\delta^4(P_f-P_i)
+    }_{d\Phi_n}.
+\end{equation*}
+
+Величина $d\Phi_n$ называется
+\rconcept{лоренц-инвариантным фазовым объёмом}: каждый множитель
+$d^3p/2E$ инвариантен относительно преобразований Лоренца.
+
+Проинтегрировав по импульсу одной из конечных частиц
+с помощью $\delta^3$, получаем
+
+\begin{equation*}
+    d\Phi_n
+    =
+    \prod_{i=1}^{n_f-1}
+    \frac{d^3p_i}{(2\pi)^3\,2E_i}\;
+    \frac{2\pi\,\delta(E_f-E_i)}{2E_{n_f}}.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection{Двухчастичный фазовый объём}
+% ------------------------------------------------------------
+
+Пусть в конечном состоянии две частицы с импульсами
+$\mathbf p_1$, $\mathbf p_2$, а полный импульс и энергия равны
+
+\begin{equation*}
+    \mathbf P_0=\mathbf p_1+\mathbf p_2,
+    \qquad
+    E_0=E_1+E_2.
+\end{equation*}
+
+Остаётся интеграл по $d^3p_1=p_1^2\,dp_1\,d\Omega$ с
+$\delta(E_0-E_1-E_2)$, где $E_2$ зависит от $\mathbf p_1$ через
+$\mathbf p_2=\mathbf P_0-\mathbf p_1$. Вычисляя производную
+$d(E_1+E_2)/dp_1$, получаем
+
+\begin{equation*}
+    d\Phi_2
+    =
+    \frac{1}{4(2\pi)^2}\,
+    \frac{p_1^3\,d\Omega}
+         {E_0p_1^2-E_1\,\mathbf P_0\mathbf p_1}.
+\end{equation*}
+
+В системе центра масс $\mathbf P_0=0$:
+
+\begin{equation*}
+    d\Phi_2
+    =
+    \frac{1}{4(2\pi)^2}\,
+    \frac{p_1\,d\Omega_1}{E_0}
+    \qquad\Longrightarrow\qquad
+    dW
+    =
+    \frac{|\mathcal M|^2}{\displaystyle\prod_{j=1}^{n_i}2E_j}\,
+    d\Phi_2.
+\end{equation*}
+
+
+% ------------------------------------------------------------
+\subsection{Поток и сечение}
+% ------------------------------------------------------------
+
+Сечение --- вероятность, нормированная на поток:
+
+\begin{equation*}
+    d\sigma=\frac{dW}{j},
+    \qquad
+    j
+    =
+    \frac{\sqrt{\left(p_1p_2\right)^2-m_1^2m_2^2}}{E_1E_2}
+\end{equation*}
+
+--- \rconcept{общее выражение для потока}
+(относительная скорость сталкивающихся частиц).
+В лабораторной системе, где вторая частица покоится,
+$p_1p_2=E_1m_2$, $E_2=m_2$:
+
+\begin{equation*}
+    j
+    =
+    \frac{\sqrt{E_1^2m_2^2-m_1^2m_2^2}}{E_1m_2}
+    =
+    \frac{|\mathbf p_1|}{E_1}
+    =
+    v_1.
+\end{equation*}
+
+Для $2\to2$ в системе центра масс
+$4E_1E_2\,j=4p_iE_0$, где $p_i$ --- импульс каждой из
+начальных частиц, $E_0=\sqrt s$. Отсюда
+
+\begin{equation*}
+    \frac{d\sigma}{d\Omega}
+    =
+    \frac{|\mathcal M|^2}{64\pi^2E_0^2}\,
+    \frac{p_f}{p_i}.
+\end{equation*}
+
+Для упругого рассеяния $p_f=p_i$.
+
+
+% ------------------------------------------------------------
+\subsection{Сечение \texorpdfstring{$\pi^-K^-$}{π⁻K⁻}-рассеяния}
+% ------------------------------------------------------------
+
+В системе центра масс
+$p_1=(E_1,\mathbf p)$, $p_2=(E_2,-\mathbf p)$,
+$p_3=(E_1,\mathbf p')$, $p_4=(E_2,-\mathbf p')$,
+$|\mathbf p'|=|\mathbf p|=p$, угол между $\mathbf p$
+и $\mathbf p'$ равен $\theta$. Тогда
+
+\begin{equation*}
+    \left(p_1+p_3\right)\left(p_2+p_4\right)
+    =
+    4E_1E_2+|\mathbf p+\mathbf p'|^2
+    =
+    4\left(E_1E_2+p^2\cos^2\frac{\theta}{2}\right),
+\end{equation*}
+
+\begin{equation*}
+    \left(p_3-p_1\right)^2
+    =
+    -|\mathbf p'-\mathbf p|^2
+    =
+    -4p^2\sin^2\frac{\theta}{2}.
+\end{equation*}
+
+Следовательно,
+
+\begin{equation*}
+    \mathcal M
+    =
+    -e^2\,
+    \frac{\left(p_1+p_3\right)\left(p_2+p_4\right)}
+         {\left(p_3-p_1\right)^2}
+    =
+    e^2\,
+    \frac{E_1E_2+p^2\cos^2\dfrac{\theta}{2}}
+         {p^2\sin^2\dfrac{\theta}{2}}.
+\end{equation*}
+
+С учётом $\alpha=\dfrac{e^2}{4\pi}$ и скоростей
+$v_1=p/E_1$, $v_2=p/E_2$:
+
+\begin{equation*}
+    \frac{d\sigma}{d\Omega}
+    =
+    \frac{\alpha^2}{4}\,
+    \frac{\left(E_1E_2\right)^2}{E_0^2}\,
+    \frac{
+        \left(1+v_1v_2\cos^2\dfrac{\theta}{2}\right)^2
+    }{
+        p^4\sin^4\dfrac{\theta}{2}
+    }.
 \end{equation*}
 
 \remark
-Поскольку $\varepsilon k=0$, слагаемое $k$ в скобке можно
-добавлять или убирать: $\varepsilon(p_i+k+p_f)=\varepsilon(p_i+p_f)$.
-Запись с $k$ удобна, когда $p_f=p_i+k$:
-тогда $\varepsilon(p_i+p_f)=\varepsilon(2p_i+k)$.
+В пределе тяжёлого каона ($E_2\to m_2\to\infty$, $v_2\to0$,
+$E_0\to m_2$) получается $\dfrac{d\sigma}{d\Omega}
+=\dfrac{\alpha^2E_1^2}{4p^4\sin^4(\theta/2)}$ ---
+\rresult{формула Резерфорда} из предыдущего раздела.
 
 
-% ------------------------------------------------------------
-\subsection{Диаграммы}
-% ------------------------------------------------------------
+% ============================================================
+\section{Переменные Мандельстама}
+% ============================================================
 
-Рассмотрим процесс
+Для процесса $1+2\rightarrow3+4$ удобно ввести
+\rconcept{переменные Мандельстама}:
+
+\begin{align*}
+    s&=\left(p_1+p_2\right)^2=\left(p_3+p_4\right)^2
+      =\left(E_1+E_2\right)^2_{\text{ц.м.}}
+      =m_1^2+m_2^2+2p_1p_2,\\[4pt]
+    t&=\left(p_3-p_1\right)^2=\left(p_4-p_2\right)^2
+      =m_3^2+m_1^2-2p_3p_1,\\[4pt]
+    u&=\left(p_4-p_1\right)^2=\left(p_3-p_2\right)^2
+      =m_4^2+m_1^2-2p_1p_4.
+\end{align*}
+
+Они лоренц-инвариантны: $s$ --- квадрат полной энергии в системе
+центра масс, $t$ --- квадрат переданного импульса.
+Независимы только две из них:
 
 \begin{equation*}
-    \gamma(k_1)+\pi(p_1)\rightarrow\gamma(k_2)+\pi(p_2).
+    s+t+u=m_1^2+m_2^2+m_3^2+m_4^2.
 \end{equation*}
 
-В порядке $e^2$ ему соответствуют три диаграммы.
+\rassumption{Если энергии большие}, массами можно пренебречь:
+
+\begin{equation*}
+    s\simeq2p_1p_2=2p_3p_4,
+    \qquad
+    t\simeq-2p_1p_3,
+    \qquad
+    u\simeq-2p_1p_4.
+\end{equation*}
+
+Тогда
+
+\begin{equation*}
+    \left(p_1+p_3\right)\left(p_2+p_4\right)
+    =
+    p_1p_2+p_1p_4+p_3p_2+p_3p_4
+    =
+    s-u,
+\end{equation*}
+
+и матричный элемент $\pi^-K^-$-рассеяния принимает простой вид
+
+\begin{equation*}
+    \mathcal M
+    =
+    -e^2\,\frac{s-u}{t}.
+\end{equation*}
+
+\remark
+На лекции результат записан как $\mathcal M=2e^2\dfrac{s-u}{t}$.
+Прямой подсчёт с $p_1p_2=s/2$, $p_1p_4=-u/2$ и т.\,д. даёт
+$(p_1+p_3)(p_2+p_4)=s-u$ \rnote{без множителя $2$}
+(так же в книге Халзена и Мартина). Знак общий для всех диаграмм
+и на сечение не влияет.
+
+\remark[Высшие порядки.]
+Обмен одним фотоном --- лишь первый член ряда теории возмущений.
+Следующие поправки дают, например, диаграммы с обменом двумя
+фотонами; они подавлены дополнительным множителем $\alpha$
+и будут рассмотрены позже.
 
 \begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
     \centering
@@ -80,62 +494,26 @@
         },
         scalar/.style={draw=rc3, line width=1.15pt}
     ]
-        % a) s-канал
-        \begin{scope}[shift={(-5.2,0)}]
-            \coordinate (A) at (-0.7,0);
-            \coordinate (B) at (0.7,0);
-            \draw[scalar, ->] (-1.9,-1.2) -- (-1.3,-0.6);
-            \draw[scalar] (-1.3,-0.6) -- (A);
-            \draw[scalar] (A) -- (B);
-            \draw[scalar, ->] (B) -- (1.3,-0.6);
-            \draw[scalar] (1.3,-0.6) -- (1.9,-1.2);
-            \draw[photon] (-1.6,1.2) -- (A);
-            \draw[photon] (B) -- (1.6,1.2);
-            \fill[rc4] (A) circle (1.5pt);
-            \fill[rc4] (B) circle (1.5pt);
-            \node[font=\small] at (-1.85,1.45) {$k_1$};
-            \node[font=\small] at (1.85,1.45) {$k_2$};
-            \node[font=\small] at (-2.1,-1.4) {$p_1$};
-            \node[font=\small] at (2.1,-1.4) {$p_2$};
-            \node[font=\small] at (0,-2.0) {а)};
+        \begin{scope}[shift={(-3,0)}]
+            \draw[scalar] (-1.2,1.6) -- (0,0.8) -- (1.2,1.6);
+            \draw[scalar] (-1.2,-1.6) -- (0,-0.8) -- (1.2,-1.6);
+            \draw[photon] (0,0.8) -- (0,-0.8);
+            \fill[rc4] (0,0.8) circle (1.5pt);
+            \fill[rc4] (0,-0.8) circle (1.5pt);
         \end{scope}
 
-        % b) u-канал
-        \begin{scope}[shift={(0,0)}]
-            \coordinate (A) at (-0.7,0);
-            \coordinate (B) at (0.7,0);
-            \draw[scalar, ->] (-1.9,-1.2) -- (-1.3,-0.6);
-            \draw[scalar] (-1.3,-0.6) -- (A);
-            \draw[scalar] (A) -- (B);
-            \draw[scalar, ->] (B) -- (1.3,-0.6);
-            \draw[scalar] (1.3,-0.6) -- (1.9,-1.2);
-            \draw[photon] (-1.6,1.2) -- (B);
-            \draw[photon] (A) -- (1.6,1.2);
-            \fill[rc4] (A) circle (1.5pt);
-            \fill[rc4] (B) circle (1.5pt);
-            \node[font=\small] at (-1.85,1.45) {$k_1$};
-            \node[font=\small] at (1.85,1.45) {$k_2$};
-            \node[font=\small] at (-2.1,-1.4) {$p_1$};
-            \node[font=\small] at (2.1,-1.4) {$p_2$};
-            \node[font=\small] at (0,-2.0) {б)};
+        \node[font=\Large] at (-0.75,0) {$+$};
+
+        \begin{scope}[shift={(1.9,0)}]
+            \draw[scalar] (-1.4,1.6) -- (-0.7,0.8) -- (0.7,0.8) -- (1.4,1.6);
+            \draw[scalar] (-1.4,-1.6) -- (-0.7,-0.8) -- (0.7,-0.8) -- (1.4,-1.6);
+            \draw[photon] (-0.7,0.8) -- (-0.7,-0.8);
+            \draw[photon] (0.7,0.8) -- (0.7,-0.8);
+            \foreach \p in {(-0.7,0.8),(0.7,0.8),(-0.7,-0.8),(0.7,-0.8)}
+                \fill[rc4] \p circle (1.5pt);
         \end{scope}
 
-        % c) контактная
-        \begin{scope}[shift={(5.0,0)}]
-            \coordinate (C) at (0,0);
-            \draw[scalar, ->] (-1.3,-1.2) -- (-0.65,-0.6);
-            \draw[scalar] (-0.65,-0.6) -- (C);
-            \draw[scalar, ->] (C) -- (0.65,-0.6);
-            \draw[scalar] (0.65,-0.6) -- (1.3,-1.2);
-            \draw[photon] (-1.2,1.2) -- (C);
-            \draw[photon] (C) -- (1.2,1.2);
-            \fill[rc4] (C) circle (1.5pt);
-            \node[font=\small] at (-1.45,1.45) {$k_1$};
-            \node[font=\small] at (1.45,1.45) {$k_2$};
-            \node[font=\small] at (-1.5,-1.4) {$p_1$};
-            \node[font=\small] at (1.5,-1.4) {$p_2$};
-            \node[font=\small] at (0,-2.0) {в)};
-        \end{scope}
+        \node[font=\Large] at (4.2,0) {$+\;\ldots$};
     \end{tikzpicture}
 
     \captionsetup{
@@ -145,246 +523,71 @@
     }
 
     \captionof{figure}{
-        Комптоновское рассеяние на бесспиновой частице:
-        а) сначала поглощается $k_1$, затем испускается $k_2$;
-        б) сначала испускается $k_2$, затем поглощается $k_1$;
-        в) контактная двухфотонная вершина.
+        Обмен одним фотоном (порядок $e^2$) и <<ящичная>>
+        диаграмма с обменом двумя фотонами (порядок $e^4$).
     }
-    \label{fig:scalar_compton}
+    \label{fig:higher_orders}
 \end{rbox}
 
 
-% ------------------------------------------------------------
-\subsection{Пропагатор и амплитуды}
-% ------------------------------------------------------------
-
-Во внутренней линии диаграммы а) частица несёт импульс
-$q=p_1+k_1$, причём $q^2\neq m^2$ --- она виртуальна. Соединение
-двух токов через такую линию даёт множитель
-
-\begin{equation*}
-    \frac{1}{-q^2+m^2}
-\end{equation*}
-
---- \rconcept{пропагатор} скалярной частицы (сравните с $-1/q^2$
-для фотона, у которого $m=0$). Тогда
-
-\begin{equation*}
-    \mathcal M_a
-    =
-    \left(j_1\varepsilon\right)
-    \left(j_2\varepsilon\right)
-    \frac{1}{m^2-q^2}
-    =
-    e^2\,
-    \frac{
-        \left[\left(2p_2+k_2\right)\varepsilon_2\right]
-        \left[\left(2p_1+k_1\right)\varepsilon_1\right]
-    }{
-        \left(p_1+k_1\right)^2-m^2
-    },
-\end{equation*}
-
-\begin{equation*}
-    \mathcal M_b
-    =
-    e^2\,
-    \frac{
-        \left[\left(2p_2-k_1\right)\varepsilon_1\right]
-        \left[\left(2p_1-k_2\right)\varepsilon_2\right]
-    }{
-        \left(p_1-k_2\right)^2-m^2
-    },
-\end{equation*}
-
-\begin{equation*}
-    \mathcal M_c
-    =
-    2e^2\left(\varepsilon_1\varepsilon_2\right).
-\end{equation*}
-
-\remark
-В знаменателе $\mathcal M_b$ стоит $(p_1-k_2)^2$: во внутренней
-линии диаграммы б) частица уже испустила $k_2$.
-Множитель $2$ в $\mathcal M_c$ возникает потому, что в $A^2$
-каждый из двух фотонов можно сопоставить любому из двух
-множителей $A$. Знаки слагаемых зависят от соглашений; ниже
-используется только $\mathcal M_c$.
-
-\subsubsection{Лабораторная система}
-
-Пусть мишень покоится: $p_1=(m,\mathbf 0)$. Выберем калибровку
-$\varepsilon^0=0$, тогда $\varepsilon_1p_1=\varepsilon_2p_1=0$ и
-$\varepsilon_ik_i=0$. Значит,
-
-\begin{equation*}
-    \left(2p_1+k_1\right)\varepsilon_1=0,
-    \qquad
-    \left(2p_1-k_2\right)\varepsilon_2=0,
-\end{equation*}
-
-т.\,е. $\mathcal M_a=\mathcal M_b=0$ и
-\rresult{в лабораторной системе работает только контактная
-диаграмма}:
-
-\begin{equation*}
-    |\mathcal M|^2=4e^4\left(\varepsilon_1\varepsilon_2\right)^2.
-\end{equation*}
-
+% ============================================================
+\section{Античастицы}
+\label{sec:antiparticles}
+% ============================================================
 
 % ------------------------------------------------------------
-\subsection{Сечение}
+\subsection{Интерпретация Фейнмана--Штюкельберга}
 % ------------------------------------------------------------
 
-Поток налетающих фотонов $j=1$, поэтому
+Решения уравнения Клейна--Гордона с отрицательной энергией
+$e^{-i(-E)t}$ описывают \rconcept{античастицы}: испускание
+античастицы с 4-импульсом $p$ эквивалентно поглощению частицы
+с 4-импульсом $-p$, т.\,е. частицы, \rnote{движущейся назад во
+времени}. На диаграммах античастица изображается линией
+со стрелкой, направленной против хода времени.
 
-\begin{equation*}
-    d\sigma
-    =
-    \frac{dW}{j}
-    =
-    \frac{|\mathcal M|^2}{2E_1\,2k_1}\,
-    \frac{d^3p_2}{(2\pi)^3\,2E_2}\,
-    \frac{d^3k_2}{(2\pi)^3\,2k_2}\,
-    (2\pi)^4\delta^4(p_f-p_i).
-\end{equation*}
+Отсюда простое правило: \rresult{амплитуда с античастицей получается
+из амплитуды с частицей заменой $p\to-p$} для соответствующей
+внешней линии.
 
-Интегрируем по $d^3p_2$ с помощью $\delta^3$, затем по $dk_2$
-с помощью $\delta(k_1+m-k_2-E_2)$. Поскольку
-$E_2^2=m^2+|\mathbf k_1-\mathbf k_2|^2$,
-
-\begin{equation*}
-    \frac{d(k_2+E_2)}{dk_2}
-    =
-    \frac{k_1+m-k_1\cos\theta}{E_2},
-\end{equation*}
-
-и в лабораторной системе ($E_1=m$)
-
-\begin{equation*}
-    d\sigma
-    =
-    \frac{|\mathcal M|^2}{16\pi^2}\,
-    \frac{1}{4k_1m}\,
-    \frac{k_2\,d\Omega}{k_1+m-k_1\cos\theta}.
-\end{equation*}
-
-Здесь $\theta$ --- угол рассеяния фотона, $m$ --- масса частицы,
-\rnote{на которой происходит рассеяние}. Из законов сохранения
-следует \rresult{формула Комптона}
-
-\begin{equation*}
-    k_2
-    =
-    \frac{mk_1}{m+k_1\left(1-\cos\theta\right)},
-\end{equation*}
-
-так что $k_1+m-k_1\cos\theta=mk_1/k_2$, и
-
-\begin{equation*}
-    \frac{d\sigma}{d\Omega}
-    =
-    \frac{e^4}{16\pi^2m^2}\,
-    \frac{\left(\boldsymbol\varepsilon_1\boldsymbol\varepsilon_2\right)^2}
-         {\left[1+\dfrac{k_1}{m}\left(1-\cos\theta\right)\right]^2}.
-\end{equation*}
-
-
-% ------------------------------------------------------------
-\subsection{Неполяризованные фотоны}
-% ------------------------------------------------------------
-
-\rassumption{Для неполяризованных частиц} нужно усреднить по двум
-поляризациям начального фотона и просуммировать по поляризациям
-конечного:
-$\left(\boldsymbol\varepsilon_1\boldsymbol\varepsilon_2\right)^2
-\to\left\langle\left(\boldsymbol\varepsilon_1\boldsymbol\varepsilon_2\right)^2\right\rangle$.
-Сумма по поперечным поляризациям конечного фотона равна
-$1-(\boldsymbol\varepsilon_1\hat{\mathbf k}_2)^2$, а усреднение по
-$\boldsymbol\varepsilon_1\perp\mathbf k_1$ даёт
-
-\begin{equation*}
-    \left\langle
-        \left(\boldsymbol\varepsilon_1\boldsymbol\varepsilon_2\right)^2
-    \right\rangle
-    =
-    \frac{1}{2}\sum_{\lambda,\lambda'}
-    \left(\boldsymbol\varepsilon_\lambda\boldsymbol\varepsilon'_{\lambda'}\right)^2
-    =
-    \frac{1}{2}\left(2-\sin^2\theta\right)
-    =
-    \frac{1+\cos^2\theta}{2}.
-\end{equation*}
-
-Итого
-
-\begin{equation*}
-    \frac{d\sigma}{d\Omega}
-    =
-    \frac{e^4}{16\pi^2m^2}\,
-    \frac{1+\cos^2\theta}{2\left[1+\dfrac{k_1}{m}\left(1-\cos\theta\right)\right]^2}
-    =
-    \frac{r^2}{2}\,
-    \frac{1+\cos^2\theta}{\left[1+\dfrac{k_1}{m}\left(1-\cos\theta\right)\right]^2},
-    \qquad
-    r=\frac{\alpha}{m}.
-\end{equation*}
-
-\remark
-На лекции множитель $\tfrac12$ от усреднения по начальной
-поляризации не был выписан. Он нужен, чтобы в пределе
-$k_1\ll m$ получить правильное \rresult{томсоновское сечение}:
-
-\begin{equation*}
-    \sigma
-    =
-    \frac{r^2}{2}\int\left(1+\cos^2\theta\right)d\Omega
-    =
-    \frac{r^2}{2}\cdot2\pi\cdot\frac{8}{3}
-    =
-    \frac{8\pi}{3}r^2
-    =
-    \sigma_{\mathrm{Th}},
-\end{equation*}
-
-которое для электрона равно $665\,\mathrm{mb}$
-(см. раздел о фотоэффекте в первой главе).
-
-\begin{rbox}[left=18pt,right=18pt,top=12pt,bottom=10pt,unbreakable]{[]}
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
     \centering
 
-    \begin{tikzpicture}
-        \begin{axis}[
-            width=0.78\linewidth,
-            height=6cm,
-            xmin=0, xmax=180,
-            ymin=0, ymax=1.45,
-            ytick={0,0.5,1},
-            xtick={0,30,60,90,120,150,180},
-            xlabel={$\theta$, градусы},
-            ylabel={$\dfrac{1}{r^2}\dfrac{d\sigma}{d\Omega}$},
-            axis line style={rtext},
-            tick style={rtext},
-            every tick label/.style={text=rtext},
-            label style={text=rtext},
-            legend style={
-                draw=none, fill=none, text=rtext,
-                at={(0.97,0.97)}, anchor=north east, font=\small
-            },
-            legend cell align=left
-        ]
-            \addplot[rconceptcolor, thick, smooth, samples=91, domain=0:180]
-            {0.5*(1+cos(x)^2)};
-            \addlegendentry{$k_1\ll m$ (Томсон)}
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext},
+        photon/.style={
+            draw=rtext,
+            line width=0.9pt,
+            decorate,
+            decoration={snake, amplitude=1.6pt, segment length=6pt}
+        },
+        scalar/.style={draw=rc3, line width=1.2pt}
+    ]
+        \coordinate (A) at (0,1);
+        \coordinate (B) at (0,-1);
 
-            \addplot[rc3, thick, smooth, samples=91, domain=0:180]
-            {0.5*(1+cos(x)^2)/(1+0.5*(1-cos(x)))^2};
-            \addlegendentry{$k_1=0.5\,m$}
+        \draw[scalar, ->] (-2.6,1) -- (-1.3,1);
+        \draw[scalar] (-1.3,1) -- (A);
+        \draw[scalar, ->] (A) -- (2.6,1.7);
 
-            \addplot[rresultcolor, thick, smooth, samples=91, domain=0:180]
-            {0.5*(1+cos(x)^2)/(1+2*(1-cos(x)))^2};
-            \addlegendentry{$k_1=2\,m$}
-        \end{axis}
+        % Античастица: стрелка против хода времени
+        \draw[scalar] (-2.6,-1) -- (-1.3,-1);
+        \draw[scalar, <-] (-1.3,-1) -- (B);
+        \draw[scalar] (B) -- (1.3,-1.35);
+        \draw[scalar, <-] (1.3,-1.35) -- (2.6,-1.7);
+
+        \draw[photon] (A) -- (B);
+
+        \node[font=\small, left] at (-2.6,1) {$\pi^-$};
+        \node[font=\small, left] at (-2.6,-1) {$K^+$};
+
+        \draw[->, draw=rtextmuted, line width=0.7pt]
+        (-2.2,-2.35) -- (2.2,-2.35);
+        \node[font=\scriptsize, below] at (0,-2.35) {время};
+
+        \fill[rc4] (A) circle (1.7pt);
+        \fill[rc4] (B) circle (1.7pt);
     \end{tikzpicture}
 
     \captionsetup{
@@ -394,380 +597,414 @@ $k_1\ll m$ получить правильное \rresult{томсоновско
     }
 
     \captionof{figure}{
-        Угловое распределение рассеянных фотонов.
-        С ростом энергии фотона рассеяние назад подавляется
-        и распределение вытягивается вперёд.
+        Рассеяние $\pi^-K^+$. Линия $K^+$ рисуется как линия
+        $K^-$, идущая назад во времени: стрелка направлена
+        от конечного состояния к начальному.
     }
-    \label{fig:scalar_compton_angular}
+    \label{fig:antiparticle_line}
 \end{rbox}
 
 
-% ============================================================
-\section{Частицы со спином: уравнение Дирака}
-% ============================================================
-
 % ------------------------------------------------------------
-\subsection{Идея Дирака}
+\subsection{Рассеяние тождественных частиц}
 % ------------------------------------------------------------
 
-Уравнение Клейна--Гордона второго порядка по времени, поэтому
-его плотность $\rho$ не положительно определена. Дирак искал
-уравнение \rassumption{первого порядка} и по времени,
-и по координатам:
+В процессе
 
 \begin{equation*}
-    i\frac{\partial\psi}{\partial t}
-    =
-    \hat H\psi
-    =
-    \left(\boldsymbol\alpha\hat{\mathbf p}+\beta m\right)\psi.
+    \pi^-(p_1)+\pi^-(p_2)\rightarrow\pi^-(p_3)+\pi^-(p_4)
 \end{equation*}
 
-Каждая компонента $\psi$ должна при этом удовлетворять
-уравнению Клейна--Гордона:
+конечные частицы \rnote{нельзя различить}: неизвестно, какой
+из пионов в конечном состоянии --- <<первый>>. Поэтому нужно
+сложить две диаграммы, отличающиеся перестановкой $p_3\leftrightarrow p_4$.
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext},
+        photon/.style={
+            draw=rtext,
+            line width=0.85pt,
+            decorate,
+            decoration={snake, amplitude=1.4pt, segment length=5pt}
+        },
+        scalar/.style={draw=rc3, line width=1.15pt}
+    ]
+        \begin{scope}[shift={(-3.2,0)}]
+            \draw[scalar, ->] (-1.4,1.6) -- (-0.7,1.2);
+            \draw[scalar] (-0.7,1.2) -- (0,0.8);
+            \draw[scalar, ->] (0,0.8) -- (1.4,1.6);
+            \draw[scalar, ->] (-1.4,-1.6) -- (-0.7,-1.2);
+            \draw[scalar] (-0.7,-1.2) -- (0,-0.8);
+            \draw[scalar, ->] (0,-0.8) -- (1.4,-1.6);
+            \draw[photon] (0,0.8) -- (0,-0.8);
+            \fill[rc4] (0,0.8) circle (1.5pt);
+            \fill[rc4] (0,-0.8) circle (1.5pt);
+            \node[font=\small, left] at (-1.4,1.6) {$p_1$};
+            \node[font=\small, left] at (-1.4,-1.6) {$p_2$};
+            \node[font=\small, right] at (1.4,1.6) {$p_3$};
+            \node[font=\small, right] at (1.4,-1.6) {$p_4$};
+            \node[font=\small] at (0,-2.2) {$t$-канал};
+        \end{scope}
+
+        \node[font=\Large] at (0,0) {$+$};
+
+        \begin{scope}[shift={(3.2,0)}]
+            \draw[scalar, ->] (-1.4,1.6) -- (-0.7,1.2);
+            \draw[scalar] (-0.7,1.2) -- (0,0.8);
+            \draw[scalar, ->] (0,0.8) -- (1.4,-1.6);
+            \draw[scalar, ->] (-1.4,-1.6) -- (-0.7,-1.2);
+            \draw[scalar] (-0.7,-1.2) -- (0,-0.8);
+            \draw[scalar, ->] (0,-0.8) -- (1.4,1.6);
+            \draw[photon] (0,0.8) -- (0,-0.8);
+            \fill[rc4] (0,0.8) circle (1.5pt);
+            \fill[rc4] (0,-0.8) circle (1.5pt);
+            \node[font=\small, left] at (-1.4,1.6) {$p_1$};
+            \node[font=\small, left] at (-1.4,-1.6) {$p_2$};
+            \node[font=\small, right] at (1.4,1.6) {$p_3$};
+            \node[font=\small, right] at (1.4,-1.6) {$p_4$};
+            \node[font=\small] at (0,-2.2) {$u$-канал};
+        \end{scope}
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Две диаграммы рассеяния тождественных частиц
+        $\pi^-\pi^-\rightarrow\pi^-\pi^-$: прямая ($t$-канал)
+        и обменная ($u$-канал).
+    }
+    \label{fig:identical_particles}
+\end{rbox}
+
+Бесспиновые частицы --- бозоны, поэтому амплитуды складываются
+со знаком плюс:
 
 \begin{equation*}
-    \hat H^2\psi
+    \mathcal M
     =
-    \left(\hat{\mathbf p}^2+m^2\right)\psi.
+    -e^2\,
+    \frac{\left(p_1+p_3\right)\left(p_2+p_4\right)}
+         {\left(p_3-p_1\right)^2}
+    -e^2\,
+    \frac{\left(p_1+p_4\right)\left(p_2+p_3\right)}
+         {\left(p_4-p_1\right)^2}.
 \end{equation*}
 
-
-% ------------------------------------------------------------
-\subsection{Условия на матрицы}
-% ------------------------------------------------------------
-
-Возводя гамильтониан в квадрат,
+При больших энергиях
+$(p_1+p_4)(p_2+p_3)=s-t$, и
 
 \begin{equation*}
-    \left(\alpha_ip_i+\beta m\right)
-    \left(\alpha_jp_j+\beta m\right)\psi
+    \mathcal M
     =
-    \Big[
-        \alpha_i^2p_i^2
-        +\sum_{i<j}\left(\alpha_i\alpha_j+\alpha_j\alpha_i\right)p_ip_j
-        +\left(\alpha_i\beta+\beta\alpha_i\right)p_im
-        +\beta^2m^2
-    \Big]\psi.
-\end{equation*}
-
-Чтобы получить $\mathbf p^2+m^2$, нужно
-
-\begin{equation*}
-    \alpha_i^2=1,
-    \qquad
-    \beta^2=1,
-    \qquad
-    \left\{\alpha_i,\alpha_j\right\}=0\;(i\neq j),
-    \qquad
-    \left\{\alpha_i,\beta\right\}=0.
-\end{equation*}
-
-Значит, $\alpha_i$ и $\beta$ --- \rnote{не числа, а матрицы}.
-Их свойства:
-
-\begin{itemize}
-    \item \rconcept{эрмитовость} (гамильтониан эрмитов):
-    $A=A^\dagger=A^{*T}$;
-
-    \item собственные значения $\lambda=\pm1$: из
-    $Av=\lambda v$ следует $AAv=v=\lambda^2v$;
-
-    \item нулевой след: $\operatorname{Tr}\alpha_i=0$,
-    $\operatorname{Tr}\beta=0$. Например,
-    $\alpha_i=-\beta\alpha_i\beta$, откуда
-    $\operatorname{Tr}\alpha_i=-\operatorname{Tr}(\alpha_i\beta^2)
-    =-\operatorname{Tr}\alpha_i$.
-\end{itemize}
-
-Приведённая к диагональному виду матрица
-$A\to\operatorname{diag}(\lambda_1,\lambda_2,\ldots)$ с $\lambda=\pm1$
-и нулевым следом имеет \rresult{чётную размерность}.
-В размерности $2$ есть только три антикоммутирующие матрицы
-(матрицы Паули), а нужно четыре. Поэтому минимальная размерность
---- \rresult{$4\times4$}, и $\psi$ --- четырёхкомпонентный
-\rconcept{биспинор}.
-
-
-% ------------------------------------------------------------
-\subsection{Представление Дирака}
-% ------------------------------------------------------------
-
-Стандартный выбор:
-
-\begin{equation*}
-    \boldsymbol\alpha
-    =
-    \begin{pmatrix}
-        0 & \boldsymbol\sigma\\
-        \boldsymbol\sigma & 0
-    \end{pmatrix},
-    \qquad
-    \beta
-    =
-    \begin{pmatrix}
-        I & 0\\
-        0 & -I
-    \end{pmatrix},
-\end{equation*}
-
-где $\boldsymbol\sigma$ --- \rconcept{матрицы Паули}:
-
-\begin{equation*}
-    \sigma_1
-    =
-    \begin{pmatrix}
-        0 & 1\\
-        1 & 0
-    \end{pmatrix},
-    \qquad
-    \sigma_2
-    =
-    \begin{pmatrix}
-        0 & -i\\
-        i & 0
-    \end{pmatrix},
-    \qquad
-    \sigma_3
-    =
-    \begin{pmatrix}
-        1 & 0\\
-        0 & -1
-    \end{pmatrix}.
-\end{equation*}
-
-
-% ------------------------------------------------------------
-\subsection{Ковариантная форма}
-% ------------------------------------------------------------
-
-Умножим уравнение на $\beta$ и введём \rconcept{гамма-матрицы}
-
-\begin{equation*}
-    \gamma^\mu=\left(\beta,\,\beta\boldsymbol\alpha\right).
-\end{equation*}
-
-Получаем \rconcept{уравнение Дирака}
-
-\begin{equation*}
-    \left(i\gamma^\mu\partial_\mu-m\right)\psi=0.
-\end{equation*}
-
-Свойства гамма-матриц:
-
-\begin{equation*}
-    \gamma^\mu\gamma^\nu+\gamma^\nu\gamma^\mu=2g^{\mu\nu}I,
-\end{equation*}
-
-\begin{equation*}
-    \left(\gamma^0\right)^2=I,
-    \quad
-    \gamma^{0\dagger}=\gamma^0,
-    \qquad
-    \left(\gamma^i\right)^2=-I,
-    \quad
-    \gamma^{i\dagger}=-\gamma^i,
-\end{equation*}
-
-\begin{equation*}
-    \gamma^0
-    =
-    \begin{pmatrix}
-        I & 0\\
-        0 & -I
-    \end{pmatrix},
-    \qquad
-    \boldsymbol\gamma
-    =
-    \begin{pmatrix}
-        0 & \boldsymbol\sigma\\
-        -\boldsymbol\sigma & 0
-    \end{pmatrix}.
-\end{equation*}
-
-Для краткости будем писать $\hat p=\gamma^\mu p_\mu$.
-
-
-% ------------------------------------------------------------
-\subsection{Сохраняющийся ток}
-% ------------------------------------------------------------
-
-Введём \rconcept{дираковски сопряжённый спинор}
-
-\begin{equation*}
-    \bar\psi=\psi^\dagger\gamma^0.
-\end{equation*}
-
-Он удовлетворяет уравнению
-$i\,\partial_\mu\bar\psi\,\gamma^\mu+m\bar\psi=0$.
-Умножим уравнение Дирака слева на $\bar\psi$, сопряжённое ---
-справа на $\psi$, и сложим:
-
-\begin{equation*}
-    \bar\psi\gamma^\mu\partial_\mu\psi
-    +
-    \left(\partial_\mu\bar\psi\right)\gamma^\mu\psi
-    =
-    \partial_\mu\left(\bar\psi\gamma^\mu\psi\right)
-    =
-    0.
-\end{equation*}
-
-Сохраняющийся ток $j^\mu=\bar\psi\gamma^\mu\psi$, и его
-временная компонента
-
-\begin{equation*}
-    \rho
-    =
-    \bar\psi\gamma^0\psi
-    =
-    \psi^\dagger\psi
-    =
-    \sum_{i=1}^{4}|\psi_i|^2
-    \geqslant0.
-\end{equation*}
-
-\rresult{Плотность положительно определена} --- в отличие
-от уравнения Клейна--Гордона.
-
-
-% ------------------------------------------------------------
-\subsection{Покоящаяся частица}
-% ------------------------------------------------------------
-
-Ищем решение в виде
-
-\begin{equation*}
-    \psi=N\,u(p)\,e^{-ipx}.
-\end{equation*}
-
-Для частицы в покое $\mathbf p=0$ остаётся
-
-\begin{equation*}
-    \left(\gamma^0E-mI\right)u=0
-    \qquad\Longleftrightarrow\qquad
-    \begin{pmatrix}
-        E & & & \\
-         & E & & \\
-         & & -E & \\
-         & & & -E
-    \end{pmatrix}
-    \begin{pmatrix}
-        u_1\\ u_2\\ u_3\\ u_4
-    \end{pmatrix}
-    =
-    m
-    \begin{pmatrix}
-        u_1\\ u_2\\ u_3\\ u_4
-    \end{pmatrix}.
-\end{equation*}
-
-Четыре решения:
-
-\begin{equation*}
-    E_1=m\;\text{(спин вверх)},
-    \qquad
-    E_2=m\;\text{(спин вниз)},
-    \qquad
-    E_3=-m,
-    \qquad
-    E_4=-m.
-\end{equation*}
-
-Решения с $E<0$ \rnote{нефизичны} как состояния частицы ---
-их отбрасывают, а соответствующие им состояния описывают
-\rconcept{античастицы}.
-
-
-% ------------------------------------------------------------
-\subsection{Движущаяся частица}
-% ------------------------------------------------------------
-
-Для движущейся частицы уравнение
-$\left(i\gamma^\mu\partial_\mu-m\right)\psi=0$ даёт
-
-\begin{equation*}
-    \left(\hat p-m\right)u(p)=0.
-\end{equation*}
-
-Заметим, что
-
-\begin{equation*}
-    \left(\gamma^\mu p_\mu-m\right)
-    \left(\gamma^\nu p_\nu+m\right)u(0)
-    =
-    \left(p^2-m^2\right)u(0)
-    =
-    0.
-\end{equation*}
-
-Следовательно, \rresult{$u(p)=(\hat p+m)\,u(0)$ --- решение
-уравнения Дирака}:
-
-\begin{equation*}
-    u(p)
-    =
-    \left[
-        \begin{pmatrix}
-            I & 0\\
-            0 & -I
-        \end{pmatrix}E
-        -
-        \begin{pmatrix}
-            0 & \boldsymbol\sigma\\
-            -\boldsymbol\sigma & 0
-        \end{pmatrix}\mathbf p
+    -e^2
+    \left(
+        \frac{s-u}{t}
         +
-        mI
-    \right]u(0).
+        \frac{s-t}{u}
+    \right).
 \end{equation*}
 
-Взяв $u(0)=\begin{pmatrix}\chi\\0\end{pmatrix}$, получаем решения
-с положительной энергией:
+Амплитуда \rresult{симметрична относительно $t\leftrightarrow u$},
+как и должно быть для тождественных бозонов.
+
+
+% ------------------------------------------------------------
+\subsection{Процесс аннигиляции}
+% ------------------------------------------------------------
+
+Для частицы и античастицы
 
 \begin{equation*}
-    u_{1,2}(p)
+    \pi^-(p_1)+\pi^+(p_2)\rightarrow\pi^-(p_3)+\pi^+(p_4)
+\end{equation*}
+
+кроме обмена фотоном возможен второй механизм: пара
+$\pi^-\pi^+$ \rconcept{аннигилирует} в виртуальный фотон,
+который затем рождает новую пару.
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext},
+        photon/.style={
+            draw=rtext,
+            line width=0.85pt,
+            decorate,
+            decoration={snake, amplitude=1.4pt, segment length=5pt}
+        },
+        scalar/.style={draw=rc3, line width=1.15pt}
+    ]
+        % Рассеяние (t-канал)
+        \begin{scope}[shift={(-3.4,0)}]
+            \draw[scalar, ->] (-1.4,1.6) -- (-0.7,1.2);
+            \draw[scalar] (-0.7,1.2) -- (0,0.8);
+            \draw[scalar, ->] (0,0.8) -- (1.4,1.6);
+            \draw[scalar, <-] (-1.4,-1.6) -- (-0.7,-1.2);
+            \draw[scalar] (-0.7,-1.2) -- (0,-0.8);
+            \draw[scalar, <-] (0,-0.8) -- (1.4,-1.6);
+            \draw[photon] (0,0.8) -- (0,-0.8);
+            \fill[rc4] (0,0.8) circle (1.5pt);
+            \fill[rc4] (0,-0.8) circle (1.5pt);
+            \node[font=\small, left] at (-1.4,1.6) {$\pi^-,\,p_1$};
+            \node[font=\small, left] at (-1.4,-1.6) {$\pi^+,\,p_2$};
+            \node[font=\small, right] at (1.4,1.6) {$p_3$};
+            \node[font=\small, right] at (1.4,-1.6) {$p_4$};
+            \node[font=\small] at (0,-2.2) {рассеяние, $t$};
+        \end{scope}
+
+        \node[font=\Large] at (-0.6,0) {$+$};
+
+        % Аннигиляция (s-канал)
+        \begin{scope}[shift={(2.6,0)}]
+            \coordinate (L) at (-0.8,0);
+            \coordinate (R) at (0.8,0);
+            \draw[scalar, ->] (-2.0,1.4) -- (-1.4,0.7);
+            \draw[scalar] (-1.4,0.7) -- (L);
+            \draw[scalar, <-] (-2.0,-1.4) -- (-1.4,-0.7);
+            \draw[scalar] (-1.4,-0.7) -- (L);
+            \draw[photon] (L) -- (R);
+            \draw[scalar, ->] (R) -- (2.0,1.4);
+            \draw[scalar, <-] (R) -- (2.0,-1.4);
+            \fill[rc4] (L) circle (1.5pt);
+            \fill[rc4] (R) circle (1.5pt);
+            \node[font=\small, left] at (-2.0,1.4) {$p_1$};
+            \node[font=\small, left] at (-2.0,-1.4) {$p_2$};
+            \node[font=\small, right] at (2.0,1.4) {$p_3$};
+            \node[font=\small, right] at (2.0,-1.4) {$p_4$};
+            \node[font=\small] at (0,-2.2) {аннигиляция, $s$};
+        \end{scope}
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Диаграммы процесса $\pi^-\pi^+\rightarrow\pi^-\pi^+$:
+        рассеяние с обменом фотоном ($t$-канал) и аннигиляция
+        в виртуальный фотон с $q^2=s$ ($s$-канал).
+    }
+    \label{fig:annihilation}
+\end{rbox}
+
+Используем правило замены $p\to-p$ для линий античастицы.
+В $t$-канале ток $\pi^+$ равен $e(-p_4-p_2)$, а в $s$-канале
+вершина $\pi^-\pi^+\gamma$ содержит $(p_1-p_2)$, вершина рождения
+пары --- $(p_3-p_4)$, а импульс фотона $q=p_1+p_2$:
+
+\begin{equation*}
+    \mathcal M
     =
-    N
-    \begin{pmatrix}
-        \chi\\[4pt]
-        \dfrac{\boldsymbol\sigma\mathbf p}{E+m}\,\chi
-    \end{pmatrix},
+    e^2\,
+    \frac{\left(p_1+p_3\right)\left(p_2+p_4\right)}
+         {\left(p_3-p_1\right)^2}
+    -e^2\,
+    \frac{\left(p_1-p_2\right)\left(p_3-p_4\right)}
+         {\left(p_1+p_2\right)^2}.
+\end{equation*}
+
+С учётом $(p_1-p_2)(p_3-p_4)=u-t$ при больших энергиях
+
+\begin{equation*}
+    \mathcal M
+    =
+    e^2
+    \left(
+        \frac{s-u}{t}
+        +
+        \frac{t-u}{s}
+    \right).
+\end{equation*}
+
+\remark
+Сравните с $\pi^-\pi^-$: амплитуда аннигиляции получается
+из обменной диаграммы \rresult{перестановкой $s\leftrightarrow t$}
+(\rconcept{перекрёстная симметрия}). На лекции перед скобкой
+стоял множитель $2e^2$ --- см. замечание о множителе $2$ выше.
+
+
+% ============================================================
+\section{Свободное электромагнитное поле}
+\label{sec:free_em_field}
+% ============================================================
+
+% ------------------------------------------------------------
+\subsection{Уравнения для потенциала}
+% ------------------------------------------------------------
+
+В системе Хевисайда--Лоренца сила Кулона
+$F=\dfrac{q_1q_2}{4\pi r^2}$, $\operatorname{div}\mathbf E=\rho$.
+Наложим \rconcept{лоренцеву калибровку}
+
+\begin{equation*}
+    \operatorname{div}\mathbf A
+    +
+    \frac{1}{c}\frac{\partial\varphi}{\partial t}
+    =
+    0
+    \qquad\Longleftrightarrow\qquad
+    \partial_\mu A^\mu=0.
+\end{equation*}
+
+Тогда в отсутствие зарядов уравнения Максвелла дают волновые
+уравнения
+
+\begin{equation*}
+    \nabla^2\mathbf A
+    -
+    \frac{1}{c^2}\frac{\partial^2\mathbf A}{\partial t^2}
+    =
+    0,
     \qquad
-    \chi_1
+    \nabla^2\varphi
+    -
+    \frac{1}{c^2}\frac{\partial^2\varphi}{\partial t^2}
     =
-    \begin{pmatrix}
-        1\\0
-    \end{pmatrix},
-    \quad
-    \chi_2
-    =
-    \begin{pmatrix}
-        0\\1
-    \end{pmatrix}.
+    0
+    \qquad\longrightarrow\qquad
+    \Box A^\mu=0.
 \end{equation*}
 
-Аналогично, из $u(0)=\begin{pmatrix}0\\\chi\end{pmatrix}$ получаются
-решения с отрицательной энергией ($E<0$):
+Это уравнение Клейна--Гордона для частицы с $m=0$ ---
+\rconcept{фотона}.
+
+
+% ------------------------------------------------------------
+\subsection{Поляризация фотона}
+% ------------------------------------------------------------
+
+Решение --- плоская волна
 
 \begin{equation*}
-    u_{3,4}(p)
-    =
-    N
-    \begin{pmatrix}
-        \dfrac{-\boldsymbol\sigma\mathbf p}{-E+m}\,\chi\\[8pt]
-        \chi
-    \end{pmatrix}.
+    A^\mu=\varepsilon^\mu e^{-ikx},
 \end{equation*}
 
-При нормировке $u^\dagger u=2E$ (как в уравнении Клейна--Гордона)
-$N=\sqrt{|E|+m}$.
-
-Для античастиц удобно перейти к положительной энергии и
-импульсу, т.\,е. записать решение в виде
+где $\varepsilon^\mu$ --- \rconcept{вектор поляризации}.
+Из уравнения и калибровки
 
 \begin{equation*}
-    \psi=v(p)\,e^{ipx}.
+    k^2=0,
+    \qquad
+    \varepsilon k=0.
+\end{equation*}
+
+Калибровка фиксирована не полностью: преобразование
+
+\begin{equation*}
+    A'_\mu=A_\mu+\partial_\mu f,
+    \qquad
+    \Box f=0,
+\end{equation*}
+
+не нарушает условия $\partial_\mu A^\mu=0$. Выбирая $f$, можно
+положить $\varepsilon^0=0$; тогда
+$\boldsymbol\varepsilon\cdot\mathbf k=0$ ---
+\rresult{фотон поперечен} и имеет только
+\rresult{два независимых состояния поляризации}.
+
+
+% ------------------------------------------------------------
+\subsection{Вершины взаимодействия с фотоном}
+% ------------------------------------------------------------
+
+Вернёмся к потенциалу взаимодействия
+
+\begin{equation*}
+    T_{fi}
+    =
+    -i\int\varphi_f^*(x)\,\hat V(x)\,\varphi_i(x)\,d^4x,
+    \qquad
+    \hat V
+    =
+    \underbrace{
+        -ie\left(\partial_\mu A^\mu+A^\mu\partial_\mu\right)
+    }_{\text{один фотон}}
+    \;
+    \underbrace{
+        -e^2A^2
+    }_{\text{два фотона}}.
+\end{equation*}
+
+Слагаемое первого порядка по $e$ описывает поглощение
+(или испускание) одного фотона, слагаемое $e^2A^2$ ---
+вершину с двумя фотонами (\rconcept{<<морская чайка>>}).
+
+\begin{rbox}[left=18pt,right=18pt,top=14pt,bottom=10pt,unbreakable]{[]}
+    \centering
+
+    \begin{tikzpicture}[
+        >=Latex,
+        every node/.style={text=rtext},
+        photon/.style={
+            draw=rtext,
+            line width=0.85pt,
+            decorate,
+            decoration={snake, amplitude=1.4pt, segment length=5pt}
+        },
+        scalar/.style={draw=rc3, line width=1.15pt}
+    ]
+        \begin{scope}[shift={(-3,0)}]
+            \draw[scalar, ->] (-1.8,0) -- (-0.9,0);
+            \draw[scalar] (-0.9,0) -- (0,0);
+            \draw[scalar, ->] (0,0) -- (1.8,0);
+            \draw[photon] (-1.0,1.4) -- (0,0);
+            \fill[rc4] (0,0) circle (1.6pt);
+            \node[font=\small, below] at (-1.4,0) {$p_i$};
+            \node[font=\small, below] at (1.4,0) {$p_f$};
+            \node[font=\small] at (-1.2,1.6) {$k$};
+            \node[font=\scriptsize] at (0,-0.85) {$-ie(\partial A+A\partial)$};
+        \end{scope}
+
+        \begin{scope}[shift={(3,0)}]
+            \draw[scalar, ->] (-1.8,0) -- (-0.9,0);
+            \draw[scalar] (-0.9,0) -- (0,0);
+            \draw[scalar, ->] (0,0) -- (1.8,0);
+            \draw[photon] (-1.0,1.4) -- (0,0);
+            \draw[photon] (0,0) -- (1.0,1.4);
+            \fill[rc4] (0,0) circle (1.6pt);
+            \node[font=\small, below] at (-1.4,0) {$p_i$};
+            \node[font=\small, below] at (1.4,0) {$p_f$};
+            \node[font=\small] at (-1.2,1.6) {$k_1$};
+            \node[font=\small] at (1.2,1.6) {$k_2$};
+            \node[font=\scriptsize] at (0,-0.85) {$-e^2A^2$};
+        \end{scope}
+    \end{tikzpicture}
+
+    \captionsetup{
+        font=footnotesize,
+        labelfont=bf,
+        skip=5pt
+    }
+
+    \captionof{figure}{
+        Вершины скалярной электродинамики: взаимодействие
+        с одним фотоном (порядок $e$) и двухфотонная вершина
+        (порядок $e^2$).
+    }
+    \label{fig:scalar_qed_vertices}
+\end{rbox}
+
+Для поглощения реального фотона $A^\mu=\varepsilon^\mu e^{-ikx}$
+частицей $\varphi=Ne^{-ipx}$ получаем
+
+\begin{equation*}
+    T_{fi}
+    =
+    ieN_fN_i\,
+    \varepsilon_\mu\left(p_i+p_f\right)^\mu
+    (2\pi)^4\delta^4\!\left(p_i+k-p_f\right).
 \end{equation*}
 
 \end{document}
