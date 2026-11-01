@@ -33,7 +33,10 @@
         "subject": "ФКСВ",
         "section": "Семинары",
         "firstDate": "2026-09-05",
-        "end": "14:15"
+        "end": "14:15",
+        "cancelled": [
+          "2026-10-31"
+        ]
       },
       {
         "id": "fech-seminars",
@@ -48,13 +51,6 @@
         "section": "Лекции",
         "firstDate": "2026-09-03",
         "end": "12:35"
-      },
-      {
-        "id": "fiham-lectures",
-        "subject": "ФиХАиМ",
-        "section": "Лекции",
-        "firstDate": "2026-09-01",
-        "end": "16:05"
       },
       {
         "id": "fiham-seminars",
@@ -76,24 +72,9 @@
         "fksv-seminars": 2,
         "fech-seminars": 3,
         "fech-lectures": 2,
-        "fiham-lectures": 2,
         "fiham-seminars": 2
       },
       "commit": "7bfd995b99fd77fea7115215083ba9e233572334"
-    },
-    {
-      "at": "2026-09-21T14:02:29+00:00",
-      "counts": {
-        "ovf-lectures": 3,
-        "tdisf-lectures": 2,
-        "tdisf-seminars": 2,
-        "fksv-seminars": 2,
-        "fech-seminars": 3,
-        "fech-lectures": 2,
-        "fiham-lectures": 3,
-        "fiham-seminars": 2
-      },
-      "commit": "e6d5e87808201e845872a6468be49c3226b819dd"
     },
     {
       "at": "2026-09-26T04:52:41+00:00",
@@ -104,24 +85,9 @@
         "fksv-seminars": 2,
         "fech-seminars": 3,
         "fech-lectures": 2,
-        "fiham-lectures": 3,
         "fiham-seminars": 2
       },
       "commit": "19901b9e9e9fcb50b74dcb47ae62655881664913"
-    },
-    {
-      "at": "2026-09-26T06:04:23+00:00",
-      "counts": {
-        "ovf-lectures": 4,
-        "tdisf-lectures": 2,
-        "tdisf-seminars": 2,
-        "fksv-seminars": 2,
-        "fech-seminars": 3,
-        "fech-lectures": 2,
-        "fiham-lectures": 4,
-        "fiham-seminars": 2
-      },
-      "commit": "a4a33afc47d6da32063f5e84e3b767e0ea934a00"
     },
     {
       "at": "2026-09-26T16:38:10+00:00",
@@ -132,7 +98,6 @@
         "fksv-seminars": 2,
         "fech-seminars": 3,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 2
       },
       "commit": "7345837f2ba18a9911d6891ea0bf392a99537e5f"
@@ -146,7 +111,6 @@
         "fksv-seminars": 2,
         "fech-seminars": 3,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 2
       },
       "commit": "20b2c7fd360e9048d5cf746208554588dbc795b1"
@@ -160,7 +124,6 @@
         "fksv-seminars": 4,
         "fech-seminars": 3,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 4
       },
       "commit": "f5b19c83d5c0a57dec17b50b941b94131f1520fd"
@@ -174,7 +137,6 @@
         "fksv-seminars": 4,
         "fech-seminars": 5,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 4
       },
       "commit": "1d586ab24dbb9654f649a9dbaec0a8deeffc6fd6"
@@ -188,7 +150,6 @@
         "fksv-seminars": 5,
         "fech-seminars": 5,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 5
       },
       "commit": "69934d9d492bf9bc81f165176cc0262d1395d7db"
@@ -202,7 +163,6 @@
         "fksv-seminars": 5,
         "fech-seminars": 5,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 6
       },
       "commit": "21044440f9de0de6085120964c24b11508439dd1"
@@ -216,7 +176,6 @@
         "fksv-seminars": 5,
         "fech-seminars": 5,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 6
       },
       "commit": "59622c7811c49dc7085761c5a17d8ec34e7d79a7"
@@ -230,7 +189,6 @@
         "fksv-seminars": 5,
         "fech-seminars": 5,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 6
       },
       "commit": "bf8b0ef57cc74ffd3005f7e1c6cdf286b3d7c34c"
@@ -244,7 +202,6 @@
         "fksv-seminars": 5,
         "fech-seminars": 5,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 6
       },
       "commit": "bd0e0f7b8f60280bb20b47721170b832996b58b1"
@@ -258,7 +215,6 @@
         "fksv-seminars": 5,
         "fech-seminars": 5,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 6
       },
       "commit": "19bc2dd21af0407708552eedd5ac18fff11d400e"
@@ -272,7 +228,6 @@
         "fksv-seminars": 5,
         "fech-seminars": 5,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 6
       },
       "commit": "3a32e113e35dccb8b1aab6c1d36a08c24735cf56"
@@ -286,7 +241,6 @@
         "fksv-seminars": 5,
         "fech-seminars": 9,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 6
       },
       "commit": "77aec7656dcbfb5c1bd4b524b3ff02f5ea0a57c0"
@@ -300,7 +254,6 @@
         "fksv-seminars": 8,
         "fech-seminars": 9,
         "fech-lectures": 2,
-        "fiham-lectures": 4,
         "fiham-seminars": 6
       },
       "commit": "a86ee2ba0ce7d7b9232b6c456f816ac607257387"
@@ -313,8 +266,7 @@
     "fksv-seminars": 8,
     "fech-seminars": 9,
     "fech-lectures": 2,
-    "fiham-lectures": 4,
     "fiham-seminars": 6
   },
-  "indexGeneratedAt": "2026-11-01T14:19:39.657347+00:00"
+  "indexGeneratedAt": "2026-11-01T15:19:14.172906+00:00"
 }
