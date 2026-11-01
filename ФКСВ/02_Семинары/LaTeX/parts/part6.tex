@@ -1,0 +1,186 @@
+% !TeX root = part6.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% Конспект: Desktop/1.jpg--3.jpg (10.10). В тетради a_k, \hbar=1;
+% здесь обозначения part5 (b_k) и явная \hbar.
+% Вариант по плану семинаров: LaTeX/archive_plan_2026-11-01.
+\practice{6}{10.10.2026}{Фононы как идеальный бозе-газ}
+
+\rtheory{Продолжение задачи о квантовании цепочки}
+
+Продолжаем задачу~4.18 из предыдущего занятия. Напомним обозначения:
+$N$ атомов массы $m$, жёсткость пружин $\alpha$, безразмерное волновое
+число $k=2\pi j/N$ и
+\[
+    \hat Q_k=\frac1{\sqrt N}\sum_r\hat q_re^{-ikr},\qquad
+    \hat P_k=\frac1{\sqrt N}\sum_r\hat p_re^{ikr},\qquad
+    [\hat q_r,\hat p_s]=i\hbar\delta_{rs}.
+\]
+Гамильтониан в нормальных координатах:
+\[
+    \hat H=\frac1{2m}\sum_k\hat P_k\hat P_{-k}
+       +\alpha\sum_k(1-\cos k)\hat Q_k\hat Q_{-k},
+    \qquad
+    \alpha(1-\cos k)=\frac{m\omega_k^2}{2},
+\]
+то есть $\omega_k^2=(4\alpha/m)\sin^2(k/2)$.
+Операторы уничтожения и рождения фонона ($k\ne0$):
+\begin{align*}
+    \hat b_k&=\frac1{\sqrt{2\hbar m\omega_k}}
+       \left(m\omega_k\hat Q_k+i\hat P_{-k}\right),\\
+    \hat b_k^\dagger&=\frac1{\sqrt{2\hbar m\omega_k}}
+       \left(m\omega_k\hat Q_{-k}-i\hat P_k\right).
+\end{align*}
+
+\subsection*{Проверка коммутатора}
+
+Из $[\hat q_r,\hat p_s]=i\hbar\delta_{rs}$ следует
+$[\hat Q_k,\hat P_{k'}]=i\hbar\delta_{kk'}$, а координаты и импульсы
+между собой коммутируют. Поэтому в $[\hat b_k,\hat b_{k'}^\dagger]$
+остаются только перекрёстные члены:
+\begin{align*}
+    [\hat b_k,\hat b_{k'}^\dagger]
+       &=\frac1{2\hbar m\sqrt{\omega_k\omega_{k'}}}
+         \Bigl(-im\omega_k[\hat Q_k,\hat P_{k'}]
+               +im\omega_{k'}[\hat P_{-k},\hat Q_{-k'}]\Bigr)\\
+       &=\frac{\hbar m(\omega_k+\omega_{k'})}
+              {2\hbar m\sqrt{\omega_k\omega_{k'}}}\,\delta_{kk'}
+        =\delta_{kk'}.
+\end{align*}
+Аналогично $[\hat b_k,\hat b_{k'}]=0$: два слагаемых сокращаются,
+поскольку $\omega_k=\omega_{-k}$.
+
+\subsection*{Гамильтониан в операторах рождения и уничтожения}
+
+Обратные формулы:
+\[
+    \hat Q_k=\sqrt{\frac{\hbar}{2m\omega_k}}
+       \left(\hat b_k+\hat b_{-k}^\dagger\right),\qquad
+    \hat P_k=\frac{\sqrt{2\hbar m\omega_k}}{2i}
+       \left(\hat b_{-k}-\hat b_k^\dagger\right).
+\]
+Подставляя их в $\hat H$, получаем
+\begin{align*}
+    \hat H&=\sum_k\frac{\hbar\omega_k}4\Bigl[
+       -\left(\hat b_{-k}-\hat b_k^\dagger\right)
+        \left(\hat b_k-\hat b_{-k}^\dagger\right)
+       +\left(\hat b_k+\hat b_{-k}^\dagger\right)
+        \left(\hat b_{-k}+\hat b_k^\dagger\right)\Bigr]\\
+    &=\sum_k\frac{\hbar\omega_k}4\Bigl[
+       \hat b_k\hat b_k^\dagger+\hat b_k^\dagger\hat b_k
+       +\hat b_{-k}\hat b_{-k}^\dagger+\hat b_{-k}^\dagger\hat b_{-k}\Bigr].
+\end{align*}
+Члены $\hat b_k\hat b_{-k}$ и $\hat b_k^\dagger\hat b_{-k}^\dagger$
+сократились, так как эти операторы коммутируют.
+После замены $-k\to k$ во второй паре и использования
+$\hat b_k\hat b_k^\dagger=\hat b_k^\dagger\hat b_k+1$:
+\[
+    \hat H=\sum_k\frac{\hbar\omega_k}4
+       \left(2\hat b_k^\dagger\hat b_k+2+2\hat b_k^\dagger\hat b_k\right)
+     =\sum_k\hbar\omega_k\left(\hat b_k^\dagger\hat b_k+\frac12\right).
+\]
+Собственные состояния --- $|\ldots n_j\ldots\rangle$, где $n_j$ ---
+число фононов в моде $j$, и
+\[
+    \hat b_j|n_j\rangle=\sqrt{n_j}\,|n_j-1\rangle,\qquad
+    \hat b_j^\dagger|n_j\rangle=\sqrt{n_j+1}\,|n_j+1\rangle.
+\]
+
+\rtheory{Тепловые средние}
+
+Равновесное среднее оператора $\hat L$ вычисляется с распределением
+Гиббса в базисе чисел заполнения:
+\[
+    \langle\hat L\rangle=
+    \frac{\sum_{\{n\}}\langle\ldots n_j\ldots|\hat L\,
+          e^{-\hat H/T}|\ldots n_j\ldots\rangle}
+         {\sum_{\{n\}}\langle\ldots n_j\ldots|
+          e^{-\hat H/T}|\ldots n_j\ldots\rangle},
+    \qquad
+    \hat H=\sum_i\hbar\omega_i\left(\hat n_i+\frac12\right).
+\]
+Полагаем \rassumption{$k_{\mathrm B}=1$}.
+
+\subsection*{Недиагональные средние}
+
+Операторы $\hat b_j$ и $\hat b_j^\dagger$ меняют $n_j$ на единицу,
+а след берётся по диагональным элементам. Поэтому
+\[
+    \langle\hat b_j\rangle=\langle\hat b_j^\dagger\rangle=0,\qquad
+    \langle\hat b_j\hat b_{j'}\rangle
+      =\langle\hat b_j^\dagger\hat b_{j'}^\dagger\rangle=0,\qquad
+    \langle\hat b_j^\dagger\hat b_{j'}\rangle=0\quad(j\ne j').
+\]
+
+\subsection*{Число заполнения}
+
+Ненулевым остаётся только $\langle\hat b_j^\dagger\hat b_j\rangle=\langle\hat n_j\rangle$.
+Множители от остальных мод и от нулевой энергии сокращаются.
+Обозначим $x=e^{-\hbar\omega_j/T}$:
+\[
+    \langle\hat n_j\rangle
+       =\frac{\sum_{n=0}^\infty n\,e^{-\hbar\omega_j(n+1/2)/T}}
+             {\sum_{n=0}^\infty e^{-\hbar\omega_j(n+1/2)/T}}
+       =\frac{x/(1-x)^2}{1/(1-x)}
+       =\frac1{e^{\hbar\omega_j/T}-1}.
+\]
+Это \rconcept{распределение Бозе--Эйнштейна} с нулевым химическим
+потенциалом: \rresult{фононы --- бозоны, число которых не сохраняется}.
+Средняя энергия решётки
+\[
+    E=\sum_k\hbar\omega_k\left(\bar n_k+\frac12\right)
+     =\sum_k\frac{\hbar\omega_k}2\,
+        \frac{e^{\hbar\omega_k/T}+1}{e^{\hbar\omega_k/T}-1}
+     =\sum_k\frac{\hbar\omega_k}2\coth\frac{\hbar\omega_k}{2T}.
+\]
+
+\rtheory{То же распределение из подсчёта состояний}
+
+Получим $\bar n$ микроканонически. Рассмотрим $N\gg1$ осцилляторов
+одной частоты $\omega$, между которыми распределено $L\gg1$ квантов:
+\[
+    E=\hbar\omega\left(L+\frac N2\right).
+\]
+
+\begin{rbox}[left=18pt,right=18pt,top=12pt,bottom=10pt]{[]}
+\centering
+\begin{tikzpicture}[>=Latex,every node/.style={text=rtext}]
+    % Последовательность: oo|ooo||o|o| --- 7 квантов, 5 перегородок.
+    \foreach \i in {0,1,3,4,5,8,10}
+        \fill[rc3] (0.5*\i,0) circle (0.14);
+    \foreach \i in {2,6,7,9,11}
+        \draw[rconceptcolor,line width=1.2pt] (0.5*\i,-0.35)--(0.5*\i,0.35);
+    \draw[<->] (-0.2,-0.6)--(5.7,-0.6)
+        node[midway,below] {$L+N-1$ мест};
+\end{tikzpicture}
+\captionof{figure}{Кванты (кружки) разделены перегородками на $N$
+осцилляторов. Здесь $N=6$, $L=7$; между соседними перегородками
+может не быть ни одного кванта.}
+\end{rbox}
+
+Каждое распределение задаётся расстановкой $L$ одинаковых квантов
+и $N-1$ одинаковых перегородок, поэтому статистический вес
+\[
+    \Gamma=\frac{(L+N-1)!}{L!\,(N-1)!},\qquad S=\ln\Gamma.
+\]
+По формуле Стирлинга $\ln n!\simeq n\ln(n/e)$:
+\[
+    S\simeq(L+N-1)\ln\frac{L+N-1}{e}-L\ln\frac Le
+       -(N-1)\ln\frac{N-1}{e}.
+\]
+Температура определяется из $dE=T\,dS$:
+\[
+    \frac1T=\frac{dS}{dE}=\frac1{\hbar\omega}\frac{dS}{dL}
+       =\frac1{\hbar\omega}\ln\frac{L+N}{L}.
+\]
+Отсюда
+\[
+    \frac LN=\frac1{e^{\hbar\omega/T}-1},\qquad
+    E=N\hbar\omega\left(\frac12+\frac1{e^{\hbar\omega/T}-1}\right).
+\]
+\rresult{Подсчёт состояний даёт то же планковское среднее число квантов
+на осциллятор}, что и усреднение с распределением Гиббса.
+
+\end{document}

@@ -1,0 +1,238 @@
+% !TeX root = part9.tex
+\documentclass[../final.tex]{subfiles}
+\begin{document}
+% Конспект: Desktop/11.jpg, 22.jpg, 33.jpg; дата в тетради 30.10.
+% Во второй строке системы для u, v в конспекте стоит 1+cos(ka) ---
+% описка, исправлено на 1-cos(ka), итоговый закон дисперсии тот же.
+% Интегралы для газа магнонов, записанные в конце, доведены до ответа.
+\practice{9}{30.10.2026}{Спиновые волны}
+
+\rtheory{Ферромагнитная цепочка}
+Полагаем \rassumption{$k_B=1$}. Рассмотрим цепочку из $N$ спинов
+$\boldsymbol S_p$ с периодом $a$ и периодическими граничными
+условиями $\boldsymbol S_{N+1}=\boldsymbol S_1$. Обменное
+взаимодействие соседей
+\[
+ U=-2J\sum_{p=1}^N\boldsymbol S_p\cdot\boldsymbol S_{p+1},
+ \qquad J>0.
+\]
+При $T=0$ все спины параллельны оси $z$, и энергия основного состояния
+\[
+ U_0=-2JNS^2.
+\]
+При \rassumption{низкой температуре} спины лишь слегка отклоняются
+от оси:
+\[
+ S_p^z\simeq S,\qquad |S_p^x|,\,|S_p^y|\ll S.
+\]
+Спины рассматриваем как классические векторы длины $S$.
+
+\subsection*{Уравнение движения спина}
+Магнитный момент атома $\boldsymbol\mu_p=-g\mu_B\boldsymbol S_p$.
+Энергию связей спина $p$ с обоими соседями запишем как энергию
+момента в эффективном поле:
+\[
+ U_p=-2J\boldsymbol S_p\cdot
+ \left(\boldsymbol S_{p-1}+\boldsymbol S_{p+1}\right)
+ =-\boldsymbol\mu_p\cdot\boldsymbol B_p,\qquad
+ \boldsymbol B_p=-\frac{2J}{g\mu_B}
+ \left(\boldsymbol S_{p-1}+\boldsymbol S_{p+1}\right).
+\]
+Скорость изменения момента импульса $\hbar\boldsymbol S_p$ равна
+моменту сил $\boldsymbol\mu_p\times\boldsymbol B_p$:
+\[
+ \hbar\frac{d\boldsymbol S_p}{dt}
+ =2J\,\boldsymbol S_p\times
+ \left(\boldsymbol S_{p-1}+\boldsymbol S_{p+1}\right).
+\]
+Раскрываем векторное произведение и оставляем члены первого порядка
+по малым поперечным компонентам:
+\begin{align*}
+ \hbar\frac{dS_p^x}{dt}&=2JS\left(2S_p^y-S_{p-1}^y-S_{p+1}^y\right),\\
+ \hbar\frac{dS_p^y}{dt}&=-2JS\left(2S_p^x-S_{p-1}^x-S_{p+1}^x\right),\\
+ \hbar\frac{dS_p^z}{dt}&=0.
+\end{align*}
+
+\subsection*{Закон дисперсии}
+Ищем решение в виде бегущей волны:
+\[
+ S_p^x=\operatorname{Re}\left(u\,e^{i(kpa-\omega t)}\right),\qquad
+ S_p^y=\operatorname{Re}\left(v\,e^{i(kpa-\omega t)}\right),\qquad
+ S_p^z=S.
+\]
+Подставляя и учитывая $2-e^{ika}-e^{-ika}=2(1-\cos ka)$, получаем
+\[
+ \begin{cases}
+  -i\omega\hbar\,u=4JS(1-\cos ka)\,v,\\
+  -i\omega\hbar\,v=-4JS(1-\cos ka)\,u.
+ \end{cases}
+\]
+Нетривиальное решение существует, когда определитель системы равен нулю:
+\[
+ \begin{vmatrix}
+  i\omega\hbar & 4JS(1-\cos ka)\\
+  -4JS(1-\cos ka) & i\omega\hbar
+ \end{vmatrix}=0
+ \quad\Longrightarrow\quad
+ \hbar\omega=4JS(1-\cos ka)=8JS\sin^2\frac{ka}2.
+\]
+При этом $v=-iu$, то есть
+\[
+ S_p^x=u\cos(kpa-\omega t),\qquad S_p^y=u\sin(kpa-\omega t):
+\]
+каждый спин прецессирует вокруг оси $z$ по конусу, а фаза прецессии
+соседних спинов сдвинута на $ka$. Эта волна называется
+\rconcept{спиновой волной}. Из периодичности цепочки
+$k=2\pi m/(Na)$, и в зоне Бриллюэна $-\pi/a<k\le\pi/a$ помещается
+ровно $N$ волн.
+
+В длинноволновом пределе $\lambda=2\pi/k\gg a$, то есть $ka\ll1$,
+раскладываем косинус в ряд:
+\[
+ \hbar\omega\simeq2JSa^2k^2.
+\]
+В отличие от акустических фононов, частота квадратична по $k$.
+
+\subsection*{Квантование амплитуды}
+\begin{rbox}[left=16pt,right=16pt,top=12pt,bottom=10pt]{[]}
+\centering
+\begin{tikzpicture}[>=Latex,scale=1.15,every node/.style={text=rtext}]
+    \coordinate (O) at (0,0);
+    \coordinate (C) at (0,4);
+    \coordinate (A) at ({2.2*cos(235)},{4+0.55*sin(235)});
+    \coordinate (B) at ({2.2*cos(305)},{4+0.55*sin(305)});
+    \coordinate (H) at (0,{4+0.55*sin(235)});
+    \draw[densely dotted] (O)--(C);
+    \draw[->] (C)--(0,5.1) node[above] {$z$};
+    \draw[rc3,dashed] (C) ellipse [x radius=2.2,y radius=0.55];
+    \draw[rc3,densely dotted] (O)--(-2.2,4) (O)--(2.2,4);
+    \draw[rnotecolor] (C)--(A) node[midway,above left=-1pt] {$u$};
+    \draw[rnotecolor] (C)--(B);
+    \draw[rnotecolor] (A)--(B);
+    \draw[->,thick,rconceptcolor] (O)--(A)
+        node[pos=0.55,left] {$\boldsymbol S_p$};
+    \draw[->,thick,rconceptcolor] (O)--(B)
+        node[pos=0.55,right] {$\boldsymbol S_{p+1}$};
+    \draw ({1.25*cos(109.58)},{1.25*sin(109.58)})
+        arc[start angle=109.58,end angle=70.42,radius=1.25];
+    \node at (0.2,1.5) {$\varphi$};
+    \node[above right=-1pt] at (0.04,4.02) {$ka$};
+    \fill (O) circle (1.5pt) node[below left] {$O$};
+    \fill (A) circle (1.3pt) node[below left] {$A$};
+    \fill (B) circle (1.3pt) node[below right] {$B$};
+    \fill (H) circle (1.1pt) node[below] {$H$};
+    \fill (C) circle (1.1pt) node[above left] {$C$};
+\end{tikzpicture}
+\captionof{figure}{Прецессия соседних спинов. Концы спинов движутся
+по окружности радиуса $u$ со сдвигом фаз $ka$;
+$\varphi$ --- угол между соседними спинами.}
+\end{rbox}
+
+Из треугольника $ACB$ с углом $ka$ при вершине $C$:
+\[
+ AH=u\sin\frac{ka}2,\qquad AB=2u\sin\frac{ka}2\simeq kau.
+\]
+Угол между соседними спинами находим из треугольника $AOH$:
+\[
+ \sin\frac\varphi2=\frac{AH}{AO}\simeq\frac{kau}{2S}
+ \quad\Longrightarrow\quad
+ \varphi\simeq\frac{kau}S.
+\]
+Поскольку $\boldsymbol S_p\cdot\boldsymbol S_{p+1}=S^2\cos\varphi$
+для всех $p$,
+\[
+ U=-2JNS^2\cos\varphi
+ \simeq-2JNS^2\left(1-\frac{\varphi^2}2\right)
+ =U_0+JNk^2a^2u^2.
+\]
+Проекция каждого спина на ось уменьшается:
+\[
+ S_z=\sqrt{S^2-u^2}\simeq S-\frac{u^2}{2S}.
+\]
+\rassumption{Амплитуда $u$ мала}, так как мала температура.
+В квантовой механике полная проекция $\sum_pS_p^z$ может принимать
+только значения $NS-n$ с целым $n$. Поэтому
+\[
+ N(S-S_z)=\frac{Nu^2}{2S}=n
+ \quad\Longrightarrow\quad
+ u^2=\frac{2Sn}N.
+\]
+Подставляя в энергию, получаем
+\[
+ U=U_0+JNk^2a^2\frac{2Sn}N=U_0+n\cdot2JSa^2k^2=U_0+n\hbar\omega(k).
+\]
+\rresult{Энергия спиновой волны квантуется порциями $\hbar\omega(k)$}.
+Квант спиновой волны называется \rconcept{магноном}; он несёт
+квазиимпульс $\hbar k$ и уменьшает полную проекцию спина на единицу.
+
+\rtheory{Газ магнонов}
+Число магнонов $n$ в одной волне может быть любым, поэтому магноны ---
+бозоны. Их число не сохраняется, и в равновесии
+\[
+ \mu=0,\qquad \overline n(\varepsilon)=\frac1{e^{\varepsilon/T}-1}.
+\]
+При $T\ll JS$ возбуждены только длинноволновые магноны с квадратичным
+законом дисперсии:
+\[
+ \boldsymbol p=\hbar\boldsymbol k,\qquad
+ \varepsilon=\frac{p^2}{2m_{\mathrm{eff}}},\qquad
+ m_{\mathrm{eff}}=\frac{\hbar^2}{4JSa^2}.
+\]
+Для простой кубической решётки
+$\hbar\omega=2JS\sum_{\boldsymbol\delta}(1-\cos\boldsymbol k\cdot\boldsymbol\delta)
+\simeq2JSa^2k^2$ --- то же выражение, что и в цепочке, поэтому
+дальше рассматриваем трёхмерный кристалл объёма $V$ из $N=V/a^3$ атомов.
+У магнона одна поляризация, и
+\[
+ E=\int_0^\infty\frac{\varepsilon}{e^{\varepsilon/T}-1}
+ \frac{V\,d^3p}{(2\pi\hbar)^3},\qquad
+ N_m=\int_0^\infty\frac1{e^{\varepsilon/T}-1}
+ \frac{V\,d^3p}{(2\pi\hbar)^3}.
+\]
+Верхний предел заменён бесконечностью: при $T\ll JS$ вклад
+коротких волн экспоненциально мал.
+
+\subsection*{Число магнонов и намагниченность}
+Подставляя $x=\varepsilon/T$ и используя
+$\int_0^\infty x^{s-1}/(e^x-1)\,dx=\Gamma(s)\zeta(s)$, находим
+\[
+ N_m=\zeta\left(\tfrac32\right)V
+ \left(\frac{m_{\mathrm{eff}}T}{2\pi\hbar^2}\right)^{3/2}
+ =\zeta\left(\tfrac32\right)N\left(\frac{T}{8\pi JS}\right)^{3/2}.
+\]
+Каждый магнон уменьшает полную проекцию спина на единицу, поэтому
+намагниченность $M\propto NS-N_m$:
+\[
+ \frac{M(0)-M(T)}{M(0)}=\frac{N_m}{NS}
+ =\frac{\zeta(3/2)}S\left(\frac{T}{8\pi JS}\right)^{3/2}
+ \simeq\frac{0{,}0587}S\left(\frac{T}{2JS}\right)^{3/2}.
+\]
+Это \rconcept{закон Блоха}: \rresult{намагниченность убывает
+как $T^{3/2}$}.
+
+\subsection*{Энергия и теплоёмкость}
+Аналогично
+\[
+ E=\frac32\zeta\left(\tfrac52\right)T\,V
+ \left(\frac{m_{\mathrm{eff}}T}{2\pi\hbar^2}\right)^{3/2}
+ =\frac32\zeta\left(\tfrac52\right)NT
+ \left(\frac{T}{8\pi JS}\right)^{3/2}\propto T^{5/2},
+\]
+\[
+ C_V=\frac{dE}{dT}
+ =\frac{15}4\zeta\left(\tfrac52\right)N
+ \left(\frac{T}{8\pi JS}\right)^{3/2}\propto T^{3/2}.
+\]
+\rresult{Магнонная теплоёмкость пропорциональна $T^{3/2}$}; при низких
+температурах она преобладает над фононной ($\propto T^3$).
+В обычных единицах $T$ заменяется на $k_BT$, а теплоёмкость умножается
+на $k_B$.
+
+\remark[Границы модели.]
+Формулы справедливы при \rassumption{$T\ll JS$}, когда $N_m\ll NS$
+и взаимодействием магнонов можно пренебречь. В одномерной и двумерной
+моделях с $\varepsilon\propto p^2$ интеграл для $N_m$ расходится
+на малых импульсах: $\int dp/p^2$ и $\int dp/p$. Поэтому в изотропной
+цепочке и плёнке при $T>0$ дальний ферромагнитный порядок
+\rnote{разрушается тепловыми спиновыми волнами}.
+\end{document}

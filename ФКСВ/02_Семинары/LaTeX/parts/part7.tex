@@ -1,0 +1,248 @@
+% !TeX root = part7.tex
+\documentclass[../final.tex]{subfiles}
+
+\begin{document}
+
+% Конспект: Desktop/4.jpg, 5.jpg (17.10) и низ 2.jpg (формула для <q^2>).
+% В тетради g_2D = S w/(pi v0^2): потерян множитель 1/2, исправлено.
+% Расходимости в 1D и 2D уточнены: какая часть (нулевая или тепловая)
+% и как именно растёт <q^2> с размером.
+\practice{7}{17.10.2026}{Средний квадрат смещения. Плотность состояний}
+\captionsetup{font=footnotesize,labelfont=bf,skip=5pt}
+
+\begingroup
+\renewcommand{\thesection}{4.\arabic{section}}
+\task[17]{Средний квадрат смещения атома в решётке}
+\label{task:fksv_displacement}
+
+\condition
+Определить средний квадрат смещения атома в решётке.
+Решить ту же задачу, используя теорему вириала.
+Продемонстрировать расходимость в 1D и 2D.
+
+\solution
+Полагаем \rassumption{$k_{\mathrm B}=1$} и, как на прошлом занятии,
+фиксируем центр масс: мода $k=0$ исключена.
+
+\subsection*{Через операторы рождения и уничтожения}
+
+Смещение атома $r$ выражается через нормальные координаты:
+\[
+    \hat q_r=\frac1{\sqrt N}\sum_k\hat Q_ke^{ikr},\qquad
+    \hat Q_k=\sqrt{\frac{\hbar}{2m\omega_k}}
+       \left(\hat b_k+\hat b_{-k}^\dagger\right).
+\]
+Средние $\langle\hat Q_k\hat Q_{k'}\rangle$ отличны от нуля только
+при $k'=-k$, и тогда из тепловых средних прошлого занятия
+\[
+    \langle\hat Q_k\hat Q_{-k}\rangle
+       =\frac{\hbar}{2m\omega_k}
+        \langle\hat b_k\hat b_k^\dagger+\hat b_{-k}^\dagger\hat b_{-k}\rangle
+       =\frac{\hbar}{m\omega_k}\left(\bar n_k+\frac12\right).
+\]
+Следовательно,
+\[
+    \langle q^2\rangle=\frac1N\sum_k\langle\hat Q_k\hat Q_{-k}\rangle
+       =\sum_k\frac{\hbar}{Nm\omega_k}
+         \left(\frac12+\frac1{e^{\hbar\omega_k/T}-1}\right).
+\]
+По трансляционной симметрии ответ не зависит от номера атома.
+
+\subsection*{Через теорему вириала}
+
+Для одной частоты $\omega$ энергия $N$ осцилляторов
+\[
+    E=N\hbar\omega\left(\frac12+\frac1{e^{\hbar\omega/T}-1}\right).
+\]
+Для гармонического осциллятора средние кинетическая и потенциальная
+энергии равны, поэтому
+\[
+    \langle U\rangle=\frac E2
+       =\frac12N\hbar\omega\left(\frac12+\bar n\right).
+\]
+С другой стороны,
+$\langle U\rangle=\sum_r\frac12m\omega^2\langle q_r^2\rangle
+=\frac12Nm\omega^2\langle q^2\rangle$, откуда
+\[
+    \langle q^2\rangle=\frac{\hbar}{m\omega}\left(\frac12+\bar n\right).
+\]
+В решётке каждая мода $k$ даёт то же соотношение для
+$\langle\hat Q_k\hat Q_{-k}\rangle$, а
+$\sum_r\hat q_r^2=\sum_k\hat Q_k\hat Q_{-k}$ (равенство Парсеваля).
+Деля на $N$, получаем ту же сумму по $k$, что и выше:
+вклад моды равен $\hbar(\bar n_k+1/2)/(Nm\omega_k)$.
+
+\subsection*{Переход к интегралу}
+
+Перейдём к размерному волновому вектору $\boldsymbol k$ и рассмотрим
+\rassumption{одну акустическую ветвь $\omega_k=ck$}: расходимости
+определяются длинными волнами. Число состояний в элементе
+фазового объёма
+\[
+    d\mathcal N=\frac{d^dx\,d^dp}{(2\pi\hbar)^d}
+       =\frac{L^d\,d^dk}{(2\pi)^d},\qquad
+    \boldsymbol p=\hbar\boldsymbol k,\qquad N=\left(\frac La\right)^d.
+\]
+В образце размера $L$ наименьшее волновое число
+$k_{\min}\sim2\pi/L$; при $L\to\infty$ интегралы идут от нуля.
+
+\subsubsection*{Одномерная цепочка}
+\[
+    \langle q^2\rangle
+       =2\int_{k_{\min}}^{\pi/a}\frac{L\,dk}{2\pi}\,
+          \frac{\hbar}{Nmck}
+          \left(\frac12+\frac1{e^{\hbar ck/T}-1}\right).
+\]
+Интеграл \rnote{расходится на нижнем пределе}. Уже нулевые колебания
+дают $\int dk/k$:
+\[
+    \langle q^2\rangle_{T=0}\simeq
+       \frac{\hbar a}{2\pi mc}\ln\frac{L}{a}.
+\]
+При $T>0$ для длинных волн $\bar n_k\simeq T/(\hbar ck)\gg1$,
+подынтегральное выражение ведёт себя как $T/k^2$, и
+$\langle q^2\rangle$ растёт пропорционально $L$. Точная сумма для
+классической цепочки ($\omega_j^2=(4\alpha/m)\sin^2(\pi j/N)$):
+\[
+    \langle q^2\rangle=\frac{T}{mN}\sum_{j=1}^{N-1}\frac1{\omega_j^2}
+       =\frac{T}{4\alpha N}\sum_{j=1}^{N-1}\frac1{\sin^2(\pi j/N)}
+       =\frac{T}{12\alpha}\left(N-\frac1N\right).
+\]
+
+\subsubsection*{Двумерная решётка}
+\[
+    \langle q^2\rangle
+       =\int_{k_{\min}}\frac{L^2\,2\pi k\,dk}{(2\pi)^2}\,
+          \frac{\hbar}{Nmck}
+          \left(\frac12+\frac1{e^{\hbar ck/T}-1}\right).
+\]
+Нулевые колебания здесь дают сходящийся интеграл $\int dk$.
+Тепловая часть ведёт себя как $\int dk/k$ и
+\rnote{логарифмически расходится}:
+\[
+    \langle q^2\rangle_T\simeq\frac{a^2T}{2\pi mc^2}\ln\frac{L}{a}.
+\]
+
+\subsubsection*{Трёхмерный кристалл}
+Множитель $k^2\,dk$ делает оба интеграла сходящимися:
+смещение конечно при любой температуре.
+
+\answer
+\[
+    \langle q^2\rangle=\sum_k\frac{\hbar}{Nm\omega_k}
+       \left(\frac12+\frac1{e^{\hbar\omega_k/T}-1}\right).
+\]
+\rresult{В 1D смещение расходится уже при $T=0$ (как $\ln L$),
+а при $T>0$ растёт как $L$; в 2D при $T>0$ растёт как $\ln L$;
+в 3D конечно.} Тепловые длинноволновые колебания разрушают дальний
+порядок в одномерных и двумерных кристаллах.
+\endgroup
+
+\rtheory{Плотность состояний}
+
+Суммы по модам удобно переписать через \rconcept{плотность состояний}
+\[
+    g(\omega)=\sum_k\delta(\omega-\omega_k),\qquad
+    g(\omega)\,d\omega=d\mathcal N\ \text{--- число мод в }(\omega,\omega+d\omega).
+\]
+Тогда тепловая энергия решётки
+\[
+    E=\int\frac{\hbar\omega\,g(\omega)\,d\omega}{e^{\hbar\omega/T}-1}.
+\]
+
+\subsection*{Линейный закон дисперсии}
+
+Пусть $\omega_k=v_0k$. В одном измерении $k$ пробегает оба знака:
+\[
+    g_{1\mathrm D}(\omega)=\frac L{2\pi}\int_{-\infty}^{\infty}
+       \delta(\omega-v_0|k|)\,dk
+     =\frac L\pi\int_0^\infty\frac1{v_0}
+       \delta\left(k-\frac\omega{v_0}\right)dk
+     =\frac L{\pi v_0}.
+\]
+В двух измерениях, на одну ветвь,
+\[
+    g_{2\mathrm D}(\omega)=\frac S{(2\pi)^2}\int_0^\infty
+       \delta(\omega-v_0k)\,2\pi k\,dk
+     =\frac S{2\pi v_0}\cdot\frac\omega{v_0}
+     =\frac{S\omega}{2\pi v_0^2}.
+\]
+В трёх измерениях с тремя ветвями одинаковой скорости
+\[
+    g_{3\mathrm D}(\omega)=\frac{3V}{(2\pi)^3}\int_0^\infty
+       \delta(\omega-v_0k)\,4\pi k^2\,dk
+     =\frac{3V}{2\pi^2}\frac{\omega^2}{v_0^3}.
+\]
+\rresult{При линейном спектре $g(\omega)\propto\omega^{d-1}$.}
+
+\subsection*{Точный спектр одномерной цепочки}
+
+Для цепочки
+\[
+    \omega(k)=\omega_0\left|\sin\frac{ka}2\right|,\qquad
+    \omega_0=2\sqrt{\frac\alpha m},\qquad
+    -\frac\pi a<k\le\frac\pi a.
+\]
+
+\begin{rbox}[left=18pt,right=18pt,top=12pt,bottom=10pt]{[]}
+\centering
+\begin{tikzpicture}[>=Latex,x=1.25cm,y=1.6cm,
+    every node/.style={text=rtext}]
+    \draw[->] (-3.5,0)--(3.6,0) node[right] {$k$};
+    \draw[->] (0,-0.1)--(0,1.45) node[above] {$\omega$};
+    \draw[rc3,thick,domain=-3.1416:3.1416,samples=81]
+        plot (\x,{abs(sin(\x/2 r))});
+    \draw[rconceptcolor,dashed] (-3.3,0.6)--(3.3,0.6)
+        node[right] {$\omega$};
+    \draw[densely dotted] (-1.287,0)--(-1.287,0.6)
+        (1.287,0)--(1.287,0.6);
+    \fill (-1.287,0.6) circle (1.6pt) (1.287,0.6) circle (1.6pt);
+    \node[below] at (-1.287,0) {$-k_0$};
+    \node[below] at (1.287,0) {$k_0$};
+    \draw[densely dotted] (-3.1416,0)--(-3.1416,1) (3.1416,0)--(3.1416,1);
+    \node[below] at (-3.1416,0) {$-\pi/a$};
+    \node[below] at (3.1416,0) {$\pi/a$};
+    \draw[densely dotted] (-3.1416,1)--(3.1416,1);
+    \node[above left] at (0,1) {$\omega_0$};
+\end{tikzpicture}
+\captionof{figure}{Закон дисперсии цепочки. Частоте $\omega<\omega_0$
+отвечают два корня $\pm k_0$.}
+\end{rbox}
+
+Используем свойство дельта-функции
+\[
+    \delta(f(x))=\sum_n\frac{\delta(x-x_n)}{|f'(x_n)|},\qquad f(x_n)=0.
+\]
+Корни $\pm k_0$ находятся из $\sin(k_0a/2)=\omega/\omega_0$, и в них
+\[
+    |f'(k_0)|=\frac{\omega_0a}2\cos\frac{k_0a}2
+       =\frac a2\sqrt{\omega_0^2-\omega^2}.
+\]
+Два корня дают одинаковый вклад:
+\[
+    g_{1\mathrm D}(\omega)=\frac{2L}{2\pi}\int_0^{\pi/a}
+       \delta\left(\omega-\omega_0\sin\frac{ka}2\right)dk
+     =\frac{2L}{\pi a\sqrt{\omega_0^2-\omega^2}},
+     \qquad 0<\omega<\omega_0.
+\]
+Проверка нормировки: $\int_0^{\omega_0}g\,d\omega
+=\frac{2L}{\pi a}\cdot\frac\pi2=\frac La=N$.
+При $\omega\ll\omega_0$ получается $g\to2L/(\pi a\omega_0)=L/(\pi v_0)$
+с $v_0=\omega_0a/2$, как и для линейного спектра.
+На краю зоны $g$ имеет интегрируемую особенность
+\rconcept{ван Хова}: там групповая скорость обращается в нуль.
+
+\subsection*{Энергия цепочки}
+
+Подставляя плотность состояний и вводя $z=\hbar\omega/T$,
+$z_0=\hbar\omega_0/T$:
+\[
+    E=\int_0^{\omega_0}\frac{\hbar\omega}{e^{\hbar\omega/T}-1}\,
+       \frac{2L\,d\omega}{\pi a\sqrt{\omega_0^2-\omega^2}}
+     =\frac{2LT}{\pi a}\int_0^{z_0}
+       \frac{z\,dz}{\sqrt{z_0^2-z^2}\,(e^z-1)}.
+\]
+Здесь опущена не зависящая от температуры нулевая энергия.
+Анализ этого интеграла --- на следующем занятии.
+
+\end{document}
