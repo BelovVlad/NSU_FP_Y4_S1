@@ -16,11 +16,15 @@
   }
   function status(rules,counts,time){
     const rows=rules.series.map(s=>{
-      const due=Math.max(0,Math.floor((time-firstDeadline(s,rules))/(7*DAY))+1);
+      const passed=Math.max(0,Math.floor((time-firstDeadline(s,rules))/(7*DAY))+1);
+      // Cancelled lessons are never owed, neither before nor after their deadline.
+      const cancelled=s.cancelled||[];
+      const due=passed-cancelled.filter(date=>firstDeadline({firstDate:date},rules)<=time).length;
       const actual=counts[s.id]||0;
-      const deadline=firstDeadline(s,rules)+due*7*DAY;
+      const deadline=firstDeadline(s,rules)+passed*7*DAY;
       const lessonEnd=firstLessonEnd(s,rules);
-      const waiting=lessonEnd!==null&&time>=lessonEnd+due*7*DAY&&time<deadline&&actual<due+1;
+      const next=new Date(Date.parse(s.firstDate+'T00:00:00Z')+passed*7*DAY).toISOString().slice(0,10);
+      const waiting=lessonEnd!==null&&!cancelled.includes(next)&&time>=lessonEnd+passed*7*DAY&&time<deadline&&actual<due+1;
       return {...s,due,actual,waiting,waitingUntil:waiting?deadline:null,
         sectionComplete:actual>0&&actual>=due};
     });
@@ -34,7 +38,7 @@
   }
   function calculate(history,now=Date.now()){
     const rules=history.rules;
-    if(rules.series.length!==8)throw new Error('Karma requires eight tracked series');
+    if(!rules.series.length)throw new Error('Karma requires tracked series');
     const snapshots=history.snapshots.map(s=>({...s,time:Date.parse(s.at)})).filter(s=>s.time<=now).sort((a,b)=>a.time-b.time);
     if(!snapshots.length)throw new Error('No karma history for this date');
     const begin=snapshots[0].time;
@@ -86,7 +90,7 @@
       hadDebt=debt;
     }
     const today=dayStart(now-rules.deadlineHour*3600000,rules);
-    // Share of sections repaid since all eight were in debt today; null when no flower is in reach.
+    // Share of sections repaid since all tracked sections were in debt today; null when no flower is in reach.
     const flowerProgress=hadDebt&&allDebtDay===today&&lastFlowerDay!==today
       ?rows.filter(row=>row.actual>=row.due).length/rows.length:null;
     return {level,raw:rows.filter(row=>row.complete).length,rows,shield,protectedUntil,flowerProgress,

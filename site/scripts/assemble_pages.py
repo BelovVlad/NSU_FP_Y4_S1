@@ -6,7 +6,7 @@ The published layout is the one the site has always had:
     <subject>/*   -> /<subject>/  (course materials the viewers open)
 
 Only tracked files are published. Like Jekyll before, names starting with
-'.', '_' or '#' are skipped, and HIDDEN stays in git but off the site.
+'.', '_' or '#' are skipped, and HIDDEN and HIDDEN_FOLDERS stay in git but off the site.
 
     python site/scripts/assemble_pages.py _site
 """
@@ -16,8 +16,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-# Same list as HIDDEN_SITE_PATHS in build_search_index.py.
+# Same lists as HIDDEN_SITE_PATHS and HIDDEN_SITE_FOLDERS in build_search_index.py.
 HIDDEN = {'ФЭЧ/04_Литератру/PhysRevD.pdf'}
+HIDDEN_FOLDERS = ('ФиХАиМ/01_Лекции/', 'ФКСВ/01_Лекции/')
 # Repository service files outside site/ that are not part of the site.
 SERVICE = {'giscus.json'}
 
@@ -27,7 +28,7 @@ def published_path(path):
         return 'docs/' + path.removeprefix('site/web/')
     if path.startswith('site/root/'):
         return path.removeprefix('site/root/')
-    if path.startswith('site/') or path in SERVICE or path in HIDDEN:
+    if path.startswith('site/') or path in SERVICE or path in HIDDEN or path.startswith(HIDDEN_FOLDERS):
         return None
     return path
 

@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "site" / "web" / "search-index"
 ORDER = ["ОВФ", "СВЧ", "ТДиСФ", "ФКСВ", "ФЭЧ", "ФиХАиМ", "КМ", "База", "ДЛ"]
 HIDDEN_SITE_PATHS = {"ФЭЧ/04_Литератру/PhysRevD.pdf"}
+# Whole folders kept in git but off the site (same list in assemble_pages.py).
+HIDDEN_SITE_FOLDERS = ("ФиХАиМ/01_Лекции/", "ФКСВ/01_Лекции/")
 
 
 def clean_text(text: str) -> str:
@@ -240,7 +242,7 @@ def iter_materials(subject: str):
         if not full.is_file():
             continue
         rel = full.relative_to(ROOT)
-        if rel.as_posix() in HIDDEN_SITE_PATHS:
+        if rel.as_posix() in HIDDEN_SITE_PATHS or rel.as_posix().startswith(HIDDEN_SITE_FOLDERS):
             continue
         if subject == "База" and is_qm_path(rel):
             continue
@@ -683,6 +685,8 @@ def build_structure(generated_at: str) -> None:
         if subject == "КМ":
             continue
         for folder, label in (("01_Лекции", "Лекции"), ("02_Семинары", "Семинары")):
+            if f"{subject}/{folder}/" in HIDDEN_SITE_FOLDERS:
+                continue
             group = structured_group(subject, folder, label)
             if group:
                 groups.append(group)

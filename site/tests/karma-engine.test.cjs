@@ -1,11 +1,11 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {calculate,graceEnd}=require('../web/Karma/karma-engine.js');
+const {calculate,graceEnd,status}=require('../web/Karma/karma-engine.js');
 const base=require('../web/Karma/rules.json');
 const at=s=>Date.parse(s+'+07:00');
-const rules={...base,series:base.series.map(s=>({...s,firstDate:'2026-09-07'}))};
+const rules={...base,series:base.series.map(({cancelled,...s})=>({...s,firstDate:'2026-09-07'}))};
 const counts=n=>Object.fromEntries(rules.series.map(s=>[s.id,n]));
-// Debts in seven of eight sections: never enough for a flower.
+// Debts in all sections but one: never enough for a flower.
 const partialDebt=()=>({...counts(0),[rules.series[0].id]:100});
 const snapshot=(when,n)=>({at:new Date(at(when)).toISOString(),counts:typeof n==='number'?counts(n):n});
 const history=(...snapshots)=>({rules,snapshots:snapshots.flat(2)});
@@ -43,7 +43,7 @@ test('one daily loss regardless of number of debts; minimum one',()=>{
     assert.equal(calculate(h,at('2026-10-01T09:00:00')).shield,false);
   }
 });
-test('repaying debts in all eight sections the same day earns flower and an increase',()=>{
+test('repaying debts in all sections the same day earns flower and an increase',()=>{
   const c=counts(0);c[rules.series[0].id]=100;
   const h=history(snapshot('2026-09-08T09:00:00',0),snapshot('2026-09-08T12:00:00',c),snapshot('2026-09-08T18:00:00',100));
   assert.equal(calculate(h,at('2026-09-08T17:00:00')).shield,false);
@@ -96,7 +96,7 @@ test('flower progress counts repaid sections only while a flower is in reach',()
   const half=counts(0);rules.series.slice(0,4).forEach(s=>half[s.id]=100);
   const h=history(snapshot('2026-09-08T09:00:00',0),snapshot('2026-09-08T11:00:00',half),snapshot('2026-09-08T18:00:00',100));
   assert.equal(calculate(h,at('2026-09-08T10:00:00')).flowerProgress,0);
-  assert.equal(calculate(h,at('2026-09-08T11:00:00')).flowerProgress,.5);
+  assert.equal(calculate(h,at('2026-09-08T11:00:00')).flowerProgress,4/rules.series.length);
   assert.equal(calculate(h,at('2026-09-08T18:00:00')).flowerProgress,null);
   assert.equal(calculate(history(snapshot('2026-09-08T09:00:00',partialDebt())),at('2026-09-08T10:00:00')).flowerProgress,null);
 });
@@ -136,7 +136,7 @@ test('waiting after lesson is not overdue before 09:00',()=>{
   assert.equal(calculate(h,at('2026-09-15T09:00:00')).level,0);
 });
 test('surplus notes cannot repay debt in another section',()=>{
-  const c=counts(0);c['fiham-lectures']=100;
+  const c=counts(0);c['tdisf-lectures']=100;
   const r=calculate(history(snapshot('2026-09-08T09:00:00',c)),at('2026-09-09T09:00:00'));
   assert.equal(r.level,0);assert.equal(r.raw,1);assert.equal(r.shield,false);
 });
@@ -151,4 +151,13 @@ test('replay is deterministic after long absence and includes every day',()=>{
   assert.deepEqual(result,calculate(JSON.parse(JSON.stringify(h)),at('2026-10-01T09:00:00')));
   assert.equal(result.level,3);
   assert.equal(result.nextDeadline,at('2026-10-02T09:00:00'));
+});
+test('a cancelled lesson is never owed and is not awaited',()=>{
+  const series={...rules.series[0],cancelled:['2026-09-14']};
+  const r={...rules,series:[series]};
+  // Lessons on 09-07 and 09-14 have passed; only the first one is owed.
+  const [row]=status(r,{[series.id]:1},at('2026-09-15T10:00:00'));
+  assert.equal(row.due,1);assert.equal(row.actual,1);
+  const [during]=status(r,{[series.id]:1},at('2026-09-14T20:00:00'));
+  assert.equal(during.waiting,false);assert.equal(during.due,1);
 });

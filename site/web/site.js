@@ -1382,7 +1382,7 @@ else{state.view='home';setActiveNav('home')}
         document.head.appendChild(karmaCss);
       }
 
-      const scripts=['Karma/karma-engine.js?v=d99288a7f9','Karma/karma-animation.js?v=13d12977d6','Karma/karma-view.js?v=3b8edbad36','secret-dashboard.js?v=92564a7fe1'];
+      const scripts=['Karma/karma-engine.js?v=0de51c35ce','Karma/karma-animation.js?v=13d12977d6','Karma/karma-view.js?v=1801aa11c3','secret-dashboard.js?v=f7cd51fbaa'];
       Promise.all(scripts.map(src=>new Promise((loaded,failed)=>{
         const script=document.createElement('script');
         script.src=src;script.async=true;script.dataset.secretDashboard='1';

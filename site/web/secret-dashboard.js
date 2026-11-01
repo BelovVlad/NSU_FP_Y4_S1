@@ -8,10 +8,9 @@
     {subject:'ОВФ', section:'Лекции', label:'Лекции', weekday:2, start:'12:40', end:'14:15', firstDate:'2026-09-01'},
     {subject:'ТДиСФ', section:'Лекции', label:'Лекции', weekday:5, start:'10:50', end:'12:25', firstDate:'2026-09-04'},
     {subject:'ТДиСФ', section:'Семинары', label:'Семинары', weekday:5, start:'12:40', end:'14:15', firstDate:'2026-09-04'},
-    {subject:'ФКСВ', section:'Семинары', label:'Семинары', weekday:6, start:'12:40', end:'14:15', firstDate:'2026-09-05'},
+    {subject:'ФКСВ', section:'Семинары', label:'Семинары', weekday:6, start:'12:40', end:'14:15', firstDate:'2026-09-05', cancelled:['2026-10-31']},
     {subject:'ФЭЧ', section:'Семинары', label:'Семинары', weekday:4, start:'09:20', end:'10:55', firstDate:'2026-09-03'},
     {subject:'ФЭЧ', section:'Лекции', label:'Лекции', weekday:4, start:'11:00', end:'12:35', firstDate:'2026-09-03'},
-    {subject:'ФиХАиМ', section:'Лекции', label:'Лекции', weekday:2, start:'14:30', end:'16:05', firstDate:'2026-09-01'},
     {subject:'ФиХАиМ', section:'Семинары', label:'Семинары', weekday:2, start:'16:20', end:'17:55', firstDate:'2026-09-01'}
   ];
 
@@ -177,6 +176,7 @@
   function occurrenceState(series,now){
     const dates=[];
     for(let d=series.firstDate;d<=now.date;d=addDays(d,7)){
+      if(series.cancelled?.includes(d))continue;
       if(d<now.date||(d===now.date&&now.minutes>=minutes(series.end)))dates.push(d);
     }
     return {due:dates.length,dates};
@@ -185,6 +185,7 @@
     let d=series.firstDate;
     while(d<now.date)d=addDays(d,7);
     if(d===now.date&&now.minutes>minutes(series.end))d=addDays(d,7);
+    while(series.cancelled?.includes(d))d=addDays(d,7);
     return d;
   }
   function buildStats(data){

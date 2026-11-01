@@ -39,7 +39,7 @@ class KarmaBrowserTests(unittest.TestCase):
         page.clock.install(time=datetime(2026,9,26,7,tzinfo=timezone.utc))
         page.route('https://**/*', lambda route: route.abort())
         rules=json.loads((WEB/'Karma/rules.json').read_text('utf-8'))
-        totals=[4,2,2,2,3,2,4,2]
+        totals=[4,2,2,2,3,2,2]
         counts={s['id']:n for s,n in zip(rules['series'],totals)}
         structure={'groups':[{'subject':s['subject'],'section':s['section'],'items':[{}]*n} for s,n in zip(rules['series'],totals)]}
         history={'rules':rules,'currentCounts':counts,'snapshots':[{'at':'2026-09-25T12:00:00+07:00','counts':counts}]}
@@ -65,14 +65,14 @@ class KarmaBrowserTests(unittest.TestCase):
         self.assertFalse(any('UIArp' in url for url in requests))
         self.assertEqual(page.locator('.karma-subject.complete').filter(has_text='ФиХАиМ').count(),0)
         fiham=page.locator('.karma-subject').filter(has_text='ФиХАиМ')
-        self.assertEqual(fiham.locator('b').inner_text(),'6 / 8')
-        self.assertIn('Лекции + Семинары',fiham.inner_text())
+        self.assertEqual(fiham.locator('b').inner_text(),'2 / 4')
+        self.assertEqual(fiham.locator('small').inner_text(),'Семинары')
         self.assertNotIn('долг по предмету',page.locator('.karma-series').inner_text())
         self.assertNotIn('долг',fiham.get_attribute('title'))
         self.assertEqual(page.locator('.karma-display').get_attribute('aria-label'),'Карма 1 из 10')
         self.assertEqual(page.locator('.karma-status').text_content(),'')
         self.assertTrue(page.locator('.karma-status').is_hidden())
-        for subject,total in [('ТДиСФ','4 / 8'),('ФЭЧ','5 / 8'),('ФиХАиМ','6 / 8')]:
+        for subject,total in [('ТДиСФ','4 / 8'),('ФЭЧ','5 / 8')]:
             row=page.locator('.karma-subject').filter(has_text=subject)
             self.assertEqual(row.locator('small').inner_text(),'Лекции + Семинары')
             self.assertEqual(row.locator('b').inner_text(),total)
@@ -154,7 +154,7 @@ class KarmaBrowserTests(unittest.TestCase):
           const fill=count=>Object.fromEntries(rules.series.map(s=>[s.id,count]));
           const partial={...fill(0),[rules.series[0].id]:100};
           const iso=time=>new Date(time).toISOString();
-          // One debt in seven sections and its full repayment on each of the last n days.
+          // One debt in all sections but one and its full repayment on each of the last n days.
           const climb=n=>Array.from({length:n},(_,k)=>[{at:iso(now-(n-k)*day),counts:partial},
             {at:iso(now-(n-k)*day+3600000),counts:fill(100)}]).flat();
           const read=snapshots=>{
@@ -167,9 +167,9 @@ class KarmaBrowserTests(unittest.TestCase):
           const states={initial:read([{at:iso(now-day/2),counts:fill(0)}]),oneDay:read(climb(1)),
             all:read([{at:iso(now-day),counts:fill(100)}]),beforeTop:read(climb(14)),top:read(climb(15))};
           const counts=Object.fromEntries(rules.series.map(s=>[s.id,0]));
-          counts['fiham-lectures']=6;counts['fiham-seminars']=2;
+          counts['tdisf-lectures']=6;counts['tdisf-seminars']=2;
           view.render(KarmaEngine.calculate({rules,snapshots:[{at:new Date(now).toISOString(),counts}]},now),now);
-          const subject=[...host.querySelectorAll('.karma-subject')].find(el=>el.textContent.includes('ФиХАиМ'));
+          const subject=[...host.querySelectorAll('.karma-subject')].find(el=>el.textContent.includes('ТДиСФ'));
           states.surplus={count:subject.querySelector('b').textContent,complete:subject.classList.contains('complete')};
           view.stop();return states;
         }""")

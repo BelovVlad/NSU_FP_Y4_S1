@@ -31,7 +31,10 @@
       "subject": "ФКСВ",
       "section": "Семинары",
       "firstDate": "2026-09-05",
-      "end": "14:15"
+      "end": "14:15",
+      "cancelled": [
+        "2026-10-31"
+      ]
     },
     {
       "id": "fech-seminars",
@@ -46,13 +49,6 @@
       "section": "Лекции",
       "firstDate": "2026-09-03",
       "end": "12:35"
-    },
-    {
-      "id": "fiham-lectures",
-      "subject": "ФиХАиМ",
-      "section": "Лекции",
-      "firstDate": "2026-09-01",
-      "end": "16:05"
     },
     {
       "id": "fiham-seminars",
