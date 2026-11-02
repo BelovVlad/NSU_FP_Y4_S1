@@ -52,8 +52,8 @@
 .app-manager-btn.danger{color:#e8a9ad}
 .app-manager-btn:disabled{opacity:.55;cursor:default}
 .app-manager-note{margin:9px 0 0!important;color:#8999a4!important;font-size:11px!important;line-height:1.5!important}
-.app-manager-progress{height:7px;margin-top:10px;overflow:hidden;border-radius:999px;background:#202b34}
-.app-manager-progress>span{display:block;width:0;height:100%;background:var(--accent,#d45d68);transition:width .18s linear}
+.app-manager-progress{position:relative;isolation:isolate;height:16px;margin-top:10px;overflow:hidden;border-radius:999px;background:#202b34}
+.app-manager-progress>span{display:block;width:0;height:100%;background:var(--accent,#d45d68);opacity:.28;transition:width .18s linear}
 .app-manager-status{min-height:18px;margin-top:7px;color:#9eabb4;font-size:11px;line-height:1.45}
 .app-manager-storage{font-variant-numeric:tabular-nums}
 
