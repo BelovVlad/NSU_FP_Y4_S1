@@ -1486,6 +1486,32 @@ else{state.view='home';setActiveNav('home')}
     node.addEventListener('touchend',end);
     node.addEventListener('touchcancel',()=>{start=null;reset()});
   }
+
+  // Phones: a horizontal swipe on the page moves to the neighbouring tab — sections of a subject
+  // (Лекции, Семинары, …, Литература) and Литература / Доп. литература. Strips that scroll sideways
+  // themselves (the tab bar, inputs, the preview) keep their gestures.
+  let swipe=null;
+  const own='.tabs,.literature-tabs,input,textarea,select,iframe,.workspace-resizer,.preview-panel,pre,table';
+  main.addEventListener('touchstart',event=>{
+    if(!isPhoneLayout()||event.touches.length!==1||event.target.closest(own)){swipe=null;return}
+    const t=event.touches[0];swipe={x:t.clientX,y:t.clientY,time:event.timeStamp};
+  },{passive:true});
+  main.addEventListener('touchcancel',()=>{swipe=null});
+  main.addEventListener('touchend',event=>{
+    if(!swipe)return;
+    const t=event.changedTouches[0],dx=t.clientX-swipe.x,dy=t.clientY-swipe.y,quick=event.timeStamp-swipe.time<700;
+    swipe=null;
+    if(!quick||Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.8)return;
+    const tabs=[...main.querySelectorAll('.tabs .tab, .literature-tabs .literature-tab')];
+    const index=tabs.findIndex(b=>b.classList.contains('active'));
+    const next=index<0?null:tabs[index+(dx<0?1:-1)];
+    if(!next)return;
+    next.click();
+    // The tabs are drawn anew: bring the active one into view and slide the content in from the swipe side.
+    main.querySelector('.tabs .tab.active')?.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
+    const content=main.querySelector('.workspace, .links-panel, .filtered-list');
+    if(content){content.classList.remove('swipe-next','swipe-prev');void content.offsetWidth;content.classList.add(dx<0?'swipe-next':'swipe-prev')}
+  });
 })();
 
 loadMeta();

@@ -411,6 +411,26 @@ class SiteTests(unittest.TestCase):
         finally:
             phone.close()
 
+    def test_phone_swipe_moves_between_tabs(self):
+        self.page.set_viewport_size({'width':390,'height':844})
+        self.home()
+        self.page.evaluate("state.literatureTab='main';renderLiterature()")
+        swipe="""([selector,dx])=>{const node=document.querySelector(selector),r=node.getBoundingClientRect();
+            const at=x=>new Touch({identifier:1,target:node,clientX:x,clientY:r.top+10});
+            const x0=r.left+r.width/2;
+            node.dispatchEvent(new TouchEvent('touchstart',{bubbles:true,touches:[at(x0)],changedTouches:[at(x0)]}));
+            node.dispatchEvent(new TouchEvent('touchend',{bubbles:true,touches:[],changedTouches:[at(x0+dx)]}));}"""
+        self.page.evaluate(swipe,['.search-title',-140])
+        self.assertEqual(self.page.evaluate('state.literatureTab'),'additional')
+        self.assertTrue(self.page.evaluate("document.querySelector('.filtered-list').classList.contains('swipe-next')"))
+        self.page.evaluate(swipe,['.search-title',140])
+        self.assertEqual(self.page.evaluate('state.literatureTab'),'main')
+        # The tab bar keeps its own sideways scroll; a short or slow move does nothing.
+        self.page.evaluate(swipe,['.literature-tabs',-140])
+        self.page.evaluate(swipe,['.search-title',-30])
+        self.assertEqual(self.page.evaluate('state.literatureTab'),'main')
+        self.assertEqual(self.errors,[])
+
     def test_mobile_pdf_search_highlights_in_continuous_mode(self):
         self.page.set_viewport_size({'width':390,'height':844})
         self.pdf()
