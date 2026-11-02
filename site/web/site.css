@@ -1160,5 +1160,3 @@ body{
 .swipe-prev{animation:swipe-prev .3s cubic-bezier(.22,.9,.24,1)}
 @media(prefers-reduced-motion:reduce){.swipe-next,.swipe-prev{animation:none}}
 
-/* The PDF loader keeps a field of dots behind its text (dots.js). */
-#pdfFullscreenLoader{isolation:isolate}
