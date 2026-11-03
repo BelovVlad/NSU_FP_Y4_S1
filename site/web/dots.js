@@ -335,12 +335,6 @@
   }
   const animate = () => settings.show !== 'off' && !still.matches;
 
-  // Arrival (the Diploma gate lets the materials in under a cover): the snippet in the page's <head> hid it
-  // (.dots-arrive) until this cover is up.
-  let arrived = 0;
-  try { arrived = +sessionStorage.getItem('hyle.arrive') || 0; sessionStorage.removeItem('hyle.arrive'); } catch {}
-  if (Date.now() - arrived < 4000 && animate()) sweep(null, { kind: 'reveal', fixed: true, duration: 650 });
-  document.documentElement.classList.remove('dots-arrive');
   // Back to a page kept in the browser's memory: it must not stay under the cover.
   addEventListener('pageshow', event => { if (event.persisted) for (const c of document.querySelectorAll('.dots-sweep')) c.remove(); });
 
