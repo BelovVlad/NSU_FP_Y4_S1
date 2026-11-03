@@ -69,12 +69,11 @@
   const SHOW = { hover: 'При наведении', always: 'Всегда', off: 'Выключены' };
 
   // Shared settings.
-  const KEY = 'hyle.dots.v1', DEFAULTS = { wave: 'drift', show: 'hover', gap: 13, speed: 1, transitions: true };
+  const KEY = 'hyle.dots.v1', DEFAULTS = { wave: 'drift', show: 'hover', gap: 13, speed: 1 };
   const clamp = (v, lo, hi, d) => Number.isFinite(+v) ? Math.min(hi, Math.max(lo, +v)) : d;
   const normalize = raw => ({
     wave: raw.wave in WAVES || raw.wave === 'random' ? raw.wave : DEFAULTS.wave, show: raw.show in SHOW ? raw.show : DEFAULTS.show,
-    gap: Math.round(clamp(raw.gap, 8, 18, DEFAULTS.gap)), speed: clamp(raw.speed, .25, 2, DEFAULTS.speed),
-    transitions: typeof raw.transitions === 'boolean' ? raw.transitions : DEFAULTS.transitions });
+    gap: Math.round(clamp(raw.gap, 8, 18, DEFAULTS.gap)), speed: clamp(raw.speed, .25, 2, DEFAULTS.speed) });
   function load() {
     try { return normalize(JSON.parse(localStorage.getItem(KEY) || '{}') || {}); } catch { return { ...DEFAULTS }; }
   }
@@ -334,23 +333,10 @@
     draw(began);
     return canvas;
   }
-  const animate = () => settings.transitions && settings.show !== 'off' && !still.matches;
+  const animate = () => settings.show !== 'off' && !still.matches;
 
-  // Moving between the Hyle sites (hub, NSU, Department, Diploma — one origin): the page sinks under a wave of
-  // dots from the top, and the next site comes up from under it. Only a plain click on a link that stays in the window.
-  const ROOTS = ['NSU_FP_Y4_S1', 'Department', 'diploma'];
-  const siteOf = url => { const first = decodeURIComponent(url.pathname.split('/')[1] || ''); return ROOTS.includes(first) ? first : ''; };
-  document.addEventListener('click', event => {
-    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || !animate()) return;
-    const link = event.target.closest?.('a[href]');
-    if (!link || (link.target && link.target !== '_self') || link.hasAttribute('download')) return;
-    const url = new URL(link.href, location.href);
-    if (url.origin !== location.origin || siteOf(url) === siteOf(location)) return;
-    event.preventDefault();
-    try { sessionStorage.setItem('hyle.arrive', String(Date.now())); } catch {}
-    sweep(null, { kind: 'cover', fixed: true, duration: 450, done: () => location.assign(url.href) });
-  });
-  // Arrival: the snippet in the page's <head> hid it (.dots-arrive) until this cover is up.
+  // Arrival (the Diploma gate lets the materials in under a cover): the snippet in the page's <head> hid it
+  // (.dots-arrive) until this cover is up.
   let arrived = 0;
   try { arrived = +sessionStorage.getItem('hyle.arrive') || 0; sessionStorage.removeItem('hyle.arrive'); } catch {}
   if (Date.now() - arrived < 4000 && animate()) sweep(null, { kind: 'reveal', fixed: true, duration: 650 });
