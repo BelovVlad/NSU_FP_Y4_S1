@@ -1,5 +1,5 @@
 /* Change SHELL_VERSION when changing the application shell. Material caches survive updates. */
-const SHELL_VERSION = 'afe8141bd8';
+const SHELL_VERSION = '53352be003';
 const BASE = new URL('./', self.location);
 const ROOT = new URL('../', BASE);
 const PREFIX = 'nsu-app-' + BASE.pathname + '-';
@@ -7,11 +7,11 @@ const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
 const HTML_WAIT = 4000;
-const CORE = ['index.html', 'site.css?v=ce4cd70474', 'site.js?v=c9418ceabe', 'app.js?v=09c610785d', 'app.css?v=9aaafa299d', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=a679564c38', 'manifest.webmanifest?v=78bf5d5133',
+const CORE = ['index.html', 'site.css?v=ce4cd70474', 'site.js?v=04f9b3d6d8', 'app.js?v=ecfa34c436', 'app.css?v=9aaafa299d', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=a679564c38', 'manifest.webmanifest?v=78bf5d5133',
   'Overseer/overseer.js?v=c6c82cab8a', 'Overseer/overseer.css?v=3c70ee01aa',
   'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
   'Overseer/assets/miscDangerSymbol.png', 'Overseer/assets/keyArrowA.png', 'Overseer/assets/keyXA.png', 'Overseer/assets/noise.png',
-  'dots.js?v=cd27f1f055', 'search-worker.js?v=32d5520b7c', 'notebook/viewer.html', 'notebook/viewer.css?build=286b961300', 'notebook/outline.js?build=d72f570ee4',
+  'dots.js?v=cd27f1f055', 'search-worker.js?v=32d5520b7c', 'notebook/viewer.html', 'notebook/code.html', 'notebook/viewer.css?build=30ef103226', 'notebook/outline.js?build=d72f570ee4',
   'pdfjs/viewer.html', 'pdfjs/viewer.css?v=816b9be83e', 'pdfjs/viewer.js?v=0c1310fc04', 'pdfjs/icons.js?v=c6753488af', 'pdfjs/pdf-tone.js?v=37583b871e',
   'pdfjs/search-text.js?v=3770976b57', 'fonts/roboto-condensed-cyrillic-wght-normal.woff2', 'fonts/roboto-condensed-latin-wght-normal.woff2', 'fonts/roboto-condensed-latin-ext-wght-normal.woff2', 'pdfjs/material-paths.js?v=ca1e61a965', 'pdfjs/renamed-materials.js?v=b94bf2d584', 'pdfjs/controls.css?v=87cc11725e', 'pdfjs/notes.js?v=01d30fc6e0', 'pdfjs/notes.css?v=dd61ee64c9', 'assets/nsu-fp-emblem.webp',
   'assets/app-192.png?v=f299e7a63c', 'assets/app-512.png?v=9f41a6f2fa', 'particles/index.html', 'particles/particles.js',
@@ -21,7 +21,10 @@ const absolute = path => new URL(path, BASE).href;
 const local = url => url.origin === BASE.origin && url.pathname.startsWith(ROOT.pathname);
 const pdfUrl = url => /\.pdf$/i.test(url.pathname) && (local(url) ||
   url.origin === 'https://media.githubusercontent.com' && url.pathname.startsWith('/media/BelovVlad/NSU_FP_Y4_S1/main/'));
-const notebookUrl = url => local(url) && /\.ipynb$/i.test(url.pathname);
+// Notebooks and code files (notebook/code.html) are kept like notebooks.
+const codeUrl = url => /\.(py|c|h|cc|cpp|cxx|hpp|hh|sh|ps1|js|mjs|json|ya?ml|toml|ini|cfg|md|txt|m|jl|wl|tex|r)$|\/makefile$/i.test(url.pathname) &&
+  !url.pathname.startsWith(new URL(BASE).pathname);
+const notebookUrl = url => local(url) && (/\.ipynb$/i.test(url.pathname) || codeUrl(url));
 const library = url => url.origin === 'https://cdn.jsdelivr.net' &&
   /^\/npm\/(mathjax@3\.2\.2|marked@12\.0\.2|dompurify@3\.1\.6|highlight\.js@11\.9\.0)\//.test(url.pathname) ||
   url.origin === 'https://cdnjs.cloudflare.com' && url.pathname.startsWith('/ajax/libs/highlight.js/11.9.0/');
@@ -176,7 +179,7 @@ async function savePdf(message) {
   let url = new URL(message.url);
   const isNotebook=notebookUrl(url);
   const viewer = new URL(message.viewer);
-  if(!(pdfUrl(url)||isNotebook) || viewer.origin !== BASE.origin || viewer.pathname !== new URL(isNotebook?'notebook/viewer.html':'pdfjs/viewer.html',BASE).pathname)
+  if(!(pdfUrl(url)||isNotebook) || viewer.origin !== BASE.origin || viewer.pathname !== new URL(codeUrl(url)?'notebook/code.html':isNotebook?'notebook/viewer.html':'pdfjs/viewer.html',BASE).pathname)
     throw new Error('Некорректная ссылка на материал.');
   viewer.searchParams.delete('embed');
   viewer.searchParams.delete('full');

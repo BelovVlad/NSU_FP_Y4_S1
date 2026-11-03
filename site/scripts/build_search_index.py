@@ -231,6 +231,40 @@ def notebook_record(rel: Path) -> dict:
     return record
 
 
+# Code files open in notebook/code.html; their type is the extension, hits point to lines.
+CODE_SUFFIXES = {
+    ".py", ".c", ".h", ".cc", ".cpp", ".cxx", ".hpp", ".hh", ".sh", ".ps1", ".js", ".mjs", ".json", ".yaml", ".yml",
+    ".toml", ".ini", ".cfg", ".md", ".txt", ".m", ".jl", ".wl", ".tex", ".r",
+}
+CODE_CHUNK = 30  # lines per searchable piece
+
+
+def is_code(rel: Path) -> bool:
+    # link.md is a subject's list of links (site.js «Ссылки»), not a material.
+    if rel.name.lower() == "link.md":
+        return False
+    return rel.suffix.lower() in CODE_SUFFIXES or rel.name.lower() == "makefile"
+
+
+def code_record(rel: Path) -> dict:
+    full = ROOT / rel
+    record = base_record(rel, rel.suffix.lower().lstrip(".") or rel.name.lower())
+    record.pop("_pointer", None)
+    record["title"] = rel.name
+    record["line_count"] = None
+    try:
+        lines = full.read_text("utf-8").splitlines()
+        record["line_count"] = len(lines)
+        for start in range(0, len(lines), CODE_CHUNK):
+            text = clean_text(" ".join(lines[start:start + CODE_CHUNK]))
+            if text:
+                record["pages"].append({"n": start + 1, "t": text})
+    except Exception as exc:
+        record["indexed"] = False
+        record["reason"] = type(exc).__name__
+    return record
+
+
 def iter_materials(subject: str):
     if subject == "КМ":
         base = ROOT / "База" / "КМ"
@@ -249,7 +283,7 @@ def iter_materials(subject: str):
         if "LaTeX" in rel.parts or ".ipynb_checkpoints" in rel.parts:
             continue
         suffix = full.suffix.lower()
-        if suffix in {".pdf", ".ipynb"}:
+        if suffix in {".pdf", ".ipynb"} or is_code(rel):
             yield rel
 
 def compact_metadata(record: dict) -> dict:
@@ -266,6 +300,7 @@ def compact_metadata(record: dict) -> dict:
         "page_count",
         "page_sizes",
         "cell_count",
+        "line_count",
         "indexed",
         "reason",
     )
@@ -713,7 +748,8 @@ def main() -> None:
     for shard_no, subject in enumerate(ORDER):
         records = []
         for rel in iter_materials(subject) or []:
-            record = pdf_record(rel) if rel.suffix.lower() == ".pdf" else notebook_record(rel)
+            suffix = rel.suffix.lower()
+            record = pdf_record(rel) if suffix == ".pdf" else notebook_record(rel) if suffix == ".ipynb" else code_record(rel)
             records.append(record)
             all_metadata.append(compact_metadata(record))
 

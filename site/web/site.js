@@ -137,9 +137,13 @@ function sortedEntries(items){
   return out;
 }
 function githubUrl(f){return 'https://github.com/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(f.path)}
+// Code files (Python, C++, Makefile…) open in notebook/code.html, the notebook reader's frame for plain text.
+const CODE_FILE=/\.(py|c|h|cc|cpp|cxx|hpp|hh|sh|ps1|js|mjs|json|ya?ml|toml|ini|cfg|md|txt|m|jl|wl|tex|r)$|(^|\/)makefile$/i;
+const isCodeFile=f=>CODE_FILE.test(f.path);
+const isReaderFile=f=>f.ext==='.ipynb'||isCodeFile(f);
 function notebookUrl(f,cell=0,titleOverride='',embed=false){
   if(f.path==='База/Частицы.ipynb')return 'particles/';
-  let url='notebook/viewer.html?build=13&file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
+  let url=(isCodeFile(f)?'notebook/code.html?':'notebook/viewer.html?build=13&')+'file='+encodeURIComponent(f.path)+'&subject='+encodeURIComponent(subjectOf(f))+'&title='+encodeURIComponent(titleOverride||niceName(f));
   if(cell)url+='&cell='+encodeURIComponent(cell);
   if(fileMeta(f).version)url+='&v='+encodeURIComponent(fileMeta(f).version);
   const theme=currentPdfTheme();if(theme)url+='&theme='+encodeURIComponent(theme);
@@ -422,7 +426,7 @@ async function openPdfFullscreen(url,title='PDF'){
   const themed=new URL(url,location.href);
   const theme=currentPdfTheme();
   if(theme)themed.searchParams.set('theme',theme);else themed.searchParams.delete('theme');
-  const isNotebook=themed.pathname.includes('/notebook/viewer.html');
+  const isNotebook=themed.pathname.includes('/notebook/'),isCode=themed.pathname.endsWith('/notebook/code.html');
   if(isNotebook){themed.searchParams.delete('embed');themed.searchParams.set('full','1')}
 
   // This is deliberately an in-app fixed overlay, not the browser Fullscreen API.
@@ -437,7 +441,7 @@ async function openPdfFullscreen(url,title='PDF'){
   pdfFullscreen.classList.add('open');
   pdfFullscreen.setAttribute('aria-hidden','false');
   document.body.classList.add('pdf-open');
-  if(pdfFullscreenLoaderText)pdfFullscreenLoaderText.textContent=isNotebook?'Открываю Notebook…':'Открываю PDF…';
+  if(pdfFullscreenLoaderText)pdfFullscreenLoaderText.textContent=isCode?'Открываю файл…':isNotebook?'Открываю Notebook…':'Открываю PDF…';
 
   requestAnimationFrame(()=>{
     try{
@@ -591,7 +595,7 @@ function entryRows(group){
 
 function preview(f,entry=null){
   if(!f)return '<aside class="panel preview-panel"><div class="preview-placeholder"><div><div class="big">Выберите материал</div><div class="small">Справа появится предпросмотр.</div></div></div></aside>';
-  const m=fileMeta(f),isPdf=f.ext==='.pdf',isNotebook=f.ext==='.ipynb';
+  const m=fileMeta(f),isPdf=f.ext==='.pdf',isNotebook=isReaderFile(f),isCode=isCodeFile(f);
   const displayTitle=entry?.title||niceName(f);
   const url=isPdf?viewerUrl(f,entry?.page||0,displayTitle):isNotebook?notebookUrl(f,0,displayTitle,false):githubUrl(f);
   const frameUrl=isPdf?(url+'&embed=1'):isNotebook?notebookUrl(f,0,displayTitle,true):url;
@@ -601,9 +605,9 @@ function preview(f,entry=null){
   const tags=keywords(f).map(k=>'<span class="tag">'+esc(k)+'</span>').join('')||'<span class="tag">'+esc(sectionOf(f))+'</span>';
   const date=entry?.date||m.updated_at||m.created_at;
   const pageRange=entry?.page?(entry.end_page&&entry.end_page!==entry.page?entry.page+'–'+entry.end_page:String(entry.page)):'—';
-  const infoLabel=isNotebook?'Ячейки':'Страницы';
-  const infoValue=isNotebook?(m.cell_count||'—'):pageRange;
-  const fullLabel=isNotebook?'Открыть Notebook':'Открыть PDF';
+  const infoLabel=isCode?'Строки':isNotebook?'Ячейки':'Страницы';
+  const infoValue=isCode?(m.line_count||'—'):isNotebook?(m.cell_count||'—'):pageRange;
+  const fullLabel=isCode?'Открыть файл':isNotebook?'Открыть Notebook':'Открыть PDF';
   return '<aside class="panel preview-panel">'+
     '<div class="preview-toolbar"><div class="preview-heading"><h2 class="preview-doc-title" title="'+esc(displayTitle)+'">'+esc(displayTitle)+'</h2><div class="preview-kicker">'+esc(entry?((entry.number?'№ '+entry.number+' · ':'')+sectionOf(f)):sectionOf(f))+'<span class="preview-date"> · '+esc(fmtDate(date))+'</span></div></div>'+
       '<div class="preview-toolbar-actions"><button class="preview-more" type="button" aria-label="Дополнительные действия" title="Информация и файл">•••</button>'+
@@ -617,7 +621,7 @@ function preview(f,entry=null){
       '<div class="info-row"><span>'+esc(infoLabel)+'</span><span>'+esc(String(infoValue))+'</span></div>'+
       '<div class="info-row"><span>Обновлено</span><span>'+esc(fmtDate(date))+'</span></div></div>'+
       '<div class="info-box"><div class="info-title">Ключевые темы</div><div class="tags">'+tags+'</div></div></div></div>'+
-    '<div class="preview-pane preview-file-pane" data-preview-pane="file" hidden><div class="info-title">Путь в репозитории</div><div class="preview-file-path">'+esc(f.path)+'</div><div class="preview-file-actions"><a class="action primary" href="'+esc(url)+'">Открыть'+(isPdf?' PDF':isNotebook?' Notebook':' файл')+'</a><a class="action" target="_blank" rel="noopener" href="'+esc(githubUrl(f))+'">GitHub ↗</a></div></div>'+
+    '<div class="preview-pane preview-file-pane" data-preview-pane="file" hidden><div class="info-title">Путь в репозитории</div><div class="preview-file-path">'+esc(f.path)+'</div><div class="preview-file-actions"><a class="action primary" href="'+esc(url)+'">Открыть'+(isPdf?' PDF':isCode?' файл':isNotebook?' Notebook':' файл')+'</a><a class="action" target="_blank" rel="noopener" href="'+esc(githubUrl(f))+'">GitHub ↗</a></div></div>'+
   '</aside>';
 }
 function bindPreviewTabs(){
@@ -784,7 +788,7 @@ function renderKnowledge(){
     categories.sort((a,b)=>['Физика','Математика','Справочники'].indexOf(a)-['Физика','Математика','Справочники'].indexOf(b));
     results.innerHTML=categories.map(category=>'<section class="knowledge-group"><h3>'+esc(category)+'</h3><div class="knowledge-grid">'+visible.filter(f=>knowledgeCategory(f)===category).map(f=>{
       const name=niceName(f),topic=KNOWLEDGE_TOPICS[name]||['book',fileDesc(f)];
-      const url=f.ext==='.ipynb'?notebookUrl(f):f.ext==='.pdf'?viewerUrl(f):githubUrl(f);
+      const url=isReaderFile(f)?notebookUrl(f):f.ext==='.pdf'?viewerUrl(f):githubUrl(f);
       const shortcuts=(topic[2]||[]).map(([anchor,label])=>'<a href="'+esc(url+'#'+anchor)+'">'+esc(label)+'</a>').join('');
       return '<article class="knowledge-tile"><a class="knowledge-card" href="'+esc(url)+'"><span class="knowledge-symbol" aria-hidden="true">'+knowledgeIcon(topic[0])+'</span><div class="knowledge-card-copy"><span class="knowledge-kind">'+esc(knowledgeSection(f))+'</span><h4>'+esc(name)+'</h4><p>'+esc(topic[1])+'</p></div><span class="knowledge-arrow" aria-hidden="true">↗</span></a>'+(shortcuts?'<nav class="knowledge-shortcuts" aria-label="'+esc(name)+': быстрые переходы">'+shortcuts+'</nav>':'')+'</article>';
     }).join('')+'</div></section>').join('')||'<div class="empty">Темы не найдены. Попробуйте другое название или выберите все материалы.</div>';
@@ -869,7 +873,7 @@ function renderSubject(){
   if(state.subject==='База'){
     const selected=state.selected;state.selected=null;state.selectedEntry=null;
     renderKnowledge();
-    if(selected&&subjectOf(selected)==='База')location.href=selected.ext==='.ipynb'?notebookUrl(selected):selected.ext==='.pdf'?viewerUrl(selected):githubUrl(selected);
+    if(selected&&subjectOf(selected)==='База')location.href=isReaderFile(selected)?notebookUrl(selected):selected.ext==='.pdf'?viewerUrl(selected):githubUrl(selected);
     return;
   }
   if(state.subject==='ТДиСФ'&&state.section==='Ссылки'){
@@ -925,7 +929,7 @@ function renderSubject(){
   $$('.file-row[data-path]').forEach(r=>r.onclick=()=>{
     const f=FILES.find(x=>x.path===r.dataset.path);if(!f)return;
     if(isPhoneLayout()&&f.ext==='.pdf'){openPdfFullscreen(viewerUrl(f),niceName(f));return}
-    if(isPhoneLayout()&&f.ext==='.ipynb'){openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
+    if(isPhoneLayout()&&isReaderFile(f)){openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
     recordOpenedFile(f);
     state.selected=f;state.selectedEntry=null;renderSubject();
   });
@@ -1049,7 +1053,7 @@ function renderHome(){
   $$('.history-row').forEach(r=>r.onclick=()=>{
     const f=fileByPath(r.dataset.historyPath);if(!f)return;
     if(f.ext==='.pdf'){void openPdfFullscreen(viewerUrl(f,rememberedPdfPage(f),niceName(f)),niceName(f));return}
-    if(f.ext==='.ipynb'){void openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
+    if(isReaderFile(f)){void openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
   });
   $$('.history-remove').forEach(button=>button.onclick=event=>{
     event.preventDefault();
@@ -1126,10 +1130,10 @@ function searchFiltersHtml(){
 }
 function searchGroupHtml(g,i,q){
   const m=fileMeta(g.f),hits=g.hits||[],active=i===searchSelectedGroup;
-  const pages=hits.slice(0,10).map((h,j)=>'<button class="search-page-hit'+(active&&j===searchSelectedHit?' active':'')+'" data-search-group="'+i+'" data-search-hit="'+j+'">'+(h.page?(g.f.ext==='.ipynb'?'ячейка ':'стр. ')+h.page:(g.f.ext==='.pdf'?'PDF':'Notebook'))+'</button>').join('');
+  const pages=hits.slice(0,10).map((h,j)=>'<button class="search-page-hit'+(active&&j===searchSelectedHit?' active':'')+'" data-search-group="'+i+'" data-search-hit="'+j+'">'+(h.page?(isCodeFile(g.f)?'строка ':g.f.ext==='.ipynb'?'ячейка ':'стр. ')+h.page:(g.f.ext==='.pdf'?'PDF':isCodeFile(g.f)?'Файл':'Notebook'))+'</button>').join('');
   const more=hits.length>10?'<span class="search-more">+'+(hits.length-10)+'</span>':'';
   const first=hits[0]||{snippet:''},meta=[subjectOf(g.f),sectionOf(g.f)];
-  if(m.page_count)meta.push(m.page_count+' стр.');else if(m.cell_count)meta.push(m.cell_count+' ячеек');if(m.size)meta.push(fmtSize(m.size));
+  if(m.page_count)meta.push(m.page_count+' стр.');else if(m.cell_count)meta.push(m.cell_count+' ячеек');else if(m.line_count)meta.push(m.line_count+' строк');if(m.size)meta.push(fmtSize(m.size));
   const badge=isNewDate(m.created_at)?'<span class="new-badge search-result-new">NEW</span>':'';
   return '<div class="search-group'+(active?' active':'')+'"><button class="search-group-main" data-search-group-main="'+i+'"><div class="search-group-top"><span class="search-badge">'+esc(subjectOf(g.f))+'</span><span class="search-group-title">'+searchHi(niceName(g.f),q)+'</span>'+badge+'<span class="search-hit-count">'+hits.length+' совп.</span></div><div class="search-group-meta">'+esc(meta.join(' · '))+'</div><div class="search-group-snippet">'+searchHi(first.snippet||'',q)+'</div></button><div class="search-pages">'+pages+more+'</div></div>';
 }
@@ -1137,15 +1141,15 @@ function searchPreviewHtml(q){
   if(state.searchBusy&&!searchMobilePreview)return '<div class="search-preview-empty">Выберите документ или дождитесь результатов поиска по содержимому.</div>';
   const g=searchGroups[searchSelectedGroup];if(!g)return '<div class="search-preview-empty">Нет результатов для выбранных фильтров.</div>';
   const hit=g.hits[searchSelectedHit]||g.hits[0]||{page:0,snippet:''},f=g.f;
-  const isPdf=f.ext==='.pdf',isNotebook=f.ext==='.ipynb';
+  const isPdf=f.ext==='.pdf',isNotebook=isReaderFile(f);
   let openUrl=isPdf?viewerUrl(f,hit.page||0,niceName(f)):isNotebook?notebookUrl(f,hit.page||0,niceName(f),false):githubUrl(f);
   let frameUrl=isPdf?openUrl+'&embed=1&searchpreview=1':isNotebook?notebookUrl(f,hit.page||0,niceName(f),true):openUrl;
   if((isPdf||isNotebook)&&q){openUrl+='&find='+encodeURIComponent(q);frameUrl+='&find='+encodeURIComponent(q)}
   const frame=(isPdf||isNotebook)
     ?'<div class="search-preview-frame-wrap"><iframe class="search-preview-frame" src="'+esc(frameUrl)+'" loading="lazy" title="'+esc(niceName(f))+'"></iframe></div>'
     :'<div class="search-preview-empty">Предпросмотр для этого формата недоступен.</div>';
-  const loc=hit.page?(isNotebook?' · ячейка ':' · стр. ')+hit.page:'';
-  return '<div class="search-preview-head"><div><div class="search-preview-kicker">'+esc(subjectOf(f)+' · '+sectionOf(f)+loc)+'</div><h2 class="search-preview-title">'+esc(niceName(f))+'</h2></div><button class="search-preview-close" type="button">×</button></div><div class="search-preview-toolbar"><a class="search-open" href="'+esc(openUrl)+'">Открыть'+(hit.page?(isNotebook?' ячейку ':' стр. ')+hit.page:'')+'</a><div class="search-hit-nav"><button class="search-prev-hit" type="button">‹</button><span class="search-hit-position">'+(searchSelectedHit+1)+' / '+g.hits.length+'</span><button class="search-next-hit" type="button">›</button></div></div>'+frame+'<div class="search-preview-text">'+searchHi(hit.snippet||'',q)+'</div>';
+  const loc=hit.page?(isCodeFile(f)?' · строка ':isNotebook?' · ячейка ':' · стр. ')+hit.page:'';
+  return '<div class="search-preview-head"><div><div class="search-preview-kicker">'+esc(subjectOf(f)+' · '+sectionOf(f)+loc)+'</div><h2 class="search-preview-title">'+esc(niceName(f))+'</h2></div><button class="search-preview-close" type="button">×</button></div><div class="search-preview-toolbar"><a class="search-open" href="'+esc(openUrl)+'">Открыть'+(hit.page?(isCodeFile(f)?' строку ':isNotebook?' ячейку ':' стр. ')+hit.page:'')+'</a><div class="search-hit-nav"><button class="search-prev-hit" type="button">‹</button><span class="search-hit-position">'+(searchSelectedHit+1)+' / '+g.hits.length+'</span><button class="search-next-hit" type="button">›</button></div></div>'+frame+'<div class="search-preview-text">'+searchHi(hit.snippet||'',q)+'</div>';
 }
 
 function dismissSearchKeyboard(){
@@ -1192,7 +1196,7 @@ function bindFilteredRows(){
     if(!f)return;
     if(subjectOf(f)==='ДЛ'){
       if(f.ext==='.pdf'){void openPdfFullscreen(viewerUrl(f),niceName(f));return}
-      if(f.ext==='.ipynb'){void openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
+      if(isReaderFile(f)){void openPdfFullscreen(notebookUrl(f,0,niceName(f),false),niceName(f));return}
     }
     state.view='subjects';
     state.subject=subjectOf(f);
@@ -1247,7 +1251,7 @@ async function loadMeta(){
       fetch('search-index/files.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error('files.json '+r.status);return r.json()}),
       fetch('search-index/structure.json',{cache:'no-cache'}).then(r=>r.ok?r.json():({groups:[]})).catch(()=>({groups:[]}))
     ]);
-    const rows=(data.files||[]).filter(x=>x?.path&&/\.(pdf|ipynb)$/i.test(x.path)&&!x.path.includes('/LaTeX/')&&x.path!=='ФЭЧ/04_Литератру/PhysRevD.pdf');
+    const rows=(data.files||[]).filter(x=>x?.path&&(/\.(pdf|ipynb)$/i.test(x.path)||CODE_FILE.test(x.path))&&!x.path.includes('/LaTeX/')&&x.path!=='ФЭЧ/04_Литератру/PhysRevD.pdf');
     FILES=rows.map(x=>({
       path:x.path,
       name:x.path.split('/').pop(),

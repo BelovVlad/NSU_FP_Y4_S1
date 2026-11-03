@@ -27,7 +27,7 @@ import build_app_bundle  # noqa: E402
 REFERRERS = [
     'index.html', 'site.js', 'sw.js', 'search-worker.js',
     'pdfjs/viewer.html', 'pdfjs/viewer.js', 'pdfjs/material-paths.js',
-    'notebook/viewer.html', 'particles/index.html',
+    'notebook/viewer.html', 'notebook/code.html', 'particles/index.html',
 ]
 REFERENCE = re.compile(
     r'''(?P<path>[A-Za-z0-9_./-]+\.(?:js|mjs|css|png|webp|webmanifest|json))\?(?P<key>v|build)=(?P<version>[A-Za-z0-9._-]*)''')

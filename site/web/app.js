@@ -77,7 +77,7 @@
       ? new URL('https://media.githubusercontent.com/media/BelovVlad/NSU_FP_Y4_S1/main/'+encPath(file.path))
       : new URL('../'+encPath(file.path),base);
     if(file.version)direct.searchParams.set('v',file.version);
-    const viewer=new URL(file.type==='ipynb'?'notebook/viewer.html':'pdfjs/viewer.html',base);
+    const viewer=new URL(file.type==='ipynb'?'notebook/viewer.html':file.type==='pdf'?'pdfjs/viewer.html':'notebook/code.html',base);
     viewer.searchParams.set('file',file.path);
     viewer.searchParams.set('subject',file.subject||fileSubject(file.path));
     viewer.searchParams.set('title',file.title||file.path.split('/').pop().replace(/\.pdf$/i,''));
@@ -175,7 +175,7 @@
       const response=await fetch(new URL('search-index/files.json',base),{cache:'no-cache'});
       if(!response.ok)throw new Error('Не удалось получить список материалов.');
       const catalogue=await response.json();
-      const files=(catalogue.files||[]).filter(file=>['pdf','ipynb'].includes(file.type));
+      const files=(catalogue.files||[]).filter(file=>file.type&&!file.path?.includes('/LaTeX/'));
       const totalBytes=files.reduce((sum,file)=>sum+(Number(file.size)||0),0);
       const saved=await request('LIST_MATERIALS');
       const savedUrls=new Set(saved.flatMap(file=>[file.url,file.alias].filter(Boolean)));

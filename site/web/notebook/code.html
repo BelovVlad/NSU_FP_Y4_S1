@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta id="appThemeColor" name="theme-color" content="#080d12">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/app-192.png?v=f299e7a63c">
+<title>Код · NSU FP</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark-dimmed.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<link rel="stylesheet" href="viewer.css?build=30ef103226">
+<link rel="stylesheet" href="../app.css?v=9aaafa299d">
+<script defer src="../app.js?v=ecfa34c436"></script>
+</head>
+<body class="code-reader">
+<header class="toolbar">
+  <button id="back" class="back" type="button" aria-label="Назад" title="Назад">←</button>
+  <div class="title-wrap">
+    <div id="title" class="title">Код</div>
+    <div id="subtitle" class="subtitle">Просмотр без выполнения кода</div>
+  </div>
+  <div class="actions">
+    <div class="find-box">
+      <input id="findInput" class="find-input" type="search" autocomplete="off" placeholder="Поиск в коде…" aria-label="Поиск по файлу">
+      <span id="findStatus" class="find-status"></span>
+      <button id="findPrev" class="find-btn" type="button" title="Предыдущее">↑</button>
+      <button id="findNext" class="find-btn" type="button" title="Следующее">↓</button>
+    </div>
+    <select id="zoomSelect" class="zoom-select" aria-label="Масштаб" title="Масштаб">
+      <option value="80">80%</option><option value="90">90%</option><option value="100">100%</option>
+      <option value="110">110%</option><option value="125">125%</option><option value="150">150%</option>
+    </select>
+    <a id="github" class="github-link" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</header>
+<main id="main" class="notebook-shell">
+  <div class="loading"><div class="loading-inner"><div class="spinner"></div><div>Загружаю файл…</div></div></div>
+</main>
+<script>
+// Code files (Python, C++, Makefile, Markdown…) in the notebook reader's frame: the same toolbar, search, zoom and
+// themes. ?file=<path>&title=…&subject=…&line=12&find=…; #L12 marks a line. Markdown is shown as text, not run.
+const OWNER='BelovVlad',REPO='NSU_FP_Y4_S1',BRANCH='main',SITE='NSU FP';
+const params=new URLSearchParams(location.search);
+const raw=params.get('file')||'';
+const home=()=>'../'+(subject?'#subject='+encodeURIComponent(subject):'');
+const titleParam=params.get('title')||'';
+const subject=params.get('subject')||'';
+const version=params.get('v')||'';
+const theme=params.get('theme')||'';
+const embed=params.get('embed')==='1';
+const full=params.get('full')==='1';
+const initialLine=Math.max(0,Number(params.get('line')||params.get('cell')||0));
+const initialFind=params.get('find')||'';
+const $=id=>document.getElementById(id);
+const main=$('main'),back=$('back'),title=$('title'),subtitle=$('subtitle'),github=$('github');
+const findInput=$('findInput'),findStatus=$('findStatus'),findPrev=$('findPrev'),findNext=$('findNext'),zoomSelect=$('zoomSelect');
+let lines=[],findHits=[],findCursor=-1;
+
+if(embed)document.body.classList.add('embed');
+function applyTheme(value){
+  document.body.classList.remove('theme-na19','theme-na19x');
+  if(value==='na19')document.body.classList.add('theme-na19');
+  else if(value==='na19x')document.body.classList.add('theme-na19x');
+  const meta=$('appThemeColor');
+  if(meta)meta.content=value==='na19'?'#061011':value==='na19x'?'#171b1e':'#080d12';
+}
+applyTheme(theme);
+window.addEventListener('message',e=>{
+  if(e.origin!==location.origin||e.data?.type!=='nsu-pdf-theme')return;
+  applyTheme(e.data.theme||'');
+});
+
+const encPath=p=>p.split('/').map(encodeURIComponent).join('/');
+const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const normalize=s=>String(s||'').normalize('NFKC').toLocaleLowerCase('ru-RU').replace(/ё/g,'е');
+const plural=(n,one,few,many)=>n%10===1&&n%100!==11?one:n%10>=2&&n%10<=4&&(n%100<10||n%100>=20)?few:many;
+const fileName=raw.split('/').pop()||'файл';
+
+// Language by name: [highlight.js language, label].
+const LANGUAGES={
+  py:['python','Python'],pyw:['python','Python'],c:['c','C'],h:['cpp','C/C++'],cc:['cpp','C++'],cpp:['cpp','C++'],cxx:['cpp','C++'],
+  hpp:['cpp','C++'],hh:['cpp','C++'],hxx:['cpp','C++'],sh:['bash','Shell'],bash:['bash','Shell'],ps1:['powershell','PowerShell'],
+  js:['javascript','JavaScript'],mjs:['javascript','JavaScript'],ts:['typescript','TypeScript'],css:['css','CSS'],html:['xml','HTML'],
+  xml:['xml','XML'],json:['json','JSON'],yaml:['yaml','YAML'],yml:['yaml','YAML'],toml:['ini','TOML'],ini:['ini','INI'],cfg:['ini','Config'],
+  md:['markdown','Markdown'],txt:['plaintext','Текст'],csv:['plaintext','CSV'],r:['r','R'],m:['matlab','MATLAB'],jl:['julia','Julia'],
+  wl:['mathematica','Wolfram'],tex:['latex','LaTeX'],sql:['sql','SQL'],rs:['rust','Rust'],go:['go','Go'],java:['java','Java'],lua:['lua','Lua']
+};
+const NAMES={makefile:['makefile','Makefile'],dockerfile:['dockerfile','Dockerfile'],'cmakelists.txt':['cmake','CMake']};
+const ext=fileName.includes('.')?fileName.split('.').pop().toLowerCase():'';
+const [language,label]=NAMES[fileName.toLowerCase()]||LANGUAGES[ext]||['plaintext',ext.toUpperCase()||'Текст'];
+// The same list decides which links of a Markdown file open here.
+const isCodePath=path=>{const name=path.split('/').pop().toLowerCase();return !!NAMES[name]||(name.includes('.')&&name.split('.').pop() in LANGUAGES)};
+
+function localFileUrl(path){
+  const url=new URL('../../'+encPath(path.replace(/^\/+/,'')),location.href);
+  if(version)url.searchParams.set('v',version);
+  return url;
+}
+function githubFileUrl(path){return 'https://github.com/'+OWNER+'/'+REPO+'/blob/'+BRANCH+'/'+encPath(path)}
+function sanitize(html){return window.DOMPurify?DOMPurify.sanitize(html,{USE_PROFILES:{html:true}}):escapeHtml(html)}
+function highlight(text){
+  // Very long files stay plain: highlighting them would hold the page for seconds.
+  if(window.hljs&&language!=='plaintext'&&text.length<1.5e6&&hljs.getLanguage(language)){
+    try{return hljs.highlight(text,{language,ignoreIllegals:true}).value}catch{}
+  }
+  return escapeHtml(text);
+}
+// Highlighted HTML split into lines; a span open across a line break is closed and reopened.
+function splitLines(html){
+  const out=[],open=[];let line='';
+  for(const token of html.split(/(<span[^>]*>|<\/span>|\n)/)){
+    if(!token)continue;
+    if(token==='\n'){out.push(line+'</span>'.repeat(open.length));line=open.join('')}
+    else if(token.startsWith('<span')){open.push(token);line+=token}
+    else if(token==='</span>'){open.pop();line+=token}
+    else line+=token;
+  }
+  out.push(line);
+  return out;
+}
+
+// Relative links of a Markdown file: materials open in their readers, other files as they are.
+function materialUrl(href){
+  if(!href||/^(?:[a-z]+:|#|data:|blob:)/i.test(href))return null;
+  let path;
+  try{path=decodeURIComponent(new URL(href,new URL('/'+raw,'https://repo.local/')).pathname.slice(1))}catch{return null}
+  const low=path.toLowerCase(),u=new URL(low.endsWith('.ipynb')?'viewer.html':low.endsWith('.pdf')?'../pdfjs/viewer.html':'code.html',location.href);
+  if(!low.endsWith('.ipynb')&&!low.endsWith('.pdf')&&!isCodePath(path))return localFileUrl(path).href;
+  u.searchParams.set('file',path);
+  u.searchParams.set('title',path.split('/').pop().replace(/\.(ipynb|pdf)$/i,'').replace(/_/g,' '));
+  if(theme)u.searchParams.set('theme',theme);
+  if(subject)u.searchParams.set('subject',subject);
+  return u.href;
+}
+function renderMarkdown(text){
+  const html=window.marked?sanitize(marked.parse(text,{gfm:true,breaks:false})):'<pre>'+escapeHtml(text)+'</pre>';
+  main.insertAdjacentHTML('beforeend','<div class="cells"><section class="cell markdown-cell code-markdown"><div class="cell-body markdown-body">'+html+'</div></section></div>');
+  const body=main.querySelector('.markdown-body');
+  body.querySelectorAll('a[href]').forEach(a=>{
+    const href=a.getAttribute('href'),internal=materialUrl(href);
+    if(internal){a.href=internal;return}
+    if(/^https?:/i.test(href)){a.target='_blank';a.rel='noopener noreferrer'}
+  });
+  body.querySelectorAll('img[src]').forEach(img=>{const src=img.getAttribute('src');if(src&&!/^(?:[a-z]+:|data:)/i.test(src))img.src=localFileUrl(new URL(src,new URL('/'+raw,'https://repo.local/')).pathname.slice(1)).href});
+  // Tables scroll sideways inside their own box, as in the notebook reader.
+  body.querySelectorAll('table').forEach(table=>{const wrap=document.createElement('div');wrap.className='table-scroll';table.before(wrap);wrap.append(table)});
+  if(window.hljs)body.querySelectorAll('pre code').forEach(el=>{try{hljs.highlightElement(el)}catch{}});
+  lines=[...body.children];
+}
+function renderCode(text){
+  const rows=splitLines(highlight(text));
+  if(rows.length>1&&rows[rows.length-1]==='')rows.pop();
+  lines=text.split('\n').slice(0,rows.length);
+  main.insertAdjacentHTML('beforeend','<div class="code-box code-file"><div class="hljs"><table class="code-lines"><tbody>'+
+    rows.map((html,i)=>'<tr class="code-line" id="L'+(i+1)+'"><td class="ln"><a href="#L'+(i+1)+'">'+(i+1)+'</a></td><td class="lc">'+(html||' ')+'</td></tr>').join('')+
+    '</tbody></table></div></div>');
+}
+
+function clearFindHit(){main.querySelectorAll('.find-hit').forEach(el=>el.classList.remove('find-hit'))}
+function rowFor(n){return ext==='md'?lines[n-1]:$('L'+n)}
+function scrollToLine(n,smooth=true){
+  const row=rowFor(n);if(!row)return false;
+  clearFindHit();row.classList.add('find-hit');
+  row.scrollIntoView({behavior:smooth&&!matchMedia('(prefers-reduced-motion:reduce)').matches?'smooth':'auto',block:'center'});
+  return true;
+}
+function rebuildFindHits(){
+  const q=normalize(findInput.value).trim();
+  findHits=[];findCursor=-1;clearFindHit();
+  if(!q){findStatus.textContent='';return}
+  lines.forEach((line,i)=>{if(normalize(typeof line==='string'?line:line.textContent).includes(q))findHits.push(i+1)});
+  findStatus.textContent='0/'+findHits.length;
+}
+function moveFind(direction){
+  if(!findHits.length){rebuildFindHits();if(!findHits.length)return}
+  findCursor=(findCursor+direction+findHits.length)%findHits.length;
+  findStatus.textContent=(findCursor+1)+'/'+findHits.length;
+  scrollToLine(findHits[findCursor]);
+}
+function markHash(){
+  const m=location.hash.match(/^#L(\d+)$/);
+  if(m)scrollToLine(Number(m[1]),false);
+}
+function notifyReady(){
+  if(window.parent!==window)try{window.parent.postMessage({type:'nsu-pdf-ready'},location.origin)}catch{}
+}
+const ZOOM_KEY='nsu-notebook-zoom';
+function applyZoom(value,persist=true){
+  let pct=Number(value);
+  if(![80,90,100,110,125,150].includes(pct))pct=100;
+  const z=pct/100;
+  zoomSelect.value=String(pct);
+  main.style.zoom=String(z);
+  main.style.width='100%';
+  main.style.maxWidth=embed?'none':(1180/z)+'px';
+  if(persist)try{localStorage.setItem(ZOOM_KEY,String(pct))}catch{}
+}
+let initialZoom=100;
+try{initialZoom=Number(localStorage.getItem(ZOOM_KEY)||100)}catch{}
+applyZoom(initialZoom,false);
+zoomSelect.addEventListener('change',()=>applyZoom(zoomSelect.value,true));
+
+async function openFile(){
+  if(!raw){main.innerHTML='<div class="error">В ссылке не указан файл.</div>';notifyReady();return}
+  title.textContent=titleParam||fileName;
+  document.title=title.textContent+' · '+SITE;
+  const fileUrl=localFileUrl(raw).href;
+  if(REPO)github.href=githubFileUrl(raw);
+  else{github.textContent='Скачать ↓';github.href=fileUrl;github.download=fileName;github.removeAttribute('target')}
+  try{
+    const response=await fetch(fileUrl,{cache:version?'force-cache':'no-cache'});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    const text=(await response.text()).replace(/\r\n?/g,'\n');
+    const count=text.split('\n').length-(text.endsWith('\n')?1:0);
+    const size=new Blob([text]).size,sizeText=size>=1048576?(size/1048576).toFixed(1)+' МБ':Math.max(1,Math.ceil(size/1024))+' КБ';
+    subtitle.textContent=label+' · '+count+' '+plural(count,'строка','строки','строк')+' · локальный просмотр';
+    main.innerHTML='<section class="notebook-head"><h1>'+escapeHtml(title.textContent)+'</h1><div class="notebook-meta"><span class="meta-chip">'+escapeHtml(label)+'</span><span class="meta-chip">'+count+' '+plural(count,'строка','строки','строк')+'</span><span class="meta-chip">'+sizeText+'</span></div></section>';
+    if(ext==='md')renderMarkdown(text);else renderCode(text);
+    window.NSUApp?.warm();
+    notifyReady();
+    if(initialFind){
+      findInput.value=initialFind;rebuildFindHits();
+      const at=findHits.indexOf(initialLine);
+      if(findHits.length){findCursor=at>=0?at:0;findStatus.textContent=(findCursor+1)+'/'+findHits.length;scrollToLine(findHits[findCursor],false)}
+    }else if(initialLine)scrollToLine(initialLine,false);
+    else markHash();
+  }catch(err){
+    main.innerHTML='<div class="error"><div><strong>Не удалось открыть файл.</strong><br><br>'+escapeHtml(err?.message||String(err))+'</div></div>';
+    notifyReady();
+  }
+}
+back.onclick=()=>{
+  if(window.parent!==window&&full){window.parent.postMessage({type:'nsu-close-pdf'},location.origin);return}
+  if(history.length>1)history.back();
+  else location.href=home();
+};
+window.addEventListener('hashchange',markHash);
+findInput.addEventListener('input',rebuildFindHits);
+findInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();moveFind(e.shiftKey?-1:1)}});
+findNext.onclick=()=>moveFind(1);
+findPrev.onclick=()=>moveFind(-1);
+window.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'){e.preventDefault();findInput.focus();findInput.select()}
+  if(e.key==='Escape'&&full&&window.parent!==window)window.parent.postMessage({type:'nsu-close-pdf'},location.origin);
+});
+window.addEventListener('DOMContentLoaded',openFile,{once:true});
+</script>
+</body>
+</html>

@@ -27,10 +27,10 @@ window.MathJax={
 };
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
-<link rel="stylesheet" href="viewer.css?build=286b961300">
+<link rel="stylesheet" href="viewer.css?build=30ef103226">
 <script defer src="outline.js?build=d72f570ee4"></script>
 <link rel="stylesheet" href="../app.css?v=9aaafa299d">
-<script defer src="../app.js?v=09c610785d"></script>
+<script defer src="../app.js?v=ecfa34c436"></script>
 </head>
 <body>
 <header class="toolbar">
@@ -178,6 +178,14 @@ function internalMaterialUrl(path){
     u.searchParams.set('file',path);
     u.searchParams.set('title',path.split('/').pop().replace(/\.pdf$/i,'').replace(/_/g,' '));
     if(theme)u.searchParams.set('theme',theme);
+    return u.href;
+  }
+  if(/\.(py|c|h|cc|cpp|cxx|hpp|hh|sh|ps1|js|mjs|json|ya?ml|toml|ini|cfg|md|txt|m|jl|wl|tex|r)$|(^|\/)makefile$/i.test(low)){
+    const u=new URL('code.html',location.href);
+    u.searchParams.set('file',path);
+    u.searchParams.set('title',path.split('/').pop());
+    if(theme)u.searchParams.set('theme',theme);
+    if(subject)u.searchParams.set('subject',subject);
     return u.href;
   }
   return null;

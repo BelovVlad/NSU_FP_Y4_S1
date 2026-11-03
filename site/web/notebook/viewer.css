@@ -302,6 +302,20 @@ body.embed .notebook-shell{padding:7px 6px 34px}
   }
 }
 
-
-
-
+/* Code files (code.html): one code box with numbered lines; #L12 and search hits mark a line. */
+.code-reader .notebook-shell{width:min(1180px,100%)}
+.code-file{border-radius:10px}
+.code-file .hljs{overflow-x:auto;padding:10px 0}
+.code-lines{border-collapse:collapse;min-width:100%;font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:4}
+.code-line td{padding:0;vertical-align:top}
+.code-line .ln{width:1%;padding:0 12px 0 14px;text-align:right;color:var(--prompt);border-right:1px solid var(--line2);user-select:none;-webkit-user-select:none}
+.code-line .ln a{color:inherit;text-decoration:none}
+.code-line .ln a:hover{color:var(--cream)}
+.code-line .lc{padding:0 16px;white-space:pre}
+.code-line{scroll-margin-top:110px}
+.code-line.find-hit{background:rgba(var(--accent-rgb),.16)}
+.code-line.find-hit .ln{color:var(--cream)}
+.code-markdown{grid-template-columns:minmax(0,1fr)}
+.code-markdown .cell-body{padding:7px 16px}
+.code-markdown .markdown-body>.find-hit{outline:1px solid var(--accent);outline-offset:4px;border-radius:4px}
+@media (max-width:640px){.code-lines{font-size:12px}.code-line .ln{padding:0 8px}.code-line .lc{padding:0 10px}}
