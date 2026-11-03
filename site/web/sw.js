@@ -6,6 +6,7 @@ const PREFIX = 'nsu-app-' + BASE.pathname + '-';
 const SHELL = PREFIX + 'shell-' + SHELL_VERSION;
 const DATA = PREFIX + 'data-v1';
 const PDFS = PREFIX + 'pdf-v1';
+const HTML_WAIT = 4000;
 const CORE = ['index.html', 'site.css?v=ce4cd70474', 'site.js?v=c9418ceabe', 'app.js?v=09c610785d', 'app.css?v=9aaafa299d', 'annotations-store.js?v=67333490cd', 'offline-resources.json', 'knowledge.css?v=a679564c38', 'manifest.webmanifest?v=78bf5d5133',
   'Overseer/overseer.js?v=c6c82cab8a', 'Overseer/overseer.css?v=3c70ee01aa',
   'Overseer/assets/Circle20.png', 'Overseer/assets/GuidancePebbles.png',
@@ -104,11 +105,19 @@ async function resource(request, event) {
   })();
 
   // HTML chooses the versioned JS/CSS. On a slow mobile network, never serve
-  // an old HTML shell merely because 1.8 seconds elapsed. Cache is offline-only.
+  // an old HTML shell merely because 1.8 seconds elapsed. Cache is offline-only,
+  // but "offline" is not always a quick error: with Wi-Fi off a VPN or virtual
+  // adapter keeps the system online and the request hangs on DNS for a long time,
+  // so the copy answers at once when the browser knows it is offline and after
+  // HTML_WAIT ms otherwise; the request goes on and refreshes the copy.
   if(html){
+    if(cached){
+      event.waitUntil(network.catch(()=>{}));
+      if(!self.navigator.onLine) return cached;
+      return Promise.race([network.catch(()=>cached),new Promise(resolve=>setTimeout(resolve,HTML_WAIT,cached))]);
+    }
     try { return await network; }
     catch {
-      if(cached) return cached;
       if(request.mode === 'navigate') return new Response('<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Нет подключения</title><body style="background:#080d12;color:#eee;font:18px "Bahnschrift","Roboto Condensed","Segoe UI",system-ui,sans-serif;padding:24px"><h1>Этот материал ещё не сохранён</h1><p>Откройте его при подключении к интернету.</p><a style="color:#f4b8a5" href="'+BASE.href+'">К материалам</a></body></html>',{status:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
       return Response.error();
     }
